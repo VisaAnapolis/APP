@@ -365,10 +365,8 @@
   async function openHistorico(ndoc, tipo, numer) {
     const b = hisBucket(ndoc);
     const path = `./data/his/${b}/${ndoc}.json`;
-    const h = await fetchJson(path);
     
     // Título: "Tipo Número" (ex: "Termo de Intimação 119483")
-    // Se tipo ou numer não disponíveis, usa fallback
     let titulo;
     if (tipo && tipo !== "—" && numer && numer !== "—") {
       titulo = `${tipo} ${numer}`;
@@ -378,7 +376,18 @@
       titulo = `Documento ${ndoc}`;
     }
     
-    openModal(titulo, (h && (h.decr || h.descr)) ? (h.decr || h.descr) : "—");
+    try {
+      const h = await fetchJson(path);
+      const conteudo = (h && (h.decr || h.descr)) ? (h.decr || h.descr) : "Documento sem conteúdo digitado.";
+      openModal(titulo, conteudo);
+    } catch (e) {
+      // Se erro 404 ou qualquer outro erro, exibe mensagem amigável
+      if (e.message && e.message.includes("404")) {
+        openModal(titulo, "Documento sem conteúdo digitado.");
+      } else {
+        openModal(titulo, "Documento sem conteúdo digitado.");
+      }
+    }
   }
 
   function applyFilter() {
