@@ -7,6 +7,48 @@
   const regPrefix = (codigo) => pad5(codigo).slice(0, 2);
   const hisBucket = (ndoc) => String((Number(ndoc) || 0) % 100).padStart(2, "0");
 
+  /**
+   * Formata data para dd/mm/aaaa
+   * Aceita formatos: "aaaa-mm-dd", "dd/mm/aaaa", "aaaa/mm/dd", etc.
+   */
+  function formatDateBR(dateStr) {
+    if (!dateStr || dateStr === "—" || dateStr === "-") return "—";
+    
+    const str = String(dateStr).trim();
+    
+    // Já está no formato dd/mm/aaaa?
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(str)) {
+      return str;
+    }
+    
+    // Formato aaaa-mm-dd ou aaaa/mm/dd
+    if (/^\d{4}[-\/]\d{2}[-\/]\d{2}/.test(str)) {
+      const parts = str.split(/[-\/T ]/);
+      if (parts.length >= 3) {
+        const [ano, mes, dia] = parts;
+        return `${dia.padStart(2, '0')}/${mes.padStart(2, '0')}/${ano}`;
+      }
+    }
+    
+    // Formato dd-mm-aaaa
+    if (/^\d{2}[-]\d{2}[-]\d{4}$/.test(str)) {
+      const [dia, mes, ano] = str.split('-');
+      return `${dia}/${mes}/${ano}`;
+    }
+    
+    // Tenta parse como Date
+    const d = new Date(str);
+    if (!isNaN(d.getTime())) {
+      const dia = String(d.getDate()).padStart(2, '0');
+      const mes = String(d.getMonth() + 1).padStart(2, '0');
+      const ano = d.getFullYear();
+      return `${dia}/${mes}/${ano}`;
+    }
+    
+    // Retorna original se não conseguir converter
+    return str;
+  }
+
   function safeText(el, v) {
     if (!el) return;
     el.textContent = (v === null || v === undefined || v === "") ? "—" : String(v);
@@ -60,6 +102,9 @@
   };
 
   let indexItems = [];
+  
+  // Armazena info da inspeção atual para usar no título do modal
+  let currentInspecaoInfo = null;
 
   function showStatus(msg) {
     safeText(els.status, msg || "");
@@ -78,6 +123,7 @@
     if (els.modal) els.modal.hidden = true;
     safeText(els.modalTitle, "");
     safeText(els.modalMemo, "");
+    currentInspecaoInfo = null;
   }
 
   function openModal(title, memo) {
@@ -169,7 +215,8 @@
     const alv = reg.alvara_ultimo;
     if (alv && typeof alv === "object") {
       safeText(els.dAlvEx, alv.exercicio ?? "—");
-      safeText(els.dAlvVal, alv.dt_validade ?? "—");
+      // Formata data de validade para dd/mm/aaaa
+      safeText(els.dAlvVal, formatDateBR(alv.dt_validade) ?? "—");
     } else {
       safeText(els.dAlvEx, "—");
       safeText(els.dAlvVal, "—");
@@ -238,7 +285,8 @@
 
           const title = document.createElement("div");
           title.className = "item__title";
-          const dt = v.dt_visita || "—";
+          // Formata data da visita para dd/mm/aaaa
+          const dt = formatDateBR(v.dt_visita) || "—";
           const tipo = v.tipo || "—";
           const num = v.numer || "—";
           title.textContent = `${tipo} ${num} · ${dt}`;
@@ -263,11 +311,16 @@
             btn.style.padding = "8px 10px";
             btn.textContent = "📄 Abrir documento";
 
+            // Armazena tipo e número para usar no título do modal
+            const inspecaoTipo = tipo;
+            const inspecaoNum = num;
+
             btn.addEventListener("click", async (ev) => {
               ev.preventDefault();
               ev.stopPropagation();
               try {
-                await openHistorico(ndoc);
+                // Passa tipo e número para o openHistorico
+                await openHistorico(ndoc, inspecaoTipo, inspecaoNum);
               } catch (e) {
                 openModal("Erro ao abrir histórico", String(e.message || e));
               }
@@ -303,11 +356,29 @@
     els.detailPanel?.scrollIntoView?.({ behavior: "smooth", block: "start" });
   }
 
-  async function openHistorico(ndoc) {
+  /**
+   * Abre modal de histórico com título formatado
+   * @param {number} ndoc - Número do documento
+   * @param {string} tipo - Tipo da inspeção (ex: "Termo de Intimação")
+   * @param {string} numer - Número da inspeção
+   */
+  async function openHistorico(ndoc, tipo, numer) {
     const b = hisBucket(ndoc);
     const path = `./data/his/${b}/${ndoc}.json`;
     const h = await fetchJson(path);
-    openModal(`Histórico NDOC ${ndoc}`, (h && (h.decr || h.descr)) ? (h.decr || h.descr) : "—");
+    
+    // Título: "Tipo Número" (ex: "Termo de Intimação 119483")
+    // Se tipo ou numer não disponíveis, usa fallback
+    let titulo;
+    if (tipo && tipo !== "—" && numer && numer !== "—") {
+      titulo = `${tipo} ${numer}`;
+    } else if (tipo && tipo !== "—") {
+      titulo = `${tipo} (Doc. ${ndoc})`;
+    } else {
+      titulo = `Documento ${ndoc}`;
+    }
+    
+    openModal(titulo, (h && (h.decr || h.descr)) ? (h.decr || h.descr) : "—");
   }
 
   function applyFilter() {
