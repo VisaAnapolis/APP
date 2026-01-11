@@ -160,13 +160,28 @@ body{
 .dSub{color:var(--muted);font-weight:700;margin-top:2px}
 
 .detailGrid{margin-top:12px}
+
+/* =============================================
+   TABELA KV - ALINHAMENTO À ESQUERDA (CORRIGIDO)
+   ============================================= */
 .kv{
   display:grid;
   grid-template-columns: 170px 1fr;
   gap:10px 12px;
+  text-align: left;           /* ADICIONADO: Alinha texto à esquerda */
+  justify-items: start;       /* ADICIONADO: Alinha itens do grid à esquerda */
 }
-.kv__k{color:var(--muted);font-size:.92rem;font-weight:800}
-.kv__v{font-size:1rem;word-break:break-word}
+.kv__k{
+  color:var(--muted);
+  font-size:.92rem;
+  font-weight:800;
+  text-align: left;           /* ADICIONADO: Garante alinhamento à esquerda */
+}
+.kv__v{
+  font-size:1rem;
+  word-break:break-word;
+  text-align: left;           /* ADICIONADO: Garante alinhamento à esquerda */
+}
 
 @media (max-width: 820px){
   .kv{grid-template-columns: 1fr}
@@ -197,10 +212,11 @@ body{
   background:#fff;
   border-radius:12px;
   padding:10px;
+  text-align: left;           /* ADICIONADO: Alinha texto à esquerda */
 }
 .item__top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.item__title{font-weight:900;font-size:1rem}
-.item__sub{font-size:.95rem;color:var(--muted);margin-top:4px;line-height:1.35}
+.item__title{font-weight:900;font-size:1rem;text-align:left}
+.item__sub{font-size:.95rem;color:var(--muted);margin-top:4px;line-height:1.35;text-align:left}
 
 .modalBackdrop{
   position:fixed; inset:0;
@@ -247,6 +263,7 @@ body{
   line-height: 1.45;
   max-height: 70vh;
   overflow:auto;
+  text-align: left;           /* ADICIONADO: Alinha texto à esquerda */
 }
 
 .modalBackdrop[hidden],
@@ -277,7 +294,7 @@ body{
 }
 
 /* =========================================================
-   MODAL – ACESSO NÃO AUTORIZADO (LOGIN)
+   MODAL — ACESSO NÃO AUTORIZADO (LOGIN)
    NÃO interfere nos modais existentes
    ========================================================= */
 
@@ -348,7 +365,7 @@ body{
 .btn-back:active {
     opacity: 0.3; /* Efeito de clique suave */
 }
-  /* Ajuste de espaço no fim da página para não “esconder” conteúdo atrás do botão */
+  /* Ajuste de espaço no fim da página para não "esconder" conteúdo atrás do botão */
   .with-ok-padding {
     padding-bottom: 84px !important;
   }
@@ -382,15 +399,3 @@ body{
   cursor:pointer;
 }
 .iosBtn:active{transform:scale(.98)}
-
-
-
-
-
-
-
-
-
-
-
-
