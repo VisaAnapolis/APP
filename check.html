@@ -127,6 +127,7 @@
       font-weight: 600;
       transition: background 0.2s;
       border-radius: 8px;
+      cursor: pointer;
     }
 
     .checklist-list a:hover {
@@ -166,6 +167,103 @@
     }
 
     /* ========================================
+       MODAL DE PDF
+       ======================================== */
+    .pdf-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #ffffff;
+      z-index: 9999;
+      flex-direction: column;
+    }
+
+    .pdf-modal.active {
+      display: flex;
+    }
+
+    .pdf-modal-header {
+      background: #1a3a6b;
+      color: #ffffff;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      padding-top: calc(16px + env(safe-area-inset-top, 0px));
+    }
+
+    .pdf-modal-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin: 0;
+      flex: 1;
+      text-align: center;
+      padding: 0 40px;
+    }
+
+    .btn-fechar-pdf {
+      position: absolute;
+      left: 16px;
+      background: transparent;
+      border: none;
+      color: #34C759;
+      font-size: 17px;
+      font-weight: 600;
+      padding: 8px;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    .btn-fechar-pdf:hover {
+      opacity: 0.7;
+    }
+
+    .pdf-iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+      background: #f5f5f5;
+    }
+
+    .pdf-modal-footer {
+      padding: 12px 16px;
+      padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+      background: #f8f9fa;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .btn-action-pdf {
+      background: #1a3a6b;
+      color: #ffffff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      transition: background 0.2s;
+    }
+
+    .btn-action-pdf:hover {
+      background: #2a4a7b;
+    }
+
+    .btn-action-pdf:active {
+      background: #0f2a4b;
+    }
+
+    /* ========================================
        RESPONSIVO
        ======================================== */
     @media (max-width: 768px) {
@@ -186,6 +284,16 @@
       .checklist-list a {
         padding: 14px 10px;
         font-size: 0.95em;
+      }
+
+      .pdf-modal-title {
+        font-size: 15px;
+        padding: 0 20px;
+      }
+
+      .btn-action-pdf {
+        padding: 10px 20px;
+        font-size: 14px;
       }
     }
   </style>
@@ -215,48 +323,48 @@
 
       <ul class="checklist-list">
         <li>
-          <a href="check-list-saude-cnaes-baixas/original.pdf">
-            Checklist SAÚDE — CNAEs baixas
+          <a href="#" onclick="abrirPDF('check-list-saude-cnaes-baixas/original.pdf', 'Checklist SAÚDE – CNAEs baixas'); return false;">
+            Checklist SAÚDE – CNAEs baixas
           </a>
         </li>
         <li>
-          <a href="check-list-varejista-cosme-e-san/original.pdf">
-            Checklist Varejista — Cosméticos e Saneantes
+          <a href="#" onclick="abrirPDF('check-list-varejista-cosme-e-san/original.pdf', 'Checklist Varejista – Cosméticos e Saneantes'); return false;">
+            Checklist Varejista – Cosméticos e Saneantes
           </a>
         </li>
         <li>
-          <a href="check-list-acougue/original.pdf">
-            Checklist — Açougue
+          <a href="#" onclick="abrirPDF('check-list-acougue/original.pdf', 'Checklist – Açougue'); return false;">
+            Checklist – Açougue
           </a>
         </li>
         <li>
-          <a href="check-list-alimentos-geral/original.pdf">
-            Checklist — Alimentos (Geral)
+          <a href="#" onclick="abrirPDF('check-list-alimentos-geral/original.pdf', 'Checklist – Alimentos (Geral)'); return false;">
+            Checklist – Alimentos (Geral)
           </a>
         </li>
         <li>
-          <a href="check-list-drogarias-1/original.pdf">
-            Checklist — Drogarias
+          <a href="#" onclick="abrirPDF('check-list-drogarias-1/original.pdf', 'Checklist – Drogarias'); return false;">
+            Checklist – Drogarias
           </a>
         </li>
         <li>
-          <a href="check-list-saude-cnaes-8630502-e-8630503/original.pdf">
-            Checklist Saúde — CNAEs 8630502 / 8630503
+          <a href="#" onclick="abrirPDF('check-list-saude-cnaes-8630502-e-8630503/original.pdf', 'Checklist Saúde – CNAEs 8630502 / 8630503'); return false;">
+            Checklist Saúde – CNAEs 8630502 / 8630503
           </a>
         </li>
         <li>
-          <a href="check-list-atacadista-cosme-e-saneantes/original.pdf">
-            Checklist Atacadista — Cosméticos e Saneantes
+          <a href="#" onclick="abrirPDF('check-list-atacadista-cosme-e-saneantes/original.pdf', 'Checklist Atacadista – Cosméticos e Saneantes'); return false;">
+            Checklist Atacadista – Cosméticos e Saneantes
           </a>
         </li>
         <li>
-          <a href="check-list-escola/original.pdf">
-            Checklist — Escola
+          <a href="#" onclick="abrirPDF('check-list-escola/original.pdf', 'Checklist – Escola'); return false;">
+            Checklist – Escola
           </a>
         </li>
         <li>
-          <a href="checklist-academia/original.pdf">
-            Checklist — Academia
+          <a href="#" onclick="abrirPDF('checklist-academia/original.pdf', 'Checklist – Academia'); return false;">
+            Checklist – Academia
           </a>
         </li>
       </ul>
@@ -269,6 +377,61 @@
     </p>
 
   </div>
+
+  <!-- ========================================
+       MODAL DE VISUALIZAÇÃO DE PDF
+       ======================================== -->
+  <div id="pdfModal" class="pdf-modal">
+    <div class="pdf-modal-header">
+      <button onclick="fecharPDF()" class="btn-fechar-pdf">Fechar</button>
+      <h3 id="pdfTitle" class="pdf-modal-title">Visualizando PDF</h3>
+    </div>
+    <iframe id="pdfViewer" class="pdf-iframe"></iframe>
+    <div class="pdf-modal-footer">
+      <button onclick="abrirEmNovaAba()" class="btn-action-pdf">
+        📥 Abrir Externamente
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================
+       SCRIPTS
+       ======================================== -->
+  <script>
+    let pdfAtual = '';
+
+    function abrirPDF(url, titulo) {
+      pdfAtual = url;
+      document.getElementById('pdfTitle').textContent = titulo;
+      document.getElementById('pdfViewer').src = url;
+      document.getElementById('pdfModal').classList.add('active');
+      
+      // Previne scroll do body quando modal está aberto
+      document.body.style.overflow = 'hidden';
+    }
+
+    function fecharPDF() {
+      document.getElementById('pdfModal').classList.remove('active');
+      document.getElementById('pdfViewer').src = '';
+      pdfAtual = '';
+      
+      // Restaura scroll do body
+      document.body.style.overflow = '';
+    }
+
+    function abrirEmNovaAba() {
+      if (pdfAtual) {
+        window.open(pdfAtual, '_blank', 'noopener,noreferrer');
+      }
+    }
+
+    // Fechar modal ao pressionar ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && document.getElementById('pdfModal').classList.contains('active')) {
+        fecharPDF();
+      }
+    });
+  </script>
 
   <!-- Platform Detector -->
   <script src="./js/platform-detector.js"></script>
