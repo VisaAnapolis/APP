@@ -2,160 +2,344 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Relatório de Plantão Fiscal</title>
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Relatório de Plantão Fiscal - VISA Anápolis</title>
+  <meta name="theme-color" content="#1a3a6b">
+
+  <!-- Sistema de Design - VISA Anápolis -->
   <link rel="stylesheet" href="./css/design-tokens.css">
   <link rel="stylesheet" href="./css/base.css">
   <link rel="stylesheet" href="./css/components.css">
-  
+
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-      padding: 20px;
-      max-width: 900px;
-      margin: 0 auto;
-      background: #f5f7fa;
+    /* ========================================
+       RESET E BASE
+       ======================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
-    
-    .topbar {
-      background: white;
-      border-bottom: 1px solid #ddd;
-      padding: 16px 20px;
-      margin: -20px -20px 20px -20px;
+
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+      background: var(--bg, #f5f7fa);
+      color: var(--text, #1a202c);
+      line-height: 1.6;
+    }
+
+    /* ========================================
+       HEADER PADRONIZADO - VISA Anápolis
+       ======================================== */
+    header.main-header {
+      background: #1a3a6b;
+      color: #ffffff;
+      padding: 28px 20px 26px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       position: sticky;
       top: 0;
       z-index: 100;
     }
-    
-    .topbar a {
-      text-decoration: none;
-      color: #007AFF;
+
+    header.main-header h1 {
+      margin: 0;
+      font-size: clamp(1.4rem, 2.4vw, 2.3rem);
+      font-weight: 900;
+      letter-spacing: 0.2px;
+      color: #ffffff;
+    }
+
+    header.main-header h2 {
+      margin: 8px 0 0;
+      font-size: clamp(1rem, 1.5vw, 1.15rem);
+      font-weight: 500;
+      opacity: 0.92;
+      color: #ffffff;
+    }
+
+    /* Botão OK - Voltar (Padrão iOS) */
+    .btn-ok-header {
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #34C759;
       font-size: 17px;
+      font-weight: 600;
+      padding: 16px 12px;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    
-    @media (min-width: 769px) {
-      .topbar {
-        display: none;
-      }
+
+    .btn-ok-header:hover {
+      opacity: 0.7;
     }
-    
+
+    /* ========================================
+       CONTAINER
+       ======================================== */
+    .container {
+      max-width: 900px;
+      margin: 22px auto 30px;
+      padding: 0 16px;
+      padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* ========================================
+       CABEÇALHO INSTITUCIONAL
+       ======================================== */
     .header-institucional {
       text-align: center;
-      font-weight: bold;
+      font-weight: 700;
       line-height: 1.6;
-      margin-bottom: 30px;
+      margin-bottom: 24px;
       padding: 20px;
-      background: white;
-      border-radius: 8px;
+      background: var(--card, #ffffff);
+      border-radius: 16px;
+      border: 1px solid var(--line, #e2e8f0);
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      color: var(--brand1, #1a3a6b);
     }
-    
-    h1 {
-      text-align: center;
-      color: #1a202c;
-      margin: 20px 0;
-    }
-    
-    .form-group {
-      margin-bottom: 20px;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-    }
-    
-    label {
+
+    .header-institucional span {
       display: block;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: #2d3748;
+      font-size: 0.95em;
     }
-    
-    input, textarea, select {
+
+    .header-institucional span:first-child {
+      font-size: 1.1em;
+    }
+
+    /* ========================================
+       TÍTULO DO FORMULÁRIO
+       ======================================== */
+    .form-title {
+      text-align: center;
+      color: var(--brand1, #1a3a6b);
+      font-size: 1.4em;
+      margin: 20px 0 24px;
+      font-weight: 800;
+    }
+
+    /* ========================================
+       CARDS DE FORMULÁRIO
+       ======================================== */
+    .form-group {
+      margin-bottom: 16px;
+      background: var(--card, #ffffff);
+      padding: 20px;
+      border-radius: 16px;
+      border: 1px solid var(--line, #e2e8f0);
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--text, #1a202c);
+      font-size: 0.95em;
+    }
+
+    .form-group label::before {
+      margin-right: 8px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #cbd5e0;
-      border-radius: 6px;
-      font-size: 16px;
-      box-sizing: border-box;
+      padding: 14px 16px;
+      border: 1px solid var(--line, #e2e8f0);
+      border-radius: 12px;
+      font-size: 16px; /* Evita zoom no iOS */
+      background: #fff;
+      color: var(--text, #1a202c);
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    
-    textarea {
-      min-height: 100px;
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--brand1, #1a3a6b);
+      box-shadow: 0 0 0 3px rgba(26, 58, 107, 0.15);
+    }
+
+    .form-group textarea {
+      min-height: 120px;
       resize: vertical;
       font-family: inherit;
+      line-height: 1.5;
     }
-    
-    button {
-      background: #2c5aa0;
-      color: white;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
+
+    .form-group select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+
+    /* ========================================
+       BOTÃO IMPRIMIR
+       ======================================== */
+    .btn-print {
       width: 100%;
-      margin-top: 20px;
+      padding: 16px 24px;
+      background: linear-gradient(135deg, var(--brand1, #1a3a6b), var(--brand2, #2c5aa0));
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 24px;
     }
-    
-    button:hover {
-      background: #1e3f70;
+
+    .btn-print:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(26, 58, 107, 0.3);
     }
-    
+
+    .btn-print:active {
+      transform: translateY(0);
+    }
+
+    /* ========================================
+       RESPONSIVO
+       ======================================== */
+    @media (max-width: 768px) {
+      header.main-header {
+        padding: 28px 70px 26px 20px;
+      }
+
+      .container {
+        padding: 0 12px;
+        margin: 16px auto 24px;
+      }
+
+      .form-group {
+        padding: 16px;
+        border-radius: 14px;
+      }
+
+      .header-institucional {
+        padding: 16px;
+        font-size: 0.9em;
+      }
+    }
+
+    /* ========================================
+       IMPRESSÃO
+       ======================================== */
     @media print {
-      body { background: white; }
-      .topbar, button { display: none; }
+      header.main-header,
+      .btn-print {
+        display: none !important;
+      }
+
+      body {
+        background: white;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      .form-group {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        break-inside: avoid;
+      }
+
+      .header-institucional {
+        box-shadow: none;
+        border: 1px solid #ddd;
+      }
     }
   </style>
 </head>
+
 <body>
+  <!-- ========================================
+       HEADER PADRONIZADO
+       ======================================== -->
+  <header class="main-header">
+    <a href="./index.html" class="btn-ok-header">OK</a>
+    <h1>Vigilância Sanitária</h1>
+    <h2>Relatório de Plantão Fiscal</h2>
+  </header>
 
-  <div class="topbar">
-    <a href="./index.html">← Voltar</a>
+  <!-- ========================================
+       CONTEÚDO PRINCIPAL
+       ======================================== -->
+  <div class="container">
+    
+    <!-- Cabeçalho Institucional (para impressão) -->
+    <div class="header-institucional">
+      <span>PREFEITURA DE ANÁPOLIS</span>
+      <span>SECRETARIA MUNICIPAL DE SAÚDE</span>
+      <span>DIRETORIA DE VIGILÂNCIA EM SAÚDE</span>
+      <span>VIGILÂNCIA SANITÁRIA</span>
+    </div>
+
+    <h1 class="form-title">📋 Relatório de Plantão Fiscal</h1>
+
+    <form id="formPlantao">
+      <div class="form-group">
+        <label>👤 Nome do Fiscal:</label>
+        <input type="text" placeholder="Digite seu nome completo" required>
+      </div>
+
+      <div class="form-group">
+        <label>📅 Data do Plantão:</label>
+        <input type="date" required>
+      </div>
+
+      <div class="form-group">
+        <label>🕐 Período:</label>
+        <select required>
+          <option value="">Selecione o período</option>
+          <option value="manha">Manhã (8h-12h)</option>
+          <option value="tarde">Tarde (12h-18h)</option>
+          <option value="integral">Integral (8h-18h)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>📝 Atividades Realizadas:</label>
+        <textarea placeholder="Descreva as atividades realizadas durante o plantão..." required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>💬 Observações:</label>
+        <textarea placeholder="Observações adicionais (opcional)"></textarea>
+      </div>
+
+      <button type="button" class="btn-print" onclick="window.print()">
+        🖨️ Imprimir Relatório
+      </button>
+    </form>
+
   </div>
 
-  <div class="header-institucional">
-    PREFEITURA DE ANÁPOLIS<br>
-    SECRETARIA MUNICIPAL DE SAÚDE<br>
-    DIRETORIA DE VIGILÂNCIA EM SAÚDE<br>
-    VIGILÂNCIA SANITÁRIA
-  </div>
-
-  <h1>Relatório de Plantão Fiscal</h1>
-
-  <form>
-    <div class="form-group">
-      <label>Nome do Fiscal:</label>
-      <input type="text" placeholder="Digite seu nome completo">
-    </div>
-
-    <div class="form-group">
-      <label>Data do Plantão:</label>
-      <input type="date">
-    </div>
-
-    <div class="form-group">
-      <label>Período:</label>
-      <select>
-        <option>Selecione</option>
-        <option>Manhã (8h-12h)</option>
-        <option>Tarde (12h-18h)</option>
-        <option>Integral (8h-18h)</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Atividades Realizadas:</label>
-      <textarea placeholder="Descreva as atividades realizadas durante o plantão"></textarea>
-    </div>
-
-    <div class="form-group">
-      <label>Observações:</label>
-      <textarea placeholder="Observações adicionais (opcional)"></textarea>
-    </div>
-
-    <button type="button" onclick="window.print()">🖨️ Imprimir Relatório</button>
-  </form>
-
+  <!-- Platform Detector -->
   <script src="./js/platform-detector.js"></script>
 </body>
 </html>
