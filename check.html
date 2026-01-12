@@ -1,157 +1,274 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <link rel="stylesheet" href="./css/design-tokens.css">
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Checklists - Vigilância Sanitária</title>
-
-  <!-- CSS GLOBAL DO PROJETO (PADRÃO REGULADOS) -->
-  <link rel="stylesheet" href="./css/regulados.css" />
+  <meta name="theme-color" content="#1a3a6b">
 
   <!-- Sistema de Design - VISA Anápolis -->
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/regulados.css">
   <link rel="stylesheet" href="./css/base.css">
   <link rel="stylesheet" href="./css/components.css">
   <link rel="stylesheet" href="./css/layouts.css">
 
-  
-
   <style>
-    /* Botão Voltar - iOS e Android Nativos */
-    .topbar .btn {
-      background: transparent !important;
-      border: none !important;
-      color: var(--text, #1a202c) !important;
-      padding: 6px 12px !important;
-      font-size: 17px !important;
-      font-weight: 400 !important;
+    /* ========================================
+       HEADER PADRONIZADO - VISA Anápolis
+       ======================================== */
+    header.main-header {
+      background: #1a3a6b;
+      color: #ffffff;
+      padding: 28px 20px 26px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    
-    .topbar .btn::before {
-      content: "←";
-      margin-right: 4px;
-      font-size: 20px;
+
+    header.main-header h1 {
+      margin: 0;
+      font-size: clamp(1.4rem, 2.4vw, 2.3rem);
+      font-weight: 900;
+      letter-spacing: 0.2px;
+      color: #ffffff;
     }
-    
-    /* iOS: Setinha fina azul */
-    @supports (-webkit-touch-callout: none) {
-      .topbar .btn {
-        color: #007AFF !important;
-        font-weight: 400 !important;
+
+    header.main-header h2 {
+      margin: 8px 0 0;
+      font-size: clamp(1rem, 1.5vw, 1.15rem);
+      font-weight: 500;
+      opacity: 0.92;
+      color: #ffffff;
+    }
+
+    /* Botão OK - Voltar (Padrão iOS) */
+    .btn-ok-header {
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #34C759;
+      font-size: 17px;
+      font-weight: 600;
+      padding: 16px 12px;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-ok-header:hover {
+      opacity: 0.7;
+    }
+
+    /* ========================================
+       CONTAINER
+       ======================================== */
+    .container {
+      max-width: 900px;
+      margin: 22px auto 30px;
+      padding: 0 16px;
+      padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* ========================================
+       CARDS
+       ======================================== */
+    .card {
+      background: var(--card, #ffffff);
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      border: 1px solid var(--line, #e2e8f0);
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    .card__title {
+      color: var(--brand1, #1a3a6b);
+      font-size: 1.1em;
+      font-weight: 700;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--brand1, #1a3a6b);
+    }
+
+    /* ========================================
+       LISTA DE CHECKLISTS
+       ======================================== */
+    .checklist-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .checklist-list li {
+      margin: 0;
+      border-bottom: 1px solid var(--line, #e2e8f0);
+    }
+
+    .checklist-list li:last-child {
+      border-bottom: none;
+    }
+
+    .checklist-list a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 12px;
+      text-decoration: none;
+      color: var(--text, #1a202c);
+      font-weight: 600;
+      transition: background 0.2s;
+      border-radius: 8px;
+    }
+
+    .checklist-list a:hover {
+      background: rgba(26, 58, 107, 0.05);
+    }
+
+    .checklist-list a::before {
+      content: "📋";
+      font-size: 1.2em;
+    }
+
+    .checklist-list a::after {
+      content: "›";
+      margin-left: auto;
+      font-size: 1.4em;
+      color: var(--muted, #64748b);
+      font-weight: 300;
+    }
+
+    /* ========================================
+       OBSERVAÇÃO
+       ======================================== */
+    .obs-text {
+      font-size: 0.9em;
+      color: var(--muted, #64748b);
+      line-height: 1.5;
+      padding: 16px;
+      background: rgba(26, 58, 107, 0.04);
+      border-radius: 8px;
+      border-left: 4px solid var(--brand1, #1a3a6b);
+    }
+
+    .update-info {
+      font-size: 0.85em;
+      color: var(--muted, #64748b);
+      margin-bottom: 16px;
+    }
+
+    /* ========================================
+       RESPONSIVO
+       ======================================== */
+    @media (max-width: 768px) {
+      header.main-header {
+        padding: 28px 70px 26px 20px;
       }
-      .topbar .btn::before {
-        content: "‹";
-        font-size: 32px;
-        font-weight: 300;
-        margin-right: 0px;
-        vertical-align: middle;
+
+      .container {
+        padding: 0 12px;
+        margin: 16px auto 24px;
       }
-    }
-    
-    /* Ocultar topbar no desktop */
-    @media (min-width: 769px) {
-      .topbar--mobile-only {
-        display: none !important;
+
+      .card {
+        padding: 16px;
+        border-radius: 14px;
+      }
+
+      .checklist-list a {
+        padding: 14px 10px;
+        font-size: 0.95em;
       }
     }
   </style>
 </head>
 
 <body>
-
-  <!-- TOPBAR PADRÃO (IGUAL AO regulados.html) -->
-  
-  <!-- Topbar - Apenas Mobile -->
-  <header class="topbar topbar--mobile-only">
-    <div class="wrap topbar__inner">
-      <div class="brand">
-        <div class="brand__title">VISA Anápolis</div>
-        <div class="brand__subtitle">Vigilância Sanitária</div>
-      </div>
-      <div class="actions">
-                <a class="btn btn--ghost btn--back" href="./index.html">
-          Voltar
-        </a>
-      </div>
-    </div>
+  <!-- ========================================
+       HEADER PADRONIZADO
+       ======================================== -->
+  <header class="main-header">
+    <a href="./index.html" class="btn-ok-header">OK</a>
+    <h1>Vigilância Sanitária</h1>
+    <h2>Checklists de Inspeção</h2>
   </header>
 
-  <style>
-    /* Topbar visível APENAS em mobile */
-    @media (min-width: 769px) {
-      .topbar--mobile-only {
-        display: none !important;
-      }
-    }
-  </style>
+  <!-- ========================================
+       CONTEÚDO PRINCIPAL
+       ======================================== -->
+  <div class="container">
+    
+    <section class="card">
+      <div class="card__title">📋 Checklists Disponíveis</div>
+      
+      <p class="update-info">
+        🕐 Atualizado em 12/12/2025 12:14 (Horário de Brasília – UTC−3)
+      </p>
 
-
-  <!-- CONTEÚDO -->
-  <main class="wrap">
-
-    <section class="card panel">
-      <div class="small muted">
-        Atualizado em 12/12/2025 12:14 (Horário de Brasília – UTC−3)
-      </div>
-
-      <ul class="list">
+      <ul class="checklist-list">
         <li>
           <a href="check-list-saude-cnaes-baixas/index.html">
-            Checklist SAÚDE – CNAEs baixas
+            Checklist SAÚDE — CNAEs baixas
           </a>
         </li>
         <li>
           <a href="check-list-varejista-cosme-e-san/index.html">
-            Checklist Varejista – Cosméticos e Saneantes
+            Checklist Varejista — Cosméticos e Saneantes
           </a>
         </li>
         <li>
           <a href="check-list-acougue/index.html">
-            Checklist – Açougue
+            Checklist — Açougue
           </a>
         </li>
         <li>
           <a href="check-list-alimentos-geral/index.html">
-            Checklist – Alimentos (Geral)
+            Checklist — Alimentos (Geral)
           </a>
         </li>
         <li>
           <a href="check-list-drogarias-1/index.html">
-            Checklist – Drogarias
+            Checklist — Drogarias
           </a>
         </li>
         <li>
           <a href="check-list-saude-cnaes-8630502-e-8630503/index.html">
-            Checklist Saúde – CNAEs 8630502 / 8630503
+            Checklist Saúde — CNAEs 8630502 / 8630503
           </a>
         </li>
         <li>
           <a href="check-list-atacadista-cosme-e-saneantes/index.html">
-            Checklist Atacadista – Cosméticos e Saneantes
+            Checklist Atacadista — Cosméticos e Saneantes
           </a>
         </li>
         <li>
           <a href="check-list-escola/index.html">
-            Checklist – Escola
+            Checklist — Escola
           </a>
         </li>
         <li>
           <a href="checklist-academia/index.html">
-            Checklist – Academia
+            Checklist — Academia
           </a>
         </li>
       </ul>
-
     </section>
 
-    <p class="small muted">
-      Observação: estes HTMLs exibem as páginas como imagens para preservar a
+    <p class="obs-text">
+      <strong>Observação:</strong> estes HTMLs exibem as páginas como imagens para preservar a
       fidelidade do formulário original. A versão preenchível será implantada
       em etapa posterior.
     </p>
 
-  </main>
-
+  </div>
 
   <!-- Platform Detector -->
   <script src="./js/platform-detector.js"></script>
