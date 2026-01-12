@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Checklists - Vigilância Sanitária</title>
+  <meta name="theme-color" content="#1a3a6b">
+
+  <!-- Sistema de Design - VISA Anápolis -->
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/regulados.css">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/layouts.css">
+
+  <style>
+    /* ========================================
+       HEADER PADRONIZADO - VISA Anápolis
+       ======================================== */
+    header.main-header {
+      background: #1a3a6b;
+      color: #ffffff;
+      padding: 28px 20px 26px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header.main-header h1 {
+      margin: 0;
+      font-size: clamp(1.4rem, 2.4vw, 2.3rem);
+      font-weight: 900;
+      letter-spacing: 0.2px;
+      color: #ffffff;
+    }
+
+    header.main-header h2 {
+      margin: 8px 0 0;
+      font-size: clamp(1rem, 1.5vw, 1.15rem);
+      font-weight: 500;
+      opacity: 0.92;
+      color: #ffffff;
+    }
+
+    /* Botão OK - Voltar (Padrão iOS) */
+    .btn-ok-header {
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #34C759;
+      font-size: 17px;
+      font-weight: 600;
+      padding: 16px 12px;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-ok-header:hover {
+      opacity: 0.7;
+    }
+
+    /* ========================================
+       CONTAINER
+       ======================================== */
+    .container {
+      max-width: 900px;
+      margin: 22px auto 30px;
+      padding: 0 16px;
+      padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* ========================================
+       CARDS
+       ======================================== */
+    .card {
+      background: var(--card, #ffffff);
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      border: 1px solid var(--line, #e2e8f0);
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    .card__title {
+      color: var(--brand1, #1a3a6b);
+      font-size: 1.1em;
+      font-weight: 700;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--brand1, #1a3a6b);
+    }
+
+    /* ========================================
+       LISTA DE CHECKLISTS
+       ======================================== */
+    .checklist-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .checklist-list li {
+      margin: 0;
+      border-bottom: 1px solid var(--line, #e2e8f0);
+    }
+
+    .checklist-list li:last-child {
+      border-bottom: none;
+    }
+
+    .checklist-list a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 12px;
+      text-decoration: none;
+      color: var(--text, #1a202c);
+      font-weight: 600;
+      transition: background 0.2s;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .checklist-list a:hover {
+      background: rgba(26, 58, 107, 0.05);
+    }
+
+    .checklist-list a::before {
+      content: "📋";
+      font-size: 1.2em;
+    }
+
+    .checklist-list a::after {
+      content: "›";
+      margin-left: auto;
+      font-size: 1.4em;
+      color: var(--muted, #64748b);
+      font-weight: 300;
+    }
+
+    /* ========================================
+       OBSERVAÇÃO
+       ======================================== */
+    .obs-text {
+      font-size: 0.9em;
+      color: var(--muted, #64748b);
+      line-height: 1.5;
+      padding: 16px;
+      background: rgba(26, 58, 107, 0.04);
+      border-radius: 8px;
+      border-left: 4px solid var(--brand1, #1a3a6b);
+    }
+
+    .update-info {
+      font-size: 0.85em;
+      color: var(--muted, #64748b);
+      margin-bottom: 16px;
+    }
+
+    /* ========================================
+       MODAL DE PDF
+       ======================================== */
+    .pdf-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #ffffff;
+      z-index: 9999;
+      /* Grid layout para garantir altura fixa do header/footer */
+      display: none;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .pdf-modal.active {
+      display: grid;
+    }
+
+    .pdf-modal-header {
+      background: #1a3a6b;
+      color: #ffffff;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      padding-top: calc(16px + env(safe-area-inset-top, 0px));
+      /* Removido position sticky - grid já controla o layout */
+      z-index: 10000;
+      position: relative;
+    }
+
+    .pdf-modal-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin: 0;
+      flex: 1;
+      text-align: center;
+      padding: 0 40px;
+    }
+
+    .btn-fechar-pdf {
+      position: absolute;
+      left: 16px;
+      background: transparent;
+      border: none;
+      color: #34C759;
+      font-size: 17px;
+      font-weight: 600;
+      padding: 8px;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      z-index: 10001;
+      min-width: 60px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-fechar-pdf:hover {
+      opacity: 0.7;
+    }
+
+    .btn-fechar-pdf:active {
+      opacity: 0.5;
+      transform: scale(0.95);
+    }
+
+    /* Garante que o botão sempre responda ao toque */
+    .pdf-modal-header * {
+      pointer-events: auto;
+    }
+
+    .pdf-iframe {
+      /* Grid já controla a altura - não precisa de flex */
+      border: none;
+      width: 100%;
+      height: 100%;
+      background: #f5f5f5;
+      /* Previne que o iframe expanda além do container */
+      max-height: 100%;
+      overflow: auto;
+    }
+
+    .pdf-modal-footer {
+      padding: 12px 16px;
+      padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+      background: #f8f9fa;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      /* Removido position sticky - grid já controla o layout */
+      z-index: 10000;
+      position: relative;
+    }
+
+    .btn-action-pdf {
+      background: #1a3a6b;
+      color: #ffffff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      transition: background 0.2s;
+      min-height: 44px;
+      touch-action: manipulation;
+    }
+
+    .btn-action-pdf:hover {
+      background: #2a4a7b;
+    }
+
+    .btn-action-pdf:active {
+      background: #0f2a4b;
+    }
+
+    /* ========================================
+       RESPONSIVO
+       ======================================== */
+    @media (max-width: 768px) {
+      header.main-header {
+        padding: 28px 70px 26px 20px;
+      }
+
+      .container {
+        padding: 0 12px;
+        margin: 16px auto 24px;
+      }
+
+      .card {
+        padding: 16px;
+        border-radius: 14px;
+      }
+
+      .checklist-list a {
+        padding: 14px 10px;
+        font-size: 0.95em;
+      }
+
+      .pdf-modal-title {
+        font-size: 15px;
+        padding: 0 20px;
+      }
+
+      .btn-action-pdf {
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ========================================
+       HEADER PADRONIZADO
+       ======================================== -->
+  <header class="main-header">
+    <a href="./index.html" class="btn-ok-header">OK</a>
+    <h1>Vigilância Sanitária</h1>
+    <h2>Checklists de Inspeção</h2>
+  </header>
+
+  <!-- ========================================
+       CONTEÚDO PRINCIPAL
+       ======================================== -->
+  <div class="container">
+    
+    <section class="card">
+      <div class="card__title">📋 Checklists Disponíveis</div>
+      
+      <p class="update-info">
+        🕐 Atualizado em 12/12/2025 12:14 (Horário de Brasília – UTC−3)
+      </p>
+
+      <ul class="checklist-list">
+        <li>
+          <a href="#" onclick="abrirPDF('check-list-saude-cnaes-baixas/original.pdf', 'Checklist SAÚDE – CNAEs baixas'); return false;">
+            Checklist SAÚDE – CNAEs baixas
+          </a>
+        </li>
+        <li>
+          <a href="#" onclick="abrirPDF('check-list-varejista-cosme-e-san/original.pdf', 'Checklist Varejista – Cosméticos e Saneantes'); return false;">
+            Checklist Varejista – Cosméticos e Saneantes
+          </a>
+        </li>
+        <li>
+          <a href="#" onclick="abrirPDF('check-list-acougue/original.pdf', 'Checklist – Açougue'); return false;">
+            Checklist – Açougue
+          </a>
+        </li>
+        <li>
+          <a href="#" onclick="abrirPDF('check-list-alimentos-geral/original.pdf', 'Checklist – Alimentos (Geral)'); return false;">
+            Checklist – Alimentos (Geral)
+          </a>
+        </li>
+        <li>
+          <a href="#" onclick="abrirPDF('check-list-drogarias-1/original.pdf', 'Checklist – Drogarias'); return false;">
+            Checklist – Drogarias
+          </a>
+        </li>
+        <li>
+          <a href="#" onclick="abrirPDF('check-list-saude-cnaes-8630502-e-8630503/original.pdf', 'Checklist Saúde – CNAEs 8630502 / 8630503'); return false;">
+            Checklist Saúde – CNAEs 8630502 / 8630503
+          </a>
+        </li>
+        <li>
+          <a href="#" onclick="abrirPDF('check-list-atacadista-cosme-e-saneantes/original.pdf', 'Checklist Atacadista – Cosméticos e Saneantes'); return false;">
+            Checklist Atacadista – Cosméticos e Saneantes
+          </a>
+        </li>
+        <li>
+          <a href="#" onclick="abrirPDF('check-list-escola/original.pdf', 'Checklist – Escola'); return false;">
+            Checklist – Escola
+          </a>
+        </li>
+        <li>
+          <a href="#" onclick="abrirPDF('checklist-academia/original.pdf', 'Checklist – Academia'); return false;">
+            Checklist – Academia
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <p class="obs-text">
+      <strong>Observação:</strong> estes HTMLs exibem as páginas como imagens para preservar a
+      fidelidade do formulário original. A versão preenchível será implantada
+      em etapa posterior.
+    </p>
+
+  </div>
+
+  <!-- ========================================
+       MODAL DE VISUALIZAÇÃO DE PDF
+       ======================================== -->
+  <div id="pdfModal" class="pdf-modal">
+    <div class="pdf-modal-header">
+      <button onclick="fecharPDF()" class="btn-fechar-pdf">Fechar</button>
+      <h3 id="pdfTitle" class="pdf-modal-title">Visualizando PDF</h3>
+    </div>
+    <iframe id="pdfViewer" class="pdf-iframe"></iframe>
+    <div class="pdf-modal-footer">
+      <button onclick="abrirEmNovaAba()" class="btn-action-pdf">
+        📥 Abrir Externamente
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================
+       SCRIPTS
+       ======================================== -->
+  <script>
+    let pdfAtual = '';
+
+    function abrirPDF(url, titulo) {
+      pdfAtual = url;
+      document.getElementById('pdfTitle').textContent = titulo;
+      document.getElementById('pdfViewer').src = url;
+      document.getElementById('pdfModal').classList.add('active');
+      
+      // Previne scroll do body quando modal está aberto
+      document.body.style.overflow = 'hidden';
+    }
+
+    function fecharPDF() {
+      document.getElementById('pdfModal').classList.remove('active');
+      document.getElementById('pdfViewer').src = '';
+      pdfAtual = '';
+      
+      // Restaura scroll do body
+      document.body.style.overflow = '';
+    }
+
+    function abrirEmNovaAba() {
+      if (pdfAtual) {
+        window.open(pdfAtual, '_blank', 'noopener,noreferrer');
+      }
+    }
+
+    // Fechar modal ao pressionar ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && document.getElementById('pdfModal').classList.contains('active')) {
+        fecharPDF();
+      }
+    });
+  </script>
+
+  <!-- Platform Detector -->
+  <script src="./js/platform-detector.js"></script>
+</body>
+</html>
