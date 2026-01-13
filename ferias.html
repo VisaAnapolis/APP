@@ -273,8 +273,8 @@
       data: [],
       columns: [
         { data: 'nome' },
-        { data: 'inicio', render: d => new Date(d).toLocaleDateString('pt-BR') },
-        { data: 'fim', render: d => new Date(d).toLocaleDateString('pt-BR') }
+        { data: 'inicio', render: d => new Date(d + 'T00:00:00').toLocaleDateString('pt-BR') },
+        { data: 'fim', render: d => new Date(d + 'T00:00:00').toLocaleDateString('pt-BR') }
       ]
     });
   }
