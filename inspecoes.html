@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatório de Produção Fiscal - VISA Anápolis</title>
+    <title>Relatório Inspeções por fiscal e período - VISA Anápolis</title>
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -509,7 +509,7 @@ window.addEventListener('scroll', () => {
         <header>
             <a href="index.html" class="btn-ok-header">OK</a>
             <h1>Vigilância Sanitária</h1>
-            <h2>Relatório de Produção Fiscal</h2>
+            <h2>Relatório Inspeções por fiscal e período</h2>
         </header>
 
         <div class="container">
@@ -1053,7 +1053,7 @@ window.addEventListener('scroll', () => {
             const hoje = new Date().toISOString().split('T')[0];
 
             doc.setFontSize(16);
-            doc.text('Relatório de Produção Fiscal - VISAM Anápolis', 14, 15);
+            doc.text('Relatório Inspeções por fiscal e período', 14, 15);
             doc.setFontSize(11);
             doc.text(`Fiscal: ${fiscal}`, 14, 22);
             doc.text(`Período: ${dataInicial} a ${dataFinal}`, 14, 28);
@@ -1098,7 +1098,7 @@ window.addEventListener('scroll', () => {
             const dados = table.rows({search: 'applied'}).data().toArray();
 
             const dadosExcel = [
-                ['Relatório de Produção Fiscal - VISAM Anápolis'],
+                ['Relatório Inspeções por fiscal e período'],
                 [`Fiscal: ${fiscal}`],
                 [`Período: ${dataInicial} a ${dataFinal}`],
                 [],
@@ -1167,7 +1167,7 @@ window.addEventListener('scroll', () => {
                     properties: {},
                     children: [
                         new docx.Paragraph({
-                            text: 'Relatório de Produção Fiscal - VISAM Anápolis',
+                            text: 'Relatório Inspeções por fiscal e período',
                             heading: docx.HeadingLevel.HEADING_1
                         }),
                         new docx.Paragraph(`Fiscal: ${fiscal}`),
@@ -1200,7 +1200,7 @@ window.addEventListener('scroll', () => {
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Relatório de Produção Fiscal</title>
+    <title>Relatório Inspeções por fiscal e período</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
         h1 { color: #1a3a6b; }
@@ -1211,7 +1211,7 @@ window.addEventListener('scroll', () => {
     </style>
 </head>
 <body>
-    <h1>Relatório de Produção Fiscal - VISA Anápolis</h1>
+    <h1>Relatório Inspeções por fiscal e período - VISA Anápolis</h1>
     <p><strong>Fiscal:</strong> ${fiscal}</p>
     <p><strong>Período:</strong> ${dataInicial} a ${dataFinal}</p>
     <table>
