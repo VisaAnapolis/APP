@@ -334,7 +334,7 @@
         table.dataTable thead th:nth-child(4) { width: auto; } /* Doc/Ação Fiscal */
         table.dataTable thead th:nth-child(5) { width: 55px; min-width: 55px; } /* Nº */
         table.dataTable thead th:nth-child(6) { width: auto; } /* Regulado/Atividade */
-        table.dataTable thead th:nth-child(7) { width: 70px; min-width: 70px; } /* Complex */
+        table.dataTable thead th:nth-child(7) { width: 70px; min-width: 70px; } /* Complex. */
         table.dataTable thead th:nth-child(8) { width: 100px; min-width: 100px; } /* Anotações */
 
         /* Célula de documento abreviado */
@@ -540,7 +540,7 @@
                                 <th>Documento/Ação Fiscal</th>
                                 <th>Nº</th>
                                 <th>Regulado/Atividade</th>
-                                <th>Complexidade</th>
+                                <th>Complex.</th>
                                 <th>Anotações</th>
                             </tr>
                         </thead>
@@ -1005,7 +1005,7 @@
                 [`Fiscal: ${fiscal}`],
                 [`Período: ${mesAno}`],
                 [],
-                ['OS', 'Data', 'Prazo', 'Documento/Ação Fiscal', 'Nº', 'Regulado/Atividade', 'Complexidade', 'Anotações']
+                ['OS', 'Data', 'Prazo', 'Documento/Ação Fiscal', 'Nº', 'Regulado/Atividade', 'Complex.', 'Anotações']
             ];
 
             dados.forEach(row => {
@@ -1052,7 +1052,7 @@
                             new docx.TableCell({ children: [new docx.Paragraph('Doc/Ação Fiscal')] }),
                             new docx.TableCell({ children: [new docx.Paragraph('Nº')] }),
                             new docx.TableCell({ children: [new docx.Paragraph('Regulado/Ativ.')] }),
-                            new docx.TableCell({ children: [new docx.Paragraph('Complexidade')] }),
+                            new docx.TableCell({ children: [new docx.Paragraph('Complex.')] }),
                             new docx.TableCell({ children: [new docx.Paragraph('Anotações')] })
                         ]
                     }),
@@ -1120,7 +1120,7 @@
                 <th>Documento/Ação Fiscal</th>
                 <th>Nº</th>
                 <th>Regulado/Atividade</th>
-                <th>Complexidade</th>
+                <th>Complex.</th>
                 <th>Anotações</th>
             </tr>
         </thead>
