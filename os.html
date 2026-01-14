@@ -1661,7 +1661,7 @@ function obterDataPrazo(os) {
         return adicionarDiasUteis(os.data_encaminha, 15);
     } else {
         // Para Requerimento, Denúncia e Ofício, usar o campo prazo do CSV
-        return os.prazo || os.data_encaminha;
+        return os.prazo || '';
     }
 }
 
