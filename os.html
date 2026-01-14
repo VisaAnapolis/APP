@@ -642,7 +642,7 @@
                             <th>Razão Social</th>
                             <th>Nome Fantasia</th>
                             <th>Complexidade</th>
-                            <th>Data Encam.</th>
+                            <th>Prazo</th>
                             <th>Motivo/Assunto</th>
                             <th>Atendido</th>
                             <th>Cancelado</th>
@@ -1628,6 +1628,40 @@
             // Armazenar resultados filtrados para o modal
             window.resultadosFiltrados = resultados;
         }
+
+// Calcular data acrescida de dias úteis
+function adicionarDiasUteis(dataISO, diasUteis) {
+    if (!dataISO) return '';
+    
+    const data = new Date(dataISO + 'T00:00:00');
+    let diasAdicionados = 0;
+    
+    while (diasAdicionados < diasUteis) {
+        data.setDate(data.getDate() + 1);
+        const diaSemana = data.getDay();
+        // Ignorar sábado (6) e domingo (0)
+        if (diaSemana !== 0 && diaSemana !== 6) {
+            diasAdicionados++;
+        }
+    }
+    
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const dia = String(data.getDate()).padStart(2, '0');
+    
+    return `${ano}-${mes}-${dia}`;
+}
+
+// Obter data de prazo conforme tipo de OS
+function obterDataPrazo(os) {
+    if (os.tipo === 'Protocolo') {
+        return adicionarDiasUteis(os.data_encaminha, 15);
+    } else {
+        // Para Requerimento, Denúncia e Ofício, usar o campo prazo do CSV
+        return os.prazo || os.data_encaminha;
+    }
+}
+
         
         function criarLinhaTabela(os, index) {
             const tr = document.createElement('tr');
@@ -1659,7 +1693,7 @@
                 <td>${os.razao_social || '-'}</td>
                 <td>${os.fantasia || '-'}</td>
                 <td>${badgeComplexidade}</td>
-                <td>${formatarDataBR(os.data_encaminha)}</td>
+                <td>${formatarDataBR((obterDataPrazo(os))}</td>
                 <td>${os.motivo || '-'}</td>
                 <td>${iconAtendido}</td>
                 <td>${iconCancelado}</td>
@@ -1687,6 +1721,11 @@
                         <div class="detail-label">Data de Encaminhamento:</div>
                         <div class="detail-value">${formatarDataBR(os.data_encaminha)}</div>
                     </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Prazo:</div>
+                        <div class="detail-value">${formatarDataBR((obterDataPrazo(os))}</div>
+                    </div>
+                    
                 </div>
 
                 <div class="detail-section">
