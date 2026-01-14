@@ -366,6 +366,117 @@
             background-color: rgba(255, 193, 7, 0.05) !important;
         }
 
+     /* ========== LAYOUT MOBILE - CARDS ========== */
+        .mobile-cards {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .table-responsive {
+                display: none !important;
+            }
+
+            .mobile-cards {
+                display: block;
+            }
+        }
+
+        .os-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #1a3a6b;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .os-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .os-card.card-vencido {
+            border-left-color: #dc3545;
+            background: rgba(220, 53, 69, 0.03);
+        }
+
+        .os-card.card-atencao {
+            border-left-color: #ffc107;
+            background: rgba(255, 193, 7, 0.03);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .card-numero {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a3a6b;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .card-label {
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 600;
+            min-width: 70px;
+        }
+
+        .card-value {
+            flex: 1;
+            text-align: right;
+            font-size: 0.85rem;
+            color: #333;
+            word-break: break-word;
+        }
+
+        .card-prazo {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        .card-prazo-label {
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 480px) {
+            .badge-prazo {
+                font-size: 0.8em;
+                padding: 6px 10px;
+            }
+
+            .card-numero {
+                font-size: 1rem;
+            }
+        }        
 
         .icon {
             font-size: 1.2em;
@@ -681,6 +792,12 @@
                 Carregando dados...
             </div>
 
+           <!-- Cards Mobile -->
+            <div class="mobile-cards" id="mobileCards">
+                <!-- Cards serão inseridos aqui via JavaScript -->
+            </div>
+
+            
             <div class="table-responsive">
                 <table id="tabelaOS" class="display" style="display: none;" width="100%">
                     <thead>
@@ -1670,6 +1787,17 @@
             });
             
             tbody.appendChild(fragment);
+
+// Renderizar cards mobile
+            const mobileCards = document.getElementById('mobileCards');
+            if (mobileCards) {
+                let cardsHtml = '';
+                resultados.forEach((os, index) => {
+                    cardsHtml += criarCardMobile(os, index);
+                });
+                mobileCards.innerHTML = cardsHtml;
+            }
+
             
             // Inicializar DataTable
             $('#tabelaOS').show();
@@ -1803,6 +1931,97 @@ function obterDataPrazo(os) {
             return tr;
         }
 
+ // ==================== CARDS MOBILE ====================
+
+        function criarCardMobile(os, index) {
+            const prazoData = obterDataPrazo(os);
+            let statusPrazo = 'normal';
+            let prazoHtml = '-';
+            let prazoLabel = 'Prazo';
+
+            const osEncerrada = os.cancelado === 'Sim' || os.atendida === 'Sim';
+
+            if (prazoData && prazoData !== '' && prazoData !== 'PENDENTE') {
+                const dataFormatada = formatarDataBR(prazoData);
+                const hoje = new Date();
+                hoje.setHours(0, 0, 0, 0);
+
+                const prazo = new Date(prazoData + 'T00:00:00');
+                const diffDias = Math.ceil((prazo - hoje) / (1000 * 60 * 60 * 24));
+
+                let icone = '📅';
+                let texto = dataFormatada;
+
+                if (!osEncerrada) {
+                    if (diffDias < 0) {
+                        statusPrazo = 'vencido';
+                        icone = '🔴';
+                        texto = `${dataFormatada} (${Math.abs(diffDias)}d atrás)`;
+                        prazoLabel = '🔴 Prazo vencido';
+                    } else if (diffDias <= 5) {
+                        statusPrazo = 'atencao';
+                        icone = '⚠️';
+                        texto = `${dataFormatada} (${diffDias}d)`;
+                        prazoLabel = '⚠️ Vence em breve';
+                    }
+                }
+
+                prazoHtml = `<span class="badge-prazo badge-prazo-${statusPrazo}">${icone} ${texto}</span>`;
+            } else {
+                prazoHtml = prazoData || '-';
+            }
+
+            const badgeTipo = `badge-${os.tipo.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`;
+
+            let cardClass = 'os-card';
+            if (!osEncerrada) {
+                if (statusPrazo === 'vencido') cardClass += ' card-vencido';
+                else if (statusPrazo === 'atencao') cardClass += ' card-atencao';
+            }
+
+            const iconAtendido = os.atendida === 'Sim' ? '✅' : '⏳';
+            const iconCancelado = os.cancelado === 'Sim' ? ' ❌' : '';
+
+            return `
+                <div class="${cardClass}" onclick="mostrarDetalhes(${index})">
+                    <div class="card-header">
+                        <div class="card-numero">OS ${os.numero}</div>
+                        <span class="badge ${badgeTipo}">${os.tipo}</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-row">
+                            <span class="card-label">Fiscal:</span>
+                            <span class="card-value">${os.fiscal || '-'}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">Empresa:</span>
+                            <span class="card-value">${os.razao_social || '-'}</span>
+                        </div>
+                        ${os.fantasia ? `
+                        <div class="card-row">
+                            <span class="card-label">Fantasia:</span>
+                            <span class="card-value">${os.fantasia}</span>
+                        </div>` : ''}
+                        ${os.motivo ? `
+                        <div class="card-row">
+                            <span class="card-label">Motivo:</span>
+                            <span class="card-value">${os.motivo}</span>
+                        </div>` : ''}
+                        <div class="card-row">
+                            <span class="card-label">Status:</span>
+                            <span class="card-value">${iconAtendido}${iconCancelado}</span>
+                        </div>
+                    </div>
+                    <div class="card-prazo">
+                        <div class="card-prazo-label">${prazoLabel}</div>
+                        ${prazoHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+
+        
         // ==================== MODAL DE DETALHES ====================
         
         // Mostrar detalhes no modal
