@@ -1278,6 +1278,7 @@
                             complexidade: r.Complexidade || '',
                             data_req: converterData(r.Dt_Req),  // CORRIGIDO
                             data_encaminha: dataEncaminha,
+                            prazo: converterData(r.Prazo),  // ← ADICIONAR
                             motivo: r.Motivo || '',
                             atendida: atendida,
                             cancelado: cancelado,
@@ -1348,6 +1349,7 @@
                             complexidade: '',
                             data_req: converterData(o.Data),
                             data_encaminha: dataEncaminha,
+                            prazo: converterData(o.Prazo),  // ← ADICIONAR
                             motivo: o.Motivo || '',
                             atendida: atendida,
                             cancelado: cancelado,
@@ -1409,6 +1411,7 @@
                             complexidade: '',
                             data_req: converterData(d.Data),
                             data_encaminha: dataEncaminha,
+                            prazo: converterData(d.Prazo),  // ← ADICIONAR
                             motivo: d.Objeto1 || '',  // CORRIGIDO: Campo é "Objeto1"
                             atendida: atendida,
                             cancelado: cancelado,
