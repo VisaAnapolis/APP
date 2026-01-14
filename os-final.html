@@ -1747,6 +1747,9 @@ function obterDataPrazo(os) {
             let prazoHtml = '-';
             let statusPrazo = 'normal'; // normal, atencao, vencido
 
+            // Verificar se está cancelada ou atendida - NÃO mostrar alertas
+            const osEncerrada = os.cancelado === 'Sim' || os.atendida === 'Sim';
+
             if (prazoData && prazoData !== '' && prazoData !== 'PENDENTE') {
                 const dataFormatada = formatarDataBR(prazoData);
                 const hoje = new Date();
@@ -1758,6 +1761,8 @@ function obterDataPrazo(os) {
                 let icone = '📅';
                 let texto = dataFormatada;
 
+            // Só aplicar alertas se NÃO estiver encerrada
+            if (!osEncerrada) {
                 if (diffDias < 0) {
                     // Vencido
                     statusPrazo = 'vencido';
@@ -1769,7 +1774,7 @@ function obterDataPrazo(os) {
                     icone = '⚠️';
                     texto = `${dataFormatada} (${diffDias}d)`;
                 }
-
+            }
                 prazoHtml = `<span class="badge-prazo badge-prazo-${statusPrazo}">${icone} ${texto}</span>`;
             } else {
                 prazoHtml = prazoData || '-';
