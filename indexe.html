@@ -1160,12 +1160,22 @@ document.addEventListener('DOMContentLoaded', function () {
 <script>
 // Oculta card Sugestões se quantidade de cards for ÍMPAR
 (function(){
-  var c=document.getElementById('card-sugestoes');
-  if(!c)return;
-  var l=document.querySelector('.links-section ul');
-  if(!l)return;
-  var n=l.querySelectorAll('li').length;
-  if(n%2!==0)c.style.display='none';
+  function verificarSimetria() {
+    var c = document.getElementById('card-sugestoes');
+    if (!c) return;
+    
+    var l = document.querySelector('.links-section ul');
+    if (!l) return;
+    
+    var n = l.querySelectorAll('li').length;
+    var isImpar = (n % 2 !== 0);
+    var isMobile = window.matchMedia('(max-width: 768px)').matches;
+    
+    c.style.display = (isImpar && isMobile) ? 'none' : '';
+  }
+  
+  verificarSimetria();
+  window.addEventListener('resize', verificarSimetria);
 })();
 </script>
   
