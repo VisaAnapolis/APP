@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Produção Fiscal - VISA Anápolis</title>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+    <!-- DataTables CSS e JS -->
+    <link rel="stylesheet" href="./css/design-tokens.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+    <!-- PapaParse para ler CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+    <!-- Biblioteca para SHA-256 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+    <style>
+        /* === VARIÁVEIS IDÊNTICAS AO INDEX === */
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100% }
+
+        body {
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* == HEADER IDÊNTICO AO INDEX == */
+        header {
+            background: #1a3a6b;
+            color: #ffffff;
+            padding: 28px 20px 26px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: clamp(1.7rem, 2.4vw, 2.3rem);
+            font-weight: 900;
+            letter-spacing: .2px;
+            color: #ffffff;
+        }
+
+        header h2 {
+            margin: 8px 0 0;
+            font-size: clamp(1rem, 1.5vw, 1.15rem);
+            font-weight: 500;
+            opacity: .92;
+            color: #ffffff;
+        }
+
+        /* Botão OK - Área clicável maior */
+        .btn-ok-header {
+            position: absolute;
+            top: 50%;
+            right: 16px;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: #34C759;
+            font-size: 17px;
+            font-weight: 600;
+            padding: 16px 12px;
+            cursor: pointer;
+            text-decoration: none;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-ok-header:hover {
+            opacity: 0.7;
+        }
+
+        /* === MODAL DE AUTENTICAÇÃO === */
+        .auth-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .auth-modal {
+            background: #1a3a6b;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .auth-modal h2 {
+            color: #ffffff;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+
+        .auth-modal p {
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 25px;
+        }
+
+        .auth-modal input,
+        .auth-modal select {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            background: rgba(255,255,255,0.95);
+            color: #1a202c;
+            box-sizing: border-box;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            height: 52px;
+        }
+
+        .auth-modal select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235b6b83' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            padding-right: 40px;
+        }
+
+        .auth-modal input:focus,
+        .auth-modal select:focus {
+            outline: none;
+            border-color: #34C759;
+            box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.3);
+        }
+
+        .auth-modal button {
+            width: 100%;
+            padding: 15px;
+            background: #34C759;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .auth-modal button:hover {
+            filter: brightness(1.1);
+        }
+
+        .auth-error {
+            color: #ff6b6b;
+            font-size: 0.9em;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .main-content {
+            display: none;
+        }
+
+        /* === CONTAINER COMO NO INDEX === */
+        .container {
+            max-width: 1100px;
+            margin: 22px auto 30px;
+            padding: 0 16px;
+        }
+
+        /* === CARD DE FILTROS === */
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 16px;
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow2);
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 150px;
+            gap: 16px;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+            font-size: 0.95em;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 12px;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            font-size: 1em;
+            background: var(--input-bg);
+            color: var(--input-text);
+            box-sizing: border-box;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: var(--input-focus);
+            box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.15);
+        }
+
+        .btn-search {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--brand1), var(--brand2));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .15s transform, .15s box-shadow;
+        }
+
+        .btn-search:hover {
+            box-shadow: var(--shadow2);
+            transform: translateY(-1px);
+        }
+
+        .btn-search:active {
+            transform: translateY(0);
+        }
+
+        /* === ÁREA DE RESULTADOS === */
+        .results-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 18px;
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow2);
+        }
+
+        .info-box {
+            background: rgba(44, 90, 160, 0.08);
+            border-left: 4px solid var(--brand1);
+            padding: 15px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+            color: var(--text);
+        }
+
+        .info-box.warning {
+            background: #fff7dd;
+            border-left-color: #d1a000;
+        }
+
+        .info-box.success {
+            background: rgba(52, 199, 89, 0.1);
+            border-left-color: #34C759;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: var(--muted);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #ccd6e0;
+            border-top: 4px solid var(--brand1);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* === DATATABLES === */
+        table.dataTable {
+            width: 100% !important;
+            border-collapse: collapse;
+            margin-top: 16px !important;
+        }
+
+        table.dataTable thead th {
+            background: var(--brand1);
+            color: white;
+            font-weight: 600;
+            padding: 12px 8px;
+            text-align: left;
+        }
+
+        table.dataTable tbody td {
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--line);
+            color: var(--text);
+        }
+
+        table.dataTable tbody tr:hover {
+            background-color: rgba(44, 90, 160, 0.05);
+        }
+
+        /* Larguras das colunas */
+        table.dataTable thead th:nth-child(1) { width: 85px; min-width: 85px; } /* OS */
+        table.dataTable thead th:nth-child(2) { width: 85px; min-width: 85px; } /* Data */
+        table.dataTable thead th:nth-child(3) { width: 85px; min-width: 85px; } /* Prazo */
+        table.dataTable thead th:nth-child(4) { width: auto; } /* Doc/Ação Fiscal */
+        table.dataTable thead th:nth-child(5) { width: 55px; min-width: 55px; } /* Nº */
+        table.dataTable thead th:nth-child(6) { width: auto; } /* Regulado/Atividade */
+        table.dataTable thead th:nth-child(7) { width: 70px; min-width: 70px; } /* Complex. */
+        table.dataTable thead th:nth-child(8) { width: 100px; min-width: 100px; } /* Anotações */
+
+        /* Célula de documento abreviado */
+        .doc-cell {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .doc-cell:hover {
+            white-space: normal;
+            overflow: visible;
+            position: relative;
+            z-index: 10;
+            background: var(--card);
+        }
+
+        .dataTables_wrapper {
+            padding: 0;
+        }
+
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter,
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            color: var(--text);
+            padding: 8px 0;
+        }
+
+        .dataTables_wrapper .dataTables_filter input,
+        .dataTables_wrapper .dataTables_length select {
+            background: var(--input-bg);
+            color: var(--input-text);
+            border: 1px solid var(--input-border);
+            border-radius: 6px;
+            padding: 6px 10px;
+        }
+
+        /* === BOTÕES DE EXPORTAÇÃO === */
+        .export-section {
+            padding: 15px 0;
+            margin-bottom: 16px;
+            display: none;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .export-section h3 {
+            color: var(--brand1);
+            font-size: 1em;
+            margin-bottom: 12px;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-export {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn-export:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn-pdf { background: #dc3545; }
+        .btn-excel { background: #28a745; }
+        .btn-word { background: #007bff; }
+        .btn-html { background: #fd7e14; }
+
+        /* === RESPONSIVO === */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        @media (max-width: 1024px) {
+            .filter-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #tabelaRPF {
+                min-width: 800px;
+            }
+            .filter-group select,
+            .filter-group input {
+                font-size: 16px;
+            }
+            .btn-search {
+                width: 100%;
+                padding: 14px;
+            }
+            header {
+                padding: 28px 70px 26px 20px;
+            }
+        }
+
+        /* Header fixo - efeito app nativo */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transform: translateY(0);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Transição suave ao scroll */
+        body.scrolled header {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+    </style>
+
+    <!-- Bibliotecas de Exportação -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.4/pizzip.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.2/docx.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.iife.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body>
+    <!-- Modal de Autenticação -->
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-modal">
+            <h2>🔒 Acesso Restrito</h2>
+            <p>Selecione seu nome e digite a senha</p>
+            <select id="usuarioSelect"></select>
+            <input type="password" id="senhaInput" placeholder="Senha" autocomplete="current-password" onkeypress="if(event.key==='Enter') verificarLogin()">
+            <button onclick="verificarLogin()">Entrar</button>
+            <div class="auth-error" id="authError">❌ Usuário ou senha inválidos.</div>
+            <div class="auth-error" id="authErrorPerm" style="display:none;">⛔ Não autorizado para este relatório.</div>
+        </div>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <div class="main-content" id="mainContent">
+        <header>
+            <a href="index.html" class="btn-ok-header">OK</a>
+            <h1>Vigilância Sanitária</h1>
+            <h2>Relatório de Produção Fiscal</h2>
+        </header>
+
+        <div class="container">
+            <div class="card">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="fiscal">Fiscal Sanitário:</label>
+                        <select id="fiscal">
+                            <option value="">-- Selecione um fiscal --</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="mesAno">Mês/Ano:</label>
+                        <input type="month" id="mesAno" min="2018-01" max="2026-12">
+                    </div>
+                    <div class="filter-group">
+                        <button class="btn-search" onclick="buscarRPF()">
+                            🔍 Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botões de Exportação -->
+            <div class="export-section" id="exportSection">
+                <h3>📤 Exportar Resultados</h3>
+                <div class="export-buttons">
+                    <button class="btn-export btn-pdf" onclick="exportarPDF()">📄 PDF</button>
+                    <button class="btn-export btn-excel" onclick="exportarExcel()">📊 Excel</button>
+                    <button class="btn-export btn-word" onclick="exportarWord()">📝 Word</button>
+                    <button class="btn-export btn-html" onclick="exportarHTML()">🌐 HTML</button>
+                </div>
+            </div>
+
+            <!-- Card de Resultados -->
+            <div class="results-card">
+                <div id="infoBox"></div>
+                <div id="loading" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    Processando dados...
+                </div>
+                
+                <div class="table-responsive">
+                    <table id="tabelaRPF" class="display" style="display: none; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>OS</th>
+                                <th>Data</th>
+                                <th>Prazo</th>
+                                <th>Documento/Ação Fiscal</th>
+                                <th>Nº</th>
+                                <th>Regulado/Atividade</th>
+                                <th>Complex.</th>
+                                <th>Anotações</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== AUTENTICAÇÃO POR USUÁRIO (login.csv) ==========
+        const LOGIN_CSV_URL = 'data/login.csv';
+        let loginDB = [];
+        let tentativasErro = 0;
+        let usuarioLogado = null;
+
+        function normalizarTexto(s) {
+            return String(s || '').trim().toUpperCase();
+        }
+
+        function limparAcentos(str) {
+            return normalizarTexto(str)
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '');
+        }
+
+        function carregarLoginDB() {
+            return new Promise((resolve, reject) => {
+                Papa.parse(LOGIN_CSV_URL, {
+                    download: true,
+                    header: true,
+                    delimiter: ';',
+                    encoding: '',
+                    skipEmptyLines: true,
+                    complete: function(results) {
+                        loginDB = (results.data || []).map(r => ({
+                            UsuarioOriginal: String(r.Usuario || '').trim(),
+                            Usuario: limparAcentos(r.Usuario),
+                            Grupo: normalizarTexto(r.Grupo),
+                            Senha: String(r.Senha || '').trim(),
+                            Senha2: String(r.Senha2 || '').trim(),
+                            Senha3: String(r.Senha3 || '').trim()
+                        }));
+                        resolve();
+                    },
+                    error: function(err) {
+                        reject(err);
+                    }
+                });
+            });
+        }
+
+        function popularUsuariosLogin() {
+            const sel = document.getElementById('usuarioSelect');
+            if (!sel) return;
+
+            sel.innerHTML = '';
+            const opt0 = document.createElement('option');
+            opt0.value = '';
+            opt0.textContent = '-- Selecione seu nome --';
+            sel.appendChild(opt0);
+
+            const regs = (loginDB || [])
+                .filter(r => r.UsuarioOriginal && r.UsuarioOriginal.length > 0)
+                .sort((a,b) => a.UsuarioOriginal.localeCompare(b.UsuarioOriginal, 'pt-BR'));
+
+            regs.forEach(r => {
+                const o = document.createElement('option');
+                o.value = r.Usuario;
+                o.textContent = r.UsuarioOriginal;
+                sel.appendChild(o);
+            });
+        }
+
+        async function prepararLoginUI() {
+            try {
+                await carregarLoginDB();
+                popularUsuariosLogin();
+            } catch(e) {
+                console.error('Erro ao carregar login.csv:', e);
+                document.getElementById('authError').style.display = 'block';
+            }
+        }
+
+        window.addEventListener('load', prepararLoginUI);
+
+        function aplicarRestricaoFiscal() {
+            const sel = document.getElementById('fiscal');
+            if (!sel || !usuarioLogado) return;
+
+            if (usuarioLogado.grupo === 'ADM') {
+                sel.disabled = false;
+                return;
+            }
+
+            if (usuarioLogado.grupo === 'FIS') {
+                const alvo = usuarioLogado.nome;
+                let achou = false;
+                for (let i = 0; i < sel.options.length; i++) {
+                    const opt = limparAcentos(sel.options[i].text);
+                    if (opt === alvo) {
+                        sel.selectedIndex = i;
+                        achou = true;
+                        break;
+                    }
+                }
+                sel.disabled = true;
+                if (!achou) alert('⛔ Seu usuário não foi encontrado na lista de fiscais.');
+            }
+        }
+
+        async function verificarLogin() {
+            try {
+                document.getElementById('authError').style.display = 'none';
+                document.getElementById('authErrorPerm').style.display = 'none';
+
+                const usuario = limparAcentos(document.getElementById('usuarioSelect').value);
+                const senha = String(document.getElementById('senhaInput').value || '').trim();
+
+                if (!usuario || !senha) {
+                    document.getElementById('authError').style.display = 'block';
+                    return;
+                }
+
+                if (!loginDB || loginDB.length === 0) {
+                    await carregarLoginDB();
+                }
+
+                const reg = loginDB.find(r => r.Usuario === usuario);
+                if (!reg) {
+                    document.getElementById('authError').style.display = 'block';
+                    return;
+                }
+
+                const senhasValidas = [reg.Senha, reg.Senha2, reg.Senha3].filter(x => x && x.length > 0);
+                if (!senhasValidas.includes(senha)) {
+                    document.getElementById('authError').style.display = 'block';
+                    document.getElementById('senhaInput').value = '';
+                    document.getElementById('usuarioSelect').focus();
+                    tentativasErro++;
+
+                    if (tentativasErro >= 3) {
+                        alert('Número máximo de tentativas excedido. Redirecionando...');
+                        window.location.href = 'index.html';
+                    }
+                    return;
+                }
+
+                if (reg.Grupo !== 'ADM' && reg.Grupo !== 'FIS') {
+                    document.getElementById('authErrorPerm').style.display = 'block';
+                    setTimeout(() => window.location.href = 'index.html', 1200);
+                    return;
+                }
+
+                usuarioLogado = { nome: reg.Usuario, grupo: reg.Grupo };
+                tentativasErro = 0;
+                document.getElementById('authOverlay').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+
+                popularFiscais();
+                carregarArquivos();
+                aplicarRestricaoFiscal();
+
+                if (typeof criarBotaoVoltar === 'function') setTimeout(criarBotaoVoltar, 300);
+            } catch (e) {
+                console.error('Erro no login:', e);
+                alert('Erro ao validar login. Veja o console.');
+            }
+        }
+
+        // ========== SISTEMA PRINCIPAL ==========
+
+        // Lista oficial de fiscais da VISAM Anápolis
+        const fiscaisOficiais = [
+            "ACADIA DE SOUZA VIEIRA SILVA",
+            "ADRIANA CRHISTINA DE REZENDE CARNEIRO",
+            "ADRIANE PEREIRA GUIMARÃES",
+            "ALINE CASTRO DAMASIO",
+            "ANA PAULA RODRIGUES CORRÊA GUIMARÃES",
+            "ANGELA RIBEIRO NEVES",
+            "ARIANNE FERREIRA VIEIRA",
+            "CÉSIO MALAQUIAS",
+            "CLÁUDIO NASCIMENTO SILVA",
+            "CLÓVIS RAFAEL BORGES FERREIRA",
+            "DANIEL SOARES BARBOSA",
+            "DANIELA DE ALMEIDA CASTRO",
+            "EDSON ARANTES FARIA FILHO",
+            "EDUARDO LUCAS MAGALHÃES CASTRO",
+            "FABÍOLA PEDROSA PEIXOTO MARQUES",
+            "GERALDO EDSON ROSA",
+            "GLEICIANE MARIA JOSÉ DA SILVA",
+            "GÚBIO DIAS PEREIRA",
+            "JOÃO BATISTA LUCAS DA SILVA REIS",
+            "JOSE LUIZ RIBEIRO",
+            "JULIANA FERREIRA VITURINO",
+            "JULIANA KÊNIA MARTINS DA SILVA",
+            "JULIO CÉSAR TELES SPINDOLA",
+            "KAMILLA CHRYSTINE ROLIM D. SANTOS GARCÊS",
+            "LIDIANE SIMÕES",
+            "LIVIA BRITO",
+            "LUCIANA CONSOLAÇÃO DOS SANTOS",
+            "LUCIANA SANTANA DA ROCHA",
+            "LUCIENE DE SOUZA BARBOSA GOMES SILVA",
+            "MARCIO HENRIQUE GOMES RODOVALHO",
+            "MARIA EDWIGES PINHEIRO DE SOUZA CHAVES",
+            "MARINA PERILLO NAVARRETE LAVERS",
+            "PATRÍCIA CORDEIRO DE MORAES E SOUZA",
+            "PEDRO HENRIQUE AIRES RIBEIRO",
+            "RODRIGO ALESSANDRO TÔGO SANTOS",
+            "RÚBIA MARA DE FREITAS",
+            "SILVIA MARQUES NAVES DA MOTA SOUZA",
+            "SIMONE DUARTE GROSSI",
+            "TATHIANE PESSOA DE SOUZA",
+            "THIAGO GOMES GOBO",
+            "VANESSA SANTANA",
+            "VIVIANE MANOEL DA SILVA BORGES",
+            "VIVIANE MIYADA",
+            "WANESSA DE BRITO JORGE"
+        ];
+
+        // Variáveis globais para armazenar os dados
+        let dadosRPF = [];
+        let dataTable = null;
+
+        function popularFiscais() {
+            const select = $('#fiscal');
+            fiscaisOficiais.forEach(fiscal => {
+                select.append(`<option value="${fiscal}">${fiscal}</option>`);
+            });
+        }
+
+        function carregarArquivos() {
+            const timestamp = new Date().getTime();
+            console.log(`🔄 Carregando arquivos com cache-busting: v=${timestamp}`);
+
+            // Carregar RDPF
+            Papa.parse(`data/rdpf.csv?v=${timestamp}`, {
+                download: true,
+                header: true,
+                delimiter: ';',
+                encoding: '',
+                skipEmptyLines: true,
+                complete: function(results) {
+                    dadosRPF = results.data;
+                    console.log(`✅ RDPF carregado: ${dadosRPF.length} registros`);
+                    mostrarInfo('✅ Dados carregados com sucesso! Selecione um fiscal e o mês/ano para consultar.', 'success');
+                },
+                error: function(err) {
+                    console.error('Erro ao carregar rdpf.csv:', err);
+                    mostrarInfo('❌ Erro ao carregar dados. Verifique o console.', 'warning');
+                }
+            });
+        }
+
+        function mostrarInfo(mensagem, tipo) {
+            const infoBox = $('#infoBox');
+            infoBox.removeClass('info-box warning success');
+            infoBox.addClass('info-box ' + tipo);
+            infoBox.html(mensagem);
+            infoBox.show();
+        }
+
+        function converterData(dataStr) {
+            // Converte dd.mm.yyyy para yyyy-mm-dd
+            if (!dataStr || dataStr.trim() === '') return null;
+            const partes = dataStr.split('.');
+            if (partes.length === 3) {
+                return `${partes[2]}-${partes[1].padStart(2, '0')}-${partes[0].padStart(2, '0')}`;
+            }
+            return null;
+        }
+
+        function extrairMesAno(dataISO) {
+            // Extrai yyyy-mm de uma data yyyy-mm-dd
+            if (!dataISO) return null;
+            return dataISO.substring(0, 7);
+        }
+
+        function formatarMesAnoBR(mesAno) {
+            // Converte yyyy-mm para "Janeiro/2026"
+            if (!mesAno) return '';
+            const [ano, mes] = mesAno.split('-');
+            const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
+                          'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+            return `${meses[parseInt(mes) - 1]}/${ano}`;
+        }
+
+        function abreviarTexto(texto, maxLength = 40) {
+            if (!texto) return '';
+            texto = texto.trim();
+            if (texto.length <= maxLength) return texto;
+            return texto.substring(0, maxLength) + '...';
+        }
+
+        function buscarRPF() {
+            const fiscalSelecionado = $('#fiscal').val();
+            const mesAno = $('#mesAno').val();
+
+            if (!fiscalSelecionado) {
+                mostrarInfo('⚠️ Por favor, selecione um fiscal.', 'warning');
+                return;
+            }
+
+            if (!mesAno) {
+                mostrarInfo('⚠️ Por favor, selecione o mês/ano.', 'warning');
+                return;
+            }
+
+            $('#loading').show();
+            $('#tabelaRPF').hide();
+            $('#infoBox').hide();
+
+            setTimeout(() => {
+                const resultados = processarRPF(fiscalSelecionado, mesAno);
+                exibirResultados(resultados, fiscalSelecionado, mesAno);
+            }, 100);
+        }
+
+        function processarRPF(fiscal, mesAnoFiltro) {
+            const resultados = [];
+
+            dadosRPF.forEach(reg => {
+                // Verificar se o fiscal corresponde (campo Nome)
+                if (reg.Nome !== fiscal) return;
+
+                // Verificar período (mês/ano)
+                const dataRegistro = converterData(reg.Data);
+                const mesAnoRegistro = extrairMesAno(dataRegistro);
+                
+                if (mesAnoRegistro !== mesAnoFiltro) return;
+
+                // Converter data do prazo
+                const prazoRegistro = converterData(reg.Prazo);
+
+                resultados.push({
+                    os: reg.OS || '',
+                    data: dataRegistro,
+                    prazo: prazoRegistro,
+                    doc: reg.Doc || '',
+                    ndoc: reg.Ndoc || '',
+                    estabe: reg.Estabe || '',
+                    complex: reg.Complex || '',
+                    comply: reg.Comply || ''
+                });
+            });
+
+            return resultados;
+        }
+
+        function exibirResultados(resultados, fiscal, mesAno) {
+            $('#loading').hide();
+
+            if (resultados.length === 0) {
+                mostrarInfo(`❌ Nenhum registro encontrado para <strong>${fiscal}</strong> em ${formatarMesAnoBR(mesAno)}.`, 'warning');
+                $('#tabelaRPF').hide();
+                $('#exportSection').hide();
+                return;
+            }
+
+            mostrarInfo(`✅ Encontrados <strong>${resultados.length}</strong> registros de <strong>${fiscal}</strong> em ${formatarMesAnoBR(mesAno)}.`, 'success');
+
+            // Destruir DataTable anterior se existir
+            if (dataTable) {
+                dataTable.destroy();
+            }
+
+            // Limpar tabela
+            $('#tabelaRPF tbody').empty();
+
+            // Popular tabela
+            resultados.forEach(r => {
+                const docAbreviado = abreviarTexto(r.doc, 40);
+                const estabeAbreviado = abreviarTexto(r.estabe, 35);
+                
+                $('#tabelaRPF tbody').append(`
+                    <tr>
+                        <td>${r.os}</td>
+                        <td>${formatarDataBR(r.data)}</td>
+                        <td>${formatarDataBR(r.prazo)}</td>
+                        <td class="doc-cell" title="${r.doc}">${docAbreviado}</td>
+                        <td>${r.ndoc}</td>
+                        <td class="doc-cell" title="${r.estabe}">${estabeAbreviado}</td>
+                        <td>${r.complex}</td>
+                        <td>${r.comply}</td>
+                    </tr>
+                `);
+            });
+
+            // Inicializar DataTable
+            $('#tabelaRPF').show();
+            document.getElementById('exportSection').style.display = 'block';
+            dataTable = $('#tabelaRPF').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json'
+                },
+                order: [[1, 'desc']], // Ordenar por data
+                pageLength: 25
+            });
+        }
+
+        function formatarDataBR(dataISO) {
+            if (!dataISO) return '';
+            const partes = dataISO.split('-');
+            return `${partes[2]}/${partes[1]}/${partes[0]}`;
+        }
+
+        // ========== FUNÇÕES DE EXPORTAÇÃO ==========
+
+        function exportarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+
+            const fiscal = document.getElementById('fiscal').options[document.getElementById('fiscal').selectedIndex].text;
+            const mesAno = formatarMesAnoBR(document.getElementById('mesAno').value);
+            const hoje = new Date().toISOString().split('T')[0];
+
+            doc.setFontSize(16);
+            doc.text('Relatório de Produção Fiscal - VISA Anápolis', 14, 15);
+            doc.setFontSize(11);
+            doc.text(`Fiscal: ${fiscal}`, 14, 22);
+            doc.text(`Período: ${mesAno}`, 14, 28);
+
+            const table = $('#tabelaRPF').DataTable();
+            const dados = table.rows({search: 'applied'}).data().toArray();
+
+            const dadosTabela = dados.map(row => [
+                row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]
+            ]);
+
+            doc.autoTable({
+                head: [['OS', 'Data', 'Prazo', 'Doc/Ação Fiscal', 'Nº', 'Regulado/Ativ.', 'Complex.', 'Anotações']],
+                body: dadosTabela,
+                startY: 32,
+                styles: { fontSize: 7 },
+                headStyles: { fillColor: [102, 126, 234] },
+                columnStyles: {
+                    0: { cellWidth: 22 },
+                    1: { cellWidth: 22 },
+                    2: { cellWidth: 22 },
+                    3: { cellWidth: 'auto' },
+                    4: { cellWidth: 18 },
+                    5: { cellWidth: 'auto' },
+                    6: { cellWidth: 18 },
+                    7: { cellWidth: 25 }
+                }
+            });
+
+            doc.save(`RPF-${fiscal.split(' ')[0]}-${hoje}.pdf`);
+        }
+
+        function exportarExcel() {
+            const fiscal = document.getElementById('fiscal').options[document.getElementById('fiscal').selectedIndex].text;
+            const mesAno = formatarMesAnoBR(document.getElementById('mesAno').value);
+            const hoje = new Date().toISOString().split('T')[0];
+
+            const table = $('#tabelaRPF').DataTable();
+            const dados = table.rows({search: 'applied'}).data().toArray();
+
+            const dadosExcel = [
+                ['Relatório de Produção Fiscal - VISA Anápolis'],
+                [`Fiscal: ${fiscal}`],
+                [`Período: ${mesAno}`],
+                [],
+                ['OS', 'Data', 'Prazo', 'Documento/Ação Fiscal', 'Nº', 'Regulado/Atividade', 'Complex.', 'Anotações']
+            ];
+
+            dados.forEach(row => {
+                dadosExcel.push([row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]]);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(dadosExcel);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'RPF');
+
+            XLSX.writeFile(wb, `RPF-${fiscal.split(' ')[0]}-${hoje}.xlsx`);
+        }
+
+        function exportarWord() {
+            const fiscal = document.getElementById('fiscal').options[document.getElementById('fiscal').selectedIndex].text;
+            const mesAno = formatarMesAnoBR(document.getElementById('mesAno').value);
+            const hoje = new Date().toISOString().split('T')[0];
+
+            const table = $('#tabelaRPF').DataTable();
+            const dados = table.rows({search: 'applied'}).data().toArray();
+
+            const rows = dados.map(row => {
+                return new docx.TableRow({
+                    children: [
+                        new docx.TableCell({ children: [new docx.Paragraph(row[0] || '')] }),
+                        new docx.TableCell({ children: [new docx.Paragraph(row[1] || '')] }),
+                        new docx.TableCell({ children: [new docx.Paragraph(row[2] || '')] }),
+                        new docx.TableCell({ children: [new docx.Paragraph(row[3] || '')] }),
+                        new docx.TableCell({ children: [new docx.Paragraph(row[4] || '')] }),
+                        new docx.TableCell({ children: [new docx.Paragraph(row[5] || '')] }),
+                        new docx.TableCell({ children: [new docx.Paragraph(row[6] || '')] }),
+                        new docx.TableCell({ children: [new docx.Paragraph(row[7] || '')] })
+                    ]
+                });
+            });
+
+            const tableWord = new docx.Table({
+                rows: [
+                    new docx.TableRow({
+                        children: [
+                            new docx.TableCell({ children: [new docx.Paragraph('OS')] }),
+                            new docx.TableCell({ children: [new docx.Paragraph('Data')] }),
+                            new docx.TableCell({ children: [new docx.Paragraph('Prazo')] }),
+                            new docx.TableCell({ children: [new docx.Paragraph('Doc/Ação Fiscal')] }),
+                            new docx.TableCell({ children: [new docx.Paragraph('Nº')] }),
+                            new docx.TableCell({ children: [new docx.Paragraph('Regulado/Ativ.')] }),
+                            new docx.TableCell({ children: [new docx.Paragraph('Complex.')] }),
+                            new docx.TableCell({ children: [new docx.Paragraph('Anotações')] })
+                        ]
+                    }),
+                    ...rows
+                ]
+            });
+
+            const doc = new docx.Document({
+                sections: [{
+                    properties: {},
+                    children: [
+                        new docx.Paragraph({
+                            text: 'Relatório de Produção Fiscal - VISA Anápolis',
+                            heading: docx.HeadingLevel.HEADING_1
+                        }),
+                        new docx.Paragraph(`Fiscal: ${fiscal}`),
+                        new docx.Paragraph(`Período: ${mesAno}`),
+                        new docx.Paragraph(''),
+                        tableWord
+                    ]
+                }]
+            });
+
+            docx.Packer.toBlob(doc).then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `RPF-${fiscal.split(' ')[0]}-${hoje}.docx`;
+                a.click();
+            });
+        }
+
+        function exportarHTML() {
+            const fiscal = document.getElementById('fiscal').options[document.getElementById('fiscal').selectedIndex].text;
+            const mesAno = formatarMesAnoBR(document.getElementById('mesAno').value);
+            const hoje = new Date().toISOString().split('T')[0];
+
+            const table = $('#tabelaRPF').DataTable();
+            const dados = table.rows({search: 'applied'}).data().toArray();
+
+            let html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Produção Fiscal</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #1a3a6b; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #2c5aa0; color: white; padding: 10px; text-align: left; }
+        td { border: 1px solid #ddd; padding: 8px; }
+        tr:nth-child(even) { background: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Relatório de Produção Fiscal - VISA Anápolis</h1>
+    <p><strong>Fiscal:</strong> ${fiscal}</p>
+    <p><strong>Período:</strong> ${mesAno}</p>
+    <table>
+        <thead>
+            <tr>
+                <th>OS</th>
+                <th>Data</th>
+                <th>Prazo</th>
+                <th>Documento/Ação Fiscal</th>
+                <th>Nº</th>
+                <th>Regulado/Atividade</th>
+                <th>Complex.</th>
+                <th>Anotações</th>
+            </tr>
+        </thead>
+        <tbody>`;
+
+            dados.forEach(row => {
+                html += `
+            <tr>
+                <td>${row[0]}</td>
+                <td>${row[1]}</td>
+                <td>${row[2]}</td>
+                <td>${row[3]}</td>
+                <td>${row[4]}</td>
+                <td>${row[5]}</td>
+                <td>${row[6]}</td>
+                <td>${row[7]}</td>
+            </tr>`;
+            });
+
+            html += `
+        </tbody>
+    </table>
+</body>
+</html>`;
+
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `RPF-${fiscal.split(' ')[0]}-${hoje}.html`;
+            a.click();
+        }
+
+        // Scroll effect
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            if (currentScroll > lastScroll) {
+                // Scroll down
+            } else {
+                document.body.classList.add('scrolled');
+            }
+            lastScroll = currentScroll;
+        });
+
+    </script>
+
+    <script type="module">
+        import { protectPage } from "./guard.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
+            authDomain: "visam-3a30b.firebaseapp.com",
+            projectId: "visam-3a30b",
+            messagingSenderId: "308899251430",
+            appId: "1:308899251430:web:0053cdbd0bed7f0de76727"
+        };
+
+        protectPage({
+            firebaseConfig,
+            onAuthorized: () => {
+                // opcional: liberar UI, etc.
+            }
+        });
+    </script>
+
+</body>
+</html>
