@@ -572,18 +572,23 @@ header h2 {
 
   </div>
 
-<!-- Botão Configurar Perfil (ADM só) -->
-{{if(window.perfilGlobal && window.perfilGlobal.grupo === "Administrador")}}
-<div class="card grid-span-2">
-  <h3>Gerenciar Perfis <small>(ADM)</small></h3>
-  <button class="btn btnPrimary" onclick="configurarPerfil()" style="width:100%;margin-top:8px;">
-    👤 Configurar/Editar Perfil
-  </button>
-  <p class="small muted" style="margin-top:12px;">
-    Ativar usuários, definir grupo (Fiscal/ADM), nome exato para filtro.
-  </p>
-</div>
-{{/if}}
+      </div> <!-- fim dos cards de links -->
+      
+      <!-- Botão ADM - Mostrado via JS -->
+      <div id="adminPanel" class="card grid-span-2" style="display:none;">
+        <h3>🔧 Gerenciar Perfis <small>(ADM)</small></h3>
+        <button class="btn btnPrimary" onclick="configurarPerfil()" style="width:100%;margin-top:8px;">
+          👤 Configurar/Editar Perfil de Usuário
+        </button>
+        <p class="small muted" style="margin-top:12px;">
+          Ativar usuários, definir grupo (Fiscal/Administrador/Administrativo) e nome exato para filtro.
+        </p>
+      </div>
+      
+    </div> <!-- container -->
+    
+    <div class="footer">
+
 
   
   
@@ -642,6 +647,7 @@ import {
   setPersistence,
   browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 
 // ===== SISTEMA DE CACHE DE AUTENTICAÇÃO =====
@@ -867,6 +873,19 @@ window.logout = function(){
     if (isAuthorized(user)) {
       authCache.save(user); // Salva no cache
       showConteudo();
+      // Carrega perfil e mostra painel ADM
+    try {
+      const db = getFirestore(app);
+      const perfilSnap = await getDoc(doc(db, 'perfis', user.email));
+      if (perfilSnap.exists()) {
+        window.perfilGlobal = perfilSnap.data();
+        if (window.perfilGlobal.grupo === 'Administrador') {
+          document.getElementById('adminPanel').style.display = 'block';
+        }
+      }
+    } catch(e) {
+      console.error('Erro perfil:', e);
+    }
       return;
     }
 
@@ -1189,8 +1208,9 @@ document.addEventListener('DOMContentLoaded', function () {
  
 </script>    
 
-<script>    
- async function configurarPerfil() {
+ 
+ // FUNÇÃO ADM - Configurar perfil
+async function configurarPerfil() {
   const email = prompt("E-mail do Google para configurar:");
   if (!email) return;
   
@@ -1200,15 +1220,20 @@ document.addEventListener('DOMContentLoaded', function () {
   if (!nome || !grupo) return alert("Nome e grupo obrigatórios.");
   
   try {
+    const db = getFirestore(app);
     await setDoc(doc(db, 'perfis', email), {
       nome, grupo, ativo: true, criadoEm: new Date()
     });
-    alert(`Perfil salvo: ${nome} (${grupo})`);
+    alert(`✅ Perfil salvo: ${nome} (${grupo})`);
   } catch (e) {
-    alert("Erro: " + e.message);
+    alert("❌ Erro: " + e.message);
   }
-}   
-</script>    
+}
+window.configurarPerfil = configurarPerfil;
+ 
+ 
+
+    
     
 </body>
 </html>
