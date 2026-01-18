@@ -1,8 +1,9 @@
 // guard.js — proteção de páginas internas (cliente)
+
 // Ajustes rápidos:
 const INDEX_URL = "index.html";
-const SESSION_MAX_MIN = 8 * 60;   // 8 horas
-const IDLE_MAX_MIN    = 20;       // 20 minutos
+const SESSION_MAX_MIN = 8 * 60; // 8 horas
+const IDLE_MAX_MIN = 20; // 20 minutos
 
 const AUTHORIZED_EMAILS = new Set([
   "ps.visa@anapolis.go.gov.br",
@@ -56,7 +57,6 @@ const AUTHORIZED_EMAILS = new Set([
 ]);
 
 function normEmail(s){ return String(s || "").toLowerCase().trim(); }
-
 function nowMs(){ return Date.now(); }
 function minutesToMs(m){ return m * 60 * 1000; }
 
@@ -74,14 +74,11 @@ function touchActivity(){
 
 function isSessionExpired(){
   const start = Number(sessionStorage.getItem("visa_session_start") || "0");
-  const last  = Number(sessionStorage.getItem("visa_last_active") || "0");
-  const now   = nowMs();
-
+  const last = Number(sessionStorage.getItem("visa_last_active") || "0");
+  const now = nowMs();
   if (!start || !last) return false;
-
-  const maxExceeded  = (now - start) > minutesToMs(SESSION_MAX_MIN);
-  const idleExceeded = (now - last)  > minutesToMs(IDLE_MAX_MIN);
-
+  const maxExceeded = (now - start) > minutesToMs(SESSION_MAX_MIN);
+  const idleExceeded = (now - last) > minutesToMs(IDLE_MAX_MIN);
   return maxExceeded || idleExceeded;
 }
 
@@ -102,21 +99,22 @@ function startExpiryTimer(signOutFn){
       alert("Sessão expirada por tempo/inatividade. Faça login novamente.");
       location.href = INDEX_URL;
     }
-  }, 10_000); // checa a cada 10s
+  }, 10_000);
 }
 
 // Função principal: chama dentro de cada página interna
-export async function protectPage({ firebaseConfig, onAuthorized }){
+export async function protectPage(firebaseConfig, onAuthorized){
   const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
   const { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } =
     await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+  const { getFirestore, doc, getDoc } = 
+    await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
 
-  const app  = initializeApp(firebaseConfig);
+  const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const db = getFirestore(app);
 
-  // força persistência local (evita pedir login toda hora)
   try { await setPersistence(auth, browserLocalPersistence); } catch(e){}
-
   setSessionMarks();
   attachIdleListeners();
 
@@ -134,32 +132,29 @@ export async function protectPage({ firebaseConfig, onAuthorized }){
       return;
     }
 
-    // autorizado
-    setSessionMarks();
-    startExpiryTimer(() => signOut(auth));
-    if (typeof onAuthorized === "function") onAuthorized({ user, auth });
+    // Busca perfil no Firestore
+    try {
+      const perfilSnap = await getDoc(doc(db, 'perfis', email));
+      const perfil = perfilSnap.exists() ? perfilSnap.data() : null;
+
+      if (!perfil || !perfil.ativo) {
+        alert(`Perfil inativo: ${email}. Acesse index para ativar.`);
+        await signOut(auth);
+        location.href = INDEX_URL;
+        return;
+      }
+
+      window.perfilGlobal = perfil;
+      setSessionMarks();
+      startExpiryTimer(() => signOut(auth));
+
+      if (typeof onAuthorized === "function") {
+        onAuthorized(user, auth, perfil);
+      }
+    } catch(e) {
+      console.error("Erro ao buscar perfil:", e);
+      alert("Erro ao carregar perfil. Tente novamente.");
+      location.href = INDEX_URL;
+    }
   });
 }
-
-// ADICIONE ISSO NO FINAL do guard-1.js (antes do export protectPage)
-import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-
-// Dentro da função protectPage, APÓS "autorizado:"
-if (typeof onAuthorized === 'function') {
-  const db = getFirestore(app);
-  const perfilSnap = await getDoc(doc(db, 'perfis', email));
-  const perfil = perfilSnap.exists() ? perfilSnap.data() : null;
-  
-  if (!perfil || !perfil.ativo) {
-    alert(`Perfil inativo: ${email}. Acesse index para ativar.`);
-    await signOut(auth);
-    location.href = INDEXURL;
-    return;
-  }
-  
-  window.perfilGlobal = perfil; // nome, grupo, ativo
-  onAuthorized(user, auth, perfil);
-} else {
-  onAuthorized?.(user, auth);
-}
-
