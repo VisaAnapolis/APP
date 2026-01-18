@@ -845,28 +845,7 @@ window.addEventListener('scroll', () => {
   }
 }
         
-function aplicarRestricaoFiscal(perfil) {
-  if (!perfil) return;
-  const sel = document.getElementById('fiscal');
-  
-  if (perfil.grupo === 'Administrador' || perfil.grupo === 'Administrativo') {
-    sel.disabled = false;
-    return;
-  }
-  
-  // Fiscal só vê seu nome
-  const nomeTarget = perfil.nome.toUpperCase();
-  for (let i = 0; i < sel.options.length; i++) {
-    if (sel.options[i].text.toUpperCase().includes(nomeTarget)) {
-      sel.selectedIndex = i;
-      sel.disabled = true;
-      break;
-    }
-  }
-}
-
-
-        
+       
         function carregarArquivos() {
             let arquivosCarregados = 0;
             const totalArquivos = 3;
