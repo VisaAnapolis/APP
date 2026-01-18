@@ -773,6 +773,27 @@
             });
         }
 
+function aplicarRestricaoFiscal(perfil) {
+  if (!perfil) return;
+  const sel = document.getElementById('fiscal');
+  
+  if (perfil.grupo === 'Administrador' || perfil.grupo === 'Administrativo') {
+    sel.disabled = false;
+    return;
+  }
+  
+  // Fiscal só vê seu nome
+  const nomeTarget = perfil.nome.toUpperCase();
+  for (let i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].text.toUpperCase().includes(nomeTarget)) {
+      sel.selectedIndex = i;
+      sel.disabled = true;
+      break;
+    }
+  }
+}
+
+        
         function carregarArquivos() {
             const timestamp = new Date().getTime();
             console.log(`🔄 Carregando arquivos com cache-busting: v=${timestamp}`);
@@ -1168,24 +1189,24 @@
 
     </script>
 
-    <script type="module">
-        import { protectPage } from "./guard.js";
+   <script type="module">
+  const firebaseConfig = {
+    apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
+    authDomain: "visam-3a30b.firebaseapp.com",
+    projectId: "visam-3a30b",
+    messagingSenderId: "308899251430",
+    appId: "1:308899251430:web:0053cdbd0bed7f0de76727"
+  };
+  
+  import { protectPage } from './js/guard.js';
+  
+  protectPage(firebaseConfig, (user, auth, perfil) => {
+    console.log('Perfil carregado:', perfil);
+    aplicarRestricaoFiscal(perfil);
+    verificarLogin();
+  });
+</script>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
-            authDomain: "visam-3a30b.firebaseapp.com",
-            projectId: "visam-3a30b",
-            messagingSenderId: "308899251430",
-            appId: "1:308899251430:web:0053cdbd0bed7f0de76727"
-        };
-
-        protectPage({
-            firebaseConfig,
-            onAuthorized: () => {
-                // opcional: liberar UI, etc.
-            }
-        });
-    </script>
 
 </body>
 </html>
