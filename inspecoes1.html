@@ -1296,10 +1296,23 @@ function aplicarRestricaoFiscal(perfil) {
   
   import { protectPage } from './js/guard1.js';
   
-  protectPage(firebaseConfig, (user, auth, perfil) => {
-    console.log('Perfil carregado:', perfil);
+ protectPage(firebaseConfig, (user, auth, perfil) => {
+    console.log('✅ Perfil carregado:', perfil);
+    
+    // Remove modal CSV se existir
+    const authOverlay = document.getElementById('authOverlay');
+    if (authOverlay) authOverlay.remove();
+    
+    // Mostra conteúdo
+    const mainContent = document.getElementById('mainContent');
+    if (mainContent) mainContent.style.display = 'block';
+    
+    // Aplica restrição de fiscal
     aplicarRestricaoFiscal(perfil);
-    verificarLogin(); // Mantém função existente
+    
+    // Carrega fiscais e dados
+    popularFiscais();
+    carregarArquivos();
   });
 </script>
 
