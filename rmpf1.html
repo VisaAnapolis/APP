@@ -774,22 +774,43 @@
         }
 
 function aplicarRestricaoFiscal(perfil) {
-  if (!perfil) return;
-  const sel = document.getElementById('fiscal');
+  if (!perfil) {
+    console.warn('Perfil não fornecido');
+    return;
+  }
   
+  const sel = document.getElementById('fiscal');
+  if (!sel) {
+    console.warn('Select #fiscal não encontrado');
+    return;
+  }
+  
+  console.log('Aplicando restrição para:', perfil.nome, perfil.grupo);
+  
+  // ADM e Administrativo veem todos
   if (perfil.grupo === 'Administrador' || perfil.grupo === 'Administrativo') {
     sel.disabled = false;
+    console.log('Usuário ADM/Administrativo - acesso total');
     return;
   }
   
   // Fiscal só vê seu nome
   const nomeTarget = perfil.nome.toUpperCase();
+  let encontrado = false;
+  
   for (let i = 0; i < sel.options.length; i++) {
-    if (sel.options[i].text.toUpperCase().includes(nomeTarget)) {
+    const optText = sel.options[i].text.toUpperCase();
+    if (optText.includes(nomeTarget)) {
       sel.selectedIndex = i;
       sel.disabled = true;
+      encontrado = true;
+      console.log('Fiscal filtrado:', sel.options[i].text);
       break;
     }
+  }
+  
+  if (!encontrado) {
+    console.warn('Nome do fiscal não encontrado na lista:', nomeTarget);
   }
 }
 
