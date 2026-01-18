@@ -572,6 +572,18 @@ header h2 {
 
   </div>
 
+<!-- Botão Configurar Perfil (ADM só) -->
+{{if(window.perfilGlobal && window.perfilGlobal.grupo === "Administrador")}}
+<div class="card grid-span-2">
+  <h3>Gerenciar Perfis <small>(ADM)</small></h3>
+  <button class="btn btnPrimary" onclick="configurarPerfil()" style="width:100%;margin-top:8px;">
+    👤 Configurar/Editar Perfil
+  </button>
+  <p class="small muted" style="margin-top:12px;">
+    Ativar usuários, definir grupo (Fiscal/ADM), nome exato para filtro.
+  </p>
+</div>
+{{/if}}
 
   
   
@@ -615,8 +627,11 @@ header h2 {
     </div>
   
 
+
+   
   
 <script type="module">
+import { setDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getAuth,
@@ -1171,6 +1186,28 @@ document.addEventListener('DOMContentLoaded', function () {
   verificarSimetria();
   window.addEventListener('resize', verificarSimetria);
 })();
+ 
+</script>    
+
+<script>    
+ async function configurarPerfil() {
+  const email = prompt("E-mail do Google para configurar:");
+  if (!email) return;
+  
+  const nome = prompt("Nome completo (exato da lista fiscal):");
+  const grupo = prompt("Grupo (Fiscal/Administrador/Administrativo):", "Fiscal");
+  
+  if (!nome || !grupo) return alert("Nome e grupo obrigatórios.");
+  
+  try {
+    await setDoc(doc(db, 'perfis', email), {
+      nome, grupo, ativo: true, criadoEm: new Date()
+    });
+    alert(`Perfil salvo: ${nome} (${grupo})`);
+  } catch (e) {
+    alert("Erro: " + e.message);
+  }
+}   
 </script>    
     
 </body>
