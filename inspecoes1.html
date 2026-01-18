@@ -804,6 +804,21 @@ window.addEventListener('scroll', () => {
             });
         }
 
+function aplicarRestricaoFiscal(perfil) {
+  const sel = document.getElementById('fiscal');
+  if (!perfil || perfil.grupo !== 'Fiscal') return sel.disabled = false;
+  
+  const nomeTarget = perfil.nome.toUpperCase();
+  for (let i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].text.toUpperCase().includes(nomeTarget)) {
+      sel.selectedIndex = i;
+      sel.disabled = true;
+      break;
+    }
+  }
+}
+
+        
         function carregarArquivos() {
             let arquivosCarregados = 0;
             const totalArquivos = 3;
@@ -826,6 +841,8 @@ window.addEventListener('scroll', () => {
                 }
             });
 
+
+            
             // Carregar Regulados
             Papa.parse(`data/regulados.csv?v=${timestamp}`, {
                 download: true,
@@ -1272,12 +1289,12 @@ window.addEventListener('scroll', () => {
     appId: "1:308899251430:web:0053cdbd0bed7f0de76727"
   };
 
-  protectPage({
-    firebaseConfig,
-    onAuthorized: () => {
-      // opcional: liberar UI, etc.
-    }
-  });
+ protectPage(firebaseConfig, (user, auth, perfil) => {
+  aplicarRestricaoFiscal(perfil);  // ← SÓ ISSO
+  popularFiscais();
+  carregarArquivos();
+});
+
 </script>
 
     
