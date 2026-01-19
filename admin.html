@@ -764,10 +764,11 @@
                 currentUserProfile = { ...perfil, uid: user.uid, email: user.email };
 
                 if (perfil.grupo !== "Administrador") {
-                    showError("Acesso negado. Apenas administradores podem acessar esta página.");
-                    await signOut(auth);
-                    return;
-                }
+    alert('🚫 Acesso Negado\n\nApenas administradores podem acessar o Painel de Gerenciamento.\n\nVocê será redirecionado para a página inicial.');
+    window.location.href = 'index.html';  // ✅ Volta pro index SEM deslogar
+    return;
+}
+
 
                 document.getElementById('userInfo').innerHTML = `
                     <span class="user-name">${perfil.nome}</span><span class="user-email">${user.email}</span>
