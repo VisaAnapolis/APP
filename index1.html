@@ -1136,8 +1136,7 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
       }
     }
     
-    // ========== 1️⃣ PROTOCOLO (tramitacao.csv) ==========
-// ========== 1️⃣ PROTOCOLO COM DEBUG ==========
+// ========== 1️⃣ PROTOCOLO - ORDENAÇÃO CORRIGIDA ==========
 function processarProtocolo() {
   return new Promise((resolve) => {
     Papa.parse('data/tramitacao.csv?' + timestamp, {
@@ -1147,22 +1146,7 @@ function processarProtocolo() {
       skipEmptyLines: true,
       complete: function(results) {
         const dados = results.data;
-        console.log(`\n📄 TRAMITAÇÃO: ${dados.length} registros`);
-        
-        // ⬇️ MOSTRA CAMPOS E AMOSTRA ⬇️
-        if (dados.length > 0) {
-          console.log('🔑 CAMPOS:', Object.keys(dados[0]));
-          console.log('📋 Amostra (3 primeiras tramitações):');
-          dados.slice(0, 3).forEach((row, i) => {
-            console.log(`  ${i+1}:`, {
-              PROTOCOLO: row.PROTOCOLO,
-              DATA: row.DATA,
-              HORA: row.HORA,
-              DESTINO: row.DESTINO,
-              ORIGEM: row.ORIGEM
-            });
-          });
-        }
+        console.log(`📄 Tramitação: ${dados.length} registros`);
         
         const porProtocolo = {};
         
@@ -1176,39 +1160,39 @@ function processarProtocolo() {
           porProtocolo[numProtocolo].push(row);
         });
         
-        console.log(`📊 Total de protocolos únicos: ${Object.keys(porProtocolo).length}`);
-        
         let vencidas = 0;
         let aVencer = 0;
-        let protocolosEncontrados = [];
         
         Object.keys(porProtocolo).forEach(numProto => {
           const registros = porProtocolo[numProto];
           
-          // Ordena por DATA/HORA (mais recente primeiro)
+          // ⬇️ ORDENAÇÃO CORRIGIDA: Converte para Date ⬇️
           registros.sort((a, b) => {
-            const dataA = a.DATA || '';
-            const dataB = b.DATA || '';
-            if (dataA !== dataB) return dataA > dataB ? -1 : 1;
+            const dataA = parseData(a.DATA || '');
+            const dataB = parseData(b.DATA || '');
+            
+            // Se não conseguiu parsear, coloca no final
+            if (!dataA && !dataB) return 0;
+            if (!dataA) return 1;
+            if (!dataB) return -1;
+            
+            // Compara as datas (decrescente = mais recente primeiro)
+            if (dataA.getTime() !== dataB.getTime()) {
+              return dataB.getTime() - dataA.getTime();
+            }
+            
+            // Se datas iguais, compara hora
             const horaA = a.HORA || '000000';
             const horaB = b.HORA || '000000';
             return horaB > horaA ? 1 : -1;
           });
           
+          // Pega o primeiro = mais recente
           const maisRecente = registros[0];
           const destino = (maisRecente.DESTINO || '').trim().toUpperCase();
-          const destinoOriginal = maisRecente.DESTINO || '';
           
-          // ⬇️ DEBUG: Log de TODOS que batem com o fiscal ⬇️
+          // Se última tramitação é para o fiscal = pendente
           if (destino === nomeFiscalUpper) {
-            protocolosEncontrados.push({
-              numero: numProto,
-              destino: destinoOriginal,
-              data: maisRecente.DATA,
-              hora: maisRecente.HORA,
-              totalTramitacoes: registros.length
-            });
-            
             const dataTramitacao = parseData(maisRecente.DATA || '');
             if (dataTramitacao) {
               const prazo = calcularPrazoUteis(dataTramitacao, 15);
@@ -1220,32 +1204,7 @@ function processarProtocolo() {
           }
         });
         
-        console.log(`\n✅ Protocolos com DESTINO = "${nomeFiscal}": ${protocolosEncontrados.length}`);
-        console.log(`   - Vencidas: ${vencidas}`);
-        console.log(`   - A vencer: ${aVencer}`);
-        
-        // ⬇️ MOSTRA OS 10 PRIMEIROS PROTOCOLOS ENCONTRADOS ⬇️
-        if (protocolosEncontrados.length > 0) {
-          console.log('\n📋 Primeiros 10 protocolos encontrados:');
-          protocolosEncontrados.slice(0, 10).forEach((p, i) => {
-            console.log(`  ${i+1}. Protocolo: ${p.numero}`);
-            console.log(`     Destino: "${p.destino}"`);
-            console.log(`     Data: ${p.data} ${p.hora}`);
-            console.log(`     Total tramitações: ${p.totalTramitacoes}`);
-          });
-        }
-        
-        // ⬇️ NORMALIZAÇÃO: Compara os nomes ⬇️
-        console.log('\n🔍 COMPARAÇÃO DE NOMES:');
-        console.log(`   Procurando: "${nomeFiscalUpper}"`);
-        console.log(`   Comprimento: ${nomeFiscalUpper.length} caracteres`);
-        if (protocolosEncontrados.length > 0) {
-          const exemplo = protocolosEncontrados[0].destino.toUpperCase();
-          console.log(`   Encontrado: "${exemplo}"`);
-          console.log(`   Comprimento: ${exemplo.length} caracteres`);
-          console.log(`   São iguais? ${exemplo === nomeFiscalUpper}`);
-        }
-        
+        console.log(`✅ Protocolos: ${vencidas} vencidas, ${aVencer} a vencer`);
         resolve({ vencidas, aVencer, total: vencidas + aVencer });
       },
       error: function(err) {
@@ -1256,8 +1215,7 @@ function processarProtocolo() {
   });
 }
     
-    // ========== 2️⃣ REQUERIMENTO COM DEBUG COMPLETO ==========
-// ========== 2️⃣ REQUERIMENTO - CORRIGIDO ==========
+  // ========== 2️⃣ REQUERIMENTO - CORRIGIDO ==========
 function processarRequerimento() {
   return new Promise((resolve) => {
     Papa.parse('data/requerimento.csv?' + timestamp, {
