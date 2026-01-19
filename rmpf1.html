@@ -616,30 +616,47 @@
 
         window.addEventListener('load', prepararLoginUI);
 
-        function aplicarRestricaoFiscal() {
-            const sel = document.getElementById('fiscal');
-            if (!sel || !usuarioLogado) return;
-
-            if (usuarioLogado.grupo === 'ADM') {
-                sel.disabled = false;
-                return;
-            }
-
-            if (usuarioLogado.grupo === 'FIS') {
-                const alvo = usuarioLogado.nome;
-                let achou = false;
-                for (let i = 0; i < sel.options.length; i++) {
-                    const opt = limparAcentos(sel.options[i].text);
-                    if (opt === alvo) {
-                        sel.selectedIndex = i;
-                        achou = true;
-                        break;
-                    }
-                }
-                sel.disabled = true;
-                if (!achou) alert('⛔ Seu usuário não foi encontrado na lista de fiscais.');
-            }
-        }
+function aplicarRestricaoFiscal(perfil) {
+  const sel = document.getElementById('fiscal');
+  if (!sel || !perfil) {
+    console.warn('⚠️ Select ou perfil inexistente');
+    return;
+  }
+  
+  console.log('🔍 Total de opções no select:', sel.options.length);
+  
+  // ADM tem acesso total
+  if (perfil.grupo === 'Administrador') {
+    sel.disabled = false;
+    console.log('✅ Acesso total:', perfil.grupo);
+    return;
+  }
+  
+  // FISCAL: deve encontrar seu nome na lista
+  const nomeFirestore = perfil.nome.toUpperCase().trim();
+  console.log('🔍 Procurando por:', nomeFirestore);
+  
+  for (let i = 0; i < sel.options.length; i++) {
+    const nomeOpcao = sel.options[i].text.toUpperCase().trim();
+    console.log(`  [${i}] Comparando: "${nomeOpcao}"`);
+    
+    if (nomeOpcao.includes(nomeFirestore) || nomeFirestore.includes(nomeOpcao)) {
+      sel.selectedIndex = i;
+      sel.disabled = true;
+      console.log('✅ Fiscal filtrado:', sel.options[i].text);
+      return;
+    }
+  }
+  
+  // ❌ NOME NÃO ENCONTRADO = BLOQUEAR ACESSO
+  console.error('❌ ACESSO NEGADO: Nome não encontrado na lista:', nomeFirestore);
+  alert(`⛔ ACESSO NEGADO\n\nSeu nome não consta na lista de fiscais desta página.\n\nNome do perfil: ${perfil.nome}\nGrupo: ${perfil.grupo}\n\nContate o administrador.`);
+  
+  // Redireciona para index
+  setTimeout(() => {
+    window.location.href = 'index1.html';
+  }, 1000);
+}
 
         async function verificarLogin() {
             try {
