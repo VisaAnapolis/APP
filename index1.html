@@ -994,7 +994,7 @@ async function carregarEstatisticasFiscal(nomeFiscal) {
     // Parseia CSV com PapaParse
     Papa.parse(csvText, {
       header: true,
-      delimiter: ',',
+      delimiter: ';',
       skipEmptyLines: true,
       complete: function(results) {
         const inspecoes = results.data;
