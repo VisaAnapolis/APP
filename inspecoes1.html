@@ -805,8 +805,8 @@ window.addEventListener('scroll', () => {
   
   console.log('Aplicando restrição para:', perfil.nome, perfil.grupo);
   
-  // ADM e Administrativo veem todos
-  if (perfil.grupo === 'Administrador' || perfil.grupo === 'Administrativo') {
+  // ADM  veem todos
+  if (perfil.grupo === 'Administrador') {
     sel.disabled = false;
     console.log('Usuário ADM/Administrativo - acesso total');
     return;
