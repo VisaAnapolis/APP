@@ -4,33 +4,6 @@ const INDEX_URL = "index1.html";
 const SESSION_MAX_MIN = 8 * 60;
 const IDLE_MAX_MIN = 20;
 
-const AUTHORIZED_EMAILS = new Set([
-  "ps.visa@anapolis.go.gov.br", "jotadaguas@gmail.com",
-  "geraldoedsonrosa@gmail.com", "patycdmes@gmail.com",
-  "ariannefvieira@hotmail.com", "marinaperillo@hotmail.com",
-  "visa@anapolis.go.gov.br", "mariaedwiges@anapolis.go.gov.br",
-  "tathnut@hotmail.com", "simonegrossi@anapolis.go.gov.br",
-  "kamillarolim@gmail.com", "lulucieneepais@gmail.com",
-  "adrianepereira@anapolis.go.gov.br", "claudio@anapolis.go.gov.br",
-  "silviamarques@anapolis.go.gov.br", "mhg.rodovalho@gmail.com",
-  "medwiges@gmail.com", "lindaenila@gmail.com",
-  "wanessab412@gmail.com", "juliocteles@anapolis.go.gov.br",
-  "fabiolappmarques@gmail.com", "lidianesimoes@anapolis.go.gov.br",
-  "educacao.esportes@anapolis.go.gov.br", "crbferreira81@gmail.com",
-  "profajulianakenia@gmail.com", "dani.visaanapolis@gmail.com",
-  "medicamentos@anapolis.go.gov.br", "cesio@anapolis.go.gov.br",
-  "gubio@anapolis.go.gov.br", "marciorodovalho@anapolis.go.gov.br",
-  "edsonarantes@anapolis.go.gov.br", "981217644pedro@gmail.com",
-  "julianafviturino@gmail.com", "thaysasouza97@gmail.com",
-  "farm.castro78@gmail.com", "viniciuscassiano@anapolis.go.gov.br",
-  "thiagogomesgobo@gmail.com", "liviabr.visa@gmail.com",
-  "wanessa05@gmail.com", "santosrat@gmail.com",
-  "vivianemiyada@gmail.com", "angelavet2@gmail.com",
-  "diasbrito1515@gmail.com", "ademargatu86@gmail.com",
-  "cidalinacoelho@anapolis.go.gov.br", "lauraeleuza@gmail.com",
-  "portaria344@anapolis.go.gov.br", "mens.agitat.molem.cns@gmail.com"
-]);
-
 function normEmail(s){ return String(s || "").toLowerCase().trim(); }
 function nowMs(){ return Date.now(); }
 function minutesToMs(m){ return m * 60 * 1000; }
