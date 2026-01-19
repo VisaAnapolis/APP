@@ -143,6 +143,12 @@ export async function protectPage(firebaseConfig, onAuthorized){
         location.href = INDEX_URL;
         return;
       }
+// Bloqueia Administrativo de acessar INSPECOES/RMPF
+if (perfil.grupo === 'Administrativo') {
+  alert(`Acesso negado. Esta página é restrita a Fiscais e Administradores.\n\nGrupo: ${perfil.grupo}`);
+  location.href = INDEX_URL;
+  return;
+}
 
       window.perfilGlobal = perfil;
       setSessionMarks();
