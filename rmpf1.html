@@ -469,19 +469,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 <body>
-    <!-- Modal de Autenticação -->
-    <div class="auth-overlay" id="authOverlay">
-        <div class="auth-modal">
-            <h2>🔒 Acesso Restrito</h2>
-            <p>Selecione seu nome e digite a senha</p>
-            <select id="usuarioSelect"></select>
-            <input type="password" id="senhaInput" placeholder="Senha" autocomplete="current-password" onkeypress="if(event.key==='Enter') verificarLogin()">
-            <button onclick="verificarLogin()">Entrar</button>
-            <div class="auth-error" id="authError">❌ Usuário ou senha inválidos.</div>
-            <div class="auth-error" id="authErrorPerm" style="display:none;">⛔ Não autorizado para este relatório.</div>
-        </div>
-    </div>
-
+    
     <!-- Conteúdo Principal -->
     <div class="main-content" id="mainContent">
         <header>
