@@ -1,7 +1,7 @@
 // guard.js — proteção de páginas internas (cliente)
 
 // Ajustes rápidos:
-const INDEX_URL = "index.html";
+const INDEX_URL = "index1.html";
 const SESSION_MAX_MIN = 8 * 60; // 8 horas
 const IDLE_MAX_MIN = 20; // 20 minutos
 
