@@ -123,59 +123,16 @@
             color: #5b6b83;
         }
 
-        /* ===== MODAL DE AUTENTICAÇÃO ===== */
-        .auth-overlay {
+        /* ===== TELA DE LOADING ===== */
+        #loading-screen {
             position: fixed;
             inset: 0;
             background: var(--bg);
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            z-index: 10000;
-        }
-
-        .auth-modal {
-            background: #1a3a6b;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: var(--shadow);
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-        }
-
-        .auth-modal h2 {
-            color: #ffffff;
-            margin-bottom: 10px;
-            font-size: 1.8em;
-        }
-
-        .auth-modal p {
-            color: rgba(255,255,255,0.8);
-            margin-bottom: 25px;
-        }
-
-        .auth-modal button {
-            width: 100%;
-            padding: 15px;
-            background: #34C759;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .auth-modal button:hover {
-            filter: brightness(1.1);
-        }
-
-        .auth-error {
-            color: #ff6b6b;
-            font-size: 0.9em;
-            margin-top: 10px;
-            display: none;
+            justify-content: center;
+            z-index: 9999;
         }
 
         .main-content {
@@ -526,14 +483,10 @@
 </head>
 <body>
 
-    <!-- Modal de Autenticação -->
-    <div class="auth-overlay" id="authOverlay">
-        <div class="auth-modal">
-            <h2>🔐 Acesso Restrito</h2>
-            <p>Apenas administradores podem acessar o painel de gerenciamento.</p>
-            <button onclick="loginGoogle()">Entrar com Google</button>
-            <div class="auth-error" id="authError"></div>
-        </div>
+    <!-- Tela de Loading Inicial -->
+    <div id="loading-screen">
+        <div class="spinner"></div>
+        <div style="color: var(--brand1); font-weight: 600; margin-top: 15px;">Verificando permissões...</div>
     </div>
 
     <!-- Conteúdo Principal -->
@@ -686,20 +639,14 @@
         let currentUserProfile = null;
 
         // ===== CONTROLE DE EXIBIÇÃO =====
-        function showAuth() {
-            document.getElementById('authOverlay').style.display = 'flex';
-            document.getElementById('mainContent').style.display = 'none';
-        }
-
         function showContent() {
-            document.getElementById('authOverlay').style.display = 'none';
+            document.getElementById('loading-screen').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
         }
 
-        function showError(msg) {
-            const errDiv = document.getElementById('authError');
-            errDiv.textContent = msg;
-            errDiv.style.display = 'block';
+        function redirectToIndex(message) {
+            alert(message);
+            window.location.href = 'index.html';
         }
 
         // ===== FORMATAR DATA/HORA =====
@@ -722,16 +669,6 @@
             return `<span class="access-time">${horaStr}</span><span class="access-date">${dataStr}</span>`;
         }
 
-        // ===== LOGIN COM GOOGLE =====
-        window.loginGoogle = async function() {
-            try {
-                const result = await signInWithPopup(auth, provider);
-            } catch (error) {
-                console.error("Erro no login:", error);
-                showError("Erro ao fazer login. Tente novamente.");
-            }
-        };
-
         // ===== LOGOUT =====
         window.logout = async function() {
             try {
@@ -742,34 +679,35 @@
             }
         };
 
-        // ===== VERIFICAÇÃO DE AUTENTICAÇÃO =====
+        // ===== VERIFICAÇÃO DE AUTENTICAÇÃO (MELHORADA) =====
         onAuthStateChanged(auth, async (user) => {
+            // 🔒 PROTEÇÃO 1: Não está logado
             if (!user) {
-                showAuth();
+                redirectToIndex('⚠️ Você precisa estar logado para acessar esta página.');
                 return;
             }
 
             const email = user.email.toLowerCase().trim();
 
             try {
+                // 🔒 PROTEÇÃO 2: Busca perfil no Firestore
                 const userDoc = await getDoc(doc(db, "usuarios", email));
                 
                 if (!userDoc.exists()) {
-                    showError("Usuário não cadastrado no sistema.");
-                    showAuth();
+                    redirectToIndex('⚠️ Usuário não cadastrado no sistema.\n\nVocê será redirecionado para a página inicial.');
                     return;
                 }
 
                 const perfil = userDoc.data();
                 currentUserProfile = { ...perfil, uid: user.uid, email: user.email };
 
+                // 🔒 PROTEÇÃO 3: Verifica se é Administrador (SEM DESLOGAR)
                 if (perfil.grupo !== "Administrador") {
-    alert('🚫 Acesso Negado\n\nApenas administradores podem acessar o Painel de Gerenciamento.\n\nVocê será redirecionado para a página inicial.');
-    window.location.href = 'index.html';  // ✅ Volta pro index SEM deslogar
-    return;
-}
+                    redirectToIndex('🚫 Acesso Negado\n\nApenas administradores podem acessar o Painel de Gerenciamento.\n\nVocê será redirecionado para a página inicial.');
+                    return;
+                }
 
-
+                // ✅ LIBERADO - É administrador
                 document.getElementById('userInfo').innerHTML = `
                     <span class="user-name">${perfil.nome}</span><span class="user-email">${user.email}</span>
                 `;
@@ -778,9 +716,8 @@
                 carregarUsuarios();
 
             } catch (error) {
-                console.error("Erro ao buscar perfil:", error);
-                showError("Erro ao verificar permissões.");
-                showAuth();
+                console.error("Erro ao verificar permissões:", error);
+                redirectToIndex('⚠️ Erro ao verificar permissões.\n\nVocê será redirecionado para a página inicial.');
             }
         });
 
