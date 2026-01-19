@@ -910,7 +910,7 @@ onAuthStateChanged(auth, async (user) => {
     if (userInfo) {
       // Busca nome do perfil se existir
       try {
-        const perfilSnap = await getDoc(doc(db, 'perfis', user.email));
+        const perfilSnap = await getDoc(doc(db, 'usuarios', user.email));
         const perfil = perfilSnap.exists() ? perfilSnap.data() : null;
         
         if (perfil) {
