@@ -536,6 +536,10 @@
             <h2>Relatório de Produção Fiscal</h2>
         </header>
 
+<!-- User Info Bar -->
+<div id="userInfo" class="user-info-bar"></div>
+
+
         <div class="container">
             <div class="card">
                 <div class="filter-row">
@@ -1289,6 +1293,13 @@ function aplicarRestricaoFiscal(perfil) {
       console.log('✅ Perfil carregado:', perfil);
       window.perfilGlobal = perfil;
     }
+
+// Mostra usuário no header
+      const userInfo = document.getElementById('userInfo');
+      if (userInfo) {
+        userInfo.innerHTML = `<span class="user-name">${perfil.nome}</span><span class="user-email">${user.email}</span>`;
+      }
+      
     
     // 1. Remove modal CSV
     const authOverlay = document.getElementById('authOverlay');
