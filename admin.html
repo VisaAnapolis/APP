@@ -184,7 +184,7 @@
 
         /* ===== CONTAINER ===== */
         .container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 22px auto 30px;
             padding: 0 16px;
         }
@@ -207,10 +207,16 @@
         }
 
         /* ===== TABELA DE USUÁRIOS ===== */
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
         .users-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
+            min-width: 900px;
         }
 
         .users-table thead th {
@@ -219,11 +225,13 @@
             font-weight: 600;
             padding: 12px 8px;
             text-align: left;
+            white-space: nowrap;
         }
 
         .users-table tbody td {
             padding: 10px 8px;
             border-bottom: 1px solid var(--line);
+            vertical-align: middle;
         }
 
         .users-table tbody tr:hover {
@@ -243,6 +251,7 @@
             border-radius: 12px;
             font-size: 0.75rem;
             font-weight: 600;
+            white-space: nowrap;
         }
 
         .badge.fiscal {
@@ -270,6 +279,20 @@
             color: #6c757d;
         }
 
+        .access-time {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .access-date {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
         .btn {
             appearance: none;
             border: 1px solid var(--line);
@@ -281,6 +304,7 @@
             font-weight: 600;
             font-size: 0.85rem;
             transition: .15s;
+            white-space: nowrap;
         }
 
         .btn:hover {
@@ -489,6 +513,14 @@
             .users-table tbody td {
                 padding: 8px 4px;
             }
+
+            .access-time {
+                font-size: 0.8rem;
+            }
+
+            .access-date {
+                font-size: 0.7rem;
+            }
         }
     </style>
 </head>
@@ -561,21 +593,23 @@
                 </div>
 
                 <div id="usersTableContainer" style="display: none;">
-                    <table class="users-table">
-                        <thead>
-                            <tr>
-                                <th>Foto</th>
-                                <th>Nome</th>
-                                <th>E-mail</th>
-                                <th>Perfil/Grupo</th>
-                                <th>Status</th>
-                                <th>Cadastrado em</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="usersTableBody">
-                        </tbody>
-                    </table>
+                    <div class="table-wrapper">
+                        <table class="users-table">
+                            <thead>
+                                <tr>
+                                    <th>Foto</th>
+                                    <th>Nome</th>
+                                    <th>E-mail</th>
+                                    <th>Perfil/Grupo</th>
+                                    <th>Status</th>
+                                    <th>Último Acesso</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -668,6 +702,26 @@
             errDiv.style.display = 'block';
         }
 
+        // ===== FORMATAR DATA/HORA =====
+        function formatarDataHora(timestamp) {
+            if (!timestamp) return '<span style="color: var(--muted);">Nunca acessou</span>';
+            
+            const date = timestamp.seconds ? new Date(timestamp.seconds * 1000) : new Date(timestamp);
+            
+            const dataStr = date.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+            
+            const horaStr = date.toLocaleTimeString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            return `<span class="access-time">${horaStr}</span><span class="access-date">${dataStr}</span>`;
+        }
+
         // ===== LOGIN COM GOOGLE =====
         window.loginGoogle = async function() {
             try {
@@ -742,8 +796,13 @@
                 const snapshot = await getDocs(q);
                 
                 const usuarios = [];
-                snapshot.forEach(doc => {
-                    usuarios.push({ id: doc.id, ...doc.data() });
+                snapshot.forEach(docSnapshot => {
+                    const data = docSnapshot.data();
+                    usuarios.push({ 
+                        id: docSnapshot.id,
+                        email: data.email || docSnapshot.id,
+                        ...data 
+                    });
                 });
 
                 renderizarUsuarios(usuarios);
@@ -786,19 +845,17 @@
                     photoHTML = `<div style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">${emoji}</div>`;
                 }
 
-                const dataCadastro = user.criadoEm ? 
-                    new Date(user.criadoEm.seconds * 1000).toLocaleDateString('pt-BR') : 
-                    'N/A';
+                const ultimoAcesso = formatarDataHora(user.ultimoAcesso);
 
                 tr.innerHTML = `
                     <td>${photoHTML}</td>
                     <td><strong>${user.nome || 'N/A'}</strong></td>
-                    <td>${user.email || user.id}</td>
+                    <td>${user.email}</td>
                     <td>${grupoBadge}</td>
                     <td>${statusBadge}</td>
-                    <td style="font-size: 0.85rem; color: var(--muted);">${dataCadastro}</td>
+                    <td>${ultimoAcesso}</td>
                     <td>
-                        <button class="btn btn-primary" onclick="editarUsuario('${user.id}')">Editar</button>
+                        <button class="btn btn-primary" onclick="editarUsuario('${user.id}', '${user.email}')">Editar</button>
                     </td>
                 `;
                 
@@ -826,7 +883,6 @@
             resultsDiv.innerHTML = '';
 
             try {
-                // 1️⃣ Buscar e extrair AUTHORIZED_EMAILS do index.html
                 const indexResponse = await fetch('index.html');
                 const indexHTML = await indexResponse.text();
                 
@@ -848,7 +904,6 @@
 
                 console.log(`📋 Encontrados ${indexEmails.size} emails no index.html`);
 
-                // 2️⃣ Buscar usuários do Firestore
                 const firestoreSnapshot = await getDocs(collection(db, "usuarios"));
                 const firestoreEmails = new Set();
                 const firestoreUsers = {};
@@ -868,7 +923,6 @@
 
                 console.log(`📊 Encontrados ${firestoreEmails.size} emails no Firestore`);
 
-                // 3️⃣ Análise de Inconsistências
                 const naFirestoreMasNaoNoIndex = [...firestoreEmails].filter(
                     email => !indexEmails.has(email)
                 );
@@ -881,7 +935,6 @@
                     email => indexEmails.has(email)
                 );
 
-                // 4️⃣ Montar Relatório
                 let html = '<div class="audit-section">';
 
                 html += `
@@ -971,7 +1024,7 @@
         };
 
         // ===== EDITAR USUÁRIO =====
-        window.editarUsuario = async function(userId) {
+        window.editarUsuario = async function(userId, userEmail) {
             try {
                 const userDoc = await getDoc(doc(db, "usuarios", userId));
                 
@@ -982,13 +1035,15 @@
 
                 const userData = userDoc.data();
 
-                document.getElementById('editEmail').value = userData.email || userId;
+                document.getElementById('editEmail').value = userEmail;
                 document.getElementById('editNome').value = userData.nome || '';
                 document.getElementById('editGrupo').value = userData.grupo || 'Administrativo';
                 document.getElementById('editStatus').value = userData.ativo === true ? 'Ativo' : 'Inativo';
                 document.getElementById('editObs').value = userData.observacoes || '';
 
                 document.getElementById('editModal').dataset.userId = userId;
+                document.getElementById('editModal').dataset.userEmail = userEmail;
+
                 document.getElementById('editModal').style.display = 'flex';
 
             } catch (error) {
@@ -1000,6 +1055,7 @@
         // ===== SALVAR ALTERAÇÕES =====
         window.salvarUsuario = async function() {
             const userId = document.getElementById('editModal').dataset.userId;
+            const userEmail = document.getElementById('editModal').dataset.userEmail;
             const nome = document.getElementById('editNome').value.trim();
             const grupo = document.getElementById('editGrupo').value;
             const statusSelect = document.getElementById('editStatus').value;
@@ -1012,7 +1068,6 @@
             }
 
             try {
-                // 🔒 VALIDAÇÃO: Verificar se email está no index.html
                 const indexResponse = await fetch('index.html');
                 const indexHTML = await indexResponse.text();
                 
@@ -1032,12 +1087,8 @@
                     emailsAutorizados.add(emailMatch[1].toLowerCase().trim());
                 }
 
-                const userDoc = await getDoc(doc(db, "usuarios", userId));
-                const emailUsuario = userDoc.exists() ? 
-                    (userDoc.data().email || userId).toLowerCase().trim() : 
-                    userId.toLowerCase().trim();
+                const emailUsuario = userEmail.toLowerCase().trim();
 
-                // 🚨 VALIDA se o email está autorizado no index.html
                 if (!emailsAutorizados.has(emailUsuario)) {
                     alert(
                         `🚫 AÇÃO BLOQUEADA!\n\n` +
@@ -1049,7 +1100,6 @@
                     return;
                 }
 
-                // ✅ Email autorizado - prossegue com salvamento
                 await updateDoc(doc(db, "usuarios", userId), {
                     nome,
                     grupo,
