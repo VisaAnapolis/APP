@@ -104,6 +104,12 @@ function startExpiryTimer(signOutFn){
 
 // Função principal: chama dentro de cada página interna
 export async function protectPage(firebaseConfig, onAuthorized){
+  // DEBUG
+  console.log('🔍 firebaseConfig recebido:', firebaseConfig);
+  if (!firebaseConfig || !firebaseConfig.apiKey) {
+    console.error('❌ firebaseConfig inválido!');
+    return;
+  }
   const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
   const { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } =
     await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
