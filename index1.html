@@ -399,35 +399,38 @@ header h2 {
   }
 }
 
-/* Info do usuário no header */
-.user-info {
-  position: absolute;
-  left: 20px;
-  bottom: 8px;
+/* Info do usuário ABAIXO do header */
+.user-info-bar {
+  background: rgba(52, 199, 89, 0.08);
+  padding: 6px 20px;
   font-size: 0.7rem;
   color: #34C759;
-  font-weight: 400;
-  line-height: 1.3;
-  opacity: 0.95;
+  border-bottom: 1px solid rgba(52, 199, 89, 0.15);
+  text-align: left;
 }
 
-.user-info .user-name {
+.user-info-bar .user-name {
   font-weight: 600;
-  display: block;
+  display: inline;
+  margin-right: 10px;
 }
 
-.user-info .user-email {
-  font-weight: 300;
+.user-info-bar .user-name::after {
+  content: "•";
+  margin-left: 10px;
+  opacity: 0.5;
+}
+
+.user-info-bar .user-email {
+  font-weight: 400;
   opacity: 0.85;
-  display: block;
+  display: inline;
 }
 
-/* Responsivo: esconde em telas pequenas */
 @media (max-width: 768px) {
-  .user-info {
-    font-size: 0.6rem;
-    left: 12px;
-    bottom: 6px;
+  .user-info-bar {
+    font-size: 0.65rem;
+    padding: 5px 12px;
   }
 }
   
@@ -529,9 +532,10 @@ header h2 {
 <header>
   <h1>Vigilância Sanitária</h1>
   <h2>Diretoria de Vigilância em Saúde — Anápolis</h2>
-  <div id="userInfo" class="user-info"></div> 
 </header>
 
+<div id="userInfo" class="user-info-bar"></div>
+  
 <div class="container">
 
   <div class="grid">
@@ -863,17 +867,32 @@ window.logout = function(){
     showConteudo();
     
     // Verifica token em background
-    onAuthStateChanged(auth, (user) => {
-      if (user && isAuthorized(user)) {
-        authCache.save(user);
-      } else {
-        authCache.clear();
-        showLogin();
-      }
-    });
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    showLogin();
+    return;
+  }
+
+  if (isAuthorized(user)) {
+    authCache.save(user);
+    showConteudo();
+    
+    // Mostra usuário no header (SEM buscar Firestore)
+    const userInfo = document.getElementById('userInfo');
+    if (userInfo) {
+      userInfo.innerHTML = `
+        <span class="user-name">${user.displayName || 'Usuário'}</span>
+        <span class="user-email">${user.email}</span>
+      `;
+    }
     
     return;
   }
+
+  showLogin();
+  showUnauthorizedModal(user);
+  window.pendingLogout = true;
+});
 
   // 2. Sem cache válido - usa Firebase normalmente
   onAuthStateChanged(auth, (user) => {
