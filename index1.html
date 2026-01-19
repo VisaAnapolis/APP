@@ -1323,18 +1323,22 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
       processarOficio()
     ]);
     
- const [protocolos, requerimentos, denuncias, oficios] = resultados;
+ // ✅ CORRETO:
+const [protocolos, requerimentos, denuncias, oficios] = resultados;
 
+console.log(`🎯 TOTAL PENDENTES: Prot=${protocolos}, Req=${requerimentos}, Den=${denuncias}, Ofc=${oficios}`);
+
+// ⬇️ ATUALIZA APENAS OS CARDS 3, 4, 5, 6 (OS pendentes) ⬇️
 const statCards = document.querySelectorAll('.stat-card .stat-number');
-if (statCards.length >= 7) {  // ← Agora são 7 cards!
-  statCards[0].textContent = total2026;        // Inspeções 2026
-  statCards[1].textContent = totalMes;         // Este mês
-  statCards[2].textContent = totalSemana;      // Última semana
-  statCards[3].textContent = protocolos;       // Protocolos
-  statCards[4].textContent = requerimentos;    // Requerimentos
-  statCards[5].textContent = denuncias;        // Denúncias
-  statCards[6].textContent = oficios;          // Ofícios
-}   
+if (statCards.length >= 7) {
+  statCards[3].textContent = protocolos;       // Card 4: Protocolos
+  statCards[4].textContent = requerimentos;    // Card 5: Requerimentos
+  statCards[5].textContent = denuncias;        // Card 6: Denúncias
+  statCards[6].textContent = oficios;          // Card 7: Ofícios
+}
+
+console.log('✅ Cards de OS atualizados');
+
     
   } catch(e) {
     console.error('❌ Erro ao carregar OS pendentes:', e);
