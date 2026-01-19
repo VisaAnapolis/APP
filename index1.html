@@ -398,42 +398,7 @@ header h2 {
    margin-bottom: 28px !important;
   }
 }
-
-/* Info do usuário ABAIXO do header */
-.user-info-bar {
-  background: rgba(52, 199, 89, 0.08);
-  padding: 6px 20px;
-  font-size: 0.7rem;
-  color: #34C759;
-  border-bottom: 1px solid rgba(52, 199, 89, 0.15);
-  text-align: left;
-}
-
-.user-info-bar .user-name {
-  font-weight: 600;
-  display: inline;
-  margin-right: 10px;
-}
-
-.user-info-bar .user-name::after {
-  content: "•";
-  margin-left: 10px;
-  opacity: 0.5;
-}
-
-.user-info-bar .user-email {
-  font-weight: 400;
-  opacity: 0.85;
-  display: inline;
-}
-
-@media (max-width: 768px) {
-  .user-info-bar {
-    font-size: 0.65rem;
-    padding: 5px 12px;
-  }
-}
-  
+ 
 
 </style>
 
@@ -534,8 +499,6 @@ header h2 {
   <h2>Diretoria de Vigilância em Saúde — Anápolis</h2>
 </header>
 
-<div id="userInfo" class="user-info-bar"></div>
-  
 <div class="container">
 
   <div class="grid">
@@ -867,32 +830,17 @@ window.logout = function(){
     showConteudo();
     
     // Verifica token em background
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    showLogin();
-    return;
-  }
-
-  if (isAuthorized(user)) {
-    authCache.save(user);
-    showConteudo();
-    
-    // Mostra usuário no header (SEM buscar Firestore)
-    const userInfo = document.getElementById('userInfo');
-    if (userInfo) {
-      userInfo.innerHTML = `
-        <span class="user-name">${user.displayName || 'Usuário'}</span>
-        <span class="user-email">${user.email}</span>
-      `;
-    }
+    onAuthStateChanged(auth, (user) => {
+      if (user && isAuthorized(user)) {
+        authCache.save(user);
+      } else {
+        authCache.clear();
+        showLogin();
+      }
+    });
     
     return;
   }
-
-  showLogin();
-  showUnauthorizedModal(user);
-  window.pendingLogout = true;
-});
 
   // 2. Sem cache válido - usa Firebase normalmente
   onAuthStateChanged(auth, (user) => {
@@ -904,32 +852,6 @@ onAuthStateChanged(auth, async (user) => {
     if (isAuthorized(user)) {
       authCache.save(user); // Salva no cache
       showConteudo();
-   
-    // Mostra usuário no header
-    const userInfo = document.getElementById('userInfo');
-    if (userInfo) {
-      // Busca nome do perfil se existir
-      try {
-        const perfilSnap = await getDoc(doc(db, 'usuarios', user.email));
-        const perfil = perfilSnap.exists() ? perfilSnap.data() : null;
-        
-        if (perfil) {
-          userInfo.innerHTML = `
-            <span class="user-name">${perfil.nome}</span>
-            <span class="user-email">${user.email}</span>
-          `;
-        } else {
-          // Se não tem perfil, mostra só displayName e email
-          userInfo.innerHTML = `
-            <span class="user-name">${user.displayName || 'Usuário'}</span>
-            <span class="user-email">${user.email}</span>
-          `;
-        }
-      } catch(e) {
-        // Se der erro, mostra só email
-        userInfo.innerHTML = `<span class="user-email">${user.email}</span>`;
-      }
-    }
       return;
     }
 
