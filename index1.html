@@ -1063,7 +1063,7 @@ async function carregarEstatisticasFiscal(nomeFiscal) {
   }
 }
 
-// ========== FUNÇÃO: Carrega OS PENDENTES (4 tipos) ==========
+// ========== FUNÇÃO: Carrega OS PENDENTES (4 tipos) - CORRIGIDA ==========
 async function carregarOSPendentesFiscal(nomeFiscal) {
   try {
     const timestamp = new Date().getTime();
@@ -1085,7 +1085,7 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
             const porProtocolo = {};
             
             dados.forEach(row => {
-              const numProtocolo = (row.protocolo || row.Protocolo || '').trim();
+              const numProtocolo = (row.PROTOCOLO || '').trim(); // ✅ MAIÚSCULO!
               if (!numProtocolo) return;
               
               if (!porProtocolo[numProtocolo]) {
@@ -1100,31 +1100,27 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
             Object.keys(porProtocolo).forEach(numProto => {
               const registros = porProtocolo[numProto];
               
-              // Ordena por data (mais recente primeiro)
+              // Ordena por DATA e HORA (mais recente primeiro)
               registros.sort((a, b) => {
-                const dataA = parseData(a.data || a.Data || a.DATA || '');
-                const dataB = parseData(b.data || b.Data || b.DATA || '');
+                const dataA = parseData(a.DATA || ''); // ✅ MAIÚSCULO!
+                const dataB = parseData(b.DATA || ''); // ✅ MAIÚSCULO!
                 if (!dataA || !dataB) return 0;
-                return dataB - dataA; // Decrescente
+                if (dataA.getTime() !== dataB.getTime()) {
+                  return dataB - dataA; // Decrescente
+                }
+                // Se datas iguais, compara HORA
+                const horaA = a.HORA || '000000'; // ✅ MAIÚSCULO!
+                const horaB = b.HORA || '000000'; // ✅ MAIÚSCULO!
+                return horaB > horaA ? 1 : -1;
               });
               
               // Pega o mais recente
               const maisRecente = registros[0];
-              const destino = (maisRecente.destino || maisRecente.Destino || '').trim().toUpperCase();
+              const destino = (maisRecente.DESTINO || '').trim().toUpperCase(); // ✅ MAIÚSCULO!
               
               // Se o mais recente for do fiscal, conta como pendente
               if (destino === nomeFiscalUpper) {
-                // Calcula prazo: 15 dias úteis
-                const dataTramitacao = parseData(maisRecente.data || maisRecente.Data || '');
-                if (dataTramitacao) {
-                  const prazo = calcularPrazoUteis(dataTramitacao, 15);
-                  const hoje = new Date();
-                  
-                  // Se ainda não venceu ou está vencido (pendente)
-                  if (prazo >= hoje || prazo < hoje) {
-                    pendentesTramitacao++;
-                  }
-                }
+                pendentesTramitacao++;
               }
             });
             
@@ -1154,24 +1150,22 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
             let pendentesReq = 0;
             
             dados.forEach(row => {
-              // Campo do fiscal
-              const fiscal = (row.fiscal_encaminha || row.fiscalEncaminha || '').trim().toUpperCase();
+              // ✅ Campo CORRETO: FiscalEncaminha (E maiúsculo)
+              const fiscal = (row.FiscalEncaminha || '').trim().toUpperCase();
               
               if (fiscal !== nomeFiscalUpper) return;
               
-              // Verifica se está cancelado ou atendido
-              const atendimento = String(row.atendimento || '').toLowerCase();
-              const cancelamento = String(row.cancelamento || '').toLowerCase();
+              // ✅ Campos CORRETOS: Atendimento e Cancelado
+              const atendimento = String(row.Atendimento || '').toLowerCase();
+              const cancelamento = String(row.Cancelado || '').toLowerCase();
               
               if (atendimento === 'true' || atendimento === '1') return;
               if (cancelamento === 'true' || cancelamento === '1') return;
               
               // Verifica prazo
-              const prazo = parseData(row.prazo || row.Prazo || '');
+              const prazo = parseData(row.Prazo || '');
               if (!prazo) return;
               
-              const hoje = new Date();
-              // Se está dentro do prazo ou vencido (ainda pendente)
               pendentesReq++;
             });
             
@@ -1201,17 +1195,17 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
             let pendentesDen = 0;
             
             dados.forEach(row => {
-              // Campo do fiscal
-              const fiscal = (row.fiscalEncaminha || row.FiscalEncaminha || '').trim().toUpperCase();
+              // ✅ Campo CORRETO: FiscalEncaminha (E maiúsculo)
+              const fiscal = (row.FiscalEncaminha || '').trim().toUpperCase();
               
               if (fiscal !== nomeFiscalUpper) return;
               
-              // Verifica se está arquivada
-              const archive = String(row.archive || row.Archive || '').toLowerCase();
+              // ✅ Campo CORRETO: Archive
+              const archive = String(row.Archive || '').toLowerCase();
               if (archive === 'true' || archive === '1') return;
               
               // Verifica prazo
-              const prazo = parseData(row.prazo || row.Prazo || '');
+              const prazo = parseData(row.Prazo || '');
               if (!prazo) return;
               
               pendentesDen++;
@@ -1243,20 +1237,20 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
             let pendentesOfi = 0;
             
             dados.forEach(row => {
-              // Campo do fiscal
-              const fiscal = (row.fiscal_encaminha || row.fiscalEncaminha || '').trim().toUpperCase();
+              // ✅ Campo CORRETO: Fiscalencaminha (e minúsculo)
+              const fiscal = (row.Fiscalencaminha || '').trim().toUpperCase();
               
               if (fiscal !== nomeFiscalUpper) return;
               
-              // Verifica se está cancelado ou arquivado
-              const cancela = String(row.cancela || row.Cancela || '').toLowerCase();
-              const archive = String(row.archive || row.Archive || '').toLowerCase();
+              // ✅ Campos CORRETOS: Cancela e Archive
+              const cancela = String(row.Cancela || '').toLowerCase();
+              const archive = String(row.Archive || '').toLowerCase();
               
               if (cancela === 'true' || cancela === '1') return;
               if (archive === 'true' || archive === '1') return;
               
               // Verifica prazo
-              const prazo = parseData(row.prazo || row.Prazo || '');
+              const prazo = parseData(row.Prazo || '');
               if (!prazo) return;
               
               pendentesOfi++;
@@ -1298,23 +1292,6 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
       return null;
     }
     
-    // ========== FUNÇÃO AUXILIAR: Calcula dias úteis ==========
-    function calcularPrazoUteis(dataInicial, diasUteis) {
-      const data = new Date(dataInicial);
-      let diasAdicionados = 0;
-      
-      while (diasAdicionados < diasUteis) {
-        data.setDate(data.getDate() + 1);
-        const diaSemana = data.getDay();
-        // 0 = domingo, 6 = sábado
-        if (diaSemana !== 0 && diaSemana !== 6) {
-          diasAdicionados++;
-        }
-      }
-      
-      return data;
-    }
-    
     // ========== CARREGA TUDO EM PARALELO ==========
     const resultados = await Promise.all([
       processarProtocolo(),
@@ -1323,22 +1300,20 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
       processarOficio()
     ]);
     
- // ✅ CORRETO:
-const [protocolos, requerimentos, denuncias, oficios] = resultados;
-
-console.log(`🎯 TOTAL PENDENTES: Prot=${protocolos}, Req=${requerimentos}, Den=${denuncias}, Ofc=${oficios}`);
-
-// ⬇️ ATUALIZA APENAS OS CARDS 3, 4, 5, 6 (OS pendentes) ⬇️
-const statCards = document.querySelectorAll('.stat-card .stat-number');
-if (statCards.length >= 7) {
-  statCards[3].textContent = protocolos;       // Card 4: Protocolos
-  statCards[4].textContent = requerimentos;    // Card 5: Requerimentos
-  statCards[5].textContent = denuncias;        // Card 6: Denúncias
-  statCards[6].textContent = oficios;          // Card 7: Ofícios
-}
-
-console.log('✅ Cards de OS atualizados');
-
+    const [protocolos, requerimentos, denuncias, oficios] = resultados;
+    
+    console.log(`🎯 TOTAL PENDENTES: Prot=${protocolos}, Req=${requerimentos}, Den=${denuncias}, Ofc=${oficios}`);
+    
+    // ⬇️ ATUALIZA OS CARDS 3, 4, 5, 6 ⬇️
+    const statCards = document.querySelectorAll('.stat-card .stat-number');
+    if (statCards.length >= 7) {
+      statCards[3].textContent = protocolos;       // Card 4: Protocolos
+      statCards[4].textContent = requerimentos;    // Card 5: Requerimentos
+      statCards[5].textContent = denuncias;        // Card 6: Denúncias
+      statCards[6].textContent = oficios;          // Card 7: Ofícios
+    }
+    
+    console.log('✅ Cards de OS atualizados');
     
   } catch(e) {
     console.error('❌ Erro ao carregar OS pendentes:', e);
