@@ -885,6 +885,32 @@ window.logout = function(){
     if (isAuthorized(user)) {
       authCache.save(user); // Salva no cache
       showConteudo();
+   
+    // Mostra usuário no header
+    const userInfo = document.getElementById('userInfo');
+    if (userInfo) {
+      // Busca nome do perfil se existir
+      try {
+        const perfilSnap = await getDoc(doc(db, 'perfis', user.email));
+        const perfil = perfilSnap.exists() ? perfilSnap.data() : null;
+        
+        if (perfil) {
+          userInfo.innerHTML = `
+            <span class="user-name">${perfil.nome}</span>
+            <span class="user-email">${user.email}</span>
+          `;
+        } else {
+          // Se não tem perfil, mostra só displayName e email
+          userInfo.innerHTML = `
+            <span class="user-name">${user.displayName || 'Usuário'}</span>
+            <span class="user-email">${user.email}</span>
+          `;
+        }
+      } catch(e) {
+        // Se der erro, mostra só email
+        userInfo.innerHTML = `<span class="user-email">${user.email}</span>`;
+      }
+    }
       return;
     }
 
