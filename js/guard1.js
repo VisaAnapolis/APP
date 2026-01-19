@@ -134,7 +134,7 @@ export async function protectPage(firebaseConfig, onAuthorized){
 
     // Busca perfil no Firestore
     try {
-      const perfilSnap = await getDoc(doc(db, 'perfis', email));
+      const perfilSnap = await getDoc(doc(db, 'usuarios', email));
       const perfil = perfilSnap.exists() ? perfilSnap.data() : null;
 
       if (!perfil || !perfil.ativo) {
