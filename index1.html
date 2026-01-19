@@ -1205,25 +1205,23 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
     }
     
     // ========== 2️⃣ REQUERIMENTO COM DEBUG COMPLETO ==========
+// ========== 2️⃣ REQUERIMENTO - CORRIGIDO ==========
 function processarRequerimento() {
   return new Promise((resolve) => {
     Papa.parse('data/requerimento.csv?' + timestamp, {
       download: true,
       header: true,
-      delimiter: ';',
+      delimiter: ';',  // ⬅️ PONTO E VÍRGULA!
       skipEmptyLines: true,
       complete: function(results) {
         const dados = results.data;
         console.log(`\n📄 REQUERIMENTO: ${dados.length} registros carregados`);
         
-        // ⬇️ MOSTRA OS CAMPOS DISPONÍVEIS ⬇️
         if (dados.length > 0) {
-          console.log('🔑 CAMPOS DO CSV:', Object.keys(dados[0]));
-          console.log('📋 AMOSTRA (3 primeiros):');
-          dados.slice(0, 3).forEach((row, i) => {
-            console.log(`\n  Registro ${i + 1}:`, {
-              FiscalEncaminha: row.FiscalEncaminha,
-              fiscalEncaminha: row.fiscalEncaminha,
+          console.log('🔑 CAMPOS:', Object.keys(dados[0]));
+          console.log('📋 Amostra (2 primeiros):');
+          dados.slice(0, 2).forEach((row, i) => {
+            console.log(`  ${i+1}:`, {
               Fiscal_Encaminha: row.Fiscal_Encaminha,
               Atendimento: row.Atendimento,
               Cancelado: row.Cancelado,
@@ -1243,72 +1241,69 @@ function processarRequerimento() {
         };
         
         dados.forEach((row, index) => {
-          // Tenta TODOS os campos possíveis
-          const fiscal = (row.FiscalEncaminha || row.fiscalEncaminha || 
-                         row.Fiscal_Encaminha || row.fiscal_encaminha || 
-                         row.FISCALENCAMINHA || '').trim().toUpperCase();
+          // ⬇️ CAMPO CORRETO: Fiscal_Encaminha (COM underscore)
+          const fiscal = (row.Fiscal_Encaminha || '').trim().toUpperCase();
           
           if (fiscal !== nomeFiscalUpper) {
             descartados.fiscalDiferente++;
-            if (index < 2) console.log(`  ❌ Fiscal diferente: "${fiscal}" !== "${nomeFiscalUpper}"`);
             return;
           }
           
-          if (index < 2) console.log(`  ✅ Fiscal BATE!`, row.FiscalEncaminha || row.fiscalEncaminha);
+          if (index < 3) console.log(`  ✅ Fiscal BATE! OS: ${row.OS}`);
           
-          const atendimento = String(row.Atendimento || row.atendimento || '').toLowerCase();
-          if (atendimento === 'true' || atendimento === '1' || atendimento === 't') {
+          // Atendimento e Cancelado são "True" ou vazio
+          const atendimento = String(row.Atendimento || '').trim().toUpperCase();
+          if (atendimento === 'TRUE') {
             descartados.atendido++;
-            if (index < 2) console.log('    ❌ Atendido');
+            if (index < 3) console.log('    ❌ Atendido');
             return;
           }
           
-          const cancelamento = String(row.Cancelado || row.cancelamento || 
-                                     row.Cancelamento || '').toLowerCase();
-          if (cancelamento === 'true' || cancelamento === '1' || cancelamento === 't') {
+          const cancelado = String(row.Cancelado || '').trim().toUpperCase();
+          if (cancelado === 'TRUE') {
             descartados.cancelado++;
-            if (index < 2) console.log('    ❌ Cancelado');
+            if (index < 3) console.log('    ❌ Cancelado');
             return;
           }
           
-          const prazo = parseData(row.Prazo || row.prazo || '');
+          const prazoStr = (row.Prazo || '').trim();
+          if (!prazoStr) {
+            descartados.semPrazo++;
+            if (index < 3) console.log('    ❌ Sem prazo');
+            return;
+          }
+          
+          const prazo = parseData(prazoStr);
           if (!prazo) {
             descartados.semPrazo++;
-            if (index < 2) console.log('    ❌ Sem prazo:', row.Prazo);
+            if (index < 3) console.log('    ❌ Prazo inválido:', prazoStr);
             return;
           }
           
           const tipo = classificarPrazo(prazo);
           
-          if (index < 2) {
-            console.log(`    📅 Prazo: ${row.Prazo} → ${tipo}`);
-            console.log(`       Hoje: ${hoje.toLocaleDateString('pt-BR')}`);
-            console.log(`       Prazo: ${prazo.toLocaleDateString('pt-BR')}`);
-            console.log(`       5 dias: ${cincoProxDias.toLocaleDateString('pt-BR')}`);
+          if (index < 3) {
+            console.log(`    📅 Prazo: ${prazoStr}`);
+            console.log(`       Classificação: ${tipo}`);
           }
           
           if (tipo === 'vencida') {
             vencidas++;
-            if (index < 2) console.log('    ✅ VENCIDA! Contando...');
+            if (index < 3) console.log('    ✅ VENCIDA!');
           } else if (tipo === 'avencer') {
             aVencer++;
-            if (index < 2) console.log('    ✅ A VENCER! Contando...');
+            if (index < 3) console.log('    ✅ A VENCER!');
           } else {
             descartados.prazoFuturo++;
-            if (index < 2) console.log('    ⏭️ Prazo futuro (>5 dias), não conta');
+            if (index < 3) console.log('    ⏭️ Prazo futuro');
           }
         });
         
         console.log('\n📊 ESTATÍSTICAS REQUERIMENTO:');
         console.log('  ✅ Vencidas:', vencidas);
-        console.log('  ⏰ A vencer (próx 5 dias):', aVencer);
+        console.log('  ⏰ A vencer:', aVencer);
         console.log('  📦 Total:', vencidas + aVencer);
-        console.log('  Descartados:');
-        console.log('    - Fiscal diferente:', descartados.fiscalDiferente);
-        console.log('    - Atendido:', descartados.atendido);
-        console.log('    - Cancelado:', descartados.cancelado);
-        console.log('    - Sem prazo:', descartados.semPrazo);
-        console.log('    - Prazo futuro (>5 dias):', descartados.prazoFuturo);
+        console.log('  Descartados:', descartados);
         
         resolve({ vencidas, aVencer, total: vencidas + aVencer });
       },
