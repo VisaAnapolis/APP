@@ -424,6 +424,58 @@
             margin-top: 4px;
         }
 
+        /* ===== AUDITORIA ===== */
+        .audit-section {
+            margin-top: 16px;
+        }
+
+        .audit-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid;
+            font-size: 0.9rem;
+        }
+
+        .audit-item.success {
+            background: rgba(52, 199, 89, 0.1);
+            border-left-color: #34C759;
+        }
+
+        .audit-item.warning {
+            background: #fff7dd;
+            border-left-color: #d1a000;
+        }
+
+        .audit-item.error {
+            background: rgba(220, 53, 69, 0.1);
+            border-left-color: #dc3545;
+        }
+
+        .audit-item strong {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 1em;
+        }
+
+        .audit-item ul {
+            margin: 8px 0 0 20px;
+            padding: 0;
+        }
+
+        .audit-item li {
+            margin: 4px 0;
+            color: var(--text);
+        }
+
+        .email-code {
+            background: rgba(0,0,0,0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.85em;
+        }
+
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: 1fr;
@@ -439,263 +491,6 @@
             }
         }
     </style>
-
-    <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, addDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
-            authDomain: "visam-3a30b.firebaseapp.com",
-            projectId: "visam-3a30b",
-            messagingSenderId: "308899251430",
-            appId: "1:308899251430:web:0053cdbd0bed7f0de76727"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const provider = new GoogleAuthProvider();
-
-        // Lista de administradores autorizados
-        const ADMIN_EMAILS = new Set([
-            "claudio@anapolis.go.gov.br",
-            "visa@anapolis.go.gov.br"
-            // Adicione outros administradores aqui
-        ]);
-
-        let currentUserProfile = null;
-
-        // ===== CONTROLE DE EXIBIÇÃO =====
-        function showAuth() {
-            document.getElementById('authOverlay').style.display = 'flex';
-            document.getElementById('mainContent').style.display = 'none';
-        }
-
-        function showContent() {
-            document.getElementById('authOverlay').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
-        }
-
-        function showError(msg) {
-            const errDiv = document.getElementById('authError');
-            errDiv.textContent = msg;
-            errDiv.style.display = 'block';
-        }
-
-        // ===== LOGIN COM GOOGLE =====
-        window.loginGoogle = async function() {
-            try {
-                const result = await signInWithPopup(auth, provider);
-                // onAuthStateChanged vai lidar com o resto
-            } catch (error) {
-                console.error("Erro no login:", error);
-                showError("Erro ao fazer login. Tente novamente.");
-            }
-        };
-
-        // ===== LOGOUT =====
-        window.logout = async function() {
-            try {
-                await signOut(auth);
-                location.reload();
-            } catch (error) {
-                console.error("Erro no logout:", error);
-            }
-        };
-
-        // ===== VERIFICAÇÃO DE AUTENTICAÇÃO =====
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                showAuth();
-                return;
-            }
-
-            const email = user.email.toLowerCase().trim();
-
-            // Busca perfil no Firestore
-            try {
-                const userDoc = await getDoc(doc(db, "usuarios", email));
-                
-                if (!userDoc.exists()) {
-                    showError("Usuário não cadastrado no sistema.");
-                    showAuth();
-                    return;
-                }
-
-                const perfil = userDoc.data();
-                currentUserProfile = { ...perfil, uid: user.uid, email: user.email };
-
-                // Verifica se é Administrador
-                if (perfil.grupo !== "Administrador") {
-                    showError("Acesso negado. Apenas administradores podem acessar esta página.");
-                    await signOut(auth);
-                    return;
-                }
-
-                // Atualiza UI com info do usuário
-                document.getElementById('userInfo').innerHTML = `
-                    <span class="user-name">${perfil.nome}</span><span class="user-email">${user.email}</span>
-                `;
-
-                showContent();
-                carregarUsuarios();
-
-            } catch (error) {
-                console.error("Erro ao buscar perfil:", error);
-                showError("Erro ao verificar permissões.");
-                showAuth();
-            }
-        });
-
-        // ===== CARREGAR USUÁRIOS =====
-        async function carregarUsuarios() {
-            const loadingDiv = document.getElementById('loading');
-            const tableContainer = document.getElementById('usersTableContainer');
-            
-            loadingDiv.style.display = 'block';
-            tableContainer.style.display = 'none';
-
-            try {
-                const q = query(collection(db, "usuarios"), orderBy("nome"));
-                const snapshot = await getDocs(q);
-                
-                const usuarios = [];
-                snapshot.forEach(doc => {
-                    usuarios.push({ id: doc.id, ...doc.data() });
-                });
-
-                renderizarUsuarios(usuarios);
-                atualizarEstatisticas(usuarios);
-
-                loadingDiv.style.display = 'none';
-                tableContainer.style.display = 'block';
-
-            } catch (error) {
-                console.error("Erro ao carregar usuários:", error);
-                loadingDiv.innerHTML = '<p style="color: #dc3545;">Erro ao carregar usuários.</p>';
-            }
-        }
-
-        // ===== RENDERIZAR TABELA =====
-        function renderizarUsuarios(usuarios) {
-            const tbody = document.getElementById('usersTableBody');
-            tbody.innerHTML = '';
-
-            usuarios.forEach(user => {
-                const tr = document.createElement('tr');
-                
-                const statusBadge = user.status === 'Ativo' ? 
-                    '<span class="badge ativo">Ativo</span>' : 
-                    '<span class="badge inativo">Inativo</span>';
-
-                const grupoBadgeClass = user.grupo?.toLowerCase() || 'administrativo';
-                const grupoBadge = `<span class="badge ${grupoBadgeClass}">${user.grupo || 'N/A'}</span>`;
-
-                const photoHTML = user.photoURL ? 
-                    `<img src="${user.photoURL}" alt="${user.nome}" class="user-photo">` : 
-                    '👤';
-
-                const lastAccess = user.lastAccess ? 
-                    new Date(user.lastAccess.seconds * 1000).toLocaleDateString('pt-BR') : 
-                    'Nunca';
-
-                tr.innerHTML = `
-                    <td>${photoHTML}</td>
-                    <td><strong>${user.nome || 'N/A'}</strong></td>
-                    <td>${user.id}</td>
-                    <td>${grupoBadge}</td>
-                    <td>${statusBadge}</td>
-                    <td style="font-size: 0.85rem; color: var(--muted);">${lastAccess}</td>
-                    <td>
-                        <button class="btn btn-primary" onclick="editarUsuario('${user.id}')">Editar</button>
-                    </td>
-                `;
-                
-                tbody.appendChild(tr);
-            });
-        }
-
-        // ===== ESTATÍSTICAS =====
-        function atualizarEstatisticas(usuarios) {
-            const totalFiscais = usuarios.filter(u => u.grupo === 'Fiscal').length;
-            const totalAdmins = usuarios.filter(u => u.grupo === 'Administrador').length;
-            const totalAtivos = usuarios.filter(u => u.status === 'Ativo').length;
-
-            document.getElementById('statFiscais').textContent = totalFiscais;
-            document.getElementById('statAdmins').textContent = totalAdmins;
-            document.getElementById('statAtivos').textContent = totalAtivos;
-        }
-
-        // ===== EDITAR USUÁRIO =====
-        window.editarUsuario = async function(userId) {
-            try {
-                const userDoc = await getDoc(doc(db, "usuarios", userId));
-                
-                if (!userDoc.exists()) {
-                    alert('Usuário não encontrado.');
-                    return;
-                }
-
-                const userData = userDoc.data();
-
-                // Preenche o formulário
-                document.getElementById('editEmail').value = userId;
-                document.getElementById('editNome').value = userData.nome || '';
-                document.getElementById('editGrupo').value = userData.grupo || 'Administrativo';
-                document.getElementById('editStatus').value = userData.status || 'Ativo';
-                document.getElementById('editObs').value = userData.observacoes || '';
-
-                // Mostra o modal
-                document.getElementById('editModal').style.display = 'flex';
-
-            } catch (error) {
-                console.error("Erro ao carregar usuário:", error);
-                alert('Erro ao carregar dados do usuário.');
-            }
-        };
-
-        // ===== SALVAR ALTERAÇÕES =====
-        window.salvarUsuario = async function() {
-            const email = document.getElementById('editEmail').value;
-            const nome = document.getElementById('editNome').value.trim();
-            const grupo = document.getElementById('editGrupo').value;
-            const status = document.getElementById('editStatus').value;
-            const observacoes = document.getElementById('editObs').value.trim();
-
-            if (!nome) {
-                alert('Nome é obrigatório.');
-                return;
-            }
-
-            try {
-                await updateDoc(doc(db, "usuarios", email), {
-                    nome,
-                    grupo,
-                    status,
-                    observacoes
-                });
-
-                alert('Usuário atualizado com sucesso!');
-                fecharModal();
-                carregarUsuarios();
-
-            } catch (error) {
-                console.error("Erro ao salvar:", error);
-                alert('Erro ao salvar alterações.');
-            }
-        };
-
-        // ===== FECHAR MODAL =====
-        window.fecharModal = function() {
-            document.getElementById('editModal').style.display = 'none';
-        };
-
-        // Expor funções globalmente
-        window.carregarUsuarios = carregarUsuarios;
-    </script>
 </head>
 <body>
 
@@ -740,6 +535,22 @@
                 </div>
             </div>
 
+            <!-- Auditoria de Consistência -->
+            <div class="card">
+                <h3>🔍 Auditoria de Consistência</h3>
+                <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 12px;">
+                    Verifica se os usuários do Firestore estão sincronizados com a lista AUTHORIZED_EMAILS do index.html
+                </p>
+                <div id="auditLoading" class="loading" style="display: none; padding: 20px;">
+                    <div class="spinner"></div>
+                    Verificando inconsistências...
+                </div>
+                <div id="auditResults"></div>
+                <button class="btn btn-primary" onclick="executarAuditoria()" style="margin-top: 12px;">
+                    🔍 Executar Auditoria
+                </button>
+            </div>
+
             <!-- Tabela de Usuários -->
             <div class="card">
                 <h3>👥 Gerenciamento de Usuários</h3>
@@ -758,7 +569,7 @@
                                 <th>E-mail</th>
                                 <th>Perfil/Grupo</th>
                                 <th>Status</th>
-                                <th>Último Acesso</th>
+                                <th>Cadastrado em</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -814,10 +625,455 @@
 
             <div class="modal-actions">
                 <button class="btn" onclick="fecharModal()">Cancelar</button>
-                <button class="btn btn-primary" onclick="salvarUsuario()">Salvar</button>
+                <button class="btn btn-primary" onclick="salvarUsuario()">💾 Salvar</button>
             </div>
         </div>
     </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
+            authDomain: "visam-3a30b.firebaseapp.com",
+            projectId: "visam-3a30b",
+            messagingSenderId: "308899251430",
+            appId: "1:308899251430:web:0053cdbd0bed7f0de76727"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        let currentUserProfile = null;
+
+        // ===== CONTROLE DE EXIBIÇÃO =====
+        function showAuth() {
+            document.getElementById('authOverlay').style.display = 'flex';
+            document.getElementById('mainContent').style.display = 'none';
+        }
+
+        function showContent() {
+            document.getElementById('authOverlay').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+        }
+
+        function showError(msg) {
+            const errDiv = document.getElementById('authError');
+            errDiv.textContent = msg;
+            errDiv.style.display = 'block';
+        }
+
+        // ===== LOGIN COM GOOGLE =====
+        window.loginGoogle = async function() {
+            try {
+                const result = await signInWithPopup(auth, provider);
+            } catch (error) {
+                console.error("Erro no login:", error);
+                showError("Erro ao fazer login. Tente novamente.");
+            }
+        };
+
+        // ===== LOGOUT =====
+        window.logout = async function() {
+            try {
+                await signOut(auth);
+                location.reload();
+            } catch (error) {
+                console.error("Erro no logout:", error);
+            }
+        };
+
+        // ===== VERIFICAÇÃO DE AUTENTICAÇÃO =====
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                showAuth();
+                return;
+            }
+
+            const email = user.email.toLowerCase().trim();
+
+            try {
+                const userDoc = await getDoc(doc(db, "usuarios", email));
+                
+                if (!userDoc.exists()) {
+                    showError("Usuário não cadastrado no sistema.");
+                    showAuth();
+                    return;
+                }
+
+                const perfil = userDoc.data();
+                currentUserProfile = { ...perfil, uid: user.uid, email: user.email };
+
+                if (perfil.grupo !== "Administrador") {
+                    showError("Acesso negado. Apenas administradores podem acessar esta página.");
+                    await signOut(auth);
+                    return;
+                }
+
+                document.getElementById('userInfo').innerHTML = `
+                    <span class="user-name">${perfil.nome}</span><span class="user-email">${user.email}</span>
+                `;
+
+                showContent();
+                carregarUsuarios();
+
+            } catch (error) {
+                console.error("Erro ao buscar perfil:", error);
+                showError("Erro ao verificar permissões.");
+                showAuth();
+            }
+        });
+
+        // ===== CARREGAR USUÁRIOS =====
+        async function carregarUsuarios() {
+            const loadingDiv = document.getElementById('loading');
+            const tableContainer = document.getElementById('usersTableContainer');
+            
+            loadingDiv.style.display = 'block';
+            tableContainer.style.display = 'none';
+
+            try {
+                const q = query(collection(db, "usuarios"), orderBy("nome"));
+                const snapshot = await getDocs(q);
+                
+                const usuarios = [];
+                snapshot.forEach(doc => {
+                    usuarios.push({ id: doc.id, ...doc.data() });
+                });
+
+                renderizarUsuarios(usuarios);
+                atualizarEstatisticas(usuarios);
+
+                loadingDiv.style.display = 'none';
+                tableContainer.style.display = 'block';
+
+            } catch (error) {
+                console.error("Erro ao carregar usuários:", error);
+                loadingDiv.innerHTML = '<p style="color: #dc3545;">Erro ao carregar usuários.</p>';
+            }
+        }
+
+        // ===== RENDERIZAR TABELA =====
+        function renderizarUsuarios(usuarios) {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+
+            usuarios.forEach(user => {
+                const tr = document.createElement('tr');
+                
+                const statusBadge = user.ativo === true ? 
+                    '<span class="badge ativo">Ativo</span>' : 
+                    '<span class="badge inativo">Inativo</span>';
+
+                const grupoBadgeClass = (user.grupo || 'administrativo').toLowerCase();
+                const grupoBadge = `<span class="badge ${grupoBadgeClass}">${user.grupo || 'N/A'}</span>`;
+
+                let photoHTML;
+                if (user.photoURL) {
+                    photoHTML = `<img src="${user.photoURL}" alt="${user.nome}" class="user-photo">`;
+                } else {
+                    const emojiMap = {
+                        'fiscal': '👮',
+                        'administrador': '👨‍💼',
+                        'administrativo': '👤'
+                    };
+                    const emoji = emojiMap[grupoBadgeClass] || '👤';
+                    photoHTML = `<div style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">${emoji}</div>`;
+                }
+
+                const dataCadastro = user.criadoEm ? 
+                    new Date(user.criadoEm.seconds * 1000).toLocaleDateString('pt-BR') : 
+                    'N/A';
+
+                tr.innerHTML = `
+                    <td>${photoHTML}</td>
+                    <td><strong>${user.nome || 'N/A'}</strong></td>
+                    <td>${user.email || user.id}</td>
+                    <td>${grupoBadge}</td>
+                    <td>${statusBadge}</td>
+                    <td style="font-size: 0.85rem; color: var(--muted);">${dataCadastro}</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="editarUsuario('${user.id}')">Editar</button>
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ===== ESTATÍSTICAS =====
+        function atualizarEstatisticas(usuarios) {
+            const totalFiscais = usuarios.filter(u => u.grupo === 'Fiscal').length;
+            const totalAdmins = usuarios.filter(u => u.grupo === 'Administrador').length;
+            const totalAtivos = usuarios.filter(u => u.ativo === true).length;
+
+            document.getElementById('statFiscais').textContent = totalFiscais;
+            document.getElementById('statAdmins').textContent = totalAdmins;
+            document.getElementById('statAtivos').textContent = totalAtivos;
+        }
+
+        // ===== AUDITORIA DE CONSISTÊNCIA =====
+        window.executarAuditoria = async function() {
+            const loadingDiv = document.getElementById('auditLoading');
+            const resultsDiv = document.getElementById('auditResults');
+            
+            loadingDiv.style.display = 'block';
+            resultsDiv.innerHTML = '';
+
+            try {
+                // 1️⃣ Buscar e extrair AUTHORIZED_EMAILS do index.html
+                const indexResponse = await fetch('index.html');
+                const indexHTML = await indexResponse.text();
+                
+                const regex = /const\s+AUTHORIZED_EMAILS\s*=\s*new\s+Set\(\[([\s\S]*?)\]\)/;
+                const match = indexHTML.match(regex);
+                
+                if (!match) {
+                    throw new Error('Não foi possível encontrar AUTHORIZED_EMAILS no index.html');
+                }
+                
+                const emailsString = match[1];
+                const indexEmails = new Set();
+                
+                const emailRegex = /["']([^"']+)["']/g;
+                let emailMatch;
+                while ((emailMatch = emailRegex.exec(emailsString)) !== null) {
+                    indexEmails.add(emailMatch[1].toLowerCase().trim());
+                }
+
+                console.log(`📋 Encontrados ${indexEmails.size} emails no index.html`);
+
+                // 2️⃣ Buscar usuários do Firestore
+                const firestoreSnapshot = await getDocs(collection(db, "usuarios"));
+                const firestoreEmails = new Set();
+                const firestoreUsers = {};
+                
+                firestoreSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.email) {
+                        const email = data.email.toLowerCase().trim();
+                        firestoreEmails.add(email);
+                        firestoreUsers[email] = {
+                            nome: data.nome,
+                            grupo: data.grupo,
+                            ativo: data.ativo
+                        };
+                    }
+                });
+
+                console.log(`📊 Encontrados ${firestoreEmails.size} emails no Firestore`);
+
+                // 3️⃣ Análise de Inconsistências
+                const naFirestoreMasNaoNoIndex = [...firestoreEmails].filter(
+                    email => !indexEmails.has(email)
+                );
+
+                const noIndexMasNaoNoFirestore = [...indexEmails].filter(
+                    email => !firestoreEmails.has(email)
+                );
+
+                const emailsConsistentes = [...firestoreEmails].filter(
+                    email => indexEmails.has(email)
+                );
+
+                // 4️⃣ Montar Relatório
+                let html = '<div class="audit-section">';
+
+                html += `
+                    <div class="audit-item success">
+                        <strong>📊 Resumo Geral</strong>
+                        <ul>
+                            <li><strong>${indexEmails.size}</strong> emails autorizados no index.html</li>
+                            <li><strong>${firestoreEmails.size}</strong> perfis cadastrados no Firestore</li>
+                            <li><strong>${emailsConsistentes.length}</strong> emails consistentes (em ambos)</li>
+                        </ul>
+                    </div>
+                `;
+
+                if (naFirestoreMasNaoNoIndex.length > 0) {
+                    html += `
+                        <div class="audit-item warning">
+                            <strong>⚠️ ${naFirestoreMasNaoNoIndex.length} usuários no Firestore mas NÃO autorizados no index.html</strong>
+                            <p>Estes usuários têm perfil cadastrado mas <strong>não conseguem fazer login</strong> porque não estão na lista AUTHORIZED_EMAILS:</p>
+                            <ul>
+                                ${naFirestoreMasNaoNoIndex.map(e => {
+                                    const user = firestoreUsers[e];
+                                    return `<li><span class="email-code">${e}</span> - ${user.nome} (${user.grupo})</li>`;
+                                }).join('')}
+                            </ul>
+                            <p><strong>🔧 Ação:</strong> Adicione estes emails em <code>AUTHORIZED_EMAILS</code> no <strong>index.html</strong> (linha ~280)</p>
+                        </div>
+                    `;
+                }
+
+                if (noIndexMasNaoNoFirestore.length > 0) {
+                    html += `
+                        <div class="audit-item warning">
+                            <strong>⚠️ ${noIndexMasNaoNoFirestore.length} emails autorizados no index.html mas SEM perfil no Firestore</strong>
+                            <p>Estes usuários podem fazer login mas <strong>não têm dados cadastrados</strong> (nome, grupo, status):</p>
+                            <ul>
+                                ${noIndexMasNaoNoFirestore.map(e => `<li><span class="email-code">${e}</span></li>`).join('')}
+                            </ul>
+                            <p><strong>🔧 Ação:</strong> Para cada email acima, crie um documento no Firestore:</p>
+                            <pre style="background: rgba(0,0,0,0.05); padding: 10px; border-radius: 6px; font-size: 0.85em; overflow-x: auto;">
+// Coleção: usuarios
+// Document ID: email_do_usuario@dominio.com
+{
+  "nome": "Nome Completo",
+  "email": "email_do_usuario@dominio.com",
+  "grupo": "Fiscal", // ou "Administrador" ou "Administrativo"
+  "ativo": true,
+  "criadoEm": timestamp,
+  "observacoes": ""
+}</pre>
+                        </div>
+                    `;
+                }
+
+                if (naFirestoreMasNaoNoIndex.length === 0 && noIndexMasNaoNoFirestore.length === 0) {
+                    html += `
+                        <div class="audit-item success">
+                            <strong>🎯 Sistema 100% Consistente!</strong>
+                            <p>Todos os <strong>${emailsConsistentes.length} usuários</strong> estão perfeitamente sincronizados:</p>
+                            <ul>
+                                <li>✅ Autorizados a fazer login (index.html)</li>
+                                <li>✅ Com perfil completo cadastrado (Firestore)</li>
+                            </ul>
+                            <p style="margin-top: 12px; color: var(--muted); font-size: 0.9em;">
+                                Nenhuma ação necessária. O sistema está operando corretamente.
+                            </p>
+                        </div>
+                    `;
+                }
+
+                html += '</div>';
+                resultsDiv.innerHTML = html;
+
+            } catch (error) {
+                console.error("Erro na auditoria:", error);
+                resultsDiv.innerHTML = `
+                    <div class="audit-item error">
+                        <strong>❌ Erro ao executar auditoria</strong>
+                        <p>${error.message}</p>
+                        <p style="font-size: 0.85em; color: var(--muted); margin-top: 8px;">
+                            Verifique se o arquivo index.html está acessível e se a lista AUTHORIZED_EMAILS existe.
+                        </p>
+                    </div>
+                `;
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        };
+
+        // ===== EDITAR USUÁRIO =====
+        window.editarUsuario = async function(userId) {
+            try {
+                const userDoc = await getDoc(doc(db, "usuarios", userId));
+                
+                if (!userDoc.exists()) {
+                    alert('Usuário não encontrado.');
+                    return;
+                }
+
+                const userData = userDoc.data();
+
+                document.getElementById('editEmail').value = userData.email || userId;
+                document.getElementById('editNome').value = userData.nome || '';
+                document.getElementById('editGrupo').value = userData.grupo || 'Administrativo';
+                document.getElementById('editStatus').value = userData.ativo === true ? 'Ativo' : 'Inativo';
+                document.getElementById('editObs').value = userData.observacoes || '';
+
+                document.getElementById('editModal').dataset.userId = userId;
+                document.getElementById('editModal').style.display = 'flex';
+
+            } catch (error) {
+                console.error("Erro ao carregar usuário:", error);
+                alert('Erro ao carregar dados do usuário.');
+            }
+        };
+
+        // ===== SALVAR ALTERAÇÕES =====
+        window.salvarUsuario = async function() {
+            const userId = document.getElementById('editModal').dataset.userId;
+            const nome = document.getElementById('editNome').value.trim();
+            const grupo = document.getElementById('editGrupo').value;
+            const statusSelect = document.getElementById('editStatus').value;
+            const ativo = statusSelect === 'Ativo';
+            const observacoes = document.getElementById('editObs').value.trim();
+
+            if (!nome) {
+                alert('Nome é obrigatório.');
+                return;
+            }
+
+            try {
+                // 🔒 VALIDAÇÃO: Verificar se email está no index.html
+                const indexResponse = await fetch('index.html');
+                const indexHTML = await indexResponse.text();
+                
+                const regex = /const\s+AUTHORIZED_EMAILS\s*=\s*new\s+Set\(\[([\s\S]*?)\]\)/;
+                const match = indexHTML.match(regex);
+                
+                if (!match) {
+                    alert('⚠️ Erro: Não foi possível validar a lista de autorizados no index.html');
+                    return;
+                }
+                
+                const emailsString = match[1];
+                const emailsAutorizados = new Set();
+                const emailRegex = /["']([^"']+)["']/g;
+                let emailMatch;
+                while ((emailMatch = emailRegex.exec(emailsString)) !== null) {
+                    emailsAutorizados.add(emailMatch[1].toLowerCase().trim());
+                }
+
+                const userDoc = await getDoc(doc(db, "usuarios", userId));
+                const emailUsuario = userDoc.exists() ? 
+                    (userDoc.data().email || userId).toLowerCase().trim() : 
+                    userId.toLowerCase().trim();
+
+                // 🚨 VALIDA se o email está autorizado no index.html
+                if (!emailsAutorizados.has(emailUsuario)) {
+                    alert(
+                        `🚫 AÇÃO BLOQUEADA!\n\n` +
+                        `O email "${emailUsuario}" NÃO está na lista AUTHORIZED_EMAILS do index.html.\n\n` +
+                        `Este usuário não conseguirá fazer login mesmo com perfil ativo.\n\n` +
+                        `➡️ Primeiro adicione o email no index.html (linha ~280),\n` +
+                        `depois volte aqui para ativar o perfil.`
+                    );
+                    return;
+                }
+
+                // ✅ Email autorizado - prossegue com salvamento
+                await updateDoc(doc(db, "usuarios", userId), {
+                    nome,
+                    grupo,
+                    ativo,
+                    observacoes
+                });
+
+                alert('✅ Usuário atualizado com sucesso!');
+                fecharModal();
+                carregarUsuarios();
+
+            } catch (error) {
+                console.error("Erro ao salvar:", error);
+                alert('❌ Erro ao salvar alterações: ' + error.message);
+            }
+        };
+
+        // ===== FECHAR MODAL =====
+        window.fecharModal = function() {
+            document.getElementById('editModal').style.display = 'none';
+        };
+
+        window.carregarUsuarios = carregarUsuarios;
+    </script>
 
 </body>
 </html>
