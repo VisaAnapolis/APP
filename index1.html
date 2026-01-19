@@ -1204,52 +1204,121 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
       });
     }
     
-    // ========== 2️⃣ REQUERIMENTO (requerimento.csv) ==========
-    function processarRequerimento() {
-      return new Promise((resolve) => {
-        Papa.parse('data/requerimento.csv?' + timestamp, {
-          download: true,
-          header: true,
-          delimiter: ',',
-          skipEmptyLines: true,
-          complete: function(results) {
-            const dados = results.data;
-            console.log(`📄 Requerimento: ${dados.length} registros`);
-            
-            let vencidas = 0;
-            let aVencer = 0;
-            
-            dados.forEach(row => {
-              const fiscal = (row.FiscalEncaminha || row.fiscalEncaminha || 
-                             row.Fiscal_Encaminha || '').trim().toUpperCase();
-              
-              if (fiscal !== nomeFiscalUpper) return;
-              
-              const atendimento = String(row.Atendimento || row.atendimento || '').toLowerCase();
-              const cancelamento = String(row.Cancelado || row.cancelamento || 
-                                         row.Cancelamento || '').toLowerCase();
-              
-              if (atendimento === 'true' || atendimento === '1' || atendimento === 't') return;
-              if (cancelamento === 'true' || cancelamento === '1' || cancelamento === 't') return;
-              
-              const prazo = parseData(row.Prazo || row.prazo || '');
-              if (!prazo) return;
-              
-              const tipo = classificarPrazo(prazo);
-              if (tipo === 'vencida') vencidas++;
-              else if (tipo === 'avencer') aVencer++;
+    // ========== 2️⃣ REQUERIMENTO COM DEBUG COMPLETO ==========
+function processarRequerimento() {
+  return new Promise((resolve) => {
+    Papa.parse('data/requerimento.csv?' + timestamp, {
+      download: true,
+      header: true,
+      delimiter: ',',
+      skipEmptyLines: true,
+      complete: function(results) {
+        const dados = results.data;
+        console.log(`\n📄 REQUERIMENTO: ${dados.length} registros carregados`);
+        
+        // ⬇️ MOSTRA OS CAMPOS DISPONÍVEIS ⬇️
+        if (dados.length > 0) {
+          console.log('🔑 CAMPOS DO CSV:', Object.keys(dados[0]));
+          console.log('📋 AMOSTRA (3 primeiros):');
+          dados.slice(0, 3).forEach((row, i) => {
+            console.log(`\n  Registro ${i + 1}:`, {
+              FiscalEncaminha: row.FiscalEncaminha,
+              fiscalEncaminha: row.fiscalEncaminha,
+              Fiscal_Encaminha: row.Fiscal_Encaminha,
+              Atendimento: row.Atendimento,
+              Cancelado: row.Cancelado,
+              Prazo: row.Prazo
             });
-            
-            console.log(`✅ Requerimentos: ${vencidas} vencidas, ${aVencer} a vencer`);
-            resolve({ vencidas, aVencer, total: vencidas + aVencer });
-          },
-          error: function(err) {
-            console.error('❌ Erro requerimento.csv:', err);
-            resolve({ vencidas: 0, aVencer: 0, total: 0 });
+          });
+        }
+        
+        let vencidas = 0;
+        let aVencer = 0;
+        let descartados = {
+          fiscalDiferente: 0,
+          atendido: 0,
+          cancelado: 0,
+          semPrazo: 0,
+          prazoFuturo: 0
+        };
+        
+        dados.forEach((row, index) => {
+          // Tenta TODOS os campos possíveis
+          const fiscal = (row.FiscalEncaminha || row.fiscalEncaminha || 
+                         row.Fiscal_Encaminha || row.fiscal_encaminha || 
+                         row.FISCALENCAMINHA || '').trim().toUpperCase();
+          
+          if (fiscal !== nomeFiscalUpper) {
+            descartados.fiscalDiferente++;
+            if (index < 2) console.log(`  ❌ Fiscal diferente: "${fiscal}" !== "${nomeFiscalUpper}"`);
+            return;
+          }
+          
+          if (index < 2) console.log(`  ✅ Fiscal BATE!`, row.FiscalEncaminha || row.fiscalEncaminha);
+          
+          const atendimento = String(row.Atendimento || row.atendimento || '').toLowerCase();
+          if (atendimento === 'true' || atendimento === '1' || atendimento === 't') {
+            descartados.atendido++;
+            if (index < 2) console.log('    ❌ Atendido');
+            return;
+          }
+          
+          const cancelamento = String(row.Cancelado || row.cancelamento || 
+                                     row.Cancelamento || '').toLowerCase();
+          if (cancelamento === 'true' || cancelamento === '1' || cancelamento === 't') {
+            descartados.cancelado++;
+            if (index < 2) console.log('    ❌ Cancelado');
+            return;
+          }
+          
+          const prazo = parseData(row.Prazo || row.prazo || '');
+          if (!prazo) {
+            descartados.semPrazo++;
+            if (index < 2) console.log('    ❌ Sem prazo:', row.Prazo);
+            return;
+          }
+          
+          const tipo = classificarPrazo(prazo);
+          
+          if (index < 2) {
+            console.log(`    📅 Prazo: ${row.Prazo} → ${tipo}`);
+            console.log(`       Hoje: ${hoje.toLocaleDateString('pt-BR')}`);
+            console.log(`       Prazo: ${prazo.toLocaleDateString('pt-BR')}`);
+            console.log(`       5 dias: ${cincoProxDias.toLocaleDateString('pt-BR')}`);
+          }
+          
+          if (tipo === 'vencida') {
+            vencidas++;
+            if (index < 2) console.log('    ✅ VENCIDA! Contando...');
+          } else if (tipo === 'avencer') {
+            aVencer++;
+            if (index < 2) console.log('    ✅ A VENCER! Contando...');
+          } else {
+            descartados.prazoFuturo++;
+            if (index < 2) console.log('    ⏭️ Prazo futuro (>5 dias), não conta');
           }
         });
-      });
-    }
+        
+        console.log('\n📊 ESTATÍSTICAS REQUERIMENTO:');
+        console.log('  ✅ Vencidas:', vencidas);
+        console.log('  ⏰ A vencer (próx 5 dias):', aVencer);
+        console.log('  📦 Total:', vencidas + aVencer);
+        console.log('  Descartados:');
+        console.log('    - Fiscal diferente:', descartados.fiscalDiferente);
+        console.log('    - Atendido:', descartados.atendido);
+        console.log('    - Cancelado:', descartados.cancelado);
+        console.log('    - Sem prazo:', descartados.semPrazo);
+        console.log('    - Prazo futuro (>5 dias):', descartados.prazoFuturo);
+        
+        resolve({ vencidas, aVencer, total: vencidas + aVencer });
+      },
+      error: function(err) {
+        console.error('❌ Erro requerimento.csv:', err);
+        resolve({ vencidas: 0, aVencer: 0, total: 0 });
+      }
+    });
+  });
+}
     
     // ========== 3️⃣ DENÚNCIA (denuncia.csv) ==========
     function processarDenuncia() {
