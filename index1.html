@@ -1337,12 +1337,12 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
 }
 
     
-  onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(auth, async (user) => {
   if (!user) {
     showLogin();
     return;
   }
-
+  
   if (isAuthorized(user)) {
     authCache.save(user);
     showConteudo();
@@ -1356,42 +1356,92 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
       const userInfo = document.getElementById('userInfo');
       if (userInfo) {
         if (perfil) {
-          userInfo.innerHTML = `
-            <span class="user-name">${perfil.nome}</span>
-            <span class="user-email">${user.email}</span>
-          `;
+          userInfo.innerHTML = `<span class="user-name">${perfil.nome}</span><span class="user-email">${user.email}</span>`;
           
-          // Se for FISCAL, carrega estatísticas
+          // ========== CONTROLE DE PERMISSÕES ==========
+          
+          // 1️⃣ FISCAL: Mostra OS (esconde indicadores)
           if (perfil.grupo === 'Fiscal') {
-    //     carregarEstatisticasFiscal(perfil.nome);
-           carregarOSPendentesFiscal(perfil.nome);
+            carregarOSPendentesFiscal(perfil.nome);
+            
+            // Esconde seção de indicadores
+            const indicadoresSection = document.querySelector('.indicadores-section');
+            if (indicadoresSection) {
+              indicadoresSection.style.display = 'none';
+            }
           }
+          
+          // 2️⃣ ADMINISTRADOR: Mostra indicadores (esconde OS)
+          else if (perfil.grupo === 'Administrador') {
+            // Esconde cards de OS
+            const fiscalStats = document.getElementById('fiscalStats');
+            if (fiscalStats) {
+              fiscalStats.style.display = 'none';
+            }
+            
+            // Indicadores já são carregados automaticamente pelo carregarIndicadores()
+          }
+          
+          // 3️⃣ ADMINISTRATIVO: Não mostra nada
+          else if (perfil.grupo === 'Administrativo') {
+            // Esconde cards de OS
+            const fiscalStats = document.getElementById('fiscalStats');
+            if (fiscalStats) {
+              fiscalStats.style.display = 'none';
+            }
+            
+            // Esconde indicadores
+            const indicadoresSection = document.querySelector('.indicadores-section');
+            if (indicadoresSection) {
+              indicadoresSection.style.display = 'none';
+            }
+          }
+          
+          // 4️⃣ OUTROS GRUPOS: Comportamento padrão (não mostra OS)
+          else {
+            const fiscalStats = document.getElementById('fiscalStats');
+            if (fiscalStats) {
+              fiscalStats.style.display = 'none';
+            }
+          }
+          
         } else {
-          userInfo.innerHTML = `
-            <span class="user-name">${user.displayName || 'Usuário'}</span>
-            <span class="user-email">${user.email}</span>
-          `;
+          // Sem perfil no Firestore
+          userInfo.innerHTML = `<span class="user-name">${user.displayName || 'Usuário'}</span><span class="user-email">${user.email}</span>`;
+          
+          // Esconde tudo por segurança
+          const fiscalStats = document.getElementById('fiscalStats');
+          if (fiscalStats) fiscalStats.style.display = 'none';
+          
+          const indicadoresSection = document.querySelector('.indicadores-section');
+          if (indicadoresSection) indicadoresSection.style.display = 'none';
         }
       }
+      
     } catch(e) {
       console.error('Erro ao buscar perfil:', e);
+      
       const userInfo = document.getElementById('userInfo');
       if (userInfo) {
-        userInfo.innerHTML = `
-          <span class="user-name">${user.displayName || 'Usuário'}</span>
-          <span class="user-email">${user.email}</span>
-        `;
+        userInfo.innerHTML = `<span class="user-name">${user.displayName || 'Usuário'}</span><span class="user-email">${user.email}</span>`;
       }
+      
+      // Esconde tudo em caso de erro
+      const fiscalStats = document.getElementById('fiscalStats');
+      if (fiscalStats) fiscalStats.style.display = 'none';
+      
+      const indicadoresSection = document.querySelector('.indicadores-section');
+      if (indicadoresSection) indicadoresSection.style.display = 'none';
     }
     
     return;
   }
-
+  
+  // Não autorizado
   showLogin();
   showUnauthorizedModal(user);
   window.pendingLogout = true;
 });
-
     
     return;
   }
