@@ -856,19 +856,36 @@ const APP_VERSION = '2.0.1';
 const VERSION_KEY = 'visa_app_version';
 const savedVersion = localStorage.getItem(VERSION_KEY);
 
-// Exibe versão no rodapé (sempre visível)
+// Exibe versão no rodapé (se elemento existir)
 const versionSpan = document.getElementById('appVersion');
 if (versionSpan) versionSpan.textContent = APP_VERSION;
 
-// Verifica atualização
+// Verifica se precisa atualizar
 if (savedVersion !== APP_VERSION) {
     console.log(`🔄 Atualizando de ${savedVersion || 'antiga'} para ${APP_VERSION}`);
     
-    // Limpeza seletiva...
-    keysToRemove.forEach(key => localStorage.removeItem(key));
+    // ✅ LIMPEZA SELETIVA - Preserva sessão Firebase
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        // Preserva APENAS chaves do Firebase Auth e a própria versão
+        if (!key.startsWith('firebase:') && key !== VERSION_KEY) {
+            keysToRemove.push(key);
+        }
+    }
+    
+    console.log(`📦 Removendo ${keysToRemove.length} itens do cache antigo`);
+    keysToRemove.forEach(key => {
+        console.log(`  ❌ ${key}`);
+        localStorage.removeItem(key);
+    });
+    
+    // Salva nova versão
     localStorage.setItem(VERSION_KEY, APP_VERSION);
     
-    // Toast de atualização (só aparece quando atualiza)
+    console.log('✅ Cache atualizado - recarregando...');
+    
+    // Toast de atualização
     const toast = document.createElement('div');
     toast.style.cssText = `
         position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
@@ -880,11 +897,19 @@ if (savedVersion !== APP_VERSION) {
     toast.innerHTML = `🚀 Atualizado para v${APP_VERSION}`;
     document.body.appendChild(toast);
     
+    // Recarrega após 2.5 segundos
     setTimeout(() => {
         toast.remove();
         location.reload();
     }, 2500);
 }
+
+// FIM DO CONTROLE DE VERSÃO
+
+// Resto do código continua aqui...
+const AUTH_CACHE_KEY = 'visa_auth_cache';
+const AUTH_CACHE_DURATION = 60 * 60 * 1000; // 1 hora
+
   
   
 // ===== SISTEMA DE CACHE DE AUTENTICAÇÃO =====
