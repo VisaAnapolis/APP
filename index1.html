@@ -1052,85 +1052,269 @@ async function carregarEstatisticasFiscal(nomeFiscal) {
   }
 }
 
-// ========== FUNÇÃO: Carrega OS pendentes de 4 CSVs ==========
+// ========== FUNÇÃO: Carrega OS PENDENTES (4 tipos) ==========
 async function carregarOSPendentesFiscal(nomeFiscal) {
   try {
     const timestamp = new Date().getTime();
+    const nomeFiscalUpper = nomeFiscal.toUpperCase().trim();
     
-    // Arrays para armazenar pendentes de cada tipo
-    let totalPendentes = 0;
-    let arquivosCarregados = 0;
-    const totalArquivos = 4;
-    
-    // Função auxiliar para processar cada CSV
-    function processarCSV(url, nomeArquivo) {
+    // ========== 1️⃣ PROTOCOLO (tramitacao.csv) ==========
+    function processarProtocolo() {
       return new Promise((resolve) => {
-        Papa.parse(url + '?' + timestamp, {
+        Papa.parse('data/tramitacao.csv?' + timestamp, {
           download: true,
           header: true,
           delimiter: ',',
           skipEmptyLines: true,
           complete: function(results) {
             const dados = results.data;
-            console.log(`${nomeArquivo} carregado: ${dados.length} registros`);
+            console.log(`📄 Tramitação carregado: ${dados.length} registros`);
             
-            let pendentesDeste = 0;
+            // Agrupa por número de protocolo
+            const porProtocolo = {};
             
             dados.forEach(row => {
-              // ⬇️ VERIFICA SE É DO FISCAL ⬇️
-              // Tenta vários campos possíveis
-              const fiscal = row.Fiscal || row.Fiscal1 || row.Responsavel || 
-                            row.Responsável || row.FISCAL || '';
+              const numProtocolo = (row.protocolo || row.Protocolo || '').trim();
+              if (!numProtocolo) return;
               
-              const pertenceAoFiscal = fiscal.trim().toUpperCase() === nomeFiscal.toUpperCase();
+              if (!porProtocolo[numProtocolo]) {
+                porProtocolo[numProtocolo] = [];
+              }
+              porProtocolo[numProtocolo].push(row);
+            });
+            
+            let pendentesTramitacao = 0;
+            
+            // Processa cada protocolo
+            Object.keys(porProtocolo).forEach(numProto => {
+              const registros = porProtocolo[numProto];
               
-              if (!pertenceAoFiscal) return;
+              // Ordena por data (mais recente primeiro)
+              registros.sort((a, b) => {
+                const dataA = parseData(a.data || a.Data || a.DATA || '');
+                const dataB = parseData(b.data || b.Data || b.DATA || '');
+                if (!dataA || !dataB) return 0;
+                return dataB - dataA; // Decrescente
+              });
               
-              // ⬇️ VERIFICA SE ESTÁ PENDENTE ⬇️
-              const dtConclusao = (row.DTCONCLUSAO || row.DataConclusao || 
-                                  row.DtConclusao || row.Conclusao || '').trim();
+              // Pega o mais recente
+              const maisRecente = registros[0];
+              const destino = (maisRecente.destino || maisRecente.Destino || '').trim().toUpperCase();
               
-              const status = (row.STATUS || row.Status || row.Situacao || 
-                             row.SITUACAO || '').trim().toUpperCase();
-              
-              // Pendente se:
-              // 1. Data conclusão vazia OU
-              // 2. Status diferente de CONCLUÍDA/CONCLUÍDO/FINALIZADA
-              const ehPendente = (dtConclusao === '' || dtConclusao === 'NA') &&
-                                (status === '' || 
-                                 (status !== 'CONCLUÍDA' && 
-                                  status !== 'CONCLUIDO' && 
-                                  status !== 'FINALIZADA' &&
-                                  status !== 'FINALIZADO'));
-              
-              if (ehPendente) {
-                pendentesDeste++;
+              // Se o mais recente for do fiscal, conta como pendente
+              if (destino === nomeFiscalUpper) {
+                // Calcula prazo: 15 dias úteis
+                const dataTramitacao = parseData(maisRecente.data || maisRecente.Data || '');
+                if (dataTramitacao) {
+                  const prazo = calcularPrazoUteis(dataTramitacao, 15);
+                  const hoje = new Date();
+                  
+                  // Se ainda não venceu ou está vencido (pendente)
+                  if (prazo >= hoje || prazo < hoje) {
+                    pendentesTramitacao++;
+                  }
+                }
               }
             });
             
-            console.log(`${nomeArquivo}: ${pendentesDeste} pendentes`);
-            resolve(pendentesDeste);
+            console.log(`✅ Protocolos pendentes: ${pendentesTramitacao}`);
+            resolve(pendentesTramitacao);
           },
           error: function(err) {
-            console.error(`Erro ao carregar ${nomeArquivo}:`, err);
+            console.error('Erro ao carregar tramitacao.csv:', err);
             resolve(0);
           }
         });
       });
     }
     
-    // ⬇️ CARREGA OS 4 ARQUIVOS EM PARALELO ⬇️
+    // ========== 2️⃣ REQUERIMENTO (requerimento.csv) ==========
+    function processarRequerimento() {
+      return new Promise((resolve) => {
+        Papa.parse('data/requerimento.csv?' + timestamp, {
+          download: true,
+          header: true,
+          delimiter: ',',
+          skipEmptyLines: true,
+          complete: function(results) {
+            const dados = results.data;
+            console.log(`📄 Requerimento carregado: ${dados.length} registros`);
+            
+            let pendentesReq = 0;
+            
+            dados.forEach(row => {
+              // Campo do fiscal
+              const fiscal = (row.fiscal_encaminha || row.fiscalEncaminha || '').trim().toUpperCase();
+              
+              if (fiscal !== nomeFiscalUpper) return;
+              
+              // Verifica se está cancelado ou atendido
+              const atendimento = String(row.atendimento || '').toLowerCase();
+              const cancelamento = String(row.cancelamento || '').toLowerCase();
+              
+              if (atendimento === 'true' || atendimento === '1') return;
+              if (cancelamento === 'true' || cancelamento === '1') return;
+              
+              // Verifica prazo
+              const prazo = parseData(row.prazo || row.Prazo || '');
+              if (!prazo) return;
+              
+              const hoje = new Date();
+              // Se está dentro do prazo ou vencido (ainda pendente)
+              pendentesReq++;
+            });
+            
+            console.log(`✅ Requerimentos pendentes: ${pendentesReq}`);
+            resolve(pendentesReq);
+          },
+          error: function(err) {
+            console.error('Erro ao carregar requerimento.csv:', err);
+            resolve(0);
+          }
+        });
+      });
+    }
+    
+    // ========== 3️⃣ DENÚNCIA (denuncia.csv) ==========
+    function processarDenuncia() {
+      return new Promise((resolve) => {
+        Papa.parse('data/denuncia.csv?' + timestamp, {
+          download: true,
+          header: true,
+          delimiter: ',',
+          skipEmptyLines: true,
+          complete: function(results) {
+            const dados = results.data;
+            console.log(`📄 Denúncia carregado: ${dados.length} registros`);
+            
+            let pendentesDen = 0;
+            
+            dados.forEach(row => {
+              // Campo do fiscal
+              const fiscal = (row.fiscalEncaminha || row.FiscalEncaminha || '').trim().toUpperCase();
+              
+              if (fiscal !== nomeFiscalUpper) return;
+              
+              // Verifica se está arquivada
+              const archive = String(row.archive || row.Archive || '').toLowerCase();
+              if (archive === 'true' || archive === '1') return;
+              
+              // Verifica prazo
+              const prazo = parseData(row.prazo || row.Prazo || '');
+              if (!prazo) return;
+              
+              pendentesDen++;
+            });
+            
+            console.log(`✅ Denúncias pendentes: ${pendentesDen}`);
+            resolve(pendentesDen);
+          },
+          error: function(err) {
+            console.error('Erro ao carregar denuncia.csv:', err);
+            resolve(0);
+          }
+        });
+      });
+    }
+    
+    // ========== 4️⃣ OFÍCIO (oficio.csv) ==========
+    function processarOficio() {
+      return new Promise((resolve) => {
+        Papa.parse('data/oficio.csv?' + timestamp, {
+          download: true,
+          header: true,
+          delimiter: ',',
+          skipEmptyLines: true,
+          complete: function(results) {
+            const dados = results.data;
+            console.log(`📄 Ofício carregado: ${dados.length} registros`);
+            
+            let pendentesOfi = 0;
+            
+            dados.forEach(row => {
+              // Campo do fiscal
+              const fiscal = (row.fiscal_encaminha || row.fiscalEncaminha || '').trim().toUpperCase();
+              
+              if (fiscal !== nomeFiscalUpper) return;
+              
+              // Verifica se está cancelado ou arquivado
+              const cancela = String(row.cancela || row.Cancela || '').toLowerCase();
+              const archive = String(row.archive || row.Archive || '').toLowerCase();
+              
+              if (cancela === 'true' || cancela === '1') return;
+              if (archive === 'true' || archive === '1') return;
+              
+              // Verifica prazo
+              const prazo = parseData(row.prazo || row.Prazo || '');
+              if (!prazo) return;
+              
+              pendentesOfi++;
+            });
+            
+            console.log(`✅ Ofícios pendentes: ${pendentesOfi}`);
+            resolve(pendentesOfi);
+          },
+          error: function(err) {
+            console.error('Erro ao carregar oficio.csv:', err);
+            resolve(0);
+          }
+        });
+      });
+    }
+    
+    // ========== FUNÇÃO AUXILIAR: Parse de data ==========
+    function parseData(dataStr) {
+      if (!dataStr) return null;
+      
+      // Tenta dd.mm.yyyy
+      let partes = dataStr.split('.');
+      if (partes.length === 3) {
+        return new Date(partes[2], partes[1] - 1, partes[0]);
+      }
+      
+      // Tenta dd/mm/yyyy
+      partes = dataStr.split('/');
+      if (partes.length === 3) {
+        return new Date(partes[2], partes[1] - 1, partes[0]);
+      }
+      
+      // Tenta yyyy-mm-dd
+      partes = dataStr.split('-');
+      if (partes.length === 3) {
+        return new Date(partes[0], partes[1] - 1, partes[2]);
+      }
+      
+      return null;
+    }
+    
+    // ========== FUNÇÃO AUXILIAR: Calcula dias úteis ==========
+    function calcularPrazoUteis(dataInicial, diasUteis) {
+      const data = new Date(dataInicial);
+      let diasAdicionados = 0;
+      
+      while (diasAdicionados < diasUteis) {
+        data.setDate(data.getDate() + 1);
+        const diaSemana = data.getDay();
+        // 0 = domingo, 6 = sábado
+        if (diaSemana !== 0 && diaSemana !== 6) {
+          diasAdicionados++;
+        }
+      }
+      
+      return data;
+    }
+    
+    // ========== CARREGA TUDO EM PARALELO ==========
     const resultados = await Promise.all([
-      processarCSV('data/requerimento.csv', 'Requerimento'),
-      processarCSV('data/oficio.csv', 'Ofício'),
-      processarCSV('data/denuncia.csv', 'Denúncia'),
-      processarCSV('data/tramitacao.csv', 'Tramitação')
+      processarProtocolo(),
+      processarRequerimento(),
+      processarDenuncia(),
+      processarOficio()
     ]);
     
-    // Soma todos os pendentes
-    totalPendentes = resultados.reduce((acc, val) => acc + val, 0);
+    const totalPendentes = resultados.reduce((acc, val) => acc + val, 0);
     
-    console.log(`TOTAL PENDENTES: ${totalPendentes}`);
+    console.log(`🎯 TOTAL PENDENTES: ${totalPendentes}`);
     
     // ⬇️ ATUALIZA O 4º CARD ⬇️
     const statCards = document.querySelectorAll('.stat-card .stat-number');
@@ -1139,7 +1323,7 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
     }
     
   } catch(e) {
-    console.error('Erro ao carregar OS pendentes:', e);
+    console.error('❌ Erro ao carregar OS pendentes:', e);
   }
 }
 
