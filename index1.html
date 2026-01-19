@@ -1061,25 +1061,23 @@ async function carregarEstatisticasFiscal(nomeFiscal) {
   }
 }
 */
-// ========== FUNÇÃO: Carrega OS PENDENTES - OPÇÃO 3 (Vencidas + Próximas) ==========
+
+// ========== FUNÇÃO: Carrega OS PENDENTES (Vencidas + Próximas 5 dias) ==========
 async function carregarOSPendentesFiscal(nomeFiscal) {
   try {
     const timestamp = new Date().getTime();
     const nomeFiscalUpper = nomeFiscal.toUpperCase().trim();
     
-    // Data de hoje (sem hora)
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
     
-    // Data daqui a 5 dias
     const cincoProxDias = new Date(hoje);
     cincoProxDias.setDate(cincoProxDias.getDate() + 5);
     
-    // ========== FUNÇÃO AUXILIAR: Parse de data ==========
+    // ========== FUNÇÕES AUXILIARES ==========
     function parseData(dataStr) {
       if (!dataStr) return null;
       
-      // Tenta dd.mm.yyyy
       let partes = dataStr.split('.');
       if (partes.length === 3) {
         const data = new Date(partes[2], partes[1] - 1, partes[0]);
@@ -1087,7 +1085,6 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
         return data;
       }
       
-      // Tenta dd/mm/yyyy
       partes = dataStr.split('/');
       if (partes.length === 3) {
         const data = new Date(partes[2], partes[1] - 1, partes[0]);
@@ -1095,7 +1092,6 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
         return data;
       }
       
-      // Tenta yyyy-mm-dd
       partes = dataStr.split('-');
       if (partes.length === 3) {
         const data = new Date(partes[0], partes[1] - 1, partes[2]);
@@ -1106,7 +1102,6 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
       return null;
     }
     
-    // ========== FUNÇÃO AUXILIAR: Calcula dias úteis ==========
     function calcularPrazoUteis(dataInicial, diasUteis) {
       const data = new Date(dataInicial);
       let diasAdicionados = 0;
@@ -1123,209 +1118,119 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
       return data;
     }
     
-    // ========== FUNÇÃO AUXILIAR: Classifica prazo ==========
     function classificarPrazo(dataPrazo) {
       if (!dataPrazo) return null;
-      
-      if (dataPrazo < hoje) {
-        return 'vencida';
-      } else if (dataPrazo <= cincoProxDias) {
-        return 'avencer';
-      } else {
-        return 'futura';
-      }
+      if (dataPrazo < hoje) return 'vencida';
+      if (dataPrazo <= cincoProxDias) return 'avencer';
+      return 'futura';
     }
     
-// ========== 1️⃣ PROTOCOLO - ORDENAÇÃO CORRIGIDA ==========
-function processarProtocolo() {
-  return new Promise((resolve) => {
-    Papa.parse('data/tramitacao.csv?' + timestamp, {
-      download: true,
-      header: true,
-      delimiter: ';',
-      skipEmptyLines: true,
-      complete: function(results) {
-        const dados = results.data;
-        console.log(`📄 Tramitação: ${dados.length} registros`);
-        
-        const porProtocolo = {};
-        
-        dados.forEach(row => {
-          const numProtocolo = (row.PROTOCOLO || '').trim();
-          if (!numProtocolo) return;
-          
-          if (!porProtocolo[numProtocolo]) {
-            porProtocolo[numProtocolo] = [];
-          }
-          porProtocolo[numProtocolo].push(row);
-        });
-        
-        let vencidas = 0;
-        let aVencer = 0;
-        
-        Object.keys(porProtocolo).forEach(numProto => {
-          const registros = porProtocolo[numProto];
-          
-          // ⬇️ ORDENAÇÃO CORRIGIDA: Converte para Date ⬇️
-          registros.sort((a, b) => {
-            const dataA = parseData(a.DATA || '');
-            const dataB = parseData(b.DATA || '');
+    // ========== 1️⃣ PROTOCOLO ==========
+    function processarProtocolo() {
+      return new Promise((resolve) => {
+        Papa.parse('data/tramitacao.csv?' + timestamp, {
+          download: true,
+          header: true,
+          delimiter: ';',
+          skipEmptyLines: true,
+          complete: function(results) {
+            const dados = results.data;
+            const porProtocolo = {};
             
-            // Se não conseguiu parsear, coloca no final
-            if (!dataA && !dataB) return 0;
-            if (!dataA) return 1;
-            if (!dataB) return -1;
-            
-            // Compara as datas (decrescente = mais recente primeiro)
-            if (dataA.getTime() !== dataB.getTime()) {
-              return dataB.getTime() - dataA.getTime();
-            }
-            
-            // Se datas iguais, compara hora
-            const horaA = a.HORA || '000000';
-            const horaB = b.HORA || '000000';
-            return horaB > horaA ? 1 : -1;
-          });
-          
-          // Pega o primeiro = mais recente
-          const maisRecente = registros[0];
-          const destino = (maisRecente.DESTINO || '').trim().toUpperCase();
-          
-          // Se última tramitação é para o fiscal = pendente
-          if (destino === nomeFiscalUpper) {
-            const dataTramitacao = parseData(maisRecente.DATA || '');
-            if (dataTramitacao) {
-              const prazo = calcularPrazoUteis(dataTramitacao, 15);
-              const tipo = classificarPrazo(prazo);
+            dados.forEach(row => {
+              const numProtocolo = (row.PROTOCOLO || '').trim();
+              if (!numProtocolo) return;
               
+              if (!porProtocolo[numProtocolo]) {
+                porProtocolo[numProtocolo] = [];
+              }
+              porProtocolo[numProtocolo].push(row);
+            });
+            
+            let vencidas = 0;
+            let aVencer = 0;
+            
+            Object.keys(porProtocolo).forEach(numProto => {
+              const registros = porProtocolo[numProto];
+              
+              registros.sort((a, b) => {
+                const dataA = parseData(a.DATA || '');
+                const dataB = parseData(b.DATA || '');
+                
+                if (!dataA && !dataB) return 0;
+                if (!dataA) return 1;
+                if (!dataB) return -1;
+                
+                if (dataA.getTime() !== dataB.getTime()) {
+                  return dataB.getTime() - dataA.getTime();
+                }
+                
+                const horaA = a.HORA || '000000';
+                const horaB = b.HORA || '000000';
+                return horaB > horaA ? 1 : -1;
+              });
+              
+              const maisRecente = registros[0];
+              const destino = (maisRecente.DESTINO || '').trim().toUpperCase();
+              
+              if (destino === nomeFiscalUpper) {
+                const dataTramitacao = parseData(maisRecente.DATA || '');
+                if (dataTramitacao) {
+                  const prazo = calcularPrazoUteis(dataTramitacao, 15);
+                  const tipo = classificarPrazo(prazo);
+                  
+                  if (tipo === 'vencida') vencidas++;
+                  else if (tipo === 'avencer') aVencer++;
+                }
+              }
+            });
+            
+            resolve({ vencidas, aVencer, total: vencidas + aVencer });
+          },
+          error: () => resolve({ vencidas: 0, aVencer: 0, total: 0 })
+        });
+      });
+    }
+    
+    // ========== 2️⃣ REQUERIMENTO ==========
+    function processarRequerimento() {
+      return new Promise((resolve) => {
+        Papa.parse('data/requerimento.csv?' + timestamp, {
+          download: true,
+          header: true,
+          delimiter: ';',
+          skipEmptyLines: true,
+          complete: function(results) {
+            const dados = results.data;
+            let vencidas = 0;
+            let aVencer = 0;
+            
+            dados.forEach(row => {
+              const fiscal = (row.Fiscal_Encaminha || '').trim().toUpperCase();
+              if (fiscal !== nomeFiscalUpper) return;
+              
+              const atendimento = String(row.Atendimento || '').trim().toUpperCase();
+              const cancelado = String(row.Cancelado || '').trim().toUpperCase();
+              
+              if (atendimento === 'TRUE') return;
+              if (cancelado === 'TRUE') return;
+              
+              const prazo = parseData(row.Prazo || '');
+              if (!prazo) return;
+              
+              const tipo = classificarPrazo(prazo);
               if (tipo === 'vencida') vencidas++;
               else if (tipo === 'avencer') aVencer++;
-            }
-          }
-        });
-        
-        console.log(`✅ Protocolos: ${vencidas} vencidas, ${aVencer} a vencer`);
-        resolve({ vencidas, aVencer, total: vencidas + aVencer });
-      },
-      error: function(err) {
-        console.error('❌ Erro tramitacao.csv:', err);
-        resolve({ vencidas: 0, aVencer: 0, total: 0 });
-      }
-    });
-  });
-}
-    
-  // ========== 2️⃣ REQUERIMENTO - CORRIGIDO ==========
-function processarRequerimento() {
-  return new Promise((resolve) => {
-    Papa.parse('data/requerimento.csv?' + timestamp, {
-      download: true,
-      header: true,
-      delimiter: ';',  // ⬅️ PONTO E VÍRGULA!
-      skipEmptyLines: true,
-      complete: function(results) {
-        const dados = results.data;
-        console.log(`\n📄 REQUERIMENTO: ${dados.length} registros carregados`);
-        
-        if (dados.length > 0) {
-          console.log('🔑 CAMPOS:', Object.keys(dados[0]));
-          console.log('📋 Amostra (2 primeiros):');
-          dados.slice(0, 2).forEach((row, i) => {
-            console.log(`  ${i+1}:`, {
-              Fiscal_Encaminha: row.Fiscal_Encaminha,
-              Atendimento: row.Atendimento,
-              Cancelado: row.Cancelado,
-              Prazo: row.Prazo
             });
-          });
-        }
-        
-        let vencidas = 0;
-        let aVencer = 0;
-        let descartados = {
-          fiscalDiferente: 0,
-          atendido: 0,
-          cancelado: 0,
-          semPrazo: 0,
-          prazoFuturo: 0
-        };
-        
-        dados.forEach((row, index) => {
-          // ⬇️ CAMPO CORRETO: Fiscal_Encaminha (COM underscore)
-          const fiscal = (row.Fiscal_Encaminha || '').trim().toUpperCase();
-          
-          if (fiscal !== nomeFiscalUpper) {
-            descartados.fiscalDiferente++;
-            return;
-          }
-          
-          if (index < 3) console.log(`  ✅ Fiscal BATE! OS: ${row.OS}`);
-          
-          // Atendimento e Cancelado são "True" ou vazio
-          const atendimento = String(row.Atendimento || '').trim().toUpperCase();
-          if (atendimento === 'TRUE') {
-            descartados.atendido++;
-            if (index < 3) console.log('    ❌ Atendido');
-            return;
-          }
-          
-          const cancelado = String(row.Cancelado || '').trim().toUpperCase();
-          if (cancelado === 'TRUE') {
-            descartados.cancelado++;
-            if (index < 3) console.log('    ❌ Cancelado');
-            return;
-          }
-          
-          const prazoStr = (row.Prazo || '').trim();
-          if (!prazoStr) {
-            descartados.semPrazo++;
-            if (index < 3) console.log('    ❌ Sem prazo');
-            return;
-          }
-          
-          const prazo = parseData(prazoStr);
-          if (!prazo) {
-            descartados.semPrazo++;
-            if (index < 3) console.log('    ❌ Prazo inválido:', prazoStr);
-            return;
-          }
-          
-          const tipo = classificarPrazo(prazo);
-          
-          if (index < 3) {
-            console.log(`    📅 Prazo: ${prazoStr}`);
-            console.log(`       Classificação: ${tipo}`);
-          }
-          
-          if (tipo === 'vencida') {
-            vencidas++;
-            if (index < 3) console.log('    ✅ VENCIDA!');
-          } else if (tipo === 'avencer') {
-            aVencer++;
-            if (index < 3) console.log('    ✅ A VENCER!');
-          } else {
-            descartados.prazoFuturo++;
-            if (index < 3) console.log('    ⏭️ Prazo futuro');
-          }
+            
+            resolve({ vencidas, aVencer, total: vencidas + aVencer });
+          },
+          error: () => resolve({ vencidas: 0, aVencer: 0, total: 0 })
         });
-        
-        console.log('\n📊 ESTATÍSTICAS REQUERIMENTO:');
-        console.log('  ✅ Vencidas:', vencidas);
-        console.log('  ⏰ A vencer:', aVencer);
-        console.log('  📦 Total:', vencidas + aVencer);
-        console.log('  Descartados:', descartados);
-        
-        resolve({ vencidas, aVencer, total: vencidas + aVencer });
-      },
-      error: function(err) {
-        console.error('❌ Erro requerimento.csv:', err);
-        resolve({ vencidas: 0, aVencer: 0, total: 0 });
-      }
-    });
-  });
-}
+      });
+    }
     
-    // ========== 3️⃣ DENÚNCIA (denuncia.csv) ==========
+    // ========== 3️⃣ DENÚNCIA ==========
     function processarDenuncia() {
       return new Promise((resolve) => {
         Papa.parse('data/denuncia.csv?' + timestamp, {
@@ -1335,20 +1240,17 @@ function processarRequerimento() {
           skipEmptyLines: true,
           complete: function(results) {
             const dados = results.data;
-            console.log(`📄 Denúncia: ${dados.length} registros`);
-            
             let vencidas = 0;
             let aVencer = 0;
             
             dados.forEach(row => {
-              const fiscal = (row.FiscalEncaminha || row.fiscalEncaminha || '').trim().toUpperCase();
-              
+              const fiscal = (row.FiscalEncaminha || '').trim().toUpperCase();
               if (fiscal !== nomeFiscalUpper) return;
               
-              const archive = String(row.Archive || row.archive || '').toLowerCase();
-              if (archive === 'true' || archive === '1' || archive === 't') return;
+              const archive = String(row.Archive || '').trim().toUpperCase();
+              if (archive === 'TRUE') return;
               
-              const prazo = parseData(row.Prazo || row.prazo || '');
+              const prazo = parseData(row.Prazo || '');
               if (!prazo) return;
               
               const tipo = classificarPrazo(prazo);
@@ -1356,18 +1258,14 @@ function processarRequerimento() {
               else if (tipo === 'avencer') aVencer++;
             });
             
-            console.log(`✅ Denúncias: ${vencidas} vencidas, ${aVencer} a vencer`);
             resolve({ vencidas, aVencer, total: vencidas + aVencer });
           },
-          error: function(err) {
-            console.error('❌ Erro denuncia.csv:', err);
-            resolve({ vencidas: 0, aVencer: 0, total: 0 });
-          }
+          error: () => resolve({ vencidas: 0, aVencer: 0, total: 0 })
         });
       });
     }
     
-    // ========== 4️⃣ OFÍCIO (oficio.csv) ==========
+    // ========== 4️⃣ OFÍCIO ==========
     function processarOficio() {
       return new Promise((resolve) => {
         Papa.parse('data/oficio.csv?' + timestamp, {
@@ -1377,24 +1275,20 @@ function processarRequerimento() {
           skipEmptyLines: true,
           complete: function(results) {
             const dados = results.data;
-            console.log(`📄 Ofício: ${dados.length} registros`);
-            
             let vencidas = 0;
             let aVencer = 0;
             
             dados.forEach(row => {
-              const fiscal = (row.Fiscalencaminha || row.FiscalEncaminha || 
-                             row.fiscalencaminha || '').trim().toUpperCase();
-              
+              const fiscal = (row.Fiscalencaminha || '').trim().toUpperCase();
               if (fiscal !== nomeFiscalUpper) return;
               
-              const cancela = String(row.Cancela || row.cancela || '').toLowerCase();
-              const archive = String(row.Archive || row.archive || '').toLowerCase();
+              const cancela = String(row.Cancela || '').trim().toUpperCase();
+              const archive = String(row.Archive || '').trim().toUpperCase();
               
-              if (cancela === 'true' || cancela === '1' || cancela === 't') return;
-              if (archive === 'true' || archive === '1' || archive === 't') return;
+              if (cancela === 'TRUE') return;
+              if (archive === 'TRUE') return;
               
-              const prazo = parseData(row.Prazo || row.prazo || '');
+              const prazo = parseData(row.Prazo || '');
               if (!prazo) return;
               
               const tipo = classificarPrazo(prazo);
@@ -1402,36 +1296,22 @@ function processarRequerimento() {
               else if (tipo === 'avencer') aVencer++;
             });
             
-            console.log(`✅ Ofícios: ${vencidas} vencidas, ${aVencer} a vencer`);
             resolve({ vencidas, aVencer, total: vencidas + aVencer });
           },
-          error: function(err) {
-            console.error('❌ Erro oficio.csv:', err);
-            resolve({ vencidas: 0, aVencer: 0, total: 0 });
-          }
+          error: () => resolve({ vencidas: 0, aVencer: 0, total: 0 })
         });
       });
     }
     
     // ========== CARREGA TUDO ==========
-    const resultados = await Promise.all([
+    const [protocolos, requerimentos, denuncias, oficios] = await Promise.all([
       processarProtocolo(),
       processarRequerimento(),
       processarDenuncia(),
       processarOficio()
     ]);
     
-    const [protocolos, requerimentos, denuncias, oficios] = resultados;
-    
-    console.log('═══════════════════════════════════════');
-    console.log('🎯 RESULTADO FINAL:');
-    console.log(`   Protocolos: ${protocolos.total} (${protocolos.vencidas}v + ${protocolos.aVencer}a)`);
-    console.log(`   Requerimentos: ${requerimentos.total} (${requerimentos.vencidas}v + ${requerimentos.aVencer}a)`);
-    console.log(`   Denúncias: ${denuncias.total} (${denuncias.vencidas}v + ${denuncias.aVencer}a)`);
-    console.log(`   Ofícios: ${oficios.total} (${oficios.vencidas}v + ${oficios.aVencer}a)`);
-    console.log('═══════════════════════════════════════');
-    
-    // ⬇️ ATUALIZA OS 4 CARDS ⬇️
+    // ========== ATUALIZA CARDS ==========
     const statCards = document.querySelectorAll('.stat-card .stat-number');
     if (statCards.length >= 4) {
       statCards[0].textContent = protocolos.total;
@@ -1439,7 +1319,6 @@ function processarRequerimento() {
       statCards[2].textContent = denuncias.total;
       statCards[3].textContent = oficios.total;
       
-      // Atualiza os detalhes
       document.getElementById('detProtocolos').textContent = 
         `${protocolos.vencidas} vencidas | ${protocolos.aVencer} próximas`;
       document.getElementById('detRequerimentos').textContent = 
@@ -1451,10 +1330,9 @@ function processarRequerimento() {
     }
     
     document.getElementById('fiscalStats').style.display = 'block';
-    console.log('✅ Cards atualizados!');
     
   } catch(e) {
-    console.error('❌ Erro:', e);
+    console.error('Erro ao carregar OS:', e);
   }
 }
 
