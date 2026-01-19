@@ -633,9 +633,20 @@ header h2 {
       <span class="stat-label">Última semana</span>
     </div>
     <div class="stat-card">
-      <span class="stat-number">-</span>
-      <span class="stat-label">OS Pendentes</span>
-    </div>
+    <span class="stat-number">-</span>
+    <span class="stat-label">Protocolos</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-number">-</span>
+    <span class="stat-label">Requerimentos</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-number">-</span>
+    <span class="stat-label">Denúncias</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-number">-</span>
+    <span class="stat-label">Ofícios</span>
   </div>
 </div>
 
@@ -1312,15 +1323,18 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
       processarOficio()
     ]);
     
-    const totalPendentes = resultados.reduce((acc, val) => acc + val, 0);
-    
-    console.log(`🎯 TOTAL PENDENTES: ${totalPendentes}`);
-    
-    // ⬇️ ATUALIZA O 4º CARD ⬇️
-    const statCards = document.querySelectorAll('.stat-card .stat-number');
-    if (statCards.length >= 4) {
-      statCards[3].textContent = totalPendentes;
-    }
+ const [protocolos, requerimentos, denuncias, oficios] = resultados;
+
+const statCards = document.querySelectorAll('.stat-card .stat-number');
+if (statCards.length >= 7) {  // ← Agora são 7 cards!
+  statCards[0].textContent = total2026;        // Inspeções 2026
+  statCards[1].textContent = totalMes;         // Este mês
+  statCards[2].textContent = totalSemana;      // Última semana
+  statCards[3].textContent = protocolos;       // Protocolos
+  statCards[4].textContent = requerimentos;    // Requerimentos
+  statCards[5].textContent = denuncias;        // Denúncias
+  statCards[6].textContent = oficios;          // Ofícios
+}   
     
   } catch(e) {
     console.error('❌ Erro ao carregar OS pendentes:', e);
