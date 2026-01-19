@@ -50,7 +50,6 @@ function startExpiryTimer(signOutFn){
   }, 10_000);
 }
 
-// Variável global para evitar múltiplas inicializações
 let firebaseApp = null;
 
 export async function protectPage(firebaseConfig, onAuthorized){
@@ -67,7 +66,6 @@ export async function protectPage(firebaseConfig, onAuthorized){
   const { getFirestore, doc, getDoc } =
     await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
 
-  // ✅ CORREÇÃO: Só inicializa se ainda não foi inicializado
   if (!firebaseApp) {
     const apps = getApps();
     if (apps.length === 0) {
@@ -89,26 +87,27 @@ export async function protectPage(firebaseConfig, onAuthorized){
 
   onAuthStateChanged(auth, async (user) => {
     if (!user){
+      console.log('❌ Usuário não autenticado - redirecionando');
       location.href = INDEX_URL;
       return;
     }
 
     const email = normEmail(user.email);
-    if (!AUTHORIZED_EMAILS.has(email)){
-      try { await signOut(auth); } catch(e){}
-      alert("Acesso não autorizado. Solicite liberação ao administrador.");
-      location.href = INDEX_URL;
-      return;
-    }
+    console.log('✅ Usuário autenticado:', email);
 
     // Busca perfil no Firestore (OPCIONAL)
     let perfil = null;
     try {
       const perfilSnap = await getDoc(doc(db, 'usuarios', email));
       perfil = perfilSnap.exists() ? perfilSnap.data() : null;
-      console.log('📋 Perfil encontrado:', perfil ? perfil.nome : 'não existe');
+      
+      if (perfil) {
+        console.log('📋 Perfil encontrado:', perfil.nome, '-', perfil.grupo);
+      } else {
+        console.log('📋 Perfil não existe (OK para páginas antigas)');
+      }
 
-      // ✅ CORREÇÃO: Só bloqueia se perfil EXISTE e está inativo
+      // Só bloqueia se perfil EXISTE e está inativo
       if (perfil && !perfil.ativo) {
         alert(`Perfil inativo: ${email}. Contate o administrador.`);
         await signOut(auth);
@@ -116,22 +115,23 @@ export async function protectPage(firebaseConfig, onAuthorized){
         return;
       }
 
-      // Bloqueia Administrativo APENAS se perfil existir
+      // Bloqueia Administrativo de páginas específicas
       if (perfil && perfil.grupo === 'Administrativo') {
         alert(`Acesso negado. Esta página é restrita.\n\nGrupo: ${perfil.grupo}`);
         location.href = INDEX_URL;
         return;
       }
     } catch(e) {
-      console.warn("Perfil não encontrado (OK para páginas sem perfil):", e.message);
+      console.warn('⚠️ Erro ao buscar perfil:', e.message);
     }
 
     window.perfilGlobal = perfil;
     setSessionMarks();
     startExpiryTimer(() => signOut(auth));
     
+    console.log('✅ Executando callback onAuthorized');
     if (typeof onAuthorized === "function") {
-      onAuthorized(user, auth, perfil); // passa null se não tem perfil
+      onAuthorized(user, auth, perfil);
     }
   });
 }
