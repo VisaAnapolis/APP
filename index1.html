@@ -1142,7 +1142,7 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
         Papa.parse('data/tramitacao.csv?' + timestamp, {
           download: true,
           header: true,
-          delimiter: ',',
+          delimiter: ';',
           skipEmptyLines: true,
           complete: function(results) {
             const dados = results.data;
@@ -1210,7 +1210,7 @@ function processarRequerimento() {
     Papa.parse('data/requerimento.csv?' + timestamp, {
       download: true,
       header: true,
-      delimiter: ',',
+      delimiter: ';',
       skipEmptyLines: true,
       complete: function(results) {
         const dados = results.data;
@@ -1326,7 +1326,7 @@ function processarRequerimento() {
         Papa.parse('data/denuncia.csv?' + timestamp, {
           download: true,
           header: true,
-          delimiter: ',',
+          delimiter: ';',
           skipEmptyLines: true,
           complete: function(results) {
             const dados = results.data;
@@ -1368,7 +1368,7 @@ function processarRequerimento() {
         Papa.parse('data/oficio.csv?' + timestamp, {
           download: true,
           header: true,
-          delimiter: ',',
+          delimiter: ';',
           skipEmptyLines: true,
           complete: function(results) {
             const dados = results.data;
