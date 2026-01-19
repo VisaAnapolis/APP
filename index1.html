@@ -473,8 +473,121 @@ header h2 {
     margin-bottom: 16px;   /* equivale visualmente a um <br> */
   }
 }
+
+/* User info bar */
+.user-info-bar {
+  background: rgba(52, 199, 89, 0.08);
+  padding: 6px 20px;
+  font-size: 0.7rem;
+  color: #34C759;
+  border-bottom: 1px solid rgba(52, 199, 89, 0.15);
+  text-align: left;
+}
+
+.user-info-bar .user-name {
+  font-weight: 600;
+  display: inline;
+  margin-right: 10px;
+}
+
+.user-info-bar .user-name::after {
+  content: "•";
+  margin-left: 10px;
+  opacity: 0.5;
+}
+
+.user-info-bar .user-email {
+  font-weight: 400;
+  opacity: 0.85;
+  display: inline;
+}
+
+/* Stats do fiscal */
+.fiscal-stats {
+  background: linear-gradient(135deg, rgba(26, 58, 107, 0.03), rgba(52, 199, 89, 0.03));
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.stats-container {
+  display: flex;
+  gap: 16px;
+  max-width: 600px;
+}
+
+.stat-card {
+  flex: 1;
+  background: white;
+  border-radius: 12px;
+  padding: 12px 16px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.stat-number {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a3a6b;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.stats-container .stat-card:nth-child(1) .stat-number {
+  color: #2c5aa0;
+}
+
+.stats-container .stat-card:nth-child(2) .stat-number {
+  color: #34C759;
+}
+
+.stats-container .stat-card:nth-child(3) .stat-number {
+  color: #007aff;
+}
+
+@media (max-width: 768px) {
+  .user-info-bar {
+    font-size: 0.65rem;
+    padding: 5px 12px;
+  }
+  
+  .fiscal-stats {
+    padding: 12px;
+  }
+  
+  .stats-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .stat-card {
+    padding: 10px;
+  }
+  
+  .stat-number {
+    font-size: 1.5rem;
+  }
+  
+  .stat-label {
+    font-size: 0.7rem;
+  }
+}
+
+      
  </style>
-    
+
+<!-- PapaParse para ler CSV -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+  
 </head>
 
 <body>
@@ -498,6 +611,33 @@ header h2 {
   <h1>Vigilância Sanitária</h1>
   <h2>Diretoria de Vigilância em Saúde — Anápolis</h2>
 </header>
+
+</header>
+
+<!-- User info -->
+<div id="userInfo" class="user-info-bar"></div>
+
+<!-- Stats do fiscal -->
+<div id="fiscalStats" class="fiscal-stats" style="display: none;">
+  <div class="stats-container">
+    <div class="stat-card">
+      <span class="stat-number">-</span>
+      <span class="stat-label">Inspeções 2026</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">-</span>
+      <span class="stat-label">Este mês</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">-</span>
+      <span class="stat-label">Última semana</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <!-- resto do conteúdo -->
+  
 
 <div class="container">
 
@@ -628,7 +768,25 @@ import {
   browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+// ========== IMPORTS ==========
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
+const firebaseConfig = {
+  apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
+  authDomain: "visam-3a30b.firebaseapp.com",
+  projectId: "visam-3a30b",
+  messagingSenderId: "308899251430",
+  appId: "1:308899251430:web:0053cdbd0bed7f0de76727"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app); // ← ESSENCIAL para buscar perfil
+const provider = new GoogleAuthProvider();
+
+  
 // ===== SISTEMA DE CACHE DE AUTENTICAÇÃO =====
 const AUTH_CACHE_KEY = 'visa_auth_cache';
 const AUTH_CACHE_DURATION = 60 * 60 * 1000; // 1 hora
@@ -828,16 +986,138 @@ window.logout = function(){
   if (cachedAuth && AUTHORIZED_EMAILS.has(cachedAuth.email.toLowerCase())) {
     console.log('✅ Login via cache - válido por', authCache.getTimeRemaining(), 'segundos');
     showConteudo();
+
+    // ========== FUNÇÃO: Carregar estatísticas do fiscal ==========
+async function carregarEstatisticasFiscal(nomeFiscal) {
+  try {
+    // Busca inspecoes.csv
+    const response = await fetch('data/inspecoes.csv?' + new Date().getTime());
+    const csvText = await response.text();
     
-    // Verifica token em background
-    onAuthStateChanged(auth, (user) => {
-      if (user && isAuthorized(user)) {
-        authCache.save(user);
-      } else {
-        authCache.clear();
-        showLogin();
+    // Parseia CSV com PapaParse
+    Papa.parse(csvText, {
+      header: true,
+      delimiter: ',',
+      skipEmptyLines: true,
+      complete: function(results) {
+        const inspecoes = results.data;
+        
+        // Filtra inspeções do fiscal
+        const minhasInspecoes = inspecoes.filter(insp => {
+          return insp.Fiscal1 === nomeFiscal || 
+                 insp.Fiscal2 === nomeFiscal || 
+                 insp.Fiscal3 === nomeFiscal;
+        });
+        
+        // Data atual
+        const hoje = new Date();
+        const anoAtual = hoje.getFullYear();
+        const mesAtual = hoje.getMonth() + 1; // 0-11, então +1
+        const seteDiasAtras = new Date(hoje.getTime() - (7 * 24 * 60 * 60 * 1000));
+        
+        // Função para converter data dd.mm.yyyy
+        function parseData(dataStr) {
+          if (!dataStr) return null;
+          const partes = dataStr.split('.');
+          if (partes.length === 3) {
+            return new Date(partes[2], partes[1] - 1, partes[0]);
+          }
+          return null;
+        }
+        
+        // Conta inspeções
+        let total2026 = 0;
+        let totalMes = 0;
+        let totalSemana = 0;
+        
+        minhasInspecoes.forEach(insp => {
+          const data = parseData(insp.DTVISITA);
+          if (!data) return;
+          
+          if (data.getFullYear() === anoAtual) {
+            total2026++;
+            
+            if (data.getMonth() + 1 === mesAtual) {
+              totalMes++;
+              
+              if (data >= seteDiasAtras) {
+                totalSemana++;
+              }
+            }
+          }
+        });
+        
+        // Atualiza cards
+        const statCards = document.querySelectorAll('.stat-card .stat-number');
+        if (statCards.length >= 3) {
+          statCards[0].textContent = total2026;
+          statCards[1].textContent = totalMes;
+          statCards[2].textContent = totalSemana;
+        }
+        
+        // Mostra cards
+        document.getElementById('fiscalStats').style.display = 'block';
       }
     });
+  } catch(e) {
+    console.error('Erro ao carregar estatísticas:', e);
+  }
+}
+
+  onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    showLogin();
+    return;
+  }
+
+  if (isAuthorized(user)) {
+    authCache.save(user);
+    showConteudo();
+    
+    // Busca perfil do Firestore
+    try {
+      const perfilSnap = await getDoc(doc(db, 'usuarios', user.email));
+      const perfil = perfilSnap.exists() ? perfilSnap.data() : null;
+      
+      // Mostra nome no header
+      const userInfo = document.getElementById('userInfo');
+      if (userInfo) {
+        if (perfil) {
+          userInfo.innerHTML = `
+            <span class="user-name">${perfil.nome}</span>
+            <span class="user-email">${user.email}</span>
+          `;
+          
+          // Se for FISCAL, carrega estatísticas
+          if (perfil.grupo === 'Fiscal') {
+            carregarEstatisticasFiscal(perfil.nome);
+          }
+        } else {
+          userInfo.innerHTML = `
+            <span class="user-name">${user.displayName || 'Usuário'}</span>
+            <span class="user-email">${user.email}</span>
+          `;
+        }
+      }
+    } catch(e) {
+      console.error('Erro ao buscar perfil:', e);
+      const userInfo = document.getElementById('userInfo');
+      if (userInfo) {
+        userInfo.innerHTML = `
+          <span class="user-name">${user.displayName || 'Usuário'}</span>
+          <span class="user-email">${user.email}</span>
+        `;
+      }
+    }
+    
+    return;
+  }
+
+  showLogin();
+  showUnauthorizedModal(user);
+  window.pendingLogout = true;
+});
+
     
     return;
   }
