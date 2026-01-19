@@ -831,7 +831,9 @@ import {
   setPersistence,
   browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+// import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
   
 const firebaseConfig = {
   apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
@@ -1407,6 +1409,14 @@ onAuthStateChanged(auth, async (user) => {
     try {
       const perfilSnap = await getDoc(doc(db, 'usuarios', user.email));
       const perfil = perfilSnap.exists() ? perfilSnap.data() : null;
+
+ // Atualiza foto e último acesso em background
+ if (perfil) {
+     updateDoc(doc(db, "usuarios", user.email), {
+         photoURL: user.photoURL || '',
+         ultimoAcesso: serverTimestamp()
+     }).catch(err => console.warn('Erro ao atualizar foto:', err));
+ }
       
       // Mostra nome no header
       const userInfo = document.getElementById('userInfo');
