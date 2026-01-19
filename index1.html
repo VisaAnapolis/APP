@@ -632,6 +632,10 @@ header h2 {
       <span class="stat-number">-</span>
       <span class="stat-label">Última semana</span>
     </div>
+    <div class="stat-card">
+      <span class="stat-number">-</span>
+      <span class="stat-label">OS Pendentes</span>
+    </div>
   </div>
 </div>
 
@@ -1048,6 +1052,98 @@ async function carregarEstatisticasFiscal(nomeFiscal) {
   }
 }
 
+// ========== FUNÇÃO: Carrega OS pendentes de 4 CSVs ==========
+async function carregarOSPendentesFiscal(nomeFiscal) {
+  try {
+    const timestamp = new Date().getTime();
+    
+    // Arrays para armazenar pendentes de cada tipo
+    let totalPendentes = 0;
+    let arquivosCarregados = 0;
+    const totalArquivos = 4;
+    
+    // Função auxiliar para processar cada CSV
+    function processarCSV(url, nomeArquivo) {
+      return new Promise((resolve) => {
+        Papa.parse(url + '?' + timestamp, {
+          download: true,
+          header: true,
+          delimiter: ',',
+          skipEmptyLines: true,
+          complete: function(results) {
+            const dados = results.data;
+            console.log(`${nomeArquivo} carregado: ${dados.length} registros`);
+            
+            let pendentesDeste = 0;
+            
+            dados.forEach(row => {
+              // ⬇️ VERIFICA SE É DO FISCAL ⬇️
+              // Tenta vários campos possíveis
+              const fiscal = row.Fiscal || row.Fiscal1 || row.Responsavel || 
+                            row.Responsável || row.FISCAL || '';
+              
+              const pertenceAoFiscal = fiscal.trim().toUpperCase() === nomeFiscal.toUpperCase();
+              
+              if (!pertenceAoFiscal) return;
+              
+              // ⬇️ VERIFICA SE ESTÁ PENDENTE ⬇️
+              const dtConclusao = (row.DTCONCLUSAO || row.DataConclusao || 
+                                  row.DtConclusao || row.Conclusao || '').trim();
+              
+              const status = (row.STATUS || row.Status || row.Situacao || 
+                             row.SITUACAO || '').trim().toUpperCase();
+              
+              // Pendente se:
+              // 1. Data conclusão vazia OU
+              // 2. Status diferente de CONCLUÍDA/CONCLUÍDO/FINALIZADA
+              const ehPendente = (dtConclusao === '' || dtConclusao === 'NA') &&
+                                (status === '' || 
+                                 (status !== 'CONCLUÍDA' && 
+                                  status !== 'CONCLUIDO' && 
+                                  status !== 'FINALIZADA' &&
+                                  status !== 'FINALIZADO'));
+              
+              if (ehPendente) {
+                pendentesDeste++;
+              }
+            });
+            
+            console.log(`${nomeArquivo}: ${pendentesDeste} pendentes`);
+            resolve(pendentesDeste);
+          },
+          error: function(err) {
+            console.error(`Erro ao carregar ${nomeArquivo}:`, err);
+            resolve(0);
+          }
+        });
+      });
+    }
+    
+    // ⬇️ CARREGA OS 4 ARQUIVOS EM PARALELO ⬇️
+    const resultados = await Promise.all([
+      processarCSV('data/requerimento.csv', 'Requerimento'),
+      processarCSV('data/oficio.csv', 'Ofício'),
+      processarCSV('data/denuncia.csv', 'Denúncia'),
+      processarCSV('data/tramitacao.csv', 'Tramitação')
+    ]);
+    
+    // Soma todos os pendentes
+    totalPendentes = resultados.reduce((acc, val) => acc + val, 0);
+    
+    console.log(`TOTAL PENDENTES: ${totalPendentes}`);
+    
+    // ⬇️ ATUALIZA O 4º CARD ⬇️
+    const statCards = document.querySelectorAll('.stat-card .stat-number');
+    if (statCards.length >= 4) {
+      statCards[3].textContent = totalPendentes;
+    }
+    
+  } catch(e) {
+    console.error('Erro ao carregar OS pendentes:', e);
+  }
+}
+
+    
   onAuthStateChanged(auth, async (user) => {
   if (!user) {
     showLogin();
@@ -1075,6 +1171,7 @@ async function carregarEstatisticasFiscal(nomeFiscal) {
           // Se for FISCAL, carrega estatísticas
           if (perfil.grupo === 'Fiscal') {
             carregarEstatisticasFiscal(perfil.nome);
+            carregarOSPendentesFiscal(perfil.nome);
           }
         } else {
           userInfo.innerHTML = `
