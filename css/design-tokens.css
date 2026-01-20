@@ -92,58 +92,49 @@
   --z-tooltip: 1070;
 }
 
-/* ===================================================================
-   DARK MODE - WEB/DESKTOP
-   ================================================================ */
+
+  /* === DARK MODE - WEB/DESKTOP === */
+
 @media (prefers-color-scheme: dark) {
   :root:not(.platform-ios):not(.platform-android) {
-    /* Superfícies */
-    --bg-primary: #0f1419;
-    --bg-secondary: #1a202c;
-    --surface: #1a202c;
-    --surface-variant: #2d3748;
-    
-    /* Texto */
-    --text-primary: #f7fafc;
-    --text-secondary: #e2e8f0;
-    --text-tertiary: #cbd5e0;
-    --text-disabled: #718096;
-    
-    /* Header escuro */
-    --header-bg-start: #1e3f70;
-    --header-bg-end: #2c5aa0;
-    --header-text: #e2e8f0;
-    --header-text-secondary: rgba(226, 232, 240, 0.85);
-    
-    /* Bordas */
-    --border-primary: rgba(255, 255, 255, 0.12);
-    --border-secondary: rgba(255, 255, 255, 0.08);
-    --border-focus: #4a7bc8;
-    
-    /* Inputs */
-    --input-bg: #2d3748;
-    --input-border: rgba(255, 255, 255, 0.23);
-    --input-text: #f7fafc;
-    --input-placeholder: #718096;
-    --input-focus: #4a7bc8;
-    
-    /* Cards */
-    --card-bg: #1a202c;
-    --card-border: rgba(255, 255, 255, 0.12);
-    --indicator-loading-bg: #2d3748;
-    --warning-bg: #3d2e00;
-    --warning-border: #d1a000;
-    
-    /* Cores primárias mais claras para contraste */
-    --primary: #4a7bc8;
-    --primary-light: #6b9adc;
-    
-    /* Sombras mais suaves */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    --bg-primary: #1e1e24;
+    --bg-secondary: #2a2a31;
+    --surface: #2a2a31;
+    --surface-variant: #323239;
+    --text-primary: #e8e6e3;
+    --text-secondary: #a8a29e;
+    --text-tertiary: #78716c;
+    --text-disabled: #57534e;
+    --header-bg-start: #2a2a31;
+    --header-bg-end: #323239;
+    --header-text: #e8e6e3;
+    --header-text-secondary: rgba(232, 230, 227, 0.85);
+    --border-primary: rgba(168, 162, 158, 0.15);
+    --border-secondary: rgba(168, 162, 158, 0.08);
+    --border-focus: #6b9ad4;
+    --input-bg: #2f2f37;
+    --input-border: rgba(168, 162, 158, 0.25);
+    --input-text: #e8e6e3;
+    --input-placeholder: #78716c;
+    --input-focus: #6b9ad4;
+    --card-bg: #2a2a31;
+    --card-border: rgba(168, 162, 158, 0.12);
+    --indicator-loading-bg: #323239;
+    --warning-bg: #2f2a1f;
+    --warning-border: #d9b955;
+    --primary: #6b9ad4;
+    --primary-light: #8ab0df;
+    --success: #4ade80;
+    --warning: #fbbf24;
+    --error: #f87171;
+    --info: #60a5fa;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
   }
 }
+
 
 /* ===================================================================
    iOS - LIGHT MODE
@@ -177,60 +168,46 @@
   }
 }
 
-/* ===================================================================
-   iOS - DARK MODE ⭐
-   ================================================================ */
+   /* === iOS - DARK MODE === */
+
 @supports (-webkit-touch-callout: none) {
   @media (prefers-color-scheme: dark) {
     :root {
-      /* Superfícies iOS Dark */
-      --bg-primary: #000000;
-      --bg-secondary: #1c1c1e;
-      --surface: #1c1c1e;
-      --surface-variant: #2c2c2e;
-      
-      /* Texto iOS Dark */
-      --text-primary: #ffffff;
-      --text-secondary: #ebebf5;
-      --text-tertiary: #aeaeb2;
-      --text-disabled: #8e8e93;
-      
-      /* Header iOS Dark */
-      --header-bg-start: #1c1c1e;
-      --header-bg-end: #2c2c2e;
-      --header-text: #ffffff;
-      --header-text-secondary: rgba(255, 255, 255, 0.85);
-      
-      /* Bordas iOS Dark */
-      --border-primary: rgba(255, 255, 255, 0.15);
-      --border-secondary: rgba(255, 255, 255, 0.10);
-      
-      /* Inputs iOS Dark */
-      --input-bg: #1c1c1e;
-      --input-border: rgba(255, 255, 255, 0.15);
-      --input-text: #ffffff;
-      --input-placeholder: #8e8e93;
-      
-      /* Cards iOS Dark */
-      --card-bg: #1c1c1e;
-      --card-border: rgba(255, 255, 255, 0.15);
-      --indicator-loading-bg: #2c2c2e;
-      --warning-bg: #3d2e00;
-      
-      /* Cores iOS Dark (mais vibrantes) */
-      --primary: #0A84FF;
-      --success: #32D74B;
-      --warning: #FF9F0A;
-      --error: #FF453A;
-      --info: #64D2FF;
-      
-      /* Sombras iOS Dark */
-      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.8);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.8);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.8);
+      --bg-primary: #1e1e24;
+      --bg-secondary: #2a2a31;
+      --surface: #2a2a31;
+      --surface-variant: #323239;
+      --text-primary: #e8e6e3;
+      --text-secondary: #a8a29e;
+      --text-tertiary: #78716c;
+      --text-disabled: #57534e;
+      --header-bg-start: #2a2a31;
+      --header-bg-end: #323239;
+      --header-text: #e8e6e3;
+      --header-text-secondary: rgba(232, 230, 227, 0.85);
+      --border-primary: rgba(168, 162, 158, 0.15);
+      --border-secondary: rgba(168, 162, 158, 0.10);
+      --input-bg: #2a2a31;
+      --input-border: rgba(168, 162, 158, 0.15);
+      --input-text: #e8e6e3;
+      --input-placeholder: #78716c;
+      --card-bg: #2a2a31;
+      --card-border: rgba(168, 162, 158, 0.15);
+      --indicator-loading-bg: #323239;
+      --warning-bg: #2f2a1f;
+      --primary: #6b9ad4;
+      --primary-light: #8ab0df;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --error: #f87171;
+      --info: #60a5fa;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
     }
   }
 }
+
 
 /* ===================================================================
    ANDROID - LIGHT MODE (Material Design 3)
@@ -263,59 +240,43 @@ html.platform-android {
   --border-focus: #1976d2;
 }
 
-/* ===================================================================
-   ANDROID - DARK MODE ⭐ (Material Design 3)
-   ================================================================ */
+/* === ANDROID - DARK MODE === */
 @media (prefers-color-scheme: dark) {
   html.platform-android {
-    /* Superfícies Material Dark */
-    --bg-primary: #121212;
-    --bg-secondary: #1e1e1e;
-    --surface: #1e1e1e;
-    --surface-variant: #2c2c2c;
-    
-    /* Texto Material Dark */
-    --text-primary: #e1e1e1;
-    --text-secondary: #b3b3b3;
-    --text-tertiary: #8a8a8a;
-    --text-disabled: #666666;
-    
-    /* Header Material Dark */
-    --header-bg-start: #1e1e1e;
-    --header-bg-end: #2c2c2c;
-    --header-text: #e1e1e1;
-    --header-text-secondary: rgba(225, 225, 225, 0.87);
-    
-    /* Bordas Material Dark */
-    --border-primary: rgba(255, 255, 255, 0.12);
-    --border-secondary: rgba(255, 255, 255, 0.08);
-    
-    /* Inputs Material Dark */
-    --input-bg: #1e1e1e;
-    --input-border: rgba(255, 255, 255, 0.42);
-    --input-text: #e1e1e1;
-    --input-placeholder: #8a8a8a;
-    
-    /* Cards Material Dark */
-    --card-bg: #1e1e1e;
-    --card-border: rgba(255, 255, 255, 0.12);
-    --indicator-loading-bg: #2c2c2c;
-    --warning-bg: #3d2e00;
-    
-    /* Cores Material Dark (tons M3) */
-    --primary: #90CAF9;        /* Azul claro */
-    --primary-light: #BBDEFB;
-    --success: #81C784;
-    --warning: #FFB74D;
-    --error: #E57373;
-    --info: #64B5F6;
-    
-    /* Sombras Material Dark (mais fortes) */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.6);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
+    --bg-primary: #1e1e24;
+    --bg-secondary: #2a2a31;
+    --surface: #2a2a31;
+    --surface-variant: #323239;
+    --text-primary: #e8e6e3;
+    --text-secondary: #a8a29e;
+    --text-tertiary: #78716c;
+    --text-disabled: #57534e;
+    --header-bg-start: #2a2a31;
+    --header-bg-end: #323239;
+    --header-text: #e8e6e3;
+    --header-text-secondary: rgba(232, 230, 227, 0.87);
+    --border-primary: rgba(168, 162, 158, 0.12);
+    --border-secondary: rgba(168, 162, 158, 0.08);
+    --input-bg: #2a2a31;
+    --input-border: rgba(168, 162, 158, 0.42);
+    --input-text: #e8e6e3;
+    --input-placeholder: #78716c;
+    --card-bg: #2a2a31;
+    --card-border: rgba(168, 162, 158, 0.12);
+    --indicator-loading-bg: #323239;
+    --warning-bg: #2f2a1f;
+    --primary: #6b9ad4;
+    --primary-light: #8ab0df;
+    --success: #4ade80;
+    --warning: #fbbf24;
+    --error: #f87171;
+    --info: #60a5fa;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
   }
 }
+
 
 /* ===================================================================
    SAFE AREAS (iOS notch, Android gestures)
