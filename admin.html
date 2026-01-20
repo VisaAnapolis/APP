@@ -849,7 +849,7 @@ document.getElementById('adminUsers').textContent         = totalAdmins;
 document.getElementById('administrativoUsers').textContent = totalAdministrativos;
 
 // Usuários ativos
-const totalAtivos = usuarios.filter(u => u.status === 'Ativo').length;
+const totalAtivos = usuarios.filter(u => u.ativo === true).length;
 document.getElementById('activeUsers').textContent = totalAtivos;
         }
         
