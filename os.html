@@ -382,7 +382,7 @@
         }
 
         .os-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 12px;
@@ -407,65 +407,52 @@
             background: rgba(255, 193, 7, 0.03);
         }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #e8e8e8;
-        }
+       .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-primary);  /* ✅ em vez de #e8e8e8 */
+}
 
-        .card-numero {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #1a3a6b;
-        }
+.card-numero {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--brand1);  /* ✅ já está correto */
+}
 
-        .card-body {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+.card-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);  /* ✅ em vez de #666 */
+    font-weight: 600;
+    min-width: 70px;
+}
 
-        .card-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 10px;
-        }
+.card-value {
+    flex: 1;
+    text-align: right;
+    font-size: 0.85rem;
+    color: var(--text-primary);  /* ✅ em vez de #333 */
+    word-break: break-word;
+}
 
-        .card-label {
-            font-size: 0.8rem;
-            color: #666;
-            font-weight: 600;
-            min-width: 70px;
-        }
+.card-prazo {
+    background: var(--surface-variant);  /* ✅ em vez de #f8f9fa */
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 8px;
+    text-align: center;
+}
 
-        .card-value {
-            flex: 1;
-            text-align: right;
-            font-size: 0.85rem;
-            color: #333;
-            word-break: break-word;
-        }
-
-        .card-prazo {
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 8px;
-            text-align: center;
-        }
-
-        .card-prazo-label {
-            font-size: 0.75rem;
-            color: #666;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
-        }
+.card-prazo-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);  /* ✅ em vez de #666 */
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
 
         @media (max-width: 480px) {
             .badge-prazo {
