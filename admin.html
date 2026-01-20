@@ -962,7 +962,7 @@ window.executarAuditoria = async function() {
     const idDiferenteEmail = firestoreUsers.filter(user => user.id !== user.email);
 
     // 4. Demais validações
-    const naFirestoreMasNoIndex = firestoreEmails.filter(email => !indexEmails.has(email));
+    const naFirestoreMasNoIndex = Array.from(firestoreEmails).filter(email => !indexEmails.has(email));
     const noIndexMasNoFirestore = Array.from(indexEmails).filter(email => !firestoreEmails.has(email));
     const emailsConsistentes = Array.from(firestoreEmails).filter(email => indexEmails.has(email));
 
