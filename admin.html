@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="./css/design-tokens.css">
     
     <style>
-        /* ===== VARIÁVEIS IDÊNTICAS AO INDEX ===== */
+        /* ===== VARIÁVEIS IDÊNTICAS AO INDEX =====
         :root {
             --input-bg: #ffffff;
             --input-border: rgba(0, 0, 0, 0.23);
@@ -30,7 +30,7 @@
             --warnBg: #fff7dd;
             --warnLine: #d1a000;
         }
-
+ */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         html, body { height: 100%; }
@@ -504,20 +504,53 @@
             <!-- Estatísticas -->
             <div class="card">
                 <h3>📊 Estatísticas Gerais</h3>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-number" id="statFiscais">0</div>
-                        <div class="stat-label">Fiscais</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="statAdmins">0</div>
-                        <div class="stat-label">Administradores</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="statAtivos">0</div>
-                        <div class="stat-label">Usuários Ativos</div>
-                    </div>
-                </div>
+               <div class="stats-grid">
+    <!-- Total de Usuários -->
+    <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-info">
+            <div class="stat-number" id="totalUsers">0</div>
+            <div class="stat-label">Total de Usuários</div>
+        </div>
+    </div>
+
+    <!-- Fiscais -->
+    <div class="stat-card">
+        <div class="stat-icon">🔍</div>
+        <div class="stat-info">
+            <div class="stat-number" id="fiscalUsers">0</div>
+            <div class="stat-label">Fiscais</div>
+        </div>
+    </div>
+
+    <!-- Administradores -->
+    <div class="stat-card">
+        <div class="stat-icon">⚙️</div>
+        <div class="stat-info">
+            <div class="stat-number" id="adminUsers">0</div>
+            <div class="stat-label">Administradores</div>
+        </div>
+    </div>
+
+    <!-- Administrativos -->
+    <div class="stat-card">
+        <div class="stat-icon">📋</div>
+        <div class="stat-info">
+            <div class="stat-number" id="administrativoUsers">0</div>
+            <div class="stat-label">Administrativos</div>
+        </div>
+    </div>
+
+    <!-- Usuários Ativos -->
+    <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-info">
+            <div class="stat-number" id="activeUsers">0</div>
+            <div class="stat-label">Usuários Ativos</div>
+        </div>
+    </div>
+</div>
+
             </div>
 
             <!-- Auditoria de Consistência -->
@@ -802,15 +835,21 @@
         }
 
         // ===== ESTATÍSTICAS =====
-        function atualizarEstatisticas(usuarios) {
-            const totalFiscais = usuarios.filter(u => u.grupo === 'Fiscal').length;
-            const totalAdmins = usuarios.filter(u => u.grupo === 'Administrador').length;
-            const totalAtivos = usuarios.filter(u => u.ativo === true).length;
+// Total de usuários
+document.getElementById('totalUsers').textContent = users.length;
 
-            document.getElementById('statFiscais').textContent = totalFiscais;
-            document.getElementById('statAdmins').textContent = totalAdmins;
-            document.getElementById('statAtivos').textContent = totalAtivos;
-        }
+// Por grupo
+const totalFiscais        = users.filter(u => u.grupo === 'Fiscal').length;
+const totalAdmins         = users.filter(u => u.grupo === 'Administrador').length;
+const totalAdministrativos = users.filter(u => u.grupo === 'Administrativo').length;
+
+document.getElementById('fiscalUsers').textContent        = totalFiscais;
+document.getElementById('adminUsers').textContent         = totalAdmins;
+document.getElementById('administrativoUsers').textContent = totalAdministrativos;
+
+// Usuários ativos
+const totalAtivos = users.filter(u => u.status === 'Ativo').length;
+document.getElementById('activeUsers').textContent = totalAtivos;
 
         // ===== AUDITORIA DE CONSISTÊNCIA =====
         window.executarAuditoria = async function() {
