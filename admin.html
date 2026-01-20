@@ -910,153 +910,163 @@ document.getElementById('activeUsers').textContent = totalAtivos;
         }
         
         // ===== AUDITORIA DE CONSISTÊNCIA =====
-        window.executarAuditoria = async function() {
-            const loadingDiv = document.getElementById('auditLoading');
-            const resultsDiv = document.getElementById('auditResults');
-            
-            loadingDiv.style.display = 'block';
-            resultsDiv.innerHTML = '';
+window.executarAuditoria = async function() {
+  const loadingDiv = document.getElementById('auditLoading');
+  const resultsDiv = document.getElementById('auditResults');
+  
+  loadingDiv.style.display = 'block';
+  resultsDiv.innerHTML = '';
 
-            try {
-                const indexResponse = await fetch('index.html');
-                const indexHTML = await indexResponse.text();
-                
-                const regex = /const\s+AUTHORIZED_EMAILS\s*=\s*new\s+Set\(\[([\s\S]*?)\]\)/;
-                const match = indexHTML.match(regex);
-                
-                if (!match) {
-                    throw new Error('Não foi possível encontrar AUTHORIZED_EMAILS no index.html');
-                }
-                
-                const emailsString = match[1];
-                const indexEmails = new Set();
-                
-                const emailRegex = /["']([^"']+)["']/g;
-                let emailMatch;
-                while ((emailMatch = emailRegex.exec(emailsString)) !== null) {
-                    indexEmails.add(emailMatch[1].toLowerCase().trim());
-                }
+  try {
+    // 1. Lista AUTHORIZEDEMAILS do index.html
+    const indexResponse = await fetch('index.html');
+    const indexHTML = await indexResponse.text();
+    const regex = /const\s*AUTHORIZED_EMAILS\s*=\s*new Set\((.*?)\)/s;
+    const match = indexHTML.match(regex);
+    
+    if (!match) throw new Error('Não foi possível encontrar AUTHORIZEDEMAILS no index.html');
+    
+    const emailsString = match[1];
+    const indexEmails = new Set();
+    const emailRegex = /['"`]([^'"`]+)['"`]/g;
+    let emailMatch;
+    while (emailMatch = emailRegex.exec(emailsString)) {
+      indexEmails.add(emailMatch[1].toLowerCase().trim());
+    }
+    
+    console.log(`Encontrados ${indexEmails.size} emails no index.html`);
 
-                console.log(`📋 Encontrados ${indexEmails.size} emails no index.html`);
+    // 2. Todos usuários do Firestore
+    const firestoreSnapshot = await getDocs(collection(db, 'usuarios'));
+    const firestoreUsers = [];
+    const firestoreEmails = new Set();
+    
+    firestoreSnapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.email) {
+        const email = data.email.toLowerCase().trim();
+        firestoreEmails.add(email);
+        firestoreUsers.push({
+          id: doc.id,
+          email: email,
+          nome: data.nome || 'N/A',
+          grupo: data.grupo || 'N/A',
+          ativo: data.ativo !== false  // true por padrão
+        });
+      }
+    });
+    
+    console.log(`Encontrados ${firestoreEmails.size} emails no Firestore`);
 
-                const firestoreSnapshot = await getDocs(collection(db, "usuarios"));
-                const firestoreEmails = new Set();
-                const firestoreUsers = {};
-                
-                firestoreSnapshot.forEach(doc => {
-                    const data = doc.data();
-                    if (data.email) {
-                        const email = data.email.toLowerCase().trim();
-                        firestoreEmails.add(email);
-                        firestoreUsers[email] = {
-                            nome: data.nome,
-                            grupo: data.grupo,
-                            ativo: data.ativo
-                        };
-                    }
-                });
+    // 3. NOVO: Usuários com ID ≠ email
+    const idDiferenteEmail = firestoreUsers.filter(user => user.id !== user.email);
 
-                console.log(`📊 Encontrados ${firestoreEmails.size} emails no Firestore`);
+    // 4. Demais validações
+    const naFirestoreMasNoIndex = firestoreEmails.filter(email => !indexEmails.has(email));
+    const noIndexMasNoFirestore = Array.from(indexEmails).filter(email => !firestoreEmails.has(email));
+    const emailsConsistentes = Array.from(firestoreEmails).filter(email => indexEmails.has(email));
 
-                const naFirestoreMasNaoNoIndex = [...firestoreEmails].filter(
-                    email => !indexEmails.has(email)
-                );
+    let html = `
+      <div class="audit-section">
+        <div class="audit-item success">
+          <strong>📊 Resumo Geral</strong>
+          <ul>
+            <li><strong>${indexEmails.size}</strong> emails autorizados no index.html</li>
+            <li><strong>${firestoreEmails.size}</strong> perfis cadastrados no Firestore</li>
+            <li><strong>${emailsConsistentes.length}</strong> emails consistentes em ambos</li>
+          </ul>
+        </div>
+    `;
 
-                const noIndexMasNaoNoFirestore = [...indexEmails].filter(
-                    email => !firestoreEmails.has(email)
-                );
+    // NOVO: Alertar ID ≠ email (CRÍTICO para RMPF/inspeções)
+    if (idDiferenteEmail.length > 0) {
+      html += `
+        <div class="audit-item error">
+          <strong>🚨 ${idDiferenteEmail.length} usuários com ID ≠ EMAIL (bloqueiam RMPF/inspeções)</strong>
+          <p>Estes usuários <strong>NÃO conseguem abrir RMPF/inspeções</strong> porque estas páginas validam por Document ID.</p>
+          <ul>
+            ${idDiferenteEmail.map(user => 
+              `<li><span class="email-code">${user.id}</span> ≠ <strong>${user.email}</strong> (${user.nome}, ${user.grupo})</li>`
+            ).join('')}
+          </ul>
+          <p><strong>Ação:</strong> <strong>DELETE + RECRIAR</strong> cada um (Painel Admin → Editar → Delete → Novo)</p>
+        </div>
+      `;
+    }
 
-                const emailsConsistentes = [...firestoreEmails].filter(
-                    email => indexEmails.has(email)
-                );
+    // Emails no Firestore mas não no index
+    if (naFirestoreMasNoIndex.length > 0) {
+      html += `
+        <div class="audit-item warning">
+          <strong>⚠️ ${naFirestoreMasNoIndex.length} usuários no Firestore mas NÃO autorizados no index.html</strong>
+          <p>Estes usuários têm perfil cadastrado mas <strong>não conseguem fazer login</strong>.</p>
+          <ul>${naFirestoreMasNoIndex.map(email => 
+            `<li><span class="email-code">${email}</span></li>`).join('')}</ul>
+          <p><strong>Ação:</strong> Adicione estes emails em <code>AUTHORIZEDEMAILS</code> no <strong>index.html</strong> (linha ~280)</p>
+        </div>
+      `;
+    }
 
-                let html = '<div class="audit-section">';
-
-                html += `
-                    <div class="audit-item success">
-                        <strong>📊 Resumo Geral</strong>
-                        <ul>
-                            <li><strong>${indexEmails.size}</strong> emails autorizados no index.html</li>
-                            <li><strong>${firestoreEmails.size}</strong> perfis cadastrados no Firestore</li>
-                            <li><strong>${emailsConsistentes.length}</strong> emails consistentes (em ambos)</li>
-                        </ul>
-                    </div>
-                `;
-
-                if (naFirestoreMasNaoNoIndex.length > 0) {
-                    html += `
-                        <div class="audit-item warning">
-                            <strong>⚠️ ${naFirestoreMasNaoNoIndex.length} usuários no Firestore mas NÃO autorizados no index.html</strong>
-                            <p>Estes usuários têm perfil cadastrado mas <strong>não conseguem fazer login</strong> porque não estão na lista AUTHORIZED_EMAILS:</p>
-                            <ul>
-                                ${naFirestoreMasNaoNoIndex.map(e => {
-                                    const user = firestoreUsers[e];
-                                    return `<li><span class="email-code">${e}</span> - ${user.nome} (${user.grupo})</li>`;
-                                }).join('')}
-                            </ul>
-                            <p><strong>🔧 Ação:</strong> Adicione estes emails em <code>AUTHORIZED_EMAILS</code> no <strong>index.html</strong> (linha ~280)</p>
-                        </div>
-                    `;
-                }
-
-                if (noIndexMasNaoNoFirestore.length > 0) {
-                    html += `
-                        <div class="audit-item warning">
-                            <strong>⚠️ ${noIndexMasNaoNoFirestore.length} emails autorizados no index.html mas SEM perfil no Firestore</strong>
-                            <p>Estes usuários podem fazer login mas <strong>não têm dados cadastrados</strong> (nome, grupo, status):</p>
-                            <ul>
-                                ${noIndexMasNaoNoFirestore.map(e => `<li><span class="email-code">${e}</span></li>`).join('')}
-                            </ul>
-                            <p><strong>🔧 Ação:</strong> Para cada email acima, crie um documento no Firestore:</p>
-                            <pre style="background: rgba(0,0,0,0.05); padding: 10px; border-radius: 6px; font-size: 0.85em; overflow-x: auto;">
-// Coleção: usuarios
-// Document ID: email_do_usuario@dominio.com
+    // Emails no index mas não no Firestore
+    if (noIndexMasNoFirestore.length > 0) {
+      html += `
+        <div class="audit-item warning">
+          <strong>⚠️ ${noIndexMasNoFirestore.length} emails autorizados no index.html mas SEM perfil no Firestore</strong>
+          <p>Estes usuários podem fazer login mas <strong>sem dados cadastrados</strong> (nome, grupo, status).</p>
+          <ul>${noIndexMasNoFirestore.map(email => 
+            `<li><span class="email-code">${email}</span></li>`).join('')}</ul>
+          <p><strong>Ação:</strong> Crie documento no Firestore:</p>
+          <pre style="background: rgba(0,0,0,0.05); padding: 10px; border-radius: 6px; font-size: 0.85em; overflow-x: auto;">
+Coleção: usuarios
+Document ID: ${email}
 {
   "nome": "Nome Completo",
-  "email": "email_do_usuario@dominio.com",
-  "grupo": "Fiscal", // ou "Administrador" ou "Administrativo"
+  "email": "${email}",
+  "grupo": "Fiscal", // ou Administrador ou Administrativo
   "ativo": true,
   "criadoEm": timestamp,
   "observacoes": ""
-}</pre>
-                        </div>
-                    `;
-                }
+}
+          </pre>
+        </div>
+      `;
+    }
 
-                if (naFirestoreMasNaoNoIndex.length === 0 && noIndexMasNaoNoFirestore.length === 0) {
-                    html += `
-                        <div class="audit-item success">
-                            <strong>🎯 Sistema 100% Consistente!</strong>
-                            <p>Todos os <strong>${emailsConsistentes.length} usuários</strong> estão perfeitamente sincronizados:</p>
-                            <ul>
-                                <li>✅ Autorizados a fazer login (index.html)</li>
-                                <li>✅ Com perfil completo cadastrado (Firestore)</li>
-                            </ul>
-                            <p style="margin-top: 12px; color: var(--muted); font-size: 0.9em;">
-                                Nenhuma ação necessária. O sistema está operando corretamente.
-                            </p>
-                        </div>
-                    `;
-                }
+    if (idDiferenteEmail.length === 0 && naFirestoreMasNoIndex.length === 0 && noIndexMasNoFirestore.length === 0) {
+      html += `
+        <div class="audit-item success">
+          <strong>✅ Sistema 100% Consistente!</strong>
+          <p>Todos os <strong>${emailsConsistentes.length}</strong> usuários estão perfeitamente sincronizados.</p>
+          <ul>
+            <li>✅ Autorizados a fazer login (index.html)</li>
+            <li>✅ Com perfil completo cadastrado (Firestore)</li>
+            <li>✅ ID = email (RMPF/inspeções funcionam)</li>
+          </ul>
+          <p style="margin-top: 12px; color: var(--muted); font-size: 0.9em;">
+            Nenhuma ação necessária. O sistema está operando corretamente.
+          </p>
+        </div>
+      `;
+    }
 
-                html += '</div>';
-                resultsDiv.innerHTML = html;
+    html += '</div>';
+    resultsDiv.innerHTML = html;
 
-            } catch (error) {
-                console.error("Erro na auditoria:", error);
-                resultsDiv.innerHTML = `
-                    <div class="audit-item error">
-                        <strong>❌ Erro ao executar auditoria</strong>
-                        <p>${error.message}</p>
-                        <p style="font-size: 0.85em; color: var(--muted); margin-top: 8px;">
-                            Verifique se o arquivo index.html está acessível e se a lista AUTHORIZED_EMAILS existe.
-                        </p>
-                    </div>
-                `;
-            } finally {
-                loadingDiv.style.display = 'none';
-            }
-        };
+  } catch (error) {
+    console.error('Erro na auditoria:', error);
+    resultsDiv.innerHTML = `
+      <div class="audit-item error">
+        <strong>❌ Erro ao executar auditoria</strong>
+        <p>${error.message}</p>
+        <p style="font-size: 0.85em; color: var(--muted); margin-top: 8px;">
+          Verifique se o arquivo index.html está acessível e se a lista AUTHORIZEDEMAILS existe.
+        </p>
+      </div>
+    `;
+  } finally {
+    loadingDiv.style.display = 'none';
+  }
+}
 
         // ===== EDITAR USUÁRIO =====
         window.editarUsuario = async function(userId, userEmail) {
