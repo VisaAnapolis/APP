@@ -837,19 +837,19 @@
         // ===== ESTATÍSTICAS =====
         function atualizarEstatisticas(usuarios) {
 // Total de usuários
-document.getElementById('totalUsers').textContent = users.length;
+document.getElementById('totalUsers').textContent = usuarios.length;
 
 // Por grupo
-const totalFiscais        = users.filter(u => u.grupo === 'Fiscal').length;
-const totalAdmins         = users.filter(u => u.grupo === 'Administrador').length;
-const totalAdministrativos = users.filter(u => u.grupo === 'Administrativo').length;
+const totalFiscais        = usuarios.filter(u => u.grupo === 'Fiscal').length;
+const totalAdmins         = usuarios.filter(u => u.grupo === 'Administrador').length;
+const totalAdministrativos = usuarios.filter(u => u.grupo === 'Administrativo').length;
 
 document.getElementById('fiscalUsers').textContent        = totalFiscais;
 document.getElementById('adminUsers').textContent         = totalAdmins;
 document.getElementById('administrativoUsers').textContent = totalAdministrativos;
 
 // Usuários ativos
-const totalAtivos = users.filter(u => u.status === 'Ativo').length;
+const totalAtivos = usuarios.filter(u => u.status === 'Ativo').length;
 document.getElementById('activeUsers').textContent = totalAtivos;
         }
         
