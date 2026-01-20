@@ -491,29 +491,33 @@
   /* Foto compacta (não fixa) */
   .users-table th:nth-child(1),
   .users-table td:nth-child(1){
-    width: 48px !important;
-    min-width: 48px !important;
-    max-width: 48px !important;
+    position: sticky !important;
+    left: 0 !important;
+    z-index: 11 !important;
+    background: var(--card) !important;
+    width: 52px !important;        /* AJUSTE AQUI */
+    min-width: 52px !important;
+    max-width: 52px !important;
   }
 
-  /* NOME: FIXO + COMPACTO + QUEBRA */
+  /* ===== COLUNA 2: NOME FIXO (ao lado da foto) ===== */
   .users-table th:nth-child(2),
   .users-table td:nth-child(2){
     position: sticky !important;
-    left: 48px !important;           /* logo após foto */
+    left: 52px !important;         /* = largura da Foto */
     z-index: 10 !important;
     background: var(--card) !important;
-    max-width: 38vw !important;      /* 38% da tela */
-    min-width: 140px !important;
-    white-space: normal !important;  /* quebra linha */
+    max-width: 30vw !important;    /* AJUSTE AQUI */
+    min-width: 160px !important;
+    white-space: normal !important;
     overflow-wrap: anywhere !important;
     word-break: break-word !important;
-    box-shadow: 8px 0 12px rgba(0,0,0,0.08) !important;
-    padding-left: 12px !important;
-    padding-right: 12px !important;
+    padding: 8px 12px !important;
+    box-shadow: 10px 0 16px rgba(0,0,0,0.1) !important;
   }
 
   /* Header do Nome mantém cor */
+  .users-table thead th:nth-child(1),
   .users-table thead th:nth-child(2){
     background: var(--brand1) !important;
     color: #fff !important;
