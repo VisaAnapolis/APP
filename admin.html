@@ -480,7 +480,56 @@
             }
         }
 
+/* ===== TABELA RESPONSIVA MOBILE - NOME FIXO + COMPACTO ===== */
 @media (max-width: 640px){
+
+  .table-wrapper{
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Foto compacta (não fixa) */
+  .users-table th:nth-child(1),
+  .users-table td:nth-child(1){
+    width: 48px !important;
+    min-width: 48px !important;
+    max-width: 48px !important;
+  }
+
+  /* NOME: FIXO + COMPACTO + QUEBRA */
+  .users-table th:nth-child(2),
+  .users-table td:nth-child(2){
+    position: sticky !important;
+    left: 48px !important;           /* logo após foto */
+    z-index: 10 !important;
+    background: var(--card) !important;
+    max-width: 38vw !important;      /* 38% da tela */
+    min-width: 140px !important;
+    white-space: normal !important;  /* quebra linha */
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+    box-shadow: 8px 0 12px rgba(0,0,0,0.08) !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  /* Header do Nome mantém cor */
+  .users-table thead th:nth-child(2){
+    background: var(--brand1) !important;
+    color: #fff !important;
+  }
+
+  /* Quebra nos headers */
+  .users-table thead th{
+    white-space: normal !important;
+  }
+
+  /* Padding geral menor */
+  .users-table th,
+  .users-table td{
+    padding: 8px 6px !important;
+  }
+}
 
         
     </style>
