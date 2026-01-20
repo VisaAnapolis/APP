@@ -835,6 +835,7 @@
         }
 
         // ===== ESTATÍSTICAS =====
+        unction atualizarEstatisticas(usuarios) {
 // Total de usuários
 document.getElementById('totalUsers').textContent = users.length;
 
@@ -850,7 +851,8 @@ document.getElementById('administrativoUsers').textContent = totalAdministrativo
 // Usuários ativos
 const totalAtivos = users.filter(u => u.status === 'Ativo').length;
 document.getElementById('activeUsers').textContent = totalAtivos;
-
+        }
+        
         // ===== AUDITORIA DE CONSISTÊNCIA =====
         window.executarAuditoria = async function() {
             const loadingDiv = document.getElementById('auditLoading');
