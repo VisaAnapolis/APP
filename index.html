@@ -836,8 +836,7 @@ import {
   setPersistence,
   browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-// import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  import { getFirestore, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   
 const firebaseConfig = {
@@ -854,7 +853,7 @@ const db = getFirestore(app); // ← ESSENCIAL para buscar perfil
 const provider = new GoogleAuthProvider();
 
 // ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
-const APP_VERSION = '2.0.2';
+const APP_VERSION = '2.0.3';
 const VERSION_KEY = 'visa_app_version';
 const savedVersion = localStorage.getItem(VERSION_KEY);
 
@@ -909,6 +908,60 @@ if (savedVersion !== APP_VERSION) {
 // FIM DO CONTROLE DE VERSÃO
   
 // ===== SISTEMA DE CACHE DE AUTENTICAÇÃO =====
+// ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
+const APP_VERSION = '2.0.3';
+const VERSION_KEY = 'visa_app_version';
+const savedVersion = localStorage.getItem(VERSION_KEY);
+
+// Exibe versão no rodapé (se elemento existir)
+const versionSpan = document.getElementById('appVersion');
+if (versionSpan) versionSpan.textContent = APP_VERSION;
+
+// Verifica se precisa atualizar
+if (savedVersion !== APP_VERSION) {
+  console.log(`🔄 Atualizando de ${savedVersion || 'antiga'} para ${APP_VERSION}`);
+
+  // ✅ LIMPEZA SELETIVA - Preserva sessão Firebase
+  const keysToRemove = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    // Preserva APENAS chaves do Firebase Auth e a própria versão
+    if (!key.startsWith('firebase:') && key !== VERSION_KEY) {
+      keysToRemove.push(key);
+    }
+  }
+
+  console.log(`📦 Removendo ${keysToRemove.length} itens do cache antigo`);
+  keysToRemove.forEach(key => {
+    console.log(`  ❌ ${key}`);
+    localStorage.removeItem(key);
+  });
+
+  // Salva nova versão
+  localStorage.setItem(VERSION_KEY, APP_VERSION);
+
+  console.log('✅ Cache atualizado - recarregando...');
+
+  // Toast de atualização
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+    background: linear-gradient(135deg, #2c5aa0, #3d6bb3);
+    color: white; padding: 14px 24px; border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    z-index: 10000; font-weight: 600; font-size: 0.95rem;
+  `;
+  toast.innerHTML = `🚀 Atualizado para v${APP_VERSION}`;
+  document.body.appendChild(toast);
+
+  // Recarrega após 2.5 segundos
+  setTimeout(() => {
+    toast.remove();
+    location.reload();
+  }, 2500);
+}
+// FIM DO CONTROLE DE VERSÃO
+
 const AUTH_CACHE_KEY = 'visa_auth_cache';
 const AUTH_CACHE_DURATION = 60 * 60 * 1000; // 1 hora
 
@@ -1466,18 +1519,37 @@ onAuthStateChanged(auth, async (user) => {
     authCache.save(user);
     showConteudo();
     
-    // Busca perfil do Firestore
+    // Busca perfil do Firestore POR CAMPO EMAIL
     try {
-      const perfilSnap = await getDoc(doc(db, 'usuarios', user.email));
-      const perfil = perfilSnap.exists() ? perfilSnap.data() : null;
+      console.log('🔍 Buscando perfil para:', user.email);
 
- // Atualiza foto e último acesso em background
- if (perfil) {
-     updateDoc(doc(db, "usuarios", user.email), {
-         photoURL: user.photoURL || '',
-         ultimoAcesso: serverTimestamp()
-     }).catch(err => console.warn('Erro ao atualizar foto:', err));
- }
+      // 🆕 BUSCA POR CAMPO EMAIL (funciona independente do Document ID)
+      const q = query(collection(db, "usuarios"), where("email", "==", user.email));
+      const querySnapshot = await getDocs(q);
+
+      let perfil = null;
+      let userDocId = null;
+
+      if (!querySnapshot.empty) {
+        const userDoc = querySnapshot.docs[0];
+        perfil = userDoc.data();
+        userDocId = userDoc.id;
+
+        console.log('✅ Perfil encontrado! Document ID:', userDocId);
+
+        // ✅ ATUALIZA foto e último acesso (usando ID real do documento)
+        try {
+          await updateDoc(doc(db, "usuarios", userDocId), {
+            photoURL: user.photoURL || '',
+            ultimoAcesso: serverTimestamp()
+          });
+          console.log('✅ Foto e último acesso atualizados');
+        } catch (updateErr) {
+          console.warn('⚠️ Erro ao atualizar foto:', updateErr);
+        }
+      } else {
+        console.warn('⚠️ Perfil não encontrado para:', user.email);
+      }
       
       // Mostra nome no header
       const userInfo = document.getElementById('userInfo');
