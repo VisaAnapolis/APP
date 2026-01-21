@@ -1483,36 +1483,19 @@ onAuthStateChanged(auth, async (user) => {
         console.log('✅ Perfil encontrado! Document ID:', userDocId);
 
         // ✅ ATUALIZA foto e último acesso (usando ID real do documento)
-   
         try {
-
-// 1) pega a melhor foto possível do Google Auth
-const googlePhoto =
-  user.photoURL ||
-  (user.providerData && user.providerData[0] && user.providerData[0].photoURL) ||
-  null;
-
-// 2) monta o payload SEM apagar foto
-const updatePayload = {
-  ultimoAcesso: serverTimestamp()
-};
-
-// só inclui photoURL se houver uma URL válida
-if (googlePhoto && typeof googlePhoto === 'string' && googlePhoto.startsWith('http')) {
-  updatePayload.photoURL = googlePhoto;
-}
-
-// referência correta do documento
-const userDocRef = doc(db, "usuarios", userDocId);          
-
-// atualiza Firestore (um único update)          
-await updateDoc(userDocRef, updatePayload);
-
-console.log('✅ Atualizou acesso/foto', updatePayload);
-          
-} catch (err) {
-  console.error("Erro ao atualizar acesso/foto:", err);
-}      
+          await updateDoc(doc(db, "usuarios", userDocId), {
+            photoURL: user.photoURL || '',
+            ultimoAcesso: serverTimestamp()
+          });
+          console.log('✅ Foto e último acesso atualizados');
+        } catch (updateErr) {
+          console.warn('⚠️ Erro ao atualizar foto:', updateErr);
+        }
+      } else {
+        console.warn('⚠️ Perfil não encontrado para:', user.email);
+      }
+      
       // Mostra nome no header
       const userInfo = document.getElementById('userInfo');
       if (userInfo) {
