@@ -1548,7 +1548,84 @@ async function carregarOSPendentesFiscal(nomeFiscal) {
 }
 
     
-onAuthStateChanged(auth, async (user) => {
+
+    // ========== FUNÇÃO DE DIAGNÓSTICO DE DISPOSITIVO ==========
+    function coletarDadosDispositivo() {
+      const ua = navigator.userAgent;
+
+      let so = 'Desconhecido', versaoSO = '';
+      if (/android/i.test(ua)) {
+        so = 'Android';
+        const match = ua.match(/Android\s([\d.]+)/);
+        versaoSO = match ? match[1] : '';
+      } else if (/iPad|iPhone|iPod/.test(ua)) {
+        so = 'iOS';
+        const match = ua.match(/OS\s([\d_]+)/);
+        versaoSO = match ? match[1].replace(/_/g, '.') : '';
+      } else if (/Windows/.test(ua)) {
+        so = 'Windows';
+        if (/Windows NT 10/.test(ua)) versaoSO = '10/11';
+        else if (/Windows NT 6.3/.test(ua)) versaoSO = '8.1';
+      } else if (/Macintosh|Mac OS X/.test(ua)) {
+        so = 'macOS';
+        const match = ua.match(/Mac OS X\s([\d_]+)/);
+        versaoSO = match ? match[1].replace(/_/g, '.') : '';
+      } else if (/Linux/.test(ua)) {
+        so = 'Linux';
+      }
+
+      let navegador = 'Desconhecido', versaoNavegador = '';
+      if (ua.includes('Edg/')) {
+        navegador = 'Edge';
+        versaoNavegador = ua.match(/Edg\/([\d.]+)/)?.[1] || '';
+      } else if (ua.includes('Chrome/')) {
+        navegador = 'Chrome';
+        versaoNavegador = ua.match(/Chrome\/([\d.]+)/)?.[1] || '';
+      } else if (ua.includes('Safari/') && !ua.includes('Chrome')) {
+        navegador = 'Safari';
+        versaoNavegador = ua.match(/Version\/([\d.]+)/)?.[1] || '';
+      } else if (ua.includes('Firefox/')) {
+        navegador = 'Firefox';
+        versaoNavegador = ua.match(/Firefox\/([\d.]+)/)?.[1] || '';
+      }
+
+      const isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+      let fabricante = '';
+      if (so === 'Android') {
+        if (ua.includes('Samsung')) fabricante = 'Samsung';
+        else if (ua.includes('Xiaomi') || ua.includes('Mi ') || ua.includes('Redmi')) fabricante = 'Xiaomi';
+        else if (ua.includes('Motorola') || ua.includes('Moto')) fabricante = 'Motorola';
+        else if (ua.includes('LG')) fabricante = 'LG';
+        else if (ua.includes('Huawei') || ua.includes('HUAWEI')) fabricante = 'Huawei';
+        else if (ua.includes('ASUS')) fabricante = 'Asus';
+        else if (ua.includes('OnePlus')) fabricante = 'OnePlus';
+      }
+
+      let modelo = '';
+      if (so === 'Android') {
+        const modelMatch = ua.match(/\(Linux; Android [^;]+; ([^)]+)\)/);
+        if (modelMatch) modelo = modelMatch[1].replace(/Build.*/, '').trim();
+      }
+
+      return {
+        sistemaOperacional: so,
+        versaoSO: versaoSO,
+        navegador: navegador,
+        versaoNavegador: versaoNavegador,
+        fabricante: fabricante || 'Desconhecido',
+        modelo: modelo || 'Desconhecido',
+        isPWA: isPWA,
+        modoAcesso: isPWA ? 'PWA' : 'Navegador',
+        resolucao: `${screen.width}x${screen.height}`,
+        tipoConexao: navigator.connection?.effectiveType || 'Desconhecida',
+        coletadoEm: new Date().toISOString(),
+        userAgent: ua.substring(0, 500)
+      };
+    }
+
+    
+    onAuthStateChanged(auth, async (user) => {
   if (!user) {
     showLogin();
     return;
@@ -1578,10 +1655,25 @@ onAuthStateChanged(auth, async (user) => {
 
         // ✅ ATUALIZA foto e último acesso (usando ID real do documento)
         try {
-          await updateDoc(doc(db, "usuarios", userDocId), {
-            photoURL: user.photoURL || '',
-            ultimoAcesso: serverTimestamp()
-          });
+          // 🆕 Coletar dados do dispositivo
+          try {
+            const dadosDispositivo = coletarDadosDispositivo();
+
+            await updateDoc(doc(db, "usuarios", userDocId), {
+              photoURL: user.photoURL || '',
+              ultimoAcesso: serverTimestamp(),
+              dispositivo: dadosDispositivo
+            });
+
+            console.log('📊 Dados do dispositivo salvos:', dadosDispositivo);
+          } catch (dispErr) {
+            console.warn('⚠️ Erro ao salvar dispositivo, continuando...', dispErr);
+            // Tenta salvar pelo menos foto e timestamp
+            await updateDoc(doc(db, "usuarios", userDocId), {
+              photoURL: user.photoURL || '',
+              ultimoAcesso: serverTimestamp()
+            });
+          }
           console.log('✅ Foto e último acesso atualizados');
         } catch (updateErr) {
           console.warn('⚠️ Erro ao atualizar foto:', updateErr);
