@@ -1485,19 +1485,18 @@ onAuthStateChanged(auth, async (user) => {
         // ✅ ATUALIZA foto e último acesso (usando ID real do documento)
    
         try {
-/*                    
-          await updateDoc(doc(db, "usuarios", userDocId), {
-            photoURL: user.photoURL || '',
-            ultimoAcesso: serverTimestamp()
-          });
-          console.log('✅ Foto e último acesso atualizados');
-        } catch (updateErr) {
-          console.warn('⚠️ Erro ao atualizar foto:', updateErr);
-        }
-      } else {
-        console.warn('⚠️ Perfil não encontrado para:', user.email);
-      }
-*/
+//          await updateDoc(doc(db, "usuarios", userDocId), {
+//            photoURL: user.photoURL || '',
+//            ultimoAcesso: serverTimestamp()
+//         });
+//          console.log('✅ Foto e último acesso atualizados');
+//        } catch (updateErr) {
+//          console.warn('⚠️ Erro ao atualizar foto:', updateErr);
+//        }
+//      } else {
+//        console.warn('⚠️ Perfil não encontrado para:', user.email);
+//      }
+
 // 1) pega a melhor foto possível do Google Auth
 const googlePhoto =
   user.photoURL ||
