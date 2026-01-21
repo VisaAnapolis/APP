@@ -1483,6 +1483,7 @@ onAuthStateChanged(auth, async (user) => {
         console.log('✅ Perfil encontrado! Document ID:', userDocId);
 
         // ✅ ATUALIZA foto e último acesso (usando ID real do documento)
+   /*
         try {
           await updateDoc(doc(db, "usuarios", userDocId), {
             photoURL: user.photoURL || '',
@@ -1495,6 +1496,25 @@ onAuthStateChanged(auth, async (user) => {
       } else {
         console.warn('⚠️ Perfil não encontrado para:', user.email);
       }
+*/
+// 1) pega a melhor foto possível do Google Auth
+const googlePhoto =
+  user.photoURL ||
+  (user.providerData && user.providerData[0] && user.providerData[0].photoURL) ||
+  null;
+
+// 2) monta o payload SEM apagar foto
+const updatePayload = {
+  ultimoAcesso: serverTimestamp()
+};
+
+// só inclui photoURL se houver uma URL válida
+if (googlePhoto && typeof googlePhoto === 'string' && googlePhoto.startsWith('http')) {
+  updatePayload.photoURL = googlePhoto;
+}
+
+await updateDoc(userDocRef, updatePayload);
+        
       
       // Mostra nome no header
       const userInfo = document.getElementById('userInfo');
