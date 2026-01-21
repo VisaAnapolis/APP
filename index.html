@@ -1571,112 +1571,76 @@ onAuthStateChanged(auth, async (user) => {
         if (perfil) {
           userInfo.innerHTML = `<span class="user-name">${perfil.nome}</span><span class="user-email">${user.email}</span>`;
           
-          // ========== CONTROLE DE PERMISSÕES ==========
-          
-          // 1️⃣ FISCAL: Mostra OS (esconde indicadores)
-          if (perfil.grupo === 'Fiscal') {
-            carregarOSPendentesFiscal(perfil.nome);
-            
-            // Esconde seção de indicadores
-            const indicadoresSection = document.querySelector('.indicadores-section');
-            if (indicadoresSection) {
-              indicadoresSection.style.display = 'none';
-            }
-          }
-          
-          // 2️⃣ ADMINISTRADOR: Mostra indicadores (esconde OS)
-          else if (perfil.grupo === 'Administrador') {
-            // Esconde cards de OS
-            const fiscalStats = document.getElementById('fiscalStats');
-            if (fiscalStats) {
-              fiscalStats.style.display = 'none';
-            }
-            
-            // Indicadores já são carregados automaticamente pelo carregarIndicadores()
-          }
-          
-          // 3️⃣ ADMINISTRATIVO: Não mostra nada
-          else if (perfil.grupo === 'Administrativo') {
-            // Esconde cards de OS
-            const fiscalStats = document.getElementById('fiscalStats');
-            if (fiscalStats) {
-              fiscalStats.style.display = 'none';
-            }
-            
-            // Esconde indicadores
-            const indicadoresSection = document.querySelector('.indicadores-section');
-            if (indicadoresSection) {
-              indicadoresSection.style.display = 'none';
-            }
-          }
-          
-          // 4️⃣ OUTROS GRUPOS: Comportamento padrão (não mostra OS)
-          else {
-            const fiscalStats = document.getElementById('fiscalStats');
-            if (fiscalStats) {
-              fiscalStats.style.display = 'none';
-            }
-          }
-          
-        } else {
-          // Sem perfil no Firestore
-          userInfo.innerHTML = `<span class="user-name">${user.displayName || 'Usuário'}</span><span class="user-email">${user.email}</span>`;
-          
-          // Esconde tudo por segurança
-          const fiscalStats = document.getElementById('fiscalStats');
-          if (fiscalStats) fiscalStats.style.display = 'none';
-          
-          const indicadoresSection = document.querySelector('.indicadores-section');
-          if (indicadoresSection) indicadoresSection.style.display = 'none';
-        }
-      }
-      
-    } catch(e) {
-      console.error('Erro ao buscar perfil:', e);
-      
-      const userInfo = document.getElementById('userInfo');
-      if (userInfo) {
-        userInfo.innerHTML = `<span class="user-name">${user.displayName || 'Usuário'}</span><span class="user-email">${user.email}</span>`;
-      }
-      
-      // Esconde tudo em caso de erro
-      const fiscalStats = document.getElementById('fiscalStats');
-      if (fiscalStats) fiscalStats.style.display = 'none';
-      
-      const indicadoresSection = document.querySelector('.indicadores-section');
-      if (indicadoresSection) indicadoresSection.style.display = 'none';
-    }
-    
+    onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = 'login.html';
     return;
   }
-  
-  // Não autorizado
-  showLogin();
-  showUnauthorizedModal(user);
-  window.pendingLogout = true;
+
+  try {
+    // 🔹 Busca perfil no Firestore
+    const q = query(collection(db, "usuarios"), where("email", "==", user.email));
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      console.warn('Usuário sem perfil no Firestore');
+      return;
+    }
+
+    const userDoc = snap.docs[0];
+    const perfil = userDoc.data();
+
+    // =====================================================
+    // 🔐 CONTROLE DE PERMISSÕES — TEM QUE FICAR AQUI
+    // =====================================================
+
+    const grupo = (perfil.grupo || '').trim();
+
+    const isFiscal = (grupo === 'Fiscal');
+    const isAdmin  = (grupo === 'Administrador');
+    const isAdm    = (grupo === 'Administrativo');
+
+    // Default: nega tudo
+    window.__podeVerIndicadores = false;
+
+    setDisplay('#fiscalStats', false);
+    setDisplay('.indicadores-section', false);
+    hideAdminLinks();
+
+    if (isFiscal) {
+      setDisplay('#fiscalStats', true);
+      carregarOSPendentesFiscal(perfil.nome);
+
+    } else if (isAdmin) {
+      setDisplay('.indicadores-section', true);
+      showAdminLinks();
+      window.__podeVerIndicadores = true;
+
+    } else if (isAdm) {
+      // mantém restrito
+    } else {
+      // grupo vazio ou inválido → restrito
+      console.warn('Grupo inválido ou vazio:', perfil.grupo);
+    }
+
+    // =====================================================
+    // 🔐 FIM DO CONTROLE DE PERMISSÕES
+    // =====================================================
+
+    // 🔹 Agora SIM, se quiser, dispara indicadores
+    if (window.__podeVerIndicadores === true) {
+      carregarIndicadores();
+    }
+
+  } catch (err) {
+    console.error('Erro ao carregar perfil:', err);
+  }
 });
-    
-    return;
-  }
 
-  // 2. Sem cache válido - usa Firebase normalmente
-  onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      showLogin();
-      return;
-    }
-
-    if (isAuthorized(user)) {
-      authCache.save(user); // Salva no cache
-      showConteudo();
-      return;
-    }
-
-    showLogin();
-    showUnauthorizedModal(user);
-    window.__pendingLogout = true;
-  });
+  
 })();
+
+  
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
