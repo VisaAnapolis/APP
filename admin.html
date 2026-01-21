@@ -375,22 +375,44 @@
 
         /* ===== ESTATÍSTICAS ===== */
         .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 14px;
+            margin-bottom: 14px;
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #f8f9fb, #ffffff);
-            border: 1px solid rgba(44, 90, 160, 0.15);
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding-right: 14px;
+            border-right: 1px solid var(--line);
+            background: transparent;
+            box-shadow: none;
+            border-radius: 0;
+        }
+        .stat-card:last-child{
+            border-right: none;
+            padding-right: 0;
         }
 
-        .stat-number {
-            font-size: 2rem;
+        
+
+        .stat-icon{
+            font-size: 1.05rem;
+            line-height: 1;
+            flex: 0 0 auto;
+        }
+        .stat-info{
+            display: inline-flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+.stat-number {
+            font-size: 1.15rem;
             font-weight: 900;
             background: linear-gradient(135deg, var(--brand1), var(--brand2));
             -webkit-background-clip: text;
@@ -399,10 +421,9 @@
         }
 
         .stat-label {
-            font-size: 0.8rem;
+            font-size: 0.88rem;
             color: var(--muted);
-            font-weight: 600;
-            margin-top: 4px;
+            font-weight: 700;
         }
 
         /* ===== AUDITORIA ===== */
@@ -585,18 +606,6 @@
   }
 
   /* 8) Último acesso: mantém seu bloco (hora + data) legível */
-  .users-table tbody td:nth-child(6) .last-access{
-    display: flex;
-    flex-direction: column;      /* empilha hora e data */
-    align-items: flex-start;     /* evita alinhamento por baseline */
-    gap: 4px;                    /* afasta visualmente */
-    
-    font-size: 1.08rem;          /* leve aumento de legibilidade */
-    font-weight: 500;            /* força peso uniforme */
-    line-height: 1.35;           /* evita colisão no Safari */
-}
-
-
   /* 9) Botão Editar: touch-friendly */
   .users-table tbody td:nth-child(7) button.btn{
     width: 100%;
@@ -622,6 +631,35 @@
     padding-bottom: 10px !important;
     margin-bottom: 2px !important;
   }
+
+  /* 8) Último acesso (hora + data): Safari iOS/Android — evita sobreposição */
+  .users-table tbody td:nth-child(6){
+    display: grid !important;
+    grid-template-columns: 112px minmax(0, 1fr) !important; /* 112px = largura do label */
+    column-gap: 10px;
+    align-items: start !important;
+  }
+  .users-table tbody td:nth-child(6)::before{
+    grid-column: 1;
+  }
+  .users-table tbody td:nth-child(6) .access-time,
+  .users-table tbody td:nth-child(6) .access-date{
+    grid-column: 2;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+  .users-table tbody td:nth-child(6) .access-time{
+    font-size: 1.05rem;
+  }
+  .users-table tbody td:nth-child(6) .access-date{
+    font-size: 0.95rem;
+    margin-top: 4px;
+  }
+
+  /* Estatísticas em linha: garante que não “vaze” no iOS */
+  .stats-grid{ max-width: 100%; }
+  .stat-card{ min-width: 0; }
+
 }
         
 /* Coluna "Último acesso" no card: empilha e melhora legibilidade */
