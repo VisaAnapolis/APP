@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<link rel="stylesheet" href="./css/design-tokens.css">
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta property="og:title" content="Vigilância Sanitária de Anápolis">
+<meta property="og:description" content="Aplicativo interno da Vigilância Sanitária">
+<meta property="og:image" content="https://garrado.github.io/VISA/icons/visa-compartilhar.png">
+<meta property="og:url" content="https://garrado.github.io/VISA/">
+<meta property="og:type" content="website">
+
+<meta property="og:image:width" content="https://garrado.github.io/VISA/icons/visa-compartilhar.png">
+<meta property="og:image:height" content="https://garrado.github.io/VISA/icons/visa-compartilhar.png">
+<meta name="apple-touch-icon" content="icons/visa-compartilhar.png">
+
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#004aad">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="icons/visa-192.png">
+
+<title>Vigilância Sanitária</title>
+
+<style>
+
+/*
+:root{
+  
+ === INPUTS E FORMULÁRIOS (CRÍTICO!) === 
+  --input-bg: #ffffff;
+  --input-border: rgba(0, 0, 0, 0.23);
+  --input-focus: #2c5aa0;
+  --input-text: #1a202c;
+  --input-placeholder: #a0aec0;
+  --input-disabled-bg: #f5f7fa;
+  --input-disabled-text: #a0aec0;
+
+  --brand1:#2c5aa0;
+  --brand2:#3d6bb3;
+  --bg:#f2f4f8;
+  --text:#1f2a3a;
+  --muted:#5b6b83;
+  --card:#ffffff;
+  --line:rgba(31,42,58,.10);
+  --shadow:0 10px 28px rgba(0,0,0,.08);
+  --shadow2:0 6px 16px rgba(0,0,0,.08);
+  --warnBg:#fff7dd;
+  --warnLine:#d1a000;
+}
+*/
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* --- TELA DE CARREGAMENTO (LOADING) --- */
+#loading {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #ccd6e0;
+  border-top: 4px solid var(--brand1);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* --- CONTEÚDO E LOGIN (Invisíveis inicialmente) --- */
+#conteudo{display:none}
+
+#login{
+  /* Oculto por padrão para evitar o "pisca" antes do Firebase carregar */
+  display:none; 
+  min-height: 70vh;
+  align-items:center;
+  justify-content:center;
+  padding: 28px 18px;
+}
+
+.loginCard{
+  width:min(520px, 100%);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: var(--shadow);
+  text-align:center;
+}
+.loginCard h2{margin:0 0 6px 0}
+.loginCard p{margin:0 0 14px 0;color:var(--muted)}
+.btn {
+  appearance: none;
+  border: 1px solid var(--border-primary);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  padding: 12px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: .15s transform, .15s box-shadow, .15s background;
+}
+
+.btn:hover{box-shadow: var(--shadow2); transform: translateY(-1px)}
+.btn:active{transform: translateY(0)}
+.btnPrimary{
+  border: none;
+  background: linear-gradient(135deg, var(--brand1), var(--brand2));
+  color:#fff;
+}
+
+header {
+  background: #1a3a6b;
+  color: #ffffff;
+  padding: 28px 20px 26px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+header h1 {
+  margin: 0;
+  font-size: clamp(1.7rem, 2.4vw, 2.3rem);
+  font-weight: 900;
+  letter-spacing: .2px;
+  color: #ffffff;
+}
+
+header h2 {
+  margin: 8px 0 0;
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  font-weight: 500;
+  opacity: .92;
+  color: #ffffff;
+}
+  
+.container{
+  max-width: 1100px;
+  margin: 22px auto 30px;
+  padding: 0 16px;
+}
+
+.card{
+  background: var(--card);
+  border-radius: 16px;
+  padding: 18px 18px;
+  margin-bottom: 16px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow2);
+}
+.card h3{
+  margin:0 0 10px 0;
+  color: var(--brand1);
+  padding-left: 10px;
+  border-left: 6px solid var(--brand1);
+}
+.card p{
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+.avisos{
+  background: var(--warnBg);
+  border-left: 6px solid var(--warnLine);
+}
+
+.muted{color:var(--muted)}
+.small{font-size:.92rem;color:var(--muted)}
+
+.grid{
+  display:grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap:16px;
+}
+@media (max-width: 920px){
+  .grid{grid-template-columns:1fr}
+}
+
+.hero{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding: 18px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(44,90,160,.12), rgba(61,107,179,.10));
+  border: 1px solid rgba(44,90,160,.18);
+}
+.heroLeft h3{
+  margin:0 0 6px 0;
+  border-left:none;
+  padding-left:0;
+  color: var(--text);
+  font-size: 1.2rem;
+}
+.heroLeft p{margin:0;color:var(--muted)}
+.heroBtn{
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  font-weight: 900;
+  letter-spacing:.2px;
+  white-space:nowrap;
+}
+.heroBtn span{
+  display:inline-flex;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.22);
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+}
+
+.links-section ul{list-style:none;padding:0;margin:0}
+.links-section li{margin: 10px 0}
+.linkPill{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--card-bg);
+  text-decoration:none;
+  color: var(--text);
+  font-weight:800;
+}
+.linkPill:hover{box-shadow: var(--shadow2); transform: translateY(-1px)}
+.linkPill small{font-weight:600;color:var(--muted)}
+.linkPill .arrow{
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  background: rgba(44,90,160,.10);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.footer{
+  text-align:center;
+  padding: 18px 16px 26px;
+  color: #66728a;
+}
+
+
+/* iOS/telas pequenas: botão "WebCVS" com toque melhor e largura total */
+@media (max-width: 640px), (pointer: coarse){
+  .heroBtn{
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 16px 16px !important;
+    font-size: 1.05rem !important;
+    line-height: 1.15 !important;
+    white-space: normal !important;
+    text-align: center !important;
+  }
+  .heroBtn span{
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 12px !important;
+  }
+}
+
+/* === CARDS QUADRADOS 2x2 PARA MOBILE === */
+@media (max-width: 768px) {
+  .links-section ul {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .links-section li {
+    margin: 0;
+  }
+  
+  .linkPill {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 18px 10px;
+    height: 150px; /* Altura fixa para uniformidade */
+    gap: 10px;
+    border-radius: 16px;
+    box-shadow: var(--shadow2);
+  }
+  
+  .linkPill .arrow {
+    order: -1;
+    width: 50px;
+    height: 50px;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, var(--brand1), var(--brand2));
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+  }
+  
+  .linkPill small {
+    font-size: 0.82rem;
+    line-height: 1.25;
+    display: block;
+    margin-top: -2px;
+  }
+  
+  .linkPill:active {
+    transform: scale(0.97);
+}
+
+/* INDICADORES */
+.indicadores-section{margin-top:24px;padding-top:20px;border-top:2px solid var(--line);}
+.indicadores-section h3{margin:0 0 16px 0;color:var(--brand1);padding-left:10px;border-left:6px solid var(--brand1);font-size:1.05rem;}
+.indicadores-loading{text-align:center;padding:20px;color:var(--muted);font-size:0.9rem;background:#f8f9fb;border-radius:8px;}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.stat-card{background:linear-gradient(135deg,#f8f9fb,#ffffff);border:1px solid rgba(44,90,160,0.15);border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px;text-align:left;}
+.stat-icon{font-size:1.6rem;flex-shrink:0;}
+.stat-numero{font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,var(--brand1),var(--brand2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin:4px 0;}
+.stat-label{font-size:0.75rem;color:var(--text);font-weight:700;margin:2px 0;}
+.stat-detalhe{font-size:0.7rem;color:var(--muted);}
+.tipos-table-container h4{margin:16px 0 10px 0;font-size:0.85rem;color:var(--brand1);font-weight:700;text-transform:uppercase;}
+.tipos-table{width:100%;border-collapse:collapse;font-size:0.8rem;}
+.tipos-table tr{border-bottom:1px solid rgba(0,0,0,0.05);}
+.tipos-table tr:last-child{border-bottom:none;}
+.tipos-table td{padding:8px 4px;}
+.tipos-table td:first-child{text-align:left;font-weight:600;color:var(--text);}
+.tipos-table td:last-child{text-align:right;font-weight:900;color:var(--brand1);font-size:0.9rem;width:50px;}
+.tipo-barra{height:5px;background:#e8edf3;border-radius:3px;margin-top:3px;overflow:hidden;}
+.tipo-barra-fill{height:100%;background:linear-gradient(90deg,var(--brand1),var(--brand2));transition:width 0.6s ease;}
+.update-info{text-align:center;font-size:0.7rem;color:var(--muted);margin-top:12px;padding-top:10px;border-top:1px solid rgba(0,0,0,0.05);}
+@media(max-width:480px){.stats-grid{grid-template-columns:1fr;gap:8px;}}.stat-card{display:flex;align-items:center;gap:12px;text-align:left;}.stat-icon{font-size:2rem;}.stat-numero{font-size:1.5rem;}}
+  }
+}
+
+/* Modal de acesso não autorizado */
+.modalOverlay{
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.45);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  z-index:9999;
+}
+.modalCard{
+  width:min(520px, 100%);
+  background:#fff;
+  border:1px solid rgba(31,42,58,.12);
+  border-radius:16px;
+  box-shadow:0 18px 50px rgba(0,0,0,.20);
+  padding:18px;
+}
+.modalCard h3{ margin:0 0 8px 0; color:#b30000; }
+.modalCard p{ margin:8px 0; color:#1f2a3a; }
+.modalCard .small{ color:#5b6b83; font-size:.92rem; white-space:pre-line; }
+.modalActions{
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+  margin-top:12px;
+}
+.modalActions .btn{ width:auto; }
+
+/* Card que ocupa as duas colunas da grid */
+.grid-span-2{
+  grid-column: 1 / -1;
+}
+
+/* Ajuste fino da linha de sincronização no mobile */
+@media (max-width: 768px) {
+  #sync-cvs-info {
+   margin-bottom: 28px !important;
+  }
+}
+
+  /* Thumbnail de documento (não interfere na grid) */
+.pdfThumb{
+  display:block;
+  text-decoration:none;
+  color: inherit;
+  margin: 10px 0 0;
+}
+
+.pdfThumbCard{
+  display:flex;
+  gap: 12px;
+  align-items:center;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.08);
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+}
+
+.pdfThumbImg{
+  width: 92px;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,.10);
+  flex-shrink: 0;
+}
+
+.pdfThumbTxt{
+  line-height: 1.2;
+}
+.pdfThumbTitulo{
+  font-weight: 900;
+  color: #1a3a6b;
+  margin: 0 0 6px 0;
+}
+.pdfThumbSub{
+  font-size: .88rem;
+  color: rgba(31,42,58,.75);
+  margin: 0;
+}
+.pdfThumbBadge{
+  display:inline-block;
+  margin-top: 8px;
+  font-size: .78rem;
+  font-weight: 800;
+  color: #2c5aa0;
+  background: rgba(44,90,160,.10);
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+
+</style>
+
+  <!-- Sistema de Design - VISA Anápolis -->
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/layouts.css">
+
+  <style>
+    /* Botão Voltar - iOS e Android Nativos */
+    .topbar .btn {
+      background: transparent !important;
+      border: none !important;
+      color: var(--text, #1a202c) !important;
+      padding: 6px 12px !important;
+      font-size: 17px !important;
+      font-weight: 400 !important;
+    }
+    
+    .topbar .btn::before {
+      content: "←";
+      margin-right: 4px;
+      font-size: 20px;
+    }
+    
+    /* iOS: Setinha fina azul */
+    @supports (-webkit-touch-callout: none) {
+      .topbar .btn {
+        color: #007AFF !important;
+        font-weight: 400 !important;
+      }
+      .topbar .btn::before {
+        content: "‹";
+        font-size: 32px;
+        font-weight: 300;
+        margin-right: 0px;
+        vertical-align: middle;
+      }
+    }
+    
+    /* Ocultar topbar no desktop */
+    @media (min-width: 769px) {
+      .topbar--mobile-only {
+        display: none !important;
+      }
+    }
+  </style>
+
+  <style>
+    /* Correção WebCVS - Alinhamento */
+    .card p {
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+  </style>
+
+  <style>
+    /* Textos justificados */
+    .aviso p,
+    .mensagem p,
+    .institucional p {
+      text-align: justify !important;
+      text-justify: inter-word;
+    }
+  </style>
+
+    <style>
+/* Ajuste de espaçamento do aviso de sincronização no mobile */
+@media (max-width: 640px) {
+  #sync-cvs-info {
+    font-size: 0.9em;      /* já aplicado */
+    margin-bottom: 16px;   /* equivale visualmente a um <br> */
+  }
+}
+
+/* ========== USER INFO BAR - PADRONIZADO ========== */
+.user-info-bar {
+  background: rgba(52, 199, 89, 0.08);
+  padding: 8px 20px;
+  font-size: 0.75rem;
+  color: #34C759;
+  border-bottom: 1px solid rgba(52, 199, 89, 0.15);
+  text-align: left;
+  line-height: 1.4;
+}
+
+.user-info-bar .user-name {
+  font-weight: 700;
+  display: inline;
+  margin-right: 10px;
+  color: #1a3a6b;
+  font-size: 0.8rem;
+}
+
+.user-info-bar .user-name::after {
+  content: "•";
+  margin-left: 10px;
+  opacity: 0.5;
+  color: #64748b;
+}
+
+.user-info-bar .user-email {
+  font-weight: 400;
+  opacity: 0.85;
+  display: inline;
+  color: #5b6b83;
+  font-size: 0.75rem;
+}
+
+/* Mobile: Empilha nome e email */
+@media (max-width: 640px) {
+  .user-info-bar {
+    font-size: 0.7rem;
+    padding: 6px 12px;
+  }
+  
+  .user-info-bar .user-name {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 0.75rem;
+  }
+  
+  .user-info-bar .user-name::after {
+    display: none;
+  }
+  
+  .user-info-bar .user-email {
+    display: block;
+    font-size: 0.7rem;
+  }
+}
+
+/* Stats do fiscal */
+.fiscal-stats {
+  background: linear-gradient(135deg, rgba(26, 58, 107, 0.03), rgba(52, 199, 89, 0.03));
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.stats-container {
+  display: flex;
+  gap: 16px;
+  max-width: 600px;
+}
+
+.stat-card {
+  flex: 1;
+  background: white;
+  border-radius: 12px;
+  padding: 12px 16px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.stat-number {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a3a6b;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.stats-container .stat-card:nth-child(1) .stat-number {
+  color: #2c5aa0;
+}
+
+.stats-container .stat-card:nth-child(2) .stat-number {
+  color: #34C759;
+}
+
+.stats-container .stat-card:nth-child(3) .stat-number {
+  color: #007aff;
+}
+
+@media (max-width: 768px) {
+  .user-info-bar {
+    font-size: 0.65rem;
+    padding: 5px 12px;
+  }
+  
+  .fiscal-stats {
+    padding: 12px;
+  }
+  
+  .stats-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .stat-card {
+    padding: 10px;
+  }
+  
+  .stat-number {
+    font-size: 1.5rem;
+  }
+  
+  .stat-label {
+    font-size: 0.7rem;
+  }
+}
+
+      
+ </style>
+
+<!-- PapaParse para ler CSV -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+  
+</head>
+
+<body>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <div style="color:var(--brand1); font-weight:600">Verificando acesso...</div>
+</div>
+
+<div id="login">
+  <div class="loginCard">
+    <h2>Área Restrita</h2>
+    <p>Entre com sua conta Google para acessar os conteúdos internos.</p>
+    <button class="btn btnPrimary" onclick="loginGoogle()">Entrar com Google</button>
+  </div>
+</div>
+
+<div id="conteudo">
+
+<header>
+  <h1>Vigilância Sanitária</h1>
+  <h2>Diretoria de Vigilância em Saúde — Anápolis</h2>
+</header>
+
+
+
+<!-- User info -->
+<div id="userInfo" class="user-info-bar"></div>
+
+<!-- Stats do fiscal -->
+<div id="fiscalStats" class="fiscal-stats" style="display: none">
+  <div class="stats-container">
+    <!-- ⬇️ 4 CARDS DE OS COM IDENTIFICAÇÃO ⬇️ -->
+    <div class="stat-card">
+      <span class="stat-number">-</span>
+      <span class="stat-label">Protocolos</span>
+      <span class="stat-detalhe" id="detProtocolos">-</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">-</span>
+      <span class="stat-label">Requerimentos</span>
+      <span class="stat-detalhe" id="detRequerimentos">-</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">-</span>
+      <span class="stat-label">Denúncias</span>
+      <span class="stat-detalhe" id="detDenuncias">-</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">-</span>
+      <span class="stat-label">Ofícios</span>
+      <span class="stat-detalhe" id="detOficios">-</span>
+    </div>
+  </div>
+</div>
+
+
+<div class="container">
+
+  <div class="grid">
+    <div class="card avisos">
+     
+      <h3>Novidades no Aplicativo</h3>
+  <p>
+
+<p>
+    ⚠️<strong>OS Pendentes para Fiscais</strong><br>
+    Cards personalizados exibindo protocolos, requerimentos, denúncias e ofícios vencidos 
+    ou a vencer nos próximos 5 dias na tela incial do APP.
+  </p>
+  
+  <br>
+  
+  <p>
+    🔐<strong>Controle de Acesso por Perfil</strong><br>
+    Visualização personalizada: Fiscais veem suas OS, Administradores os indicadores 
+    gerenciais, e Administrativos o conteúdo institucional.
+  </p>
+
+  <br>
+    
+ <p>
+    📚<strong>RMPF</strong><br>
+  </p>
+  <p>
+  Relatório Mensal de Produtividade Fiscal.
+  </p>
+<br>
+   
+<p>
+    🧩<strong>Àreas</strong><br>
+  </p>
+  <p>
+  Divisão dos fiscais por áreas de atuação(bairro e CNAE).
+  </p>
+<br>
+  <p>
+    📋<strong>OS</strong><br>
+  </p>
+  <p>
+  Pesquisa Ordens de Serviço pelo Número, Fiscal, Razão Social, Nome de Fantasia.
+  </p>
+<br>
+  <p>
+    🔄<strong>CVS em Tempo Real</strong><br>
+  </p>
+ <p>
+  As informações do APP, como OS, RMPF e dados dos regulados são sincronizadas com o CVS <strong style="color: #2c5aa0; font-weight: 500;">diariamente.</strong>
+ </p>
+<br>
+    👁️<strong>Inspeções por Período</strong><br>
+  </p>
+      <p>
+      Lista todas inspeções por fiscal e período desde 2018. Para acessar, selecione o nome e utilize a senha do CVS.  
+      </p>  
+ <br>
+      <h3>Avisos da Supervisão</h3>
+      <p style="text-align: center; margin: 16px 0;">
+        <img src="Comunicado.png" alt="Procedimentos Obrigatórios: Lotes Proibidos Nestlé" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+      </p>     
+
+      <!-- Mini-card do PDF (leve e não quebra a seção) -->
+<a class="pdfThumb"
+   href="pdf_viewer.html?src=docs/SEI_2151446_Oficio_2.pdf&title=Of%C3%ADcio%20Interno%2002-2026%20%28Produtividade%2030h%29">
+  <div class="pdfThumbCard">
+    <img class="pdfThumbImg"
+         src="docs/oficio_02_2026_thumb.png"
+         alt="Miniatura do Ofício Interno 02/2026">
+    <div class="pdfThumbTxt">
+      <div class="pdfThumbTitulo">Ofício Interno nº 02/2026</div>
+      <p class="pdfThumbSub">
+        Produtividade (jornada 30h) — fórmula e vigência imediata.
+      </p>
+      <span class="pdfThumbBadge">📄 Toque para abrir</span>
+    </div>
+  </div>
+</a>
+      
+       <br>  
+    <div class="indicadores-section"><h3>📊 Indicadores do Mês</h3><div id="indicadores-content"><div class="indicadores-loading">📊 Carregando...</div></div></div>
+</div>
+     <div class="card links-section">
+      <h3>Central de Trabalho</h3>
+<p id="sync-cvs-info" class="small muted" style="margin: 0 0 24px 0; padding-top: 4px; font-size: 0.95rem; color: #2c5aa0; font-weight: 600;">
+  🔄 Sincronização CVS: verificando...
+</p>
+      <ul>
+        <li><a class="linkPill" href="os.html"><div>OS<br><small>Consulta Ordens de serviço</small></div><div class="arrow">📋</div></a></li>
+        <li><a class="linkPill" href="cvs.html"><div>Regulados<br><small>Histórico dos regulados</small></div><div class="arrow">🏪</div></a></li>
+        <li><a class="linkPill" href="rmpf1.html"><div>RMPF<br><small>Relatório mensal de produtividade fiscal</small></div><div class="arrow">📚</div></a></li>
+        <li><a class="linkPill" href="inspecoes1.html"><div>Inspeções<br><small>Inspeções por fiscal e período</small></div><div class="arrow">👁️</div></a></li>
+        <li><a class="linkPill" href="plantao.html"><div>Plantão Fiscal<br><small>Escala de plantão</small></div><div class="arrow">📅</div></a></li>
+        <li><a class="linkPill" href="veiculos.html"><div>Veículos<br><small>Escala de uso dos veículos</small></div><div class="arrow">🚗</div></a></li>
+        <li><a class="linkPill" href="ferias.html"><div>Férias<br><small>Escala de férias</small></div><div class="arrow">🏖️</div></a></li>
+        <li><a class="linkPill" href="relatorio_plantao_fiscal.html"><div>Ocorrências<br><small>Relatório do plantão fiscal</small></div><div class="arrow">📈</div></a></li>
+        <li><a class="linkPill" href="legislacao.html"><div>Legislação<br><small>Consulta normativa</small></div><div class="arrow">📜</div></a></li>
+        <li><a class="linkPill" href="check.html"><div>Check Lists<br><small>Roteiros de inspeção</small></div><div class="arrow">✓</div></a></li>
+        <li><a class="linkPill" href="areas.html"><div>Áreas<br><small>Fiscais por bairro e CNAEs</small></div><div class="arrow">🧩</div></a></li>
+        <li><a class="linkPill" href="cnae.html"><div>CNAEs<br><small>Distribuição por área</small></div><div class="arrow">👥</div></a></li>
+        <li>
+        <a class="linkPill" href="admin.html">
+        <div>
+            <strong>Painel Admin</strong><br>
+            <small>Gerenciamento de usuários</small>
+        </div>
+        <div class="arrow">⚙️</div>
+    </a>
+</li>
+        <li id="card-sugestoes"><a class="linkPill" href="mailto:visa@anapolis.go.gov.br"><div>Sugestões<br><small>Envie sua ideia</small></div><div class="arrow">💡</div></a></li> 
+      </ul>
+
+  </div>
+
+
+  
+  
+    <div class="card grid-span-2">
+    <h3>Mensagem Institucional</h3>
+    <p>
+      Esta página interna da Gerência de Vigilância Sanitária reúne informações, links e comunicados destinados aos servidores, com o objetivo de apoiar as atividades de fiscalização sanitária, promovendo a qualidade das ações fiscalizatórias e a melhor organização da comunicação e do acesso a dados operacionais.
+    </p>
+    <br>
+    <p class="small">
+      📄 <a href="README.html" target="_blank" rel="noopener">Consulte aqui o Aviso Institucional e as regras de uso da plataforma</a>
+    </p>
+  </div>
+
+
+
+</div>
+
+</div></div>
+
+<div style="text-align: center; padding: 20px 16px;">
+  <button class="btn" onclick="logout()">Encerrar sessão</button>
+</div>
+
+<div class="footer">
+  Vigilância Sanitária – Diretoria de Vigilância em Saúde<br>
+  Município de Anápolis – GO<br>
+  © 2025-2026
+  <div style="margin-top: 8px; font-size: 0.7rem; opacity: 0.5;">
+        v<span id="appVersion"></span>
+  </div>
+</div>
+
+
+<div id="modalNaoAutorizado" class="modalOverlay" style="display:none" role="dialog" aria-modal="true" aria-labelledby="modalNaoAutorizadoTitulo">
+  <div class="modalCard">
+    <h3 id="modalNaoAutorizadoTitulo">Acesso não autorizado</h3>
+    <p>Sua conta Google não consta na lista de usuários liberados para esta página institucional.</p>
+    <p class="small" id="modalNaoAutorizadoConta"></p>
+    <p class="small">Solicite a liberação ao administrador da página e tente novamente.</p>
+    <div class="modalActions">
+      <button class="btn btnPrimary" onclick="fecharModalNaoAutorizado()">Entendi</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signOut,
+  setPersistence,
+  browserLocalPersistence
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, query, where, getDocs, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  
+const firebaseConfig = {
+  apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
+  authDomain: "visam-3a30b.firebaseapp.com",
+  projectId: "visam-3a30b",
+  messagingSenderId: "308899251430",
+  appId: "1:308899251430:web:0053cdbd0bed7f0de76727"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app); // ← ESSENCIAL para buscar perfil
+const provider = new GoogleAuthProvider();
+
+// ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
+const APP_VERSION = '2.0.3';
+const VERSION_KEY = 'visa_app_version';
+const savedVersion = localStorage.getItem(VERSION_KEY);
+
+// Exibe versão no rodapé (se elemento existir)
+const versionSpan = document.getElementById('appVersion');
+if (versionSpan) versionSpan.textContent = APP_VERSION;
+
+// Verifica se precisa atualizar
+if (savedVersion !== APP_VERSION) {
+    console.log(`🔄 Atualizando de ${savedVersion || 'antiga'} para ${APP_VERSION}`);
+    
+    // ✅ LIMPEZA SELETIVA - Preserva sessão Firebase
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        // Preserva APENAS chaves do Firebase Auth e a própria versão
+        if (!key.startsWith('firebase:') && key !== VERSION_KEY) {
+            keysToRemove.push(key);
+        }
+    }
+    
+    console.log(`📦 Removendo ${keysToRemove.length} itens do cache antigo`);
+    keysToRemove.forEach(key => {
+        console.log(`  ❌ ${key}`);
+        localStorage.removeItem(key);
+    });
+    
+    // Salva nova versão
+    localStorage.setItem(VERSION_KEY, APP_VERSION);
+    
+    console.log('✅ Cache atualizado - recarregando...');
+    
+    // Toast de atualização
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+        background: linear-gradient(135deg, #2c5aa0, #3d6bb3);
+        color: white; padding: 14px 24px; border-radius: 12px;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        z-index: 10000; font-weight: 600; font-size: 0.95rem;
+    `;
+    toast.innerHTML = `🚀 Atualizado para v${APP_VERSION}`;
+    document.body.appendChild(toast);
+    
+    // Recarrega após 2.5 segundos
+    setTimeout(() => {
+        toast.remove();
+        location.reload();
+    }, 2500);
+}
+
+// FIM DO CONTROLE DE VERSÃO
+  
+const AUTH_CACHE_KEY = 'visa_auth_cache';
+const AUTH_CACHE_DURATION = 60 * 60 * 1000; // 1 hora
+
+class AuthCache {
+  constructor() {
+    this.cacheKey = AUTH_CACHE_KEY;
+    this.cacheDuration = AUTH_CACHE_DURATION;
+  }
+
+  save(user) {
+    const cacheData = {
+      email: user.email,
+      uid: user.uid,
+      displayName: user.displayName,
+      photoURL: user.photoURL,
+      timestamp: Date.now(),
+      expiresAt: Date.now() + this.cacheDuration
+    };
+    try {
+      localStorage.setItem(this.cacheKey, JSON.stringify(cacheData));
+      console.log('✅ Cache salvo - válido por', Math.floor(this.cacheDuration / 1000 / 60), 'minutos');
+    } catch (error) {
+      console.warn('Erro ao salvar cache:', error);
+    }
+  }
+
+  get() {
+    try {
+      const cached = localStorage.getItem(this.cacheKey);
+      if (!cached) return null;
+      const data = JSON.parse(cached);
+      if (Date.now() < data.expiresAt) return data;
+      this.clear();
+      return null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  clear() {
+    try {
+      localStorage.removeItem(this.cacheKey);
+      console.log('🗑️ Cache limpo');
+    } catch (error) {}
+  }
+
+  getTimeRemaining() {
+    const cached = this.get();
+    if (!cached) return 0;
+    return Math.max(0, Math.floor((cached.expiresAt - Date.now()) / 1000));
+  }
+}
+
+const authCache = new AuthCache();
+// ===== FIM DO CACHE =====
+
+// CONFIGURAÇÃO DE PERSISTÊNCIA (Isso evita logins repetidos)
+setPersistence(auth, browserLocalPersistence).catch((error) => {
+  console.error("Erro ao definir persistência:", error);
+});
+
+/* ===== LISTA DE AUTORIZADOS (SOMENTE E-MAIL) ===== */
+const AUTHORIZED_EMAILS = new Set([
+  "lindaenila@gmail.com",
+  "adrianarezendevisa@gmail.com",
+  "anapaula.rcg@gmail.com",
+  "lucianacsantos.lc@gmail.com",
+  "gleicimaryjs@gmail.com",
+  "wanessa05@gmail.com",
+  "luciana.santanarocha@hotmail.com",
+  "maelkaanapolis04081415@gmail.com",
+  "flavianebrito@anapolis.go.gov.br",
+  "vmsbgyn@gmail.com",
+  "joseluizribeiro22@gmail.com",
+  "acadiaasocial@gmail.com",
+  "rubiamarabel@gmail.com",
+  "jotadaguas@gmail.com",
+  "geraldoedsonrosa@gmail.com",
+  "patycdmes@gmail.com",
+  "ariannefvieira@hotmail.com",
+  "marinaperillo@hotmail.com",
+  "visa@anapolis.go.gov.br",
+  "mariaedwiges@anapolis.go.gov.br",
+  "tathnut@hotmail.com",
+  "simonegrossi@anapolis.go.gov.br",
+  "kamillarolim@gmail.com",
+  "lulucieneepais@gmail.com",
+  "adrianepereira@anapolis.go.gov.br",
+  "claudio@anapolis.go.gov.br",
+  "silviamarques@anapolis.go.gov.br",
+  "medwiges@gmail.com",
+  "wanessab412@gmail.com",
+  "juliocteles@anapolis.go.gov.br",
+  "fabiolappmarques@gmail.com",
+  "lidianesimoes@anapolis.go.gov.br",
+  "crbferreira81@gmail.com",
+  "profajulianakenia@gmail.com",
+  "dani.visaanapolis@gmail.com",
+  "cesio@anapolis.go.gov.br",
+  "gubio@anapolis.go.gov.br",
+  "marciorodovalho@anapolis.go.gov.br",
+  "edsonarantes@anapolis.go.gov.br",
+  "981217644pedro@gmail.com",
+  "julianafviturino@gmail.com",
+  "thaysasouza97@gmail.com",
+  "farm.castro78@gmail.com",
+  "viniciuscassiano@anapolis.go.gov.br",
+  "thiagogomesgobo@gmail.com",
+  "liviabr.visa@gmail.com",
+  "santosrat@gmail.com",
+  "vivianemiyada@gmail.com",
+  "angelavet2@gmail.com",
+  "cidalinacoelho@anapolis.go.gov.br",
+  "lauraeleuza@gmail.com",
+  "mens.agitat.molem.cns@gmail.com"
+]);
+
+function isAuthorized(user){
+  const email = (user?.email || "").toLowerCase().trim();
+  return AUTHORIZED_EMAILS.has(email);
+}
+
+/* --- CONTROLE DE EXIBIÇÃO --- */
+function showLoading(){
+  document.getElementById("loading").style.display = "flex";
+  document.getElementById("login").style.display = "none";
+  document.getElementById("conteudo").style.display = "none";
+}
+
+function showLogin(){
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("login").style.display = "flex";
+  document.getElementById("conteudo").style.display = "none";
+}
+
+function showConteudo(){
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("login").style.display = "none";
+  document.getElementById("conteudo").style.display = "block";
+}
+
+/* modal não autorizado */
+function showUnauthorizedModal(user){
+  const modal = document.getElementById("modalNaoAutorizado");
+  const conta = document.getElementById("modalNaoAutorizadoConta");
+  const email = user?.email || "(e-mail não identificado)";
+  if (conta) conta.textContent = `E-mail: ${email}`;
+  if (modal) modal.style.display = "flex";
+}
+
+window.__pendingLogout = false;
+
+window.fecharModalNaoAutorizado = async function(){
+  const modal = document.getElementById("modalNaoAutorizado");
+  if (modal) modal.style.display = "none";
+
+  if (window.__pendingLogout){
+    window.__pendingLogout = false;
+    try { await signOut(auth); } catch(e){ console.error(e); }
+  }
+};
+
+/* fechar clicando fora do card */
+document.addEventListener("click", (e) => {
+  const modal = document.getElementById("modalNaoAutorizado");
+  if (modal && modal.style.display === "flex" && e.target === modal) {
+    window.fecharModalNaoAutorizado();
+  }
+});
+
+/* LOGIN */
+window.loginGoogle = function() {
+  signInWithPopup(auth, provider).catch(console.error);
+};
+
+/* LOGOUT (manual) */
+window.logout = function(){
+  signOut(auth).catch(console.error);
+};
+
+/* CONTROLE DE SESSÃO */
+
+// ===== INICIALIZAÇÃO OTIMIZADA =====
+(function initOptimizedAuth() {
+  // 1. Verifica cache primeiro
+  const cachedAuth = authCache.get();
+  
+  if (cachedAuth && AUTHORIZED_EMAILS.has(cachedAuth.email.toLowerCase())) {
+    console.log('✅ Login via cache - válido por', authCache.getTimeRemaining(), 'segundos');
+    showConteudo();
+
+    
+    // ========== FUNÇÃO: Carregar estatísticas do fiscal ==========
+/*
+    
+async function carregarEstatisticasFiscal(nomeFiscal) {
+  try {
+    // Busca inspecoes.csv
+    const response = await fetch('data/inspecoes.csv?' + new Date().getTime());
+    const csvText = await response.text();
+    
+    // Parseia CSV com PapaParse
+    Papa.parse(csvText, {
+      header: true,
+      delimiter: ';',
+      skipEmptyLines: true,
+      complete: function(results) {
+        const inspecoes = results.data;
+        
+        // Filtra inspeções do fiscal
+        const minhasInspecoes = inspecoes.filter(insp => {
+          return insp.Fiscal1 === nomeFiscal || 
+                 insp.Fiscal2 === nomeFiscal || 
+                 insp.Fiscal3 === nomeFiscal;
+        });
+        
+        // Data atual
+        const hoje = new Date();
+        const anoAtual = hoje.getFullYear();
+        const mesAtual = hoje.getMonth() + 1; // 0-11, então +1
+        const seteDiasAtras = new Date(hoje.getTime() - (7 * 24 * 60 * 60 * 1000));
+        
+        // Função para converter data dd.mm.yyyy
+        function parseData(dataStr) {
+          if (!dataStr) return null;
+          const partes = dataStr.split('.');
+          if (partes.length === 3) {
+            return new Date(partes[2], partes[1] - 1, partes[0]);
+          }
+          return null;
+        }
+        
+        // Conta inspeções
+        let total2026 = 0;
+        let totalMes = 0;
+        let totalSemana = 0;
+        
+        minhasInspecoes.forEach(insp => {
+          const data = parseData(insp.DTVISITA);
+          if (!data) return;
+          
+          if (data.getFullYear() === anoAtual) {
+            total2026++;
+            
+            if (data.getMonth() + 1 === mesAtual) {
+              totalMes++;
+              
+              if (data >= seteDiasAtras) {
+                totalSemana++;
+              }
+            }
+          }
+        });
+        
+        // Atualiza cards
+        const statCards = document.querySelectorAll('.stat-card .stat-number');
+        if (statCards.length >= 3) {
+          statCards[0].textContent = total2026;
+          statCards[1].textContent = totalMes;
+          statCards[2].textContent = totalSemana;
+        }
+        
+        // Mostra cards
+        document.getElementById('fiscalStats').style.display = 'block';
+      }
+    });
+  } catch(e) {
+    console.error('Erro ao carregar estatísticas:', e);
+  }
+}
+*/
+
+// ========== FUNÇÃO: Carrega OS PENDENTES (Vencidas + Próximas 5 dias) ==========
+async function carregarOSPendentesFiscal(nomeFiscal) {
+  try {
+    const timestamp = new Date().getTime();
+    const nomeFiscalUpper = nomeFiscal.toUpperCase().trim();
+    
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    
+    const cincoProxDias = new Date(hoje);
+    cincoProxDias.setDate(cincoProxDias.getDate() + 5);
+    
+    // ========== FUNÇÕES AUXILIARES ==========
+    function parseData(dataStr) {
+      if (!dataStr) return null;
+      
+      let partes = dataStr.split('.');
+      if (partes.length === 3) {
+        const data = new Date(partes[2], partes[1] - 1, partes[0]);
+        data.setHours(0, 0, 0, 0);
+        return data;
+      }
+      
+      partes = dataStr.split('/');
+      if (partes.length === 3) {
+        const data = new Date(partes[2], partes[1] - 1, partes[0]);
+        data.setHours(0, 0, 0, 0);
+        return data;
+      }
+      
+      partes = dataStr.split('-');
+      if (partes.length === 3) {
+        const data = new Date(partes[0], partes[1] - 1, partes[2]);
+        data.setHours(0, 0, 0, 0);
+        return data;
+      }
+      
+      return null;
+    }
+    
+    function calcularPrazoUteis(dataInicial, diasUteis) {
+      const data = new Date(dataInicial);
+      let diasAdicionados = 0;
+      
+      while (diasAdicionados < diasUteis) {
+        data.setDate(data.getDate() + 1);
+        const diaSemana = data.getDay();
+        if (diaSemana !== 0 && diaSemana !== 6) {
+          diasAdicionados++;
+        }
+      }
+      
+      data.setHours(0, 0, 0, 0);
+      return data;
+    }
+    
+    function classificarPrazo(dataPrazo) {
+      if (!dataPrazo) return null;
+      if (dataPrazo < hoje) return 'vencida';
+      if (dataPrazo <= cincoProxDias) return 'avencer';
+      return 'futura';
+    }
+    
+    // ========== 1️⃣ PROTOCOLO ==========
+    function processarProtocolo() {
+      return new Promise((resolve) => {
+        Papa.parse('data/tramitacao.csv?' + timestamp, {
+          download: true,
+          header: true,
+          delimiter: ';',
+          skipEmptyLines: true,
+          complete: function(results) {
+            const dados = results.data;
+            const porProtocolo = {};
+            
+            dados.forEach(row => {
+              const numProtocolo = (row.PROTOCOLO || '').trim();
+              if (!numProtocolo) return;
+              
+              if (!porProtocolo[numProtocolo]) {
+                porProtocolo[numProtocolo] = [];
+              }
+              porProtocolo[numProtocolo].push(row);
+            });
+            
+            let vencidas = 0;
+            let aVencer = 0;
+            
+            Object.keys(porProtocolo).forEach(numProto => {
+              const registros = porProtocolo[numProto];
+              
+              registros.sort((a, b) => {
+                const dataA = parseData(a.DATA || '');
+                const dataB = parseData(b.DATA || '');
+                
+                if (!dataA && !dataB) return 0;
+                if (!dataA) return 1;
+                if (!dataB) return -1;
+                
+                if (dataA.getTime() !== dataB.getTime()) {
+                  return dataB.getTime() - dataA.getTime();
+                }
+                
+                const horaA = a.HORA || '000000';
+                const horaB = b.HORA || '000000';
+                return horaB > horaA ? 1 : -1;
+              });
+              
+              const maisRecente = registros[0];
+              const destino = (maisRecente.DESTINO || '').trim().toUpperCase();
+              
+              if (destino === nomeFiscalUpper) {
+                const dataTramitacao = parseData(maisRecente.DATA || '');
+                if (dataTramitacao) {
+                  const prazo = calcularPrazoUteis(dataTramitacao, 15);
+                  const tipo = classificarPrazo(prazo);
+                  
+                  if (tipo === 'vencida') vencidas++;
+                  else if (tipo === 'avencer') aVencer++;
+                }
+              }
+            });
+            
+            resolve({ vencidas, aVencer, total: vencidas + aVencer });
+          },
+          error: () => resolve({ vencidas: 0, aVencer: 0, total: 0 })
+        });
+      });
+    }
+    
+    // ========== 2️⃣ REQUERIMENTO ==========
+    function processarRequerimento() {
+      return new Promise((resolve) => {
+        Papa.parse('data/requerimento.csv?' + timestamp, {
+          download: true,
+          header: true,
+          delimiter: ';',
+          skipEmptyLines: true,
+          complete: function(results) {
+            const dados = results.data;
+            let vencidas = 0;
+            let aVencer = 0;
+            
+            dados.forEach(row => {
+              const fiscal = (row.Fiscal_Encaminha || '').trim().toUpperCase();
+              if (fiscal !== nomeFiscalUpper) return;
+              
+              const atendimento = String(row.Atendimento || '').trim().toUpperCase();
+              const cancelado = String(row.Cancelado || '').trim().toUpperCase();
+              
+              if (atendimento === 'TRUE') return;
+              if (cancelado === 'TRUE') return;
+              
+              const prazo = parseData(row.Prazo || '');
+              if (!prazo) return;
+              
+              const tipo = classificarPrazo(prazo);
+              if (tipo === 'vencida') vencidas++;
+              else if (tipo === 'avencer') aVencer++;
+            });
+            
+            resolve({ vencidas, aVencer, total: vencidas + aVencer });
+          },
+          error: () => resolve({ vencidas: 0, aVencer: 0, total: 0 })
+        });
+      });
+    }
+    
+    // ========== 3️⃣ DENÚNCIA ==========
+    function processarDenuncia() {
+      return new Promise((resolve) => {
+        Papa.parse('data/denuncia.csv?' + timestamp, {
+          download: true,
+          header: true,
+          delimiter: ';',
+          skipEmptyLines: true,
+          complete: function(results) {
+            const dados = results.data;
+            let vencidas = 0;
+            let aVencer = 0;
+            
+            dados.forEach(row => {
+              const fiscal = (row.FiscalEncaminha || '').trim().toUpperCase();
+              if (fiscal !== nomeFiscalUpper) return;
+              
+              const archive = String(row.Archive || '').trim().toUpperCase();
+              if (archive === 'TRUE') return;
+              
+              const prazo = parseData(row.Prazo || '');
+              if (!prazo) return;
+              
+              const tipo = classificarPrazo(prazo);
+              if (tipo === 'vencida') vencidas++;
+              else if (tipo === 'avencer') aVencer++;
+            });
+            
+            resolve({ vencidas, aVencer, total: vencidas + aVencer });
+          },
+          error: () => resolve({ vencidas: 0, aVencer: 0, total: 0 })
+        });
+      });
+    }
+    
+    // ========== 4️⃣ OFÍCIO ==========
+    function processarOficio() {
+      return new Promise((resolve) => {
+        Papa.parse('data/oficio.csv?' + timestamp, {
+          download: true,
+          header: true,
+          delimiter: ';',
+          skipEmptyLines: true,
+          complete: function(results) {
+            const dados = results.data;
+            let vencidas = 0;
+            let aVencer = 0;
+            
+            dados.forEach(row => {
+              const fiscal = (row.Fiscalencaminha || '').trim().toUpperCase();
+              if (fiscal !== nomeFiscalUpper) return;
+              
+              const cancela = String(row.Cancela || '').trim().toUpperCase();
+              const archive = String(row.Archive || '').trim().toUpperCase();
+              
+              if (cancela === 'TRUE') return;
+              if (archive === 'TRUE') return;
+              
+              const prazo = parseData(row.Prazo || '');
+              if (!prazo) return;
+              
+              const tipo = classificarPrazo(prazo);
+              if (tipo === 'vencida') vencidas++;
+              else if (tipo === 'avencer') aVencer++;
+            });
+            
+            resolve({ vencidas, aVencer, total: vencidas + aVencer });
+          },
+          error: () => resolve({ vencidas: 0, aVencer: 0, total: 0 })
+        });
+      });
+    }
+    
+    // ========== CARREGA TUDO ==========
+    const [protocolos, requerimentos, denuncias, oficios] = await Promise.all([
+      processarProtocolo(),
+      processarRequerimento(),
+      processarDenuncia(),
+      processarOficio()
+    ]);
+    
+    // ========== ATUALIZA CARDS ==========
+    const statCards = document.querySelectorAll('.stat-card .stat-number');
+    if (statCards.length >= 4) {
+      statCards[0].textContent = protocolos.total;
+      statCards[1].textContent = requerimentos.total;
+      statCards[2].textContent = denuncias.total;
+      statCards[3].textContent = oficios.total;
+      
+      document.getElementById('detProtocolos').textContent = 
+        `${protocolos.vencidas} vencidas | ${protocolos.aVencer} próximas`;
+      document.getElementById('detRequerimentos').textContent = 
+        `${requerimentos.vencidas} vencidas | ${requerimentos.aVencer} próximas`;
+      document.getElementById('detDenuncias').textContent = 
+        `${denuncias.vencidas} vencidas | ${denuncias.aVencer} próximas`;
+      document.getElementById('detOficios').textContent = 
+        `${oficios.vencidas} vencidas | ${oficios.aVencer} próximas`;
+    }
+    
+    document.getElementById('fiscalStats').style.display = 'block';
+    
+  } catch(e) {
+    console.error('Erro ao carregar OS:', e);
+  }
+}
+
+    
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    showLogin();
+    return;
+  }
+  
+  if (isAuthorized(user)) {
+    authCache.save(user);
+    showConteudo();
+    
+    // Busca perfil do Firestore POR CAMPO EMAIL
+    try {
+      console.log('🔍 Buscando perfil para:', user.email);
+
+      // 🆕 BUSCA POR CAMPO EMAIL (funciona independente do Document ID)
+      const q = query(collection(db, "usuarios"), where("email", "==", user.email));
+      const querySnapshot = await getDocs(q);
+
+      let perfil = null;
+      let userDocId = null;
+
+      if (!querySnapshot.empty) {
+        const userDoc = querySnapshot.docs[0];
+        perfil = userDoc.data();
+        userDocId = userDoc.id;
+
+        console.log('✅ Perfil encontrado! Document ID:', userDocId);
+
+        // ✅ ATUALIZA foto e último acesso (usando ID real do documento)
+        try {
+          await updateDoc(doc(db, "usuarios", userDocId), {
+            photoURL: user.photoURL || '',
+            ultimoAcesso: serverTimestamp()
+          });
+          console.log('✅ Foto e último acesso atualizados');
+        } catch (updateErr) {
+          console.warn('⚠️ Erro ao atualizar foto:', updateErr);
+        }
+
+
+        // =====================================================
+        // 🔐 CONTROLE DE PERMISSÕES (NEGA POR PADRÃO)
+        // =====================================================
+        const grupo = (perfil?.grupo || '').trim();
+
+        const setDisplay = (sel, show) => {
+          const el = document.querySelector(sel);
+          if (el) el.style.display = show ? '' : 'none';
+        };
+
+        const setAdminLinksVisible = (show) => {
+          const hrefs = ['rmpf1.html', 'inspecoes1.html'];
+          hrefs.forEach((href) => {
+            const a = document.querySelector(`.links-section a[href="${href}"]`);
+            if (!a) return;
+            const li = a.closest('li');
+            (li || a).style.display = show ? '' : 'none';
+          });
+        };
+
+        // Default: tudo restrito
+        window.__podeVerIndicadores = false;
+        setDisplay('#fiscalStats', false);
+        setDisplay('.indicadores-section', false);
+        setAdminLinksVisible(false);
+
+        // Grupo inválido/vazio: trata como NÃO AUTORIZADO (evita liberar admin por acidente)
+        if (!['Fiscal', 'Administrativo', 'Administrador'].includes(grupo)) {
+          showLogin();
+          showUnauthorizedModal(user);
+          window.__pendingLogout = true;
+          return;
+        }
+
+        if (grupo === 'Fiscal') {
+          setDisplay('#fiscalStats', true);
+          // Resumo de OS depende de CSVs — só carrega para Fiscal
+          carregarOSPendentesFiscal(perfil.nome || user.email);
+        }
+
+        if (grupo === 'Administrador') {
+          // Admin: libera indicadores e links gerenciais
+          setDisplay('.indicadores-section', true);
+          setAdminLinksVisible(true);
+          window.__podeVerIndicadores = true;
+        }
+        // Administrativo: mantém restrito (já está no default)
+
+        // =====================================================
+        // 🔐 FIM CONTROLE DE PERMISSÕES
+        // =====================================================
+      } else {
+        console.warn('⚠️ Perfil não encontrado para:', user.email);
+      }
+      
+      // Mostra nome no header
+      const userInfo = document.getElementById('userInfo');
+      if (userInfo) {
+        if (perfil) {
+          userInfo.innerHTML = `<span class="user-name">${perfil.nome}</span><span class="user-email">${user.email}</span>`;
+          
+    
+
+  
+})();
+
+  
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+<script>
+function carregarIndicadores() {
+  const container = document.getElementById('indicadores-content');
+  if (!container) return;
+  
+  Papa.parse('data/inspecoes.csv', {
+    download: true,
+    header: true,
+    delimiter: ';',
+    encoding: '',
+    skipEmptyLines: true,
+    complete: function(results) {
+      processarDados(results.data, container);
+    },
+    error: function(error) {
+      container.innerHTML = '<div class="indicadores-loading">⚠️ Erro: data/inspecoes.csv</div>';
+    }
+  });
+}
+
+function processarDados(data, container) {
+  const rows = data;
+
+  // ===== Helpers =====
+  const mesesPt = [
+    'Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+    'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'
+  ];
+
+  const pad2 = (n) => String(n).padStart(2, '0');
+
+  // Extrai {day, month, year} de "DD.MM.YYYY" ou "DD/MM/YYYY" (ou com "-")
+  function parseDMY(str) {
+    if (!str) return null;
+    const m = String(str).trim().match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{2,4})/);
+    if (!m) return null;
+    const day = parseInt(m[1], 10);
+    const month = parseInt(m[2], 10);
+    let year = parseInt(m[3], 10);
+    if (year < 100) year += 2000; // caso venha "26" em vez de "2026"
+    if (!(day >= 1 && day <= 31 && month >= 1 && month <= 12)) return null;
+    return { day, month, year };
+  }
+
+  function labelMesAno(month, year) {
+    return `${mesesPt[month - 1]} ${year}`;
+  }
+
+  function prevMesAno(month, year) {
+    if (month === 1) return { month: 12, year: year - 1 };
+    return { month: month - 1, year };
+  }
+
+  function keyMesAno(month, year) {
+    return `${pad2(month)}.${year}`; // ex: "01.2026"
+  }
+
+  // ===== Regra do mês avaliado =====
+  const hoje = new Date(); // data do dispositivo (web/pwa)
+  const hojeDia = hoje.getDate();
+  const mesAtual = hoje.getMonth() + 1; // 1..12
+  const anoAtual = hoje.getFullYear();
+
+  const atualKey = keyMesAno(mesAtual, anoAtual);
+  const anterior = prevMesAno(mesAtual, anoAtual);
+  const anteriorKey = keyMesAno(anterior.month, anterior.year);
+
+  // Filtra linhas do mês atual e do mês anterior (baseado no "MM.AAAA" presente na data)
+  const rowsMesAtual = rows.filter(row => row.DT_VISITA && String(row.DT_VISITA).includes(atualKey));
+  const rowsMesAnterior = rows.filter(row => row.DT_VISITA && String(row.DT_VISITA).includes(anteriorKey));
+
+  // Verifica se no mês atual já existem inspeções "a partir do dia 15" (>= 15)
+  const existeDia15ouMaisNoMesAtual = rowsMesAtual.some(row => {
+    const dmy = parseDMY(row.DT_VISITA);
+    return dmy && dmy.year === anoAtual && dmy.month === mesAtual && dmy.day >= 15;
+  });
+
+  // === Decisão final ===
+  // 1) Enquanto NÃO chegar no dia 15 do mês corrente, mostra mês anterior.
+  // 2) Depois do dia 15, só troca para o mês corrente se já existirem inspeções com dia >= 15 nesse mês.
+  let inspecoesFiltradas;
+  let periodoTexto;
+
+  if (hojeDia < 15) {
+    inspecoesFiltradas = rowsMesAnterior;
+    periodoTexto = labelMesAno(anterior.month, anterior.year);
+  } else {
+    if (existeDia15ouMaisNoMesAtual) {
+      inspecoesFiltradas = rowsMesAtual;
+      periodoTexto = labelMesAno(mesAtual, anoAtual);
+    } else {
+      inspecoesFiltradas = rowsMesAnterior;
+      periodoTexto = labelMesAno(anterior.month, anterior.year);
+    }
+  }
+
+  // Fallback final: se não achou nada no mês anterior (muito raro), pega últimos 1000
+  if (!inspecoesFiltradas || inspecoesFiltradas.length === 0) {
+    inspecoesFiltradas = rows.slice(-1000);
+    periodoTexto = 'Últimos 1000';
+  }
+
+  // ===== segue seu cálculo original =====
+  const totalInspecoes = inspecoesFiltradas.length;
+  const autos = inspecoesFiltradas.filter(row => row.TIPO && row.TIPO.includes('AUTO DE INFRAÇÃO')).length;
+
+  const fiscaisSet = new Set();
+  inspecoesFiltradas.forEach(row => {
+  if (row.Fiscal1 && row.Fiscal1.trim()) fiscaisSet.add(row.Fiscal1.trim());
+  if (row.Fiscal2 && row.Fiscal2.trim()) fiscaisSet.add(row.Fiscal2.trim());
+  if (row.Fiscal3 && row.Fiscal3.trim()) fiscaisSet.add(row.Fiscal3.trim());
+  });
+  const totalFiscais = fiscaisSet.size;
+
+  // === CONTAR CADA MODALIDADE SEPARADAMENTE ===
+  const denuncias = new Set();
+  const requerimentos = new Set();
+  const oficios = new Set();
+  const protocolos = new Set();
+
+  inspecoesFiltradas.forEach(row => {
+    if (row.Denuncia && row.Denuncia.trim() !== '') denuncias.add(row.Denuncia.trim());
+    if (row.OS && row.OS.trim() !== '') requerimentos.add(row.OS.trim());
+    if (row.Oficio && row.Oficio.trim() !== '') oficios.add(row.Oficio.trim());
+    if (row.Protocolo && row.Protocolo.trim() !== '') protocolos.add(row.Protocolo.trim());
+  });
+
+  const osDetalhadas = {
+    requerimentos: requerimentos.size,
+    oficios: oficios.size,
+    denuncias: denuncias.size,
+    protocolos: protocolos.size,
+    total: requerimentos.size + oficios.size + denuncias.size + protocolos.size
+  };
+
+
+
+  const tiposDocumentos = {};
+  inspecoesFiltradas.forEach(row => {
+   if (row.TIPO && row.TIPO.trim()) {
+      tiposDocumentos[row.TIPO.trim()] = (tiposDocumentos[row.TIPO.trim()] || 0) + 1;
+
+    }
+  });
+
+  const topTipos = Object.entries(tiposDocumentos).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const mediaPorFiscal = totalFiscais > 0 ? Math.round(totalInspecoes / totalFiscais) : 0;
+  const taxaAutos = totalInspecoes > 0 ? ((autos / totalInspecoes) * 100).toFixed(1) : 0;
+
+  renderizarIndicadores(container, {
+    totalInspecoes,
+    autos,
+    totalFiscais,
+    osDetalhadas,
+    mediaPorFiscal,
+    taxaAutos,
+    topTipos,
+    periodoTexto
+  });
+}
+
+
+
+function renderizarIndicadores(container, dados) {
+  // INDICADORES INICIAIS COMO TABELA COMPACTA (estilo padronizado)
+  let html = '<table style="width: 100%; font-size: 0.875rem; border-collapse: collapse; margin-bottom: 8px;">' +
+    '<tr style="border-bottom: 1px solid rgba(0,0,0,0.05);"><td style="padding: 8px 4px;">🔍 Inspeções</td><td style="text-align: right; font-weight: 600; color: #2c5aa0;">' + dados.totalInspecoes + ' <small style="color: var(--muted); font-weight: normal;">• Média ' + dados.mediaPorFiscal + '/fiscal</small></td></tr>' +
+    '<tr style="border-bottom: 1px solid rgba(0,0,0,0.05);"><td style="padding: 8px 4px;">📋 Autos</td><td style="text-align: right; font-weight: 600; color: #2c5aa0;">' + dados.autos + ' <small style="color: var(--muted); font-weight: normal;">• Taxa ' + dados.taxaAutos + '%</small></td></tr>' +
+    '<tr><td style="padding: 8px 4px;">👥 Fiscais Ativos</td><td style="text-align: right; font-weight: 600; color: #2c5aa0;">' + dados.totalFiscais + '</td></tr>' +
+    '</table>' +
+
+    // Linha de separação antes de Ordens de Serviço
+    '<div style="border-top: 1px solid rgba(0,0,0,0.08); margin: 20px 0 16px 0;"></div>' +
+
+    // Seção Ordens de Serviço
+    '<div style="margin-top: 0px; padding-top: 0px;">' +
+      '<h4 style="margin: 0 0 12px 0; color: #2c5aa0; font-size: 0.95rem; font-weight: 600;">📝 Ordens de Serviço: <strong style="font-size: 0.95rem;">' + dados.osDetalhadas.total + '</strong> <small style="color: var(--muted); font-weight: normal;">Atendidas</small></h4>' +
+      '<table style="width: 100%; font-size: 0.875rem; border-collapse: collapse;">' +
+        '<tr style="border-bottom: 1px solid rgba(0,0,0,0.05);"><td style="padding: 8px 4px;">📄 Requerimento</td><td style="text-align: right; font-weight: 600; color: #2c5aa0;">' + dados.osDetalhadas.requerimentos + '</td></tr>' +
+        '<tr style="border-bottom: 1px solid rgba(0,0,0,0.05);"><td style="padding: 8px 4px;">📮 Ofício</td><td style="text-align: right; font-weight: 600; color: #2c5aa0;">' + dados.osDetalhadas.oficios + '</td></tr>' +
+        '<tr style="border-bottom: 1px solid rgba(0,0,0,0.05);"><td style="padding: 8px 4px;">🔔 Denúncia</td><td style="text-align: right; font-weight: 600; color: #2c5aa0;">' + dados.osDetalhadas.denuncias + '</td></tr>' +
+        '<tr><td style="padding: 8px 4px;">📋 Protocolo</td><td style="text-align: right; font-weight: 600; color: #2c5aa0;">' + dados.osDetalhadas.protocolos + '</td></tr>' +
+      '</table>' +
+    '</div>' +
+    '<div style="border-top: 1px solid rgba(0,0,0,0.08); margin: 20px 0 16px 0;"></div>' +
+    
+    // Seção Tipos de Documentos
+    '<div style="margin-top: 8px; padding-top: 0px;">' +
+      '<h4 style="margin: 0 0 12px 0; color: #2c5aa0; font-size: 0.95rem; font-weight: 600;">📄 Tipos de Documentos: <strong style="font-size: 0.95rem;">' + dados.totalInspecoes + '</strong> <small style="color: var(--muted); font-weight: normal;">Total</small></h4>' +
+      '<table style="width: 100%; font-size: 0.875rem; border-collapse: collapse;">';
+
+  // Função auxiliar para converter para Title Case
+  function toTitleCase(str) {
+    var minusculas = ['de', 'da', 'do', 'das', 'dos', 'e', 'em', 'a', 'o'];
+    return str.toLowerCase().split(' ').map(function(palavra, indice) {
+      if (indice === 0) {
+        return palavra.charAt(0).toUpperCase() + palavra.slice(1);
+      }
+      if (minusculas.indexOf(palavra) > -1) {
+        return palavra;
+      }
+      return palavra.charAt(0).toUpperCase() + palavra.slice(1);
+    }).join(' ');
+  }
+
+  // Mapear tipos de documentos para ícones
+  function getIconeDocumento(tipo) {
+    var tipoLower = tipo.toLowerCase();
+    if (tipoLower.indexOf('intimação') > -1 || tipoLower.indexOf('intimacao') > -1) return '⚠️';
+    if (tipoLower.indexOf('notificação') > -1 || tipoLower.indexOf('notificacao') > -1) return '📢';
+    if (tipoLower.indexOf('certidão') > -1 || tipoLower.indexOf('certidao') > -1) return '📜';
+    if (tipoLower.indexOf('análise') > -1 || tipoLower.indexOf('analise') > -1) return '🔍';
+    if (tipoLower.indexOf('prorrogação') > -1 || tipoLower.indexOf('prorrogacao') > -1) return '⏳';
+    if (tipoLower.indexOf('auto') > -1) return '📋';
+    if (tipoLower.indexOf('alvará') > -1 || tipoLower.indexOf('alvara') > -1) return '✅';
+    if (tipoLower.indexOf('relatório') > -1 || tipoLower.indexOf('relatorio') > -1) return '📊';
+    if (tipoLower.indexOf('ofício') > -1 || tipoLower.indexOf('oficio') > -1) return '📮';
+    return '📄';
+  }
+
+  // Processar cada tipo de documento
+  dados.topTipos.forEach(function(item, index) {
+    var nomeOriginal = item[0];
+    var quantidade = item[1];
+    var nomeFormatado = toTitleCase(nomeOriginal);
+    if (nomeFormatado.length > 32) {
+      nomeFormatado = nomeFormatado.substring(0, 29) + '...';
+    }
+    var icone = getIconeDocumento(nomeOriginal);
+    var estiloBorda = (index < dados.topTipos.length - 1) ? 'border-bottom: 1px solid rgba(0,0,0,0.05);' : '';
+    html += '<tr style="' + estiloBorda + '"><td style="padding: 8px 4px;">' + icone + ' ' + nomeFormatado + '</td><td style="text-align: right; font-weight: 600; color: #2c5aa0;">' + quantidade + '</td></tr>';
+  });
+
+  // Fechar tabela de tipos
+  html += '</table></div>';
+
+  // Data/período NO FINAL - Alinhada à direita
+  html += '<div style="margin-top: 20px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.08); text-align: right; font-size: 0.85rem; color: var(--muted);">📅 ' + dados.periodoTexto + ' • 🔄 Atualizado</div>';
+
+  container.innerHTML = html;
+}
+
+
+// ✅ Só carrega indicadores para Administrador (flag setada no onAuthStateChanged)
+document.addEventListener('DOMContentLoaded', function () {
+  if (window.__podeVerIndicadores === true) {
+    try { carregarIndicadores(); } catch(e) { console.error('Erro ao carregar indicadores:', e); }
+  }
+});
+
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const el = document.getElementById('sync-cvs-info');
+  if (!el) return;
+
+  fetch('data/cvs_sync.txt?ts=' + Date.now(), { cache: 'no-store' })
+    .then(function (resp) {
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      return resp.text();
+    })
+    .then(function (txt) {
+      const v = (txt || '').trim();
+      if (!v) throw new Error('Arquivo vazio');
+
+      // Se vier ISO (ex.: 2026-01-08T23:14:55-03:00), formata bonito.
+      // Se vier outro formato, mostra como está.
+      let exibicao = v;
+      const d = new Date(v);
+      if (!isNaN(d.getTime())) {
+        exibicao = d.toLocaleString('pt-BR', {
+          timeZone: 'America/Sao_Paulo',
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+
+      el.innerHTML = '🔄 Sincronização CVS: <strong>' + exibicao + '</strong>';
+    })
+    .catch(function () {
+      el.innerHTML = '⚠️ Sincronização CVS: não foi possível verificar';
+    });
+});
+</script>
+
+<script>
+// Oculta card Sugestões se quantidade de cards for ÍMPAR
+(function(){
+  function verificarSimetria() {
+    var c = document.getElementById('card-sugestoes');
+    if (!c) return;
+    
+    var l = document.querySelector('.links-section ul');
+    if (!l) return;
+    
+    var n = l.querySelectorAll('li').length;
+    var isImpar = (n % 2 !== 0);
+    var isMobile = window.matchMedia('(max-width: 768px)').matches;
+    
+    c.style.display = (isImpar && isMobile) ? 'none' : '';
+  }
+  
+  verificarSimetria();
+  window.addEventListener('resize', verificarSimetria);
+})();
+</script>    
+    
+</body>
+</html>
