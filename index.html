@@ -401,7 +401,58 @@ header h2 {
    margin-bottom: 28px !important;
   }
 }
- 
+
+  /* Thumbnail de documento (não interfere na grid) */
+.pdfThumb{
+  display:block;
+  text-decoration:none;
+  color: inherit;
+  margin: 10px 0 0;
+}
+
+.pdfThumbCard{
+  display:flex;
+  gap: 12px;
+  align-items:center;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.08);
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+}
+
+.pdfThumbImg{
+  width: 92px;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,.10);
+  flex-shrink: 0;
+}
+
+.pdfThumbTxt{
+  line-height: 1.2;
+}
+.pdfThumbTitulo{
+  font-weight: 900;
+  color: #1a3a6b;
+  margin: 0 0 6px 0;
+}
+.pdfThumbSub{
+  font-size: .88rem;
+  color: rgba(31,42,58,.75);
+  margin: 0;
+}
+.pdfThumbBadge{
+  display:inline-block;
+  margin-top: 8px;
+  font-size: .78rem;
+  font-weight: 800;
+  color: #2c5aa0;
+  background: rgba(44,90,160,.10);
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
 
 </style>
 
@@ -749,17 +800,21 @@ header h2 {
 </div>
 
 <!-- Mini-card do PDF (leve e não quebra a seção) -->
-<div style="margin: 10px 0 0;">
-  <a class="linkPill"
-     href="pdf_viewer.html?src=docs/SEI_2151446_Oficio_2.pdf&title=Of%C3%ADcio%20Interno%2002-2026%20%28Produtividade%2030h%29"
-     style="text-decoration:none;">
-    <div>
-      Ofício Interno 02/2026<br>
-      <small>Nova fórmula da produtividade (30h) — abrir PDF</small>
+<a class="pdfThumb"
+   href="pdf_viewer.html?src=docs/SEI_2151446_Oficio_2.pdf&title=Of%C3%ADcio%20Interno%2002-2026%20%28Produtividade%2030h%29">
+  <div class="pdfThumbCard">
+    <img class="pdfThumbImg"
+         src="docs/oficio_02_2026_thumb.png"
+         alt="Miniatura do Ofício Interno 02/2026">
+    <div class="pdfThumbTxt">
+      <div class="pdfThumbTitulo">Ofício Interno nº 02/2026</div>
+      <p class="pdfThumbSub">
+        Produtividade (jornada 30h) — fórmula e vigência imediata.
+      </p>
+      <span class="pdfThumbBadge">📄 Toque para abrir</span>
     </div>
-    <div class="arrow">📄</div>
-  </a>
-</div>
+  </div>
+</a>
     
      <div class="card links-section">
       <h3>Central de Trabalho</h3>
