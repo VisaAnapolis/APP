@@ -753,6 +753,16 @@
             <div class="stat-label">Usuários Ativos</div>
         </div>
     </div>
+
+    <!-- Acessaram nas últimas 24h -->
+    <div class="stat-card">
+        <div class="stat-icon">⏱️</div>
+        <div class="stat-info">
+            <div class="stat-number" id="last24hUsers">0</div>
+            <div class="stat-label">Acessos (últimas 24h)</div>
+        </div>
+    </div>
+
 </div>
 
             </div>
@@ -1040,22 +1050,40 @@
 
         // ===== ESTATÍSTICAS =====
         function atualizarEstatisticas(usuarios) {
-// Total de usuários
-document.getElementById('totalUsers').textContent = usuarios.length;
+  // Total de usuários
+  document.getElementById('totalUsers').textContent = usuarios.length;
 
-// Por grupo
-const totalFiscais        = usuarios.filter(u => u.grupo === 'Fiscal').length;
-const totalAdmins         = usuarios.filter(u => u.grupo === 'Administrador').length;
-const totalAdministrativos = usuarios.filter(u => u.grupo === 'Administrativo').length;
+  // Por grupo
+  const totalFiscais         = usuarios.filter(u => u.grupo === 'Fiscal').length;
+  const totalAdmins          = usuarios.filter(u => u.grupo === 'Administrador').length;
+  const totalAdministrativos = usuarios.filter(u => u.grupo === 'Administrativo').length;
 
-document.getElementById('fiscalUsers').textContent        = totalFiscais;
-document.getElementById('adminUsers').textContent         = totalAdmins;
-document.getElementById('administrativoUsers').textContent = totalAdministrativos;
+  document.getElementById('fiscalUsers').textContent          = totalFiscais;
+  document.getElementById('adminUsers').textContent           = totalAdmins;
+  document.getElementById('administrativoUsers').textContent  = totalAdministrativos;
 
-// Usuários ativos
-const totalAtivos = usuarios.filter(u => u.ativo === true).length;
-document.getElementById('activeUsers').textContent = totalAtivos;
-        }
+  // Usuários ativos
+  const totalAtivos = usuarios.filter(u => u.ativo === true).length;
+  document.getElementById('activeUsers').textContent = totalAtivos;
+
+  // ✅ NOVO: Acessaram nas últimas 24h (baseado em ultimoAcesso)
+  const agora = Date.now();
+  const limite = agora - (24 * 60 * 60 * 1000);
+
+  const total24h = usuarios.filter(u => {
+    if (!u.ultimoAcesso) return false;
+
+    // Firestore Timestamp => {seconds, nanoseconds}
+    const ms = (u.ultimoAcesso.seconds)
+      ? (u.ultimoAcesso.seconds * 1000)
+      : new Date(u.ultimoAcesso).getTime();
+
+    return Number.isFinite(ms) && ms >= limite;
+  }).length;
+
+  const el24 = document.getElementById('last24hUsers');
+  if (el24) el24.textContent = total24h;
+}
         
         // ===== AUDITORIA DE CONSISTÊNCIA =====
 window.executarAuditoria = async function() {
