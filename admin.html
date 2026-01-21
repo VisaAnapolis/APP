@@ -457,29 +457,7 @@
             font-size: 0.85em;
         }
 
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .users-table {
-                font-size: 0.8rem;
-            }
-
-            .users-table thead th,
-            .users-table tbody td {
-                padding: 8px 4px;
-            }
-
-            .access-time {
-                font-size: 0.8rem;
-            }
-
-            .access-date {
-                font-size: 0.7rem;
-            }
-        }
-
+      
 /* =========================================================
    MOBILE ADMIN (retrato) — breakpoint único 430px
    Safari iOS friendly: sem sticky, sem scroll horizontal, cards legíveis
@@ -646,6 +624,26 @@
   }
 }
         
+/* Coluna "Último acesso" no card: empilha e melhora legibilidade */
+.users-table tbody td:nth-child(6){
+  align-items: flex-start;        /* evita centralização por baseline */
+}
+
+.users-table tbody td:nth-child(6) .access-time,
+.users-table tbody td:nth-child(6) .access-date{
+  flex: 0 0 100%;                 /* cada um ocupa uma linha (resolve sobreposição) */
+  font-weight: 500;               /* remove “bold diferente” */
+  line-height: 1.35;
+}
+
+.users-table tbody td:nth-child(6) .access-time{
+  font-size: 1.05rem;             /* aumenta um pouco */
+}
+
+.users-table tbody td:nth-child(6) .access-date{
+  font-size: 0.95rem;             /* aumenta, mas levemente menor que a hora */
+  margin-top: 4px;                /* afasta a data da hora */
+}
         
     </style>
 </head>
