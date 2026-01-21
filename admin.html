@@ -609,10 +609,15 @@
   /* 8) Último acesso: mantém seu bloco (hora + data) legível */
   .users-table tbody td:nth-child(6) .last-access{
     display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
+    flex-direction: column;      /* empilha hora e data */
+    align-items: flex-start;     /* evita alinhamento por baseline */
+    gap: 4px;                    /* afasta visualmente */
+    
+    font-size: 1.08rem;          /* leve aumento de legibilidade */
+    font-weight: 500;            /* força peso uniforme */
+    line-height: 1.35;           /* evita colisão no Safari */
+}
+
 
   /* 9) Botão Editar: touch-friendly */
   .users-table tbody td:nth-child(7) button.btn{
