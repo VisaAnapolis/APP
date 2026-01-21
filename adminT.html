@@ -1188,17 +1188,16 @@
              <td>${ultimoAcesso}</td>
       <td>
         ${(() => {
-          if (!u.dispositivo) return '<span style="color: #999;">-</span>';
-          const d = u.dispositivo;
-          return `
-            <div style="font-size: 0.85em; line-height: 1.5;">
-              📱 ${d.fabricante} ${d.modelo}<br>
-              💻 ${d.sistemaOperacional} ${d.versaoSO}<br>
-              🌐 ${d.navegador} ${d.versaoNavegador}<br>
-              ${d.isPWA ? '📲 <strong>PWA</strong>' : '🌍 Navegador'}
-            </div>
-          `;
-        })()}
+          ${(() => {
+    if (!user.dispositivo) return `<span style="color: #999">-</span>`;
+    const d = user.dispositivo;
+    return `<div style="font-size: 0.85em; line-height: 1.5">
+      ${d.fabricante} ${d.modelo}<br>
+      ${d.sistemaOperacional} ${d.versaoSO}<br>
+      ${d.navegador} ${d.versaoNavegador}<br>
+      ${d.isPWA ? '<strong>PWA</strong>' : 'Navegador'}
+    </div>`;
+  })()}
       </td>
       <td>
 
