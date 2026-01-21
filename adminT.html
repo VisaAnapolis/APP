@@ -1185,16 +1185,23 @@
                     <td>${statusBadge}</td>
                     <td>${ultimoAcesso}</td>
                     <td>
-        <td>
-          ${u.dispositivo ? `
+             <td>${ultimoAcesso}</td>
+      <td>
+        ${(() => {
+          if (!u.dispositivo) return '<span style="color: #999;">-</span>';
+          const d = u.dispositivo;
+          return `
             <div style="font-size: 0.85em; line-height: 1.5;">
-              📱 ${u.dispositivo.fabricante} ${u.dispositivo.modelo}<br>
-              💻 ${u.dispositivo.sistemaOperacional} ${u.dispositivo.versaoSO}<br>
-              🌐 ${u.dispositivo.navegador} ${u.dispositivo.versaoNavegador}<br>
-              ${u.dispositivo.isPWA ? '📲 <strong>PWA</strong>' : '🌍 Navegador'}
+              📱 ${d.fabricante} ${d.modelo}<br>
+              💻 ${d.sistemaOperacional} ${d.versaoSO}<br>
+              🌐 ${d.navegador} ${d.versaoNavegador}<br>
+              ${d.isPWA ? '📲 <strong>PWA</strong>' : '🌍 Navegador'}
             </div>
-          ` : '<span style="color: #999;">-</span>'}
-        </td>
+          `;
+        })()}
+      </td>
+      <td>
+
         <td>
                         <button class="btn btn-primary" onclick="editarUsuario('${user.id}', '${user.email}')">Editar</button>
                     </td>
