@@ -683,7 +683,146 @@
   margin-top: 4px;                /* afasta a data da hora */
 }
         
-    </style>
+    
+  /* ========== CARDS MOBILE ========== */
+  @media (max-width: 768px) {
+    .table-responsive {
+      display: none !important;
+    }
+
+    #mobileUserCards {
+      display: block !important;
+    }
+  }
+
+  @media (min-width: 769px) {
+    #mobileUserCards {
+      display: none !important;
+    }
+  }
+
+  .user-mobile-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #2c5aa0;
+  }
+
+  .user-mobile-card.inativo {
+    border-left-color: #dc3545;
+    opacity: 0.7;
+  }
+
+  .card-header-mobile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e8e8e8;
+  }
+
+  .card-nome {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a3a6b;
+  }
+
+  .card-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .badge-fiscal {
+    background: #007bff;
+    color: white;
+  }
+
+  .badge-administrador {
+    background: #28a745;
+    color: white;
+  }
+
+  .badge-administrativo {
+    background: #6c757d;
+    color: white;
+  }
+
+  .card-info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 8px 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .card-info-icon {
+    flex-shrink: 0;
+    font-size: 1.1rem;
+    width: 20px;
+  }
+
+  .card-info-text {
+    flex: 1;
+    color: #333;
+    word-break: break-word;
+  }
+
+  .card-dispositivo {
+    background: linear-gradient(135deg, rgba(44, 90, 160, 0.05), rgba(52, 199, 89, 0.05));
+    border-radius: 8px;
+    padding: 12px;
+    margin: 12px 0;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  .card-dispositivo-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0;
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e8e8e8;
+  }
+
+  .btn-card {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-card-edit {
+    background: #007bff;
+    color: white;
+  }
+
+  .btn-card-delete {
+    background: #dc3545;
+    color: white;
+  }
+
+  .btn-card:active {
+    transform: scale(0.95);
+  }
+
+</style>
 </head>
 <body>
 
@@ -810,6 +949,12 @@
                             </tbody>
                         </table>
                     </div>
+
+  <!-- 🆕 CARDS MOBILE -->
+  <div id="mobileUserCards" style="display: none;">
+    <!-- Cards serão inseridos aqui via JavaScript -->
+  </div>
+
                 </div>
             </div>
 
@@ -1040,6 +1185,17 @@
                     <td>${statusBadge}</td>
                     <td>${ultimoAcesso}</td>
                     <td>
+        <td>
+          ${u.dispositivo ? `
+            <div style="font-size: 0.85em; line-height: 1.5;">
+              📱 ${u.dispositivo.fabricante} ${u.dispositivo.modelo}<br>
+              💻 ${u.dispositivo.sistemaOperacional} ${u.dispositivo.versaoSO}<br>
+              🌐 ${u.dispositivo.navegador} ${u.dispositivo.versaoNavegador}<br>
+              ${u.dispositivo.isPWA ? '📲 <strong>PWA</strong>' : '🌍 Navegador'}
+            </div>
+          ` : '<span style="color: #999;">-</span>'}
+        </td>
+        <td>
                         <button class="btn btn-primary" onclick="editarUsuario('${user.id}', '${user.email}')">Editar</button>
                     </td>
                 `;
@@ -1344,7 +1500,90 @@ Document ID: ${email}
         };
 
         window.carregarUsuarios = carregarUsuarios;
-    </script>
+    
+  // ========== RENDERIZAR CARDS MOBILE ==========
+  function renderizarCardsMobile(usuarios) {
+    const container = document.getElementById('mobileUserCards');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    if (usuarios.length === 0) {
+      container.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;">Nenhum usuário encontrado</div>';
+      return;
+    }
+
+    usuarios.forEach(u => {
+      const ativo = u.ativo !== false;
+      const statusClass = ativo ? '' : 'inativo';
+
+      const ultimoAcesso = u.ultimoAcesso 
+        ? formatarData(u.ultimoAcesso.toDate ? u.ultimoAcesso.toDate() : new Date(u.ultimoAcesso))
+        : 'Nunca';
+
+      // Formatar dados do dispositivo
+      let dispositivoHTML = '';
+      if (u.dispositivo) {
+        const d = u.dispositivo;
+        dispositivoHTML = `
+          <div class="card-dispositivo">
+            <div class="card-dispositivo-item">
+              📱 <strong>${d.fabricante}</strong> ${d.modelo}
+            </div>
+            <div class="card-dispositivo-item">
+              💻 ${d.sistemaOperacional} ${d.versaoSO}
+            </div>
+            <div class="card-dispositivo-item">
+              🌐 ${d.navegador} ${d.versaoNavegador}
+            </div>
+            <div class="card-dispositivo-item">
+              ${d.isPWA ? '📲 <strong style="color: #28a745;">PWA Instalado</strong>' : '🌍 Navegador Web'}
+            </div>
+          </div>
+        `;
+      }
+
+      const card = document.createElement('div');
+      card.className = `user-mobile-card ${statusClass}`;
+      card.innerHTML = `
+        <div class="card-header-mobile">
+          <div class="card-nome">${u.nome || 'Sem nome'}</div>
+          <span class="card-badge badge-${u.grupo.toLowerCase()}">${u.grupo}</span>
+        </div>
+
+        <div class="card-info-row">
+          <span class="card-info-icon">✉️</span>
+          <span class="card-info-text">${u.email}</span>
+        </div>
+
+        <div class="card-info-row">
+          <span class="card-info-icon">${ativo ? '✅' : '❌'}</span>
+          <span class="card-info-text">${ativo ? 'Ativo' : 'Inativo'}</span>
+        </div>
+
+        <div class="card-info-row">
+          <span class="card-info-icon">🕒</span>
+          <span class="card-info-text">${ultimoAcesso}</span>
+        </div>
+
+        ${dispositivoHTML}
+
+        <div class="card-actions">
+          <button class="btn-card btn-card-edit" onclick="editarUsuario('${u.email}')">
+            ✏️ Editar
+          </button>
+          <button class="btn-card btn-card-delete" onclick="excluirUsuario('${u.email}')">
+            🗑️ Excluir
+          </button>
+        </div>
+      `;
+
+      container.appendChild(card);
+    });
+  }
+
+
+  </script>
 
 </body>
 </html>
