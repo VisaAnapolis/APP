@@ -1483,9 +1483,10 @@ onAuthStateChanged(auth, async (user) => {
         console.log('✅ Perfil encontrado! Document ID:', userDocId);
 
         // ✅ ATUALIZA foto e último acesso (usando ID real do documento)
-   /*
+   
         try {
-          await updateDoc(doc(db, "usuarios", userDocId), {
+/*
+            await updateDoc(doc(db, "usuarios", userDocId), {
             photoURL: user.photoURL || '',
             ultimoAcesso: serverTimestamp()
           });
@@ -1515,7 +1516,9 @@ if (googlePhoto && typeof googlePhoto === 'string' && googlePhoto.startsWith('ht
 
 await updateDoc(userDocRef, updatePayload);
         
-      
+} catch (err) {
+  console.error("Erro ao atualizar acesso/foto:", err);
+}      
       // Mostra nome no header
       const userInfo = document.getElementById('userInfo');
       if (userInfo) {
