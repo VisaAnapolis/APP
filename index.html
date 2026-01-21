@@ -453,7 +453,31 @@ header h2 {
   border-radius: 999px;
 }
 
+/* === DESTAQUE OFÍCIO INTERNO (AZUL INSTITUCIONAL) === */
+.pdfThumb--destaque{
+  border: 2px solid var(--brand1);           /* azul padrão */
+  background: linear-gradient(
+    135deg,
+    rgba(44,90,160,0.06),
+    rgba(255,255,255,1)
+  );
+  box-shadow:
+    0 0 0 1px rgba(44,90,160,0.15),
+    0 4px 14px rgba(44,90,160,0.18);
+}
 
+.pdfThumb--destaque:hover{
+  box-shadow:
+    0 0 0 1px rgba(44,90,160,0.25),
+    0 6px 18px rgba(44,90,160,0.25);
+  transform: translateY(-1px);
+}
+
+.pdfThumb--destaque .pdfThumbTitulo{
+  color: var(--brand1);
+}
+
+  
 </style>
 
   <!-- Sistema de Design - VISA Anápolis -->
@@ -694,6 +718,9 @@ header h2 {
   <h1>Vigilância Sanitária</h1>
   <h2>Diretoria de Vigilância em Saúde — Anápolis</h2>
 </header>
+
+</header>
+
 <!-- User info -->
 <div id="userInfo" class="user-info-bar"></div>
 
@@ -789,21 +816,14 @@ header h2 {
       </p>  
  <br>
       <h3>Avisos da Supervisão</h3>
-      
-<button type="button"
-        class="imgThumbBtn"
-        onclick="window.abrirImagemAviso('Comunicado.png','Comunicado da Supervisão')">
-  <img src="Comunicado.png"
-       alt="Comunicado da Supervisão"
-       class="imgThumb">
-  <span class="imgThumbHint">🔎 Toque para ampliar</span>
-</button>
-     
+      <p style="text-align: center; margin: 16px 0;">
+        <img src="Comunicado.png" alt="Procedimentos Obrigatórios: Lotes Proibidos Nestlé" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+      </p>     
 
       <!-- Mini-card do PDF (leve e não quebra a seção) -->
 <a class="pdfThumb"
    href="pdf_viewer.html?src=docs/SEI_2151446_Oficio_2.pdf&title=Of%C3%ADcio%20Interno%2002-2026%20%28Produtividade%2030h%29">
-  <div class="pdfThumbCard">
+  <div class="pdfThumbCard pdfThumb--destaque">
     <img class="pdfThumbImg"
          src="docs/oficio_02_2026_thumb.png"
          alt="Miniatura do Ofício Interno 02/2026">
@@ -898,11 +918,6 @@ header h2 {
   
 
   
-
-    </div>  <!-- modalActions -->
-  </div>    <!-- modalCard -->
-</div>      <!-- modalNaoAutorizado -->
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
@@ -1999,17 +2014,5 @@ document.addEventListener('DOMContentLoaded', function () {
 })();
 </script>    
     
-<div id="imgModal" class="imgModalOverlay" style="display:none" role="dialog" aria-modal="true">
-  <div class="imgModalCard">
-    <div class="imgModalTop">
-      <div id="imgModalTitle" class="imgModalTitle">Imagem</div>
-      <button class="imgModalClose" type="button" aria-label="Fechar" onclick="window.fecharImagemAviso()">×</button>
-    </div>
-    <div class="imgModalBody">
-      <img id="imgModalImg" alt="Aviso ampliado">
-    </div>
-  </div>
-</div>
-
 </body>
 </html>
