@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - VISA Anápolis</title>
+    
+    <!-- CSS do sistema de design -->
+    <link rel="stylesheet" href="./css/design-tokens.css">
+    
+    <style>
+        /* ===== VARIÁVEIS IDÊNTICAS AO INDEX =====
+        :root {
+            --input-bg: #ffffff;
+            --input-border: rgba(0, 0, 0, 0.23);
+            --input-focus: #2c5aa0;
+            --input-text: #1a202c;
+            --input-placeholder: #a0aec0;
+            --input-disabled-bg: #f5f7fa;
+            --input-disabled-text: #a0aec0;
+            --brand1: #2c5aa0;
+            --brand2: #3d6bb3;
+            --bg: #f2f4f8;
+            --text: #1f2a3a;
+            --muted: #5b6b83;
+            --card: #ffffff;
+            --line: rgba(31,42,58,.10);
+            --shadow: 0 10px 28px rgba(0,0,0,.08);
+            --shadow2: 0 6px 16px rgba(0,0,0,.08);
+            --warnBg: #fff7dd;
+            --warnLine: #d1a000;
+        }
+ */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        html, body { height: 100%; }
+        
+        body {
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* ===== HEADER IDÊNTICO AO INDEX ===== */
+        header {
+            background: #1a3a6b;
+            color: #ffffff;
+            padding: 28px 20px 26px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: clamp(1.7rem, 2.4vw, 2.3rem);
+            font-weight: 900;
+            letter-spacing: .2px;
+        }
+
+        header h2 {
+            margin: 8px 0 0;
+            font-size: clamp(1rem, 1.5vw, 1.15rem);
+            font-weight: 500;
+            opacity: .92;
+        }
+
+        /* Botão Voltar - iOS/Android Nativos */
+        .btn-ok-header {
+            position: absolute;
+            top: 50%;
+            left: 16px;
+            transform: translateY(-50%);
+            background: transparent !important;
+            border: none !important;
+            color: #ffffff !important;
+            font-size: 17px !important;
+            font-weight: 600;
+            padding: 16px 12px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-ok-header:before {
+            content: "‹";
+            margin-right: 4px;
+            font-size: 32px;
+            font-weight: 300;
+        }
+
+        /* ===== USER INFO BAR ===== */
+        .user-info-bar {
+            background: rgba(52, 199, 89, 0.08);
+            padding: 8px 20px;
+            font-size: 0.75rem;
+            color: #34C759;
+            border-bottom: 1px solid rgba(52, 199, 89, 0.15);
+            text-align: left;
+        }
+
+        .user-info-bar .user-name {
+            font-weight: 700;
+            display: inline;
+            margin-right: 10px;
+            color: #1a3a6b;
+            font-size: 0.8rem;
+        }
+
+        .user-info-bar .user-name:after {
+            content: "•";
+            margin-left: 10px;
+            opacity: 0.5;
+            color: #64748b;
+        }
+
+        .user-info-bar .user-email {
+            font-weight: 400;
+            opacity: 0.85;
+            display: inline;
+            color: #5b6b83;
+        }
+
+        /* ===== TELA DE LOADING ===== */
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .main-content {
+            display: none;
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 1200px;
+            margin: 22px auto 30px;
+            padding: 0 16px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 16px;
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow2);
+        }
+
+        .card h3 {
+            margin: 0 0 16px 0;
+            color: var(--brand1);
+            padding-left: 10px;
+            border-left: 6px solid var(--brand1);
+            font-size: 1.05rem;
+        }
+
+        /* ===== TABELA DE USUÁRIOS ===== */
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            min-width: 900px;
+        }
+
+        .users-table thead th {
+            background: var(--brand1);
+            color: white;
+            font-weight: 600;
+            padding: 12px 8px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .users-table tbody td {
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--line);
+            vertical-align: middle;
+        }
+
+        .users-table tbody tr:hover {
+            background-color: rgba(44, 90, 160, 0.05);
+        }
+
+        .user-photo {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge.fiscal {
+            background: rgba(61, 107, 179, 0.15);
+            color: #2c5aa0;
+        }
+
+        .badge.administrador {
+            background: rgba(220, 53, 69, 0.15);
+            color: #dc3545;
+        }
+
+        .badge.administrativo {
+            background: rgba(52, 199, 89, 0.15);
+            color: #34C759;
+        }
+
+        .badge.ativo {
+            background: rgba(52, 199, 89, 0.15);
+            color: #34C759;
+        }
+
+        .badge.inativo {
+            background: rgba(108, 117, 125, 0.15);
+            color: #6c757d;
+        }
+
+        .access-time {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .access-date {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .btn {
+            appearance: none;
+            border: 1px solid var(--line);
+            background: var(--card-bg);
+            color: var(--text-primary);
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: .15s;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            box-shadow: var(--shadow2);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            border: none;
+            background: linear-gradient(135deg, var(--brand1), var(--brand2));
+            color: #fff;
+        }
+
+        .btn-danger {
+            border: none;
+            background: #dc3545;
+            color: #fff;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: var(--muted);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #ccd6e0;
+            border-top: 4px solid var(--brand1);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===== MODAL DE EDIÇÃO ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .modal-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 18px 50px rgba(0,0,0,0.2);
+        }
+
+        .modal-card h3 {
+            margin: 0 0 20px 0;
+            color: var(--brand1);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            font-size: 1em;
+            background: var(--input-bg);
+            color: var(--input-text);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--input-focus);
+            box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.15);
+        }
+
+        .form-group input:disabled {
+            background: var(--input-disabled-bg);
+            color: var(--input-disabled-text);
+            cursor: not-allowed;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        /* ===== ESTATÍSTICAS ===== */
+        .stats-grid {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 14px;
+            margin-bottom: 14px;
+        }
+
+        .stat-card {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding-right: 14px;
+            border-right: 1px solid var(--line);
+            background: transparent;
+            box-shadow: none;
+            border-radius: 0;
+        }
+        .stat-card:last-child{
+            border-right: none;
+            padding-right: 0;
+        }
+
+        
+
+        .stat-icon{
+            font-size: 1.05rem;
+            line-height: 1;
+            flex: 0 0 auto;
+        }
+        .stat-info{
+            display: inline-flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+.stat-number {
+            font-size: 1.15rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--brand1), var(--brand2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.88rem;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        /* ===== AUDITORIA ===== */
+        .audit-section {
+            margin-top: 16px;
+        }
+
+        .audit-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid;
+            font-size: 0.9rem;
+        }
+
+        .audit-item.success {
+            background: rgba(52, 199, 89, 0.1);
+            border-left-color: #34C759;
+        }
+
+        .audit-item.warning {
+            background: #fff7dd;
+            border-left-color: #d1a000;
+        }
+
+        .audit-item.error {
+            background: rgba(220, 53, 69, 0.1);
+            border-left-color: #dc3545;
+        }
+
+        .audit-item strong {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 1em;
+        }
+
+        .audit-item ul {
+            margin: 8px 0 0 20px;
+            padding: 0;
+        }
+
+        .audit-item li {
+            margin: 4px 0;
+            color: var(--text);
+        }
+
+        .email-code {
+            background: rgba(0,0,0,0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.85em;
+        }
+
+      
+/* =========================================================
+   MOBILE ADMIN (retrato) — breakpoint único 430px
+   Safari iOS friendly: sem sticky, sem scroll horizontal, cards legíveis
+   ========================================================= */
+@media (max-width: 430px){
+
+  /* 1) Para de “forçar planilha larga” */
+  .users-table{
+    min-width: 0 !important;
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 12px !important; /* espaço vertical entre cards */
+    table-layout: auto !important;      /* evita truncamentos estranhos no Safari */
+    font-size: 0.94rem;
+  }
+
+  /* 2) No modo card, thead atrapalha */
+  .users-table thead{
+    display: none !important;
+  }
+
+  /* 3) Cada linha vira um card */
+  .users-table tbody tr{
+    display: block !important;
+    background: var(--card) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 14px !important;
+    box-shadow: var(--shadow2) !important;
+    padding: 12px 12px !important;
+    margin: 0 !important;
+
+    /* Safari iOS: garante clipping correto de radius/bordas */
+    overflow: hidden;
+  }
+
+  /* 4) Desliga sticky/left/z-index (no Safari isso costuma dar “fantasma”) */
+  .users-table th,
+  .users-table td{
+    position: static !important;
+    left: auto !important;
+    z-index: auto !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+  /* 5) Cada célula vira uma linha do card */
+  .users-table tbody td{
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    border: none !important;
+
+    /* Espaçamento “iOS-safe” (evita depender de gap se quiser máxima compatibilidade) */
+    padding: 8px 0 !important;
+  }
+
+  /* 6) “Topo” do card: foto e nome em formato de cabeçalho */
+  .users-table tbody td:nth-child(1){
+    padding-top: 2px !important;
+    padding-bottom: 0 !important;
+  }
+
+  .users-table tbody td:nth-child(2){
+    padding-top: 2px !important;
+    padding-bottom: 12px !important;
+    border-bottom: 1px solid var(--line) !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Foto compacta e consistente */
+  .users-table tbody td:nth-child(1) img.user-photo{
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 999px;
+    flex: 0 0 auto;
+  }
+
+  /* Nome com hierarquia visual */
+  .users-table tbody td:nth-child(2) strong{
+    display: block;
+    font-size: 1.02rem;
+    line-height: 1.25;
+  }
+
+  /* 7) Labels fixos via nth-child (sem mexer no JS) */
+  .users-table tbody td:nth-child(3)::before{ content:"E-mail"; }
+  .users-table tbody td:nth-child(4)::before{ content:"Perfil"; }
+  .users-table tbody td:nth-child(5)::before{ content:"Status"; }
+  .users-table tbody td:nth-child(6)::before{ content:"Último acesso"; }
+  .users-table tbody td:nth-child(7)::before{ content:"Ações"; }
+
+  /* Estilo do label (coluna da esquerda) */
+  .users-table tbody td:nth-child(3)::before,
+  .users-table tbody td:nth-child(4)::before,
+  .users-table tbody td:nth-child(5)::before,
+  .users-table tbody td:nth-child(6)::before,
+  .users-table tbody td:nth-child(7)::before{
+    flex: 0 0 112px;     /* largura do rótulo */
+    max-width: 112px;
+    color: var(--muted);
+    font-weight: 800;
+    font-size: 0.82rem;
+    line-height: 1.2;
+    padding-top: 2px;
+
+    /* iOS: evita seleção/incômodo */
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Conteúdo (coluna da direita) */
+  .users-table tbody td:nth-child(3),
+  .users-table tbody td:nth-child(4),
+  .users-table tbody td:nth-child(5),
+  .users-table tbody td:nth-child(6),
+  .users-table tbody td:nth-child(7){
+    /* cria “2 colunas”: label + valor */
+  }
+
+  /* Safari iOS: quebra de e-mail sem estourar */
+  .users-table tbody td:nth-child(3){
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  /* 8) Último acesso: mantém seu bloco (hora + data) legível */
+  /* 9) Botão Editar: touch-friendly */
+  .users-table tbody td:nth-child(7) button.btn{
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 12px;
+  }
+
+  /* 10) Reduz ruído visual: separadores sutis entre “linhas” internas do card */
+  .users-table tbody td:nth-child(3),
+  .users-table tbody td:nth-child(4),
+  .users-table tbody td:nth-child(5),
+  .users-table tbody td:nth-child(6),
+  .users-table tbody td:nth-child(7){
+    border-bottom: 1px dashed rgba(0,0,0,0); /* placeholder p/ não mexer no tema */
+  }
+
+  /* (Opcional iOS/tema) Se quiser separador visível, mas respeitando tokens: */
+  .users-table tbody td:nth-child(3),
+  .users-table tbody td:nth-child(4),
+  .users-table tbody td:nth-child(5),
+  .users-table tbody td:nth-child(6){
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 10px !important;
+    margin-bottom: 2px !important;
+  }
+
+  /* 8) Último acesso (hora + data): Safari iOS/Android — evita sobreposição */
+  .users-table tbody td:nth-child(6){
+    display: grid !important;
+    grid-template-columns: 112px minmax(0, 1fr) !important; /* 112px = largura do label */
+    column-gap: 10px;
+    align-items: start !important;
+  }
+  .users-table tbody td:nth-child(6)::before{
+    grid-column: 1;
+  }
+  .users-table tbody td:nth-child(6) .access-time,
+  .users-table tbody td:nth-child(6) .access-date{
+    grid-column: 2;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+  .users-table tbody td:nth-child(6) .access-time{
+    font-size: 1.05rem;
+  }
+  .users-table tbody td:nth-child(6) .access-date{
+    font-size: 0.95rem;
+    margin-top: 4px;
+  }
+
+  /* Estatísticas em linha: garante que não “vaze” no iOS */
+  .stats-grid{ max-width: 100%; }
+  .stat-card{ min-width: 0; }
+
+}
+        
+/* Coluna "Último acesso" no card: empilha e melhora legibilidade */
+.users-table tbody td:nth-child(6){
+  align-items: flex-start;        /* evita centralização por baseline */
+}
+
+.users-table tbody td:nth-child(6) .access-time,
+.users-table tbody td:nth-child(6) .access-date{
+  flex: 0 0 100%;                 /* cada um ocupa uma linha (resolve sobreposição) */
+  font-weight: 500;               /* remove “bold diferente” */
+  line-height: 1.35;
+}
+
+.users-table tbody td:nth-child(6) .access-time{
+  font-size: 1.05rem;             /* aumenta um pouco */
+}
+
+.users-table tbody td:nth-child(6) .access-date{
+  font-size: 0.95rem;             /* aumenta, mas levemente menor que a hora */
+  margin-top: 4px;                /* afasta a data da hora */
+}
+        
+    </style>
+</head>
+<body>
+
+    <!-- Tela de Loading Inicial -->
+    <div id="loading-screen">
+        <div class="spinner"></div>
+        <div style="color: var(--brand1); font-weight: 600; margin-top: 15px;">Verificando permissões...</div>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <div class="main-content" id="mainContent">
+        <header>
+            <a href="index.html" class="btn-ok-header"></a>
+            <h1>Vigilância Sanitária</h1>
+            <h2>Painel Administrativo</h2>
+        </header>
+
+        <!-- User info -->
+        <div id="userInfo" class="user-info-bar"></div>
+
+        <div class="container">
+            <!-- Estatísticas -->
+            <div class="card">
+                <h3>📊 Estatísticas Gerais</h3>
+               <div class="stats-grid">
+    <!-- Total de Usuários -->
+    <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-info">
+            <div class="stat-number" id="totalUsers">0</div>
+            <div class="stat-label">Total de Usuários</div>
+        </div>
+    </div>
+
+    <!-- Fiscais -->
+    <div class="stat-card">
+        <div class="stat-icon">🔍</div>
+        <div class="stat-info">
+            <div class="stat-number" id="fiscalUsers">0</div>
+            <div class="stat-label">Fiscais</div>
+        </div>
+    </div>
+
+    <!-- Administradores -->
+    <div class="stat-card">
+        <div class="stat-icon">⚙️</div>
+        <div class="stat-info">
+            <div class="stat-number" id="adminUsers">0</div>
+            <div class="stat-label">Administradores</div>
+        </div>
+    </div>
+
+    <!-- Administrativos -->
+    <div class="stat-card">
+        <div class="stat-icon">📋</div>
+        <div class="stat-info">
+            <div class="stat-number" id="administrativoUsers">0</div>
+            <div class="stat-label">Administrativos</div>
+        </div>
+    </div>
+
+    <!-- Usuários Ativos -->
+    <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-info">
+            <div class="stat-number" id="activeUsers">0</div>
+            <div class="stat-label">Usuários Ativos</div>
+        </div>
+    </div>
+
+    <!-- Acessaram nas últimas 24h -->
+    <div class="stat-card">
+        <div class="stat-icon">⏱️</div>
+        <div class="stat-info">
+            <div class="stat-number" id="last24hUsers">0</div>
+            <div class="stat-label">Acessos (últimas 24h)</div>
+        </div>
+    </div>
+
+</div>
+
+            </div>
+
+            <!-- Auditoria de Consistência -->
+            <div class="card">
+                <h3>🔍 Auditoria de Consistência</h3>
+                <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 12px;">
+                    Verifica se os usuários do Firestore estão sincronizados com a lista AUTHORIZED_EMAILS do index.html
+                </p>
+                <div id="auditLoading" class="loading" style="display: none; padding: 20px;">
+                    <div class="spinner"></div>
+                    Verificando inconsistências...
+                </div>
+                <div id="auditResults"></div>
+                <button class="btn btn-primary" onclick="executarAuditoria()" style="margin-top: 12px;">
+                    🔍 Executar Auditoria
+                </button>
+            </div>
+
+            <!-- Tabela de Usuários -->
+            <div class="card">
+                <h3>👥 Gerenciamento de Usuários</h3>
+                
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    Carregando usuários...
+                </div>
+
+                <div id="usersTableContainer" style="display: none;">
+                    <div class="table-wrapper">
+                        <table class="users-table">
+                            <thead>
+                                <tr>
+                                    <th>Foto</th>
+                                    <th>Nome</th>
+                                    <th>E-mail</th>
+                                    <th>Perfil/Grupo</th>
+                                    <th>Status</th>
+                                    <th>Último Acesso</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botão de Logout -->
+            <div style="text-align: center; padding: 20px;">
+                <button class="btn" onclick="logout()">Encerrar sessão</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edição -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-card">
+            <h3>✏️ Editar Usuário</h3>
+            
+            <div class="form-group">
+                <label for="editEmail">E-mail (não editável)</label>
+                <input type="email" id="editEmail" disabled>
+            </div>
+
+            <div class="form-group">
+                <label for="editNome">Nome Completo *</label>
+                <input type="text" id="editNome" required>
+            </div>
+
+            <div class="form-group">
+                <label for="editGrupo">Perfil/Grupo *</label>
+                <select id="editGrupo">
+                    <option value="Fiscal">Fiscal</option>
+                    <option value="Administrador">Administrador</option>
+                    <option value="Administrativo">Administrativo</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="editStatus">Status *</label>
+                <select id="editStatus">
+                    <option value="Ativo">Ativo</option>
+                    <option value="Inativo">Inativo</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="editObs">Observações Internas</label>
+                <textarea id="editObs" rows="3" placeholder="Anotações administrativas..."></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn" onclick="fecharModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="salvarUsuario()">💾 Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
+            authDomain: "visam-3a30b.firebaseapp.com",
+            projectId: "visam-3a30b",
+            messagingSenderId: "308899251430",
+            appId: "1:308899251430:web:0053cdbd0bed7f0de76727"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        let currentUserProfile = null;
+
+        // ===== CONTROLE DE EXIBIÇÃO =====
+        function showContent() {
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+        }
+
+        function redirectToIndex(message) {
+            alert(message);
+            window.location.href = 'index.html';
+        }
+
+        // ===== FORMATAR DATA/HORA =====
+        function formatarDataHora(timestamp) {
+            if (!timestamp) return '<span style="color: var(--muted);">Nunca acessou</span>';
+            
+            const date = timestamp.seconds ? new Date(timestamp.seconds * 1000) : new Date(timestamp);
+            
+            const dataStr = date.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+            
+            const horaStr = date.toLocaleTimeString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            return `<span class="access-time">${horaStr}</span><span class="access-date">${dataStr}</span>`;
+        }
+
+        // ===== LOGOUT =====
+        window.logout = async function() {
+            try {
+                await signOut(auth);
+                location.reload();
+            } catch (error) {
+                console.error("Erro no logout:", error);
+            }
+        };
+
+        // ===== VERIFICAÇÃO DE AUTENTICAÇÃO (MELHORADA) =====
+        onAuthStateChanged(auth, async (user) => {
+            // 🔒 PROTEÇÃO 1: Não está logado
+            if (!user) {
+                redirectToIndex('⚠️ Você precisa estar logado para acessar esta página.');
+                return;
+            }
+
+            const email = user.email.toLowerCase().trim();
+
+            try {
+                // 🔒 PROTEÇÃO 2: Busca perfil no Firestore
+                const userDoc = await getDoc(doc(db, "usuarios", email));
+                
+                if (!userDoc.exists()) {
+                    redirectToIndex('⚠️ Usuário não cadastrado no sistema.\n\nVocê será redirecionado para a página inicial.');
+                    return;
+                }
+
+                const perfil = userDoc.data();
+                currentUserProfile = { ...perfil, uid: user.uid, email: user.email };
+
+                // 🔒 PROTEÇÃO 3: Verifica se é Administrador (SEM DESLOGAR)
+                if (perfil.grupo !== "Administrador") {
+                    redirectToIndex('🚫 Acesso Negado\n\nApenas administradores podem acessar o Painel de Gerenciamento.\n\nVocê será redirecionado para a página inicial.');
+                    return;
+                }
+
+                // ✅ LIBERADO - É administrador
+                document.getElementById('userInfo').innerHTML = `
+                    <span class="user-name">${perfil.nome}</span><span class="user-email">${user.email}</span>
+                `;
+
+                showContent();
+                carregarUsuarios();
+
+            } catch (error) {
+                console.error("Erro ao verificar permissões:", error);
+                redirectToIndex('⚠️ Erro ao verificar permissões.\n\nVocê será redirecionado para a página inicial.');
+            }
+        });
+
+        // ===== CARREGAR USUÁRIOS =====
+        async function carregarUsuarios() {
+            const loadingDiv = document.getElementById('loading');
+            const tableContainer = document.getElementById('usersTableContainer');
+            
+            loadingDiv.style.display = 'block';
+            tableContainer.style.display = 'none';
+
+            try {
+                const q = query(collection(db, "usuarios"), orderBy("nome"));
+                const snapshot = await getDocs(q);
+                
+                const usuarios = [];
+                snapshot.forEach(docSnapshot => {
+                    const data = docSnapshot.data();
+                    usuarios.push({ 
+                        id: docSnapshot.id,
+                        email: data.email || docSnapshot.id,
+                        ...data 
+                    });
+                });
+
+                renderizarUsuarios(usuarios);
+                atualizarEstatisticas(usuarios);
+
+                loadingDiv.style.display = 'none';
+                tableContainer.style.display = 'block';
+
+            } catch (error) {
+                console.error("Erro ao carregar usuários:", error);
+                loadingDiv.innerHTML = '<p style="color: #dc3545;">Erro ao carregar usuários.</p>';
+            }
+        }
+
+        // ===== RENDERIZAR TABELA =====
+        function renderizarUsuarios(usuarios) {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+
+            usuarios.forEach(user => {
+                const tr = document.createElement('tr');
+                
+                const statusBadge = user.ativo === true ? 
+                    '<span class="badge ativo">Ativo</span>' : 
+                    '<span class="badge inativo">Inativo</span>';
+
+                const grupoBadgeClass = (user.grupo || 'administrativo').toLowerCase();
+                const grupoBadge = `<span class="badge ${grupoBadgeClass}">${user.grupo || 'N/A'}</span>`;
+
+                let photoHTML;
+                if (user.photoURL) {
+                    photoHTML = `<img src="${user.photoURL}" alt="${user.nome}" class="user-photo">`;
+                } else {
+                    const emojiMap = {
+                        'fiscal': '👮',
+                        'administrador': '👨‍💼',
+                        'administrativo': '👤'
+                    };
+                    const emoji = emojiMap[grupoBadgeClass] || '👤';
+                    photoHTML = `<div style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">${emoji}</div>`;
+                }
+
+                const ultimoAcesso = formatarDataHora(user.ultimoAcesso);
+
+                tr.innerHTML = `
+                    <td>${photoHTML}</td>
+                    <td><strong>${user.nome || 'N/A'}</strong></td>
+                    <td>${user.email}</td>
+                    <td>${grupoBadge}</td>
+                    <td>${statusBadge}</td>
+                    <td>${ultimoAcesso}</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="editarUsuario('${user.id}', '${user.email}')">Editar</button>
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ===== ESTATÍSTICAS =====
+        function atualizarEstatisticas(usuarios) {
+  // Total de usuários
+  document.getElementById('totalUsers').textContent = usuarios.length;
+
+  // Por grupo
+  const totalFiscais         = usuarios.filter(u => u.grupo === 'Fiscal').length;
+  const totalAdmins          = usuarios.filter(u => u.grupo === 'Administrador').length;
+  const totalAdministrativos = usuarios.filter(u => u.grupo === 'Administrativo').length;
+
+  document.getElementById('fiscalUsers').textContent          = totalFiscais;
+  document.getElementById('adminUsers').textContent           = totalAdmins;
+  document.getElementById('administrativoUsers').textContent  = totalAdministrativos;
+
+  // Usuários ativos
+  const totalAtivos = usuarios.filter(u => u.ativo === true).length;
+  document.getElementById('activeUsers').textContent = totalAtivos;
+
+  // ✅ NOVO: Acessaram nas últimas 24h (baseado em ultimoAcesso)
+  const agora = Date.now();
+  const limite = agora - (24 * 60 * 60 * 1000);
+
+  const total24h = usuarios.filter(u => {
+    if (!u.ultimoAcesso) return false;
+
+    // Firestore Timestamp => {seconds, nanoseconds}
+    const ms = (u.ultimoAcesso.seconds)
+      ? (u.ultimoAcesso.seconds * 1000)
+      : new Date(u.ultimoAcesso).getTime();
+
+    return Number.isFinite(ms) && ms >= limite;
+  }).length;
+
+  const el24 = document.getElementById('last24hUsers');
+  if (el24) el24.textContent = total24h;
+}
+        
+        // ===== AUDITORIA DE CONSISTÊNCIA =====
+window.executarAuditoria = async function() {
+  const loadingDiv = document.getElementById('auditLoading');
+  const resultsDiv = document.getElementById('auditResults');
+  
+  loadingDiv.style.display = 'block';
+  resultsDiv.innerHTML = '';
+
+  try {
+    // 1. Lista AUTHORIZEDEMAILS do index.html
+    const indexResponse = await fetch('index.html');
+    const indexHTML = await indexResponse.text();
+    const regex = /const\s*AUTHORIZED_EMAILS\s*=\s*new Set\((.*?)\)/s;
+    const match = indexHTML.match(regex);
+    
+    if (!match) throw new Error('Não foi possível encontrar AUTHORIZEDEMAILS no index.html');
+    
+    const emailsString = match[1];
+    const indexEmails = new Set();
+    const emailRegex = /['"`]([^'"`]+)['"`]/g;
+    let emailMatch;
+    while (emailMatch = emailRegex.exec(emailsString)) {
+      indexEmails.add(emailMatch[1].toLowerCase().trim());
+    }
+    
+    console.log(`Encontrados ${indexEmails.size} emails no index.html`);
+
+    // 2. Todos usuários do Firestore
+    const firestoreSnapshot = await getDocs(collection(db, 'usuarios'));
+    const firestoreUsers = [];
+    const firestoreEmails = new Set();
+    
+    firestoreSnapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.email) {
+        const email = data.email.toLowerCase().trim();
+        firestoreEmails.add(email);
+        firestoreUsers.push({
+          id: doc.id,
+          email: email,
+          nome: data.nome || 'N/A',
+          grupo: data.grupo || 'N/A',
+          ativo: data.ativo !== false  // true por padrão
+        });
+      }
+    });
+    
+    console.log(`Encontrados ${firestoreEmails.size} emails no Firestore`);
+
+    // 3. NOVO: Usuários com ID ≠ email
+    const idDiferenteEmail = firestoreUsers.filter(user => user.id !== user.email);
+
+    // 4. Demais validações
+    const naFirestoreMasNoIndex = Array.from(firestoreEmails).filter(email => !indexEmails.has(email));
+    const noIndexMasNoFirestore = Array.from(indexEmails).filter(email => !firestoreEmails.has(email));
+    const emailsConsistentes = Array.from(firestoreEmails).filter(email => indexEmails.has(email));
+
+    let html = `
+      <div class="audit-section">
+        <div class="audit-item success">
+          <strong>📊 Resumo Geral</strong>
+          <ul>
+            <li><strong>${indexEmails.size}</strong> emails autorizados no index.html</li>
+            <li><strong>${firestoreEmails.size}</strong> perfis cadastrados no Firestore</li>
+            <li><strong>${emailsConsistentes.length}</strong> emails consistentes em ambos</li>
+          </ul>
+        </div>
+    `;
+
+    // NOVO: Alertar ID ≠ email (CRÍTICO para RMPF/inspeções)
+    if (idDiferenteEmail.length > 0) {
+      html += `
+        <div class="audit-item error">
+          <strong>🚨 ${idDiferenteEmail.length} usuários com ID ≠ EMAIL (bloqueiam RMPF/inspeções)</strong>
+          <p>Estes usuários <strong>NÃO conseguem abrir RMPF/inspeções</strong> porque estas páginas validam por Document ID.</p>
+          <ul>
+            ${idDiferenteEmail.map(user => 
+              `<li><span class="email-code">${user.id}</span> ≠ <strong>${user.email}</strong> (${user.nome}, ${user.grupo})</li>`
+            ).join('')}
+          </ul>
+          <p><strong>Ação:</strong> <strong>DELETE + RECRIAR</strong> cada um (Painel Admin → Editar → Delete → Novo)</p>
+        </div>
+      `;
+    }
+
+    // Emails no Firestore mas não no index
+    if (naFirestoreMasNoIndex.length > 0) {
+      html += `
+        <div class="audit-item warning">
+          <strong>⚠️ ${naFirestoreMasNoIndex.length} usuários no Firestore mas NÃO autorizados no index.html</strong>
+          <p>Estes usuários têm perfil cadastrado mas <strong>não conseguem fazer login</strong>.</p>
+          <ul>${naFirestoreMasNoIndex.map(email => 
+            `<li><span class="email-code">${email}</span></li>`).join('')}</ul>
+          <p><strong>Ação:</strong> Adicione estes emails em <code>AUTHORIZEDEMAILS</code> no <strong>index.html</strong> (linha ~280)</p>
+        </div>
+      `;
+    }
+
+    // Emails no index mas não no Firestore
+    if (noIndexMasNoFirestore.length > 0) {
+      html += `
+        <div class="audit-item warning">
+          <strong>⚠️ ${noIndexMasNoFirestore.length} emails autorizados no index.html mas SEM perfil no Firestore</strong>
+          <p>Estes usuários podem fazer login mas <strong>sem dados cadastrados</strong> (nome, grupo, status).</p>
+          <ul>${noIndexMasNoFirestore.map(email => 
+            `<li><span class="email-code">${email}</span></li>`).join('')}</ul>
+          <p><strong>Ação:</strong> Crie documento no Firestore:</p>
+          <pre style="background: rgba(0,0,0,0.05); padding: 10px; border-radius: 6px; font-size: 0.85em; overflow-x: auto;">
+Coleção: usuarios
+Document ID: ${email}
+{
+  "nome": "Nome Completo",
+  "email": "${email}",
+  "grupo": "Fiscal", // ou Administrador ou Administrativo
+  "ativo": true,
+  "criadoEm": timestamp,
+  "observacoes": ""
+}
+          </pre>
+        </div>
+      `;
+    }
+
+    if (idDiferenteEmail.length === 0 && naFirestoreMasNoIndex.length === 0 && noIndexMasNoFirestore.length === 0) {
+      html += `
+        <div class="audit-item success">
+          <strong>✅ Sistema 100% Consistente!</strong>
+          <p>Todos os <strong>${emailsConsistentes.length}</strong> usuários estão perfeitamente sincronizados.</p>
+          <ul>
+            <li>✅ Autorizados a fazer login (index.html)</li>
+            <li>✅ Com perfil completo cadastrado (Firestore)</li>
+            <li>✅ ID = email (RMPF/inspeções funcionam)</li>
+          </ul>
+          <p style="margin-top: 12px; color: var(--muted); font-size: 0.9em;">
+            Nenhuma ação necessária. O sistema está operando corretamente.
+          </p>
+        </div>
+      `;
+    }
+
+    html += '</div>';
+    resultsDiv.innerHTML = html;
+
+  } catch (error) {
+    console.error('Erro na auditoria:', error);
+    resultsDiv.innerHTML = `
+      <div class="audit-item error">
+        <strong>❌ Erro ao executar auditoria</strong>
+        <p>${error.message}</p>
+        <p style="font-size: 0.85em; color: var(--muted); margin-top: 8px;">
+          Verifique se o arquivo index.html está acessível e se a lista AUTHORIZEDEMAILS existe.
+        </p>
+      </div>
+    `;
+  } finally {
+    loadingDiv.style.display = 'none';
+  }
+}
+
+        // ===== EDITAR USUÁRIO =====
+        window.editarUsuario = async function(userId, userEmail) {
+            try {
+                const userDoc = await getDoc(doc(db, "usuarios", userId));
+                
+                if (!userDoc.exists()) {
+                    alert('Usuário não encontrado.');
+                    return;
+                }
+
+                const userData = userDoc.data();
+
+                document.getElementById('editEmail').value = userEmail;
+                document.getElementById('editNome').value = userData.nome || '';
+                document.getElementById('editGrupo').value = userData.grupo || 'Administrativo';
+                document.getElementById('editStatus').value = userData.ativo === true ? 'Ativo' : 'Inativo';
+                document.getElementById('editObs').value = userData.observacoes || '';
+
+                document.getElementById('editModal').dataset.userId = userId;
+                document.getElementById('editModal').dataset.userEmail = userEmail;
+
+                document.getElementById('editModal').style.display = 'flex';
+
+            } catch (error) {
+                console.error("Erro ao carregar usuário:", error);
+                alert('Erro ao carregar dados do usuário.');
+            }
+        };
+
+        // ===== SALVAR ALTERAÇÕES =====
+        window.salvarUsuario = async function() {
+            const userId = document.getElementById('editModal').dataset.userId;
+            const userEmail = document.getElementById('editModal').dataset.userEmail;
+            const nome = document.getElementById('editNome').value.trim();
+            const grupo = document.getElementById('editGrupo').value;
+            const statusSelect = document.getElementById('editStatus').value;
+            const ativo = statusSelect === 'Ativo';
+            const observacoes = document.getElementById('editObs').value.trim();
+
+            if (!nome) {
+                alert('Nome é obrigatório.');
+                return;
+            }
+
+            try {
+                const indexResponse = await fetch('index.html');
+                const indexHTML = await indexResponse.text();
+                
+                const regex = /const\s+AUTHORIZED_EMAILS\s*=\s*new\s+Set\(\[([\s\S]*?)\]\)/;
+                const match = indexHTML.match(regex);
+                
+                if (!match) {
+                    alert('⚠️ Erro: Não foi possível validar a lista de autorizados no index.html');
+                    return;
+                }
+                
+                const emailsString = match[1];
+                const emailsAutorizados = new Set();
+                const emailRegex = /["']([^"']+)["']/g;
+                let emailMatch;
+                while ((emailMatch = emailRegex.exec(emailsString)) !== null) {
+                    emailsAutorizados.add(emailMatch[1].toLowerCase().trim());
+                }
+
+                const emailUsuario = userEmail.toLowerCase().trim();
+
+                if (!emailsAutorizados.has(emailUsuario)) {
+                    alert(
+                        `🚫 AÇÃO BLOQUEADA!\n\n` +
+                        `O email "${emailUsuario}" NÃO está na lista AUTHORIZED_EMAILS do index.html.\n\n` +
+                        `Este usuário não conseguirá fazer login mesmo com perfil ativo.\n\n` +
+                        `➡️ Primeiro adicione o email no index.html (linha ~280),\n` +
+                        `depois volte aqui para ativar o perfil.`
+                    );
+                    return;
+                }
+
+                await updateDoc(doc(db, "usuarios", userId), {
+                    nome,
+                    grupo,
+                    ativo,
+                    observacoes
+                });
+
+                alert('✅ Usuário atualizado com sucesso!');
+                fecharModal();
+                carregarUsuarios();
+
+            } catch (error) {
+                console.error("Erro ao salvar:", error);
+                alert('❌ Erro ao salvar alterações: ' + error.message);
+            }
+        };
+
+        // ===== FECHAR MODAL =====
+        window.fecharModal = function() {
+            document.getElementById('editModal').style.display = 'none';
+        };
+
+        window.carregarUsuarios = carregarUsuarios;
+    </script>
+
+</body>
+</html>
