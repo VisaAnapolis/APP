@@ -453,7 +453,31 @@ header h2 {
   border-radius: 999px;
 }
 
+/* === DESTAQUE OFÍCIO INTERNO (AZUL INSTITUCIONAL) === */
+.pdfThumb--destaque{
+  border: 2px solid var(--brand1);           /* azul padrão */
+  background: linear-gradient(
+    135deg,
+    rgba(44,90,160,0.06),
+    rgba(255,255,255,1)
+  );
+  box-shadow:
+    0 0 0 1px rgba(44,90,160,0.15),
+    0 4px 14px rgba(44,90,160,0.18);
+}
 
+.pdfThumb--destaque:hover{
+  box-shadow:
+    0 0 0 1px rgba(44,90,160,0.25),
+    0 6px 18px rgba(44,90,160,0.25);
+  transform: translateY(-1px);
+}
+
+.pdfThumb--destaque .pdfThumbTitulo{
+  color: var(--brand1);
+}
+
+  
 </style>
 
   <!-- Sistema de Design - VISA Anápolis -->
@@ -799,7 +823,7 @@ header h2 {
       <!-- Mini-card do PDF (leve e não quebra a seção) -->
 <a class="pdfThumb"
    href="pdf_viewer.html?src=docs/SEI_2151446_Oficio_2.pdf&title=Of%C3%ADcio%20Interno%2002-2026%20%28Produtividade%2030h%29">
-  <div class="pdfThumbCard">
+  <div class="pdfThumbCard pdfThumb--destaque">
     <img class="pdfThumbImg"
          src="docs/oficio_02_2026_thumb.png"
          alt="Miniatura do Ofício Interno 02/2026">
