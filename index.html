@@ -1485,8 +1485,8 @@ onAuthStateChanged(auth, async (user) => {
         // ✅ ATUALIZA foto e último acesso (usando ID real do documento)
    
         try {
-            await updateDoc(doc(db, "usuarios", userDocId), {
-/*              
+/*                    
+          await updateDoc(doc(db, "usuarios", userDocId), {
             photoURL: user.photoURL || '',
             ultimoAcesso: serverTimestamp()
           });
@@ -1514,8 +1514,14 @@ if (googlePhoto && typeof googlePhoto === 'string' && googlePhoto.startsWith('ht
   updatePayload.photoURL = googlePhoto;
 }
 
+// referência correta do documento
+const userDocRef = doc(db, "usuarios", userDocId);          
+
+// atualiza Firestore (um único update)          
 await updateDoc(userDocRef, updatePayload);
-        
+
+console.log('✅ Atualizou acesso/foto', updatePayload);
+          
 } catch (err) {
   console.error("Erro ao atualizar acesso/foto:", err);
 }      
