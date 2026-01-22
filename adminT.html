@@ -434,6 +434,7 @@
         background:#0b1220; color:#e5e7eb; border-color: rgba(255,255,255,.12);
       }
       .card-dispositivo{ border-color: rgba(255,255,255,.12); }
+      .card-nome{ color:#eaf2ff; }
     }
   </style>
 </head>
@@ -1084,14 +1085,27 @@
         const ativo = (u.ativo === true);
         const statusClass = ativo ? "" : "inativo";
         const disp = formatarDispositivoTexto(u.dispositivo);
+        const grupoLower = (u.grupo || '').toLowerCase();
+        const emojiMap = { fiscal:'👮', administrador:'👨‍💼', administrativo:'👤' };
+        const emoji = emojiMap[grupoLower] || '👤';
+        const photoMobile = u.photoURL
+          ? `<img src="${u.photoURL}" alt="${u.nome || 'Usuário'}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:1px solid rgba(0,0,0,.08);">`
+          : `<div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;background:rgba(44,90,160,.08);border:1px solid rgba(0,0,0,.08);">${emoji}</div>`;
 
         const card = document.createElement("div");
         card.className = `user-mobile-card ${statusClass}`;
 
         card.innerHTML = `
           <div class="card-header-mobile">
-            <div class="card-nome">${u.nome || "Sem nome"}</div>
-            <span class="card-badge ${badgeClass(u.grupo)}">${u.grupo || "N/A"}</span>
+            <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+              ${photoMobile}
+              <div style="min-width:0;">
+                <div class="card-nome" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${u.nome || "Sem nome"}</div>
+                <div style="margin-top:4px;">
+                  <span class="card-badge ${badgeClass(u.grupo)}">${u.grupo || "N/A"}</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="card-info-row">
