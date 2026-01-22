@@ -1162,37 +1162,33 @@
         }
         
         // Buscar última tramitação do protocolo
-        function buscarUltimaTramitacao(numeroProtocolo) {
-            if (!dadosTramitacao || dadosTramitacao.length === 0) return null;
-            
-            // Filtrar TODAS tramitações deste protocolo
-            // CORRIGIDO: Campo é "PROTOCOLO" (maiúsculo)
-            const tramitacoesFiltradas = dadosTramitacao.filter(t => {
-                return t.PROTOCOLO === numeroProtocolo;
-            });
-            
-            if (tramitacoesFiltradas.length === 0) return null;
-            
-            // Ordenar por Data + Hora (mais recente primeiro)
-            // CORRIGIDO: Campos são "DATA" e "HORA" (maiúsculos)
-            tramitacoesFiltradas.sort((a, b) => {
-                const dataA = converterData(a.DATA);
-                const dataB = converterData(b.DATA);
-                
-                // Primeiro compara data
-                if (dataA !== dataB) {
-                    return dataB > dataA ? 1 : -1;
-                }
-                
-                // Se data igual, compara hora
-                const horaA = a.HORA || '00:00:00';
-                const horaB = b.HORA || '00:00:00';
-                return horaB > horaA ? 1 : -1;
-            });
-            
-            // Retornar a mais recente (primeira da lista)
-            return tramitacoesFiltradas[0];
+function buscarUltimaTramitacao(numeroProtocolo) {
+    if (!dadosTramitacao || dadosTramitacao.length === 0) return null;
+    
+    const tramitacoesFiltradas = dadosTramitacao.filter(t => {
+        return t.PROTOCOLO === numeroProtocolo;
+    });
+    
+    if (tramitacoesFiltradas.length === 0) return null;
+    
+    // Ordenar por Data + Hora (mais recente primeiro)
+    tramitacoesFiltradas.sort((a, b) => {
+        const dataA = converterData(a.DATA);
+        const dataB = converterData(b.DATA);
+        
+        // Primeiro compara data (CORRIGIDO: inverte o retorno)
+        if (dataA !== dataB) {
+            return dataB > dataA ? -1 : 1;
         }
+        
+        // Se data igual, compara hora (CORRIGIDO: inverte o retorno)
+        const horaA = a.HORA || '00:00:00';
+        const horaB = b.HORA || '00:00:00';
+        return horaB > horaA ? -1 : 1;
+    });
+    
+    return tramitacoesFiltradas[0];
+}
 
         // ==================== BUSCA OTIMIZADA ====================
         
