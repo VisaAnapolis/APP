@@ -859,7 +859,7 @@ header h2 {
         <li><a class="linkPill" href="areas.html"><div>Áreas<br><small>Fiscais por bairro e CNAEs</small></div><div class="arrow">🧩</div></a></li>
         <li><a class="linkPill" href="cnae.html"><div>CNAEs<br><small>Distribuição por área</small></div><div class="arrow">👥</div></a></li>
         <li>
-        <a class="linkPill" href="adminT.html">
+        <a class="linkPill" href="admin.html">
         <div>
             <strong>Painel Admin</strong><br>
             <small>Gerenciamento de usuários</small>
@@ -946,7 +946,7 @@ const db = getFirestore(app); // ← ESSENCIAL para buscar perfil
 const provider = new GoogleAuthProvider();
 
 // ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
-const APP_VERSION = '2.0.4';
+const APP_VERSION = '2.0.5';
 const VERSION_KEY = 'visa_app_version';
 const savedVersion = localStorage.getItem(VERSION_KEY);
 
