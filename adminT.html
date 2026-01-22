@@ -8,10 +8,9 @@
 <link rel="stylesheet" href="./css/design-tokens.css">
 
 <style>
-/* === ESTILOS (mantidos do original, sem mudanças estruturais) === */
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
-.card{background:#fff;border-radius:16px;padding:18px;margin-bottom:16px;border:1px solid var(--line);box-shadow:var(--shadow2)}
+.card{background:#fff;border-radius:16px;padding:18px;margin:20px;border:1px solid var(--line);box-shadow:var(--shadow2)}
 .users-table{width:100%;border-collapse:collapse;font-size:.9rem}
 .users-table th,.users-table td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
 .users-table th{background:var(--brand1);color:#fff;text-align:left}
@@ -21,10 +20,15 @@ body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;backgr
 .user-photo{width:32px;height:32px;border-radius:50%;object-fit:cover}
 .btn{padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
 .btn-primary{background:linear-gradient(135deg,#2c5aa0,#3d6bb3);color:#fff}
+#loading{padding:40px;text-align:center;color:#64748b}
 </style>
 </head>
 
 <body>
+
+<div id="loading">🔐 Verificando permissões...</div>
+
+<div id="conteudo" style="display:none">
 
 <div class="card">
 <h3>👥 Gerenciamento de Usuários</h3>
@@ -45,9 +49,15 @@ body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;backgr
 </table>
 </div>
 
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { 
+  getFirestore, collection, getDocs, query, orderBy,
+  doc, getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
@@ -55,8 +65,9 @@ const firebaseConfig = {
   projectId: "visam-3a30b"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
 
 function formatarDataHora(ts){
   if(!ts) return "<span style='color:#999'>Nunca</span>";
@@ -66,7 +77,6 @@ function formatarDataHora(ts){
 
 function formatarDispositivo(d){
   if(!d) return "<span style='color:#999'>-</span>";
-
   return `
     <div style="font-size:.85em;line-height:1.4">
       💻 ${d.sistemaOperacional || "?"} ${d.versaoSO || ""}<br>
@@ -91,18 +101,43 @@ async function carregarUsuarios(){
       <td>${u.photoURL ? `<img src="${u.photoURL}" class="user-photo">` : "👤"}</td>
       <td><strong>${u.nome||"N/A"}</strong></td>
       <td>${u.email||docSnap.id}</td>
-      <td>${u.grupo||"-"} </td>
+      <td>${u.grupo||"-"}</td>
       <td><span class="badge ${u.ativo!==false?"ativo":"inativo"}">${u.ativo!==false?"Ativo":"Inativo"}</span></td>
       <td>${formatarDataHora(u.ultimoAcesso)}</td>
       <td>${formatarDispositivo(u.dispositivo)}</td>
       <td><button class="btn btn-primary">Editar</button></td>
     `;
-
     tbody.appendChild(tr);
   });
 }
 
-carregarUsuarios();
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){
+    alert("Você precisa estar logado.");
+    window.location.href = "index.html";
+    return;
+  }
+
+  const email = user.email.toLowerCase().trim();
+  const perfilSnap = await getDoc(doc(db,"usuarios",email));
+
+  if(!perfilSnap.exists()){
+    alert("Usuário sem perfil no sistema.");
+    window.location.href = "index.html";
+    return;
+  }
+
+  const perfil = perfilSnap.data();
+  if(perfil.grupo !== "Administrador"){
+    alert("Acesso negado. Apenas administradores.");
+    window.location.href = "index.html";
+    return;
+  }
+
+  document.getElementById("loading").style.display="none";
+  document.getElementById("conteudo").style.display="block";
+  carregarUsuarios();
+});
 </script>
 
 </body>
