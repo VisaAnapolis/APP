@@ -197,7 +197,7 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 0.88rem;
-      min-width: 1050px; /* ficou melhor com coluna Dispositivo */
+      min-width: 930px; /* ajustado (sem coluna Último Acesso) */
     }
     .users-table thead th{
       background: var(--brand1);
@@ -252,16 +252,7 @@
       flex-wrap: wrap;
       margin: 2px 0;
     }
-    .device-box .ua{
-      margin-top: 6px;
-      padding-top: 6px;
-      border-top: 1px dashed var(--line);
-      color: var(--muted);
-      font-size: .78rem;
-      line-height: 1.35;
-    }
-
-    .btn{
+        .btn{
       appearance:none;
       border: 1px solid var(--line);
       background: var(--card);
@@ -416,7 +407,6 @@
       transition: transform .12s;
     }
     .btn-card-edit{ background: linear-gradient(135deg, var(--brand1), var(--brand2)); color:#fff; }
-    .btn-card-delete{ background:#dc3545; color:#fff; }
     .btn-card:active{ transform: scale(.97); }
 
     /* ===== DARK MODE (desktop + mobile) ===== */
@@ -438,8 +428,7 @@
       .badge.administrativo{ background: rgba(52,199,89,.16); color:#7bf0ad; }
       .badge.ativo{ background: rgba(52,199,89,.16); color:#7bf0ad; }
       .badge.inativo{ background: rgba(148,163,184,.16); color:#cbd5e1; }
-      .device-box .ua{ border-top-color: rgba(255,255,255,.08); color:#9fb4cc; }
-      .btn{ background:#0f1b2e; color:#e5e7eb; border-color: rgba(255,255,255,.10); }
+            .btn{ background:#0f1b2e; color:#e5e7eb; border-color: rgba(255,255,255,.10); }
       .modal-card{ background:#0f1b2e; border-color: rgba(255,255,255,.10); }
       .form-group input, .form-group select, .form-group textarea{
         background:#0b1220; color:#e5e7eb; border-color: rgba(255,255,255,.12);
@@ -513,7 +502,6 @@
                   <th>E-mail</th>
                   <th>Perfil/Grupo</th>
                   <th>Status</th>
-                  <th>Último Acesso</th>
                   <th>Dispositivo</th>
                   <th>Ações</th>
                 </tr>
@@ -573,7 +561,6 @@
       <div class="modal-actions">
         <button class="btn" onclick="fecharModal()">Cancelar</button>
         <button class="btn btn-primary" onclick="salvarUsuario()">💾 Salvar</button>
-        <button class="btn btn-danger" onclick="excluirUsuario()">🗑️ Excluir</button>
       </div>
     </div>
   </div>
@@ -653,8 +640,6 @@
       const tipoConexao = safeVal(d.tipoConexao);
       const modoAcesso = d.isPWA ? "PWA" : (safeVal(d.modoAcesso) || "Navegador");
       const coletadoEm = formatarColetadoEm(d);
-      const ua = safeVal(d.userAgent);
-
       const rows = [];
 
       if(fabricante || modelo){
@@ -678,9 +663,7 @@
         rows.push(`<div class="row"><span class="k">🕒</span><span>${coletadoEm}</span></div>`);
       }
 
-      const uaBlock = ua ? `<div class="ua"><strong>User-Agent:</strong><br>${ua}</div>` : "";
-
-      return `<div class="device-box">${rows.join("")}${uaBlock}</div>`;
+      return `<div class="device-box">${rows.join("")}</div>`;
     }
 
     window.logout = async function(){
@@ -806,7 +789,6 @@
           photoHTML = `<div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:1.45rem;">${emoji}</div>`;
         }
 
-        const ultimoAcesso = formatarDataHora(u.ultimoAcesso);
         const dispositivoHTML = formatarDispositivo(u.dispositivo);
 
         tr.innerHTML = `
@@ -815,7 +797,6 @@
           <td>${u.email || ""}</td>
           <td>${grupoBadge}</td>
           <td>${statusBadge}</td>
-          <td>${ultimoAcesso}</td>
           <td>${dispositivoHTML}</td>
           <td>
             <button class="btn btn-primary" onclick="editarUsuario('${u.id}', '${(u.email || "").replace(/'/g, "\\'")}')">Editar</button>
@@ -1056,30 +1037,6 @@
       }
     };
 
-    window.excluirUsuario = async function(){
-      const modal = document.getElementById("editModal");
-      const userId = modal.dataset.userId;
-      const userEmail = modal.dataset.userEmail || "";
-
-      if(!userId){
-        alert("Usuário inválido.");
-        return;
-      }
-
-      const ok = confirm(`Confirmar EXCLUSÃO do perfil?\n\n${userEmail}\n\nIsso remove o documento no Firestore (coleção usuarios).`);
-      if(!ok) return;
-
-      try{
-        await deleteDoc(doc(db, "usuarios", userId));
-        alert("🗑️ Usuário excluído.");
-        fecharModal();
-        carregarUsuarios();
-      }catch(err){
-        console.error("Erro ao excluir:", err);
-        alert("❌ Erro ao excluir: " + err.message);
-      }
-    };
-
     // ===== MOBILE CARDS =====
     function badgeClass(grupo){
       const g = (grupo || "").toLowerCase();
@@ -1126,7 +1083,6 @@
       usuarios.forEach(u => {
         const ativo = (u.ativo === true);
         const statusClass = ativo ? "" : "inativo";
-        const ultimoAcesso = u.ultimoAcesso ? formatarDataHora(u.ultimoAcesso) : '<span style="color: var(--muted);">Nunca</span>';
         const disp = formatarDispositivoTexto(u.dispositivo);
 
         const card = document.createElement("div");
@@ -1148,36 +1104,16 @@
             <span class="card-info-text">${ativo ? "Ativo" : "Inativo"}</span>
           </div>
 
-          <div class="card-info-row">
-            <span class="card-info-icon">🕒</span>
-            <span class="card-info-text">${ultimoAcesso}</span>
-          </div>
 
           <div class="card-dispositivo">${disp || "—"}</div>
 
           <div class="card-actions">
             <button class="btn-card btn-card-edit" onclick="editarUsuario('${u.id}', '${(u.email || "").replace(/'/g, "\\'")}')">✏️ Editar</button>
-            <button class="btn-card btn-card-delete" onclick="abrirExclusaoRapida('${u.id}', '${(u.email || "").replace(/'/g, "\\'")}')">🗑️ Excluir</button>
           </div>
         `;
         container.appendChild(card);
       });
     }
-
-    window.abrirExclusaoRapida = function(id, email){
-      const ok = confirm(`Confirmar EXCLUSÃO do perfil?\n\n${email}\n\nIsso remove o documento no Firestore (coleção usuarios).`);
-      if(!ok) return;
-      (async () => {
-        try{
-          await deleteDoc(doc(db, "usuarios", id));
-          alert("🗑️ Usuário excluído.");
-          carregarUsuarios();
-        }catch(err){
-          console.error("Erro ao excluir:", err);
-          alert("❌ Erro ao excluir: " + err.message);
-        }
-      })();
-    };
 
     // expõe para debug
     window.carregarUsuarios = carregarUsuarios;
