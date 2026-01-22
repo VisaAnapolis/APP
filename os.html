@@ -1160,6 +1160,35 @@
             const cnae = indiceCnae ? indiceCnae.get(subclasseNorm) : null;
             return cnae ? (cnae.Atividade || cnae.ATIVIDADE || cnae.atividade || cnae.Denominacao || cnae.DENOMINACAO || '').trim() : '';
         }
+
+// Converter hora de 12h (AM/PM) para 24h (HH:MM:SS)
+function converterHora12para24(hora12) {
+    if (!hora12 || hora12 === '') return '00:00:00';
+    
+    // Se já está em formato 24h, retorna direto
+    if (!hora12.includes('AM') && !hora12.includes('PM')) {
+        return hora12;
+    }
+    
+    const regex = /(\d+):(\d+):(\d+)\s*(AM|PM)/i;
+    const match = hora12.match(regex);
+    
+    if (!match) return hora12;
+    
+    let [_, horas, minutos, segundos, periodo] = match;
+    horas = parseInt(horas);
+    
+    // Converter para 24h
+    if (periodo.toUpperCase() === 'PM' && horas !== 12) {
+        horas += 12;
+    } else if (periodo.toUpperCase() === 'AM' && horas === 12) {
+        horas = 0;
+    }
+    
+    // Formatar com zeros à esquerda
+    return `${String(horas).padStart(2, '0')}:${minutos}:${segundos}`;
+}
+
         
         // Buscar última tramitação do protocolo
 function buscarUltimaTramitacao(numeroProtocolo) {
@@ -1176,15 +1205,15 @@ function buscarUltimaTramitacao(numeroProtocolo) {
         const dataA = converterData(a.DATA);
         const dataB = converterData(b.DATA);
         
-        // Primeiro compara data (CORRIGIDO: inverte o retorno)
+        // Primeiro compara data
         if (dataA !== dataB) {
-            return dataB > dataA ? -1 : 1;
+            return dataB > dataA ? 1 : -1;
         }
         
-        // Se data igual, compara hora (CORRIGIDO: inverte o retorno)
-        const horaA = a.HORA || '00:00:00';
-        const horaB = b.HORA || '00:00:00';
-        return horaB > horaA ? -1 : 1;
+        // Se data igual, compara hora (CONVERTENDO AM/PM para 24h)
+        const horaA = converterHora12para24(a.HORA || '00:00:00');
+        const horaB = converterHora12para24(b.HORA || '00:00:00');
+        return horaB > horaA ? 1 : -1;
     });
     
     return tramitacoesFiltradas[0];
