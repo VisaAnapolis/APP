@@ -569,7 +569,8 @@
   .users-table tbody td:nth-child(4)::before{ content:"Perfil"; }
   .users-table tbody td:nth-child(5)::before{ content:"Status"; }
   .users-table tbody td:nth-child(6)::before{ content:"Último acesso"; }
-  .users-table tbody td:nth-child(7)::before{ content:"Ações"; }
+  .users-table tbody td:nth-child(7)::before{ content:"Dispositivo"; }
+  .users-table tbody td:nth-child(8)::before{ content:"Ações"; }
 
   /* Estilo do label (coluna da esquerda) */
   .users-table tbody td:nth-child(3)::before,
@@ -595,7 +596,8 @@
   .users-table tbody td:nth-child(4),
   .users-table tbody td:nth-child(5),
   .users-table tbody td:nth-child(6),
-  .users-table tbody td:nth-child(7){
+  .users-table tbody td:nth-child(7),
+  .users-table tbody td:nth-child(8){
     /* cria “2 colunas”: label + valor */
   }
 
@@ -607,7 +609,7 @@
 
   /* 8) Último acesso: mantém seu bloco (hora + data) legível */
   /* 9) Botão Editar: touch-friendly */
-  .users-table tbody td:nth-child(7) button.btn{
+  .users-table tbody td:nth-child(8) button.btn{
     width: 100%;
     padding: 11px 14px;
     border-radius: 12px;
@@ -618,7 +620,8 @@
   .users-table tbody td:nth-child(4),
   .users-table tbody td:nth-child(5),
   .users-table tbody td:nth-child(6),
-  .users-table tbody td:nth-child(7){
+  .users-table tbody td:nth-child(7),
+  .users-table tbody td:nth-child(8){
     border-bottom: 1px dashed rgba(0,0,0,0); /* placeholder p/ não mexer no tema */
   }
 
@@ -942,6 +945,7 @@
                                     <th>Perfil/Grupo</th>
                                     <th>Status</th>
                                     <th>Último Acesso</th>
+                                    <th>Dispositivo</th>
                                     <th>Ações</th>
                                 </tr>
                             </thead>
@@ -1013,7 +1017,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
@@ -1060,6 +1064,17 @@
             
             return `<span class="access-time">${horaStr}</span><span class="access-date">${dataStr}</span>`;
         }
+
+        // ===== FORMATAR DATA/HORA (TEXTO SIMPLES) =====
+        function formatarDataHoraTexto(timestamp) {
+            if (!timestamp) return 'Nunca';
+            const date = (timestamp.seconds ? new Date(timestamp.seconds * 1000) :
+                         (timestamp.toDate ? timestamp.toDate() : new Date(timestamp)));
+            const dataStr = date.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric' });
+            const horaStr = date.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+            return `${horaStr} • ${dataStr}`;
+        }
+
 
         // ===== LOGOUT =====
         window.logout = async function() {
@@ -1136,6 +1151,7 @@
                 });
 
                 renderizarUsuarios(usuarios);
+                renderizarCardsMobile(usuarios);
                 atualizarEstatisticas(usuarios);
 
                 loadingDiv.style.display = 'none';
@@ -1154,9 +1170,9 @@
 
             usuarios.forEach(user => {
                 const tr = document.createElement('tr');
-                
-                const statusBadge = user.ativo === true ? 
-                    '<span class="badge ativo">Ativo</span>' : 
+
+                const statusBadge = user.ativo === true ?
+                    '<span class="badge ativo">Ativo</span>' :
                     '<span class="badge inativo">Inativo</span>';
 
                 const grupoBadgeClass = (user.grupo || 'administrativo').toLowerCase();
@@ -1164,7 +1180,7 @@
 
                 let photoHTML;
                 if (user.photoURL) {
-                    photoHTML = `<img src="${user.photoURL}" alt="${user.nome}" class="user-photo">`;
+                    photoHTML = `<img src="${user.photoURL}" alt="${user.nome || 'Usuário'}" class="user-photo">`;
                 } else {
                     const emojiMap = {
                         'fiscal': '👮',
@@ -1177,40 +1193,46 @@
 
                 const ultimoAcesso = formatarDataHora(user.ultimoAcesso);
 
+                // Dispositivo (opcional)
+                let dispositivoHTML = '<span style="color:#999">-</span>';
+                if (user.dispositivo) {
+                    const d = user.dispositivo;
+                    const fabricante = d.fabricante || '';
+                    const modelo = d.modelo || '';
+                    const so = d.sistemaOperacional || '';
+                    const versaoSO = d.versaoSO || '';
+                    const nav = d.navegador || '';
+                    const versaoNav = d.versaoNavegador || '';
+                    const modo = d.isPWA ? '<strong>PWA</strong>' : 'Navegador';
+
+                    dispositivoHTML = `
+                        <div style="font-size: 0.85em; line-height: 1.5">
+                            ${fabricante} ${modelo}<br>
+                            ${so} ${versaoSO}<br>
+                            ${nav} ${versaoNav}<br>
+                            ${modo}
+                        </div>
+                    `.trim();
+                }
+
                 tr.innerHTML = `
                     <td>${photoHTML}</td>
                     <td><strong>${user.nome || 'N/A'}</strong></td>
-                    <td>${user.email}</td>
+                    <td>${user.email || 'N/A'}</td>
                     <td>${grupoBadge}</td>
                     <td>${statusBadge}</td>
                     <td>${ultimoAcesso}</td>
+                    <td>${dispositivoHTML}</td>
                     <td>
-             <td>${ultimoAcesso}</td>
-      <td>
-        ${(() => {
-          ${(() => {
-    if (!user.dispositivo) return `<span style="color: #999">-</span>`;
-    const d = user.dispositivo;
-    return `<div style="font-size: 0.85em; line-height: 1.5">
-      ${d.fabricante} ${d.modelo}<br>
-      ${d.sistemaOperacional} ${d.versaoSO}<br>
-      ${d.navegador} ${d.versaoNavegador}<br>
-      ${d.isPWA ? '<strong>PWA</strong>' : 'Navegador'}
-    </div>`;
-  })()}
-      </td>
-      <td>
-
-        <td>
-                        <button class="btn btn-primary" onclick="editarUsuario('${user.id}', '${user.email}')">Editar</button>
+                        <button class="btn btn-primary" onclick="editarUsuario('${user.id}', '${user.email || ''}')">Editar</button>
                     </td>
                 `;
-                
+
                 tbody.appendChild(tr);
             });
         }
 
-        // ===== ESTATÍSTICAS =====
+// ===== ESTATÍSTICAS =====
         function atualizarEstatisticas(usuarios) {
   // Total de usuários
   document.getElementById('totalUsers').textContent = usuarios.length;
@@ -1500,7 +1522,27 @@ Document ID: ${email}
             }
         };
 
-        // ===== FECHAR MODAL =====
+        
+        // ===== EXCLUIR USUÁRIO =====
+        window.excluirUsuario = async function(userId, userEmail) {
+            if (!userId) {
+                alert('ID do usuário inválido.');
+                return;
+            }
+            const ok = confirm(`Confirma excluir o usuário?\n\n${userEmail || userId}`);
+            if (!ok) return;
+
+            try {
+                await deleteDoc(doc(db, "usuarios", userId));
+                alert('✅ Usuário excluído.');
+                carregarUsuarios();
+            } catch (error) {
+                console.error("Erro ao excluir usuário:", error);
+                alert('❌ Erro ao excluir: ' + error.message);
+            }
+        };
+
+// ===== FECHAR MODAL =====
         window.fecharModal = function() {
             document.getElementById('editModal').style.display = 'none';
         };
@@ -1514,79 +1556,72 @@ Document ID: ${email}
 
     container.innerHTML = '';
 
-    if (usuarios.length === 0) {
-      container.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;">Nenhum usuário encontrado</div>';
-      return;
+    if (!usuarios || usuarios.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;">Nenhum usuário encontrado</div>';
+        return;
     }
 
     usuarios.forEach(u => {
-      const ativo = u.ativo !== false;
-      const statusClass = ativo ? '' : 'inativo';
+        const ativo = u.ativo === true;
+        const statusClass = ativo ? '' : 'inativo';
 
-      const ultimoAcesso = u.ultimoAcesso 
-        ? formatarData(u.ultimoAcesso.toDate ? u.ultimoAcesso.toDate() : new Date(u.ultimoAcesso))
-        : 'Nunca';
+        const grupo = (u.grupo || 'Administrativo');
+        const grupoClass = grupo.toLowerCase();
 
-      // Formatar dados do dispositivo
-      let dispositivoHTML = '';
-      if (u.dispositivo) {
-        const d = u.dispositivo;
-        dispositivoHTML = `
-          <div class="card-dispositivo">
-            <div class="card-dispositivo-item">
-              📱 <strong>${d.fabricante}</strong> ${d.modelo}
-            </div>
-            <div class="card-dispositivo-item">
-              💻 ${d.sistemaOperacional} ${d.versaoSO}
-            </div>
-            <div class="card-dispositivo-item">
-              🌐 ${d.navegador} ${d.versaoNavegador}
-            </div>
-            <div class="card-dispositivo-item">
-              ${d.isPWA ? '📲 <strong style="color: #28a745;">PWA Instalado</strong>' : '🌍 Navegador Web'}
-            </div>
+        const ultimoAcessoTxt = formatarDataHoraTexto(u.ultimoAcesso);
+
+        // Dispositivo
+        let dispositivoHTML = '';
+        if (u.dispositivo) {
+            const d = u.dispositivo;
+            dispositivoHTML = `
+              <div class="card-dispositivo">
+                <div class="card-dispositivo-item">📱 <strong>${d.fabricante || ''}</strong> ${d.modelo || ''}</div>
+                <div class="card-dispositivo-item">💻 ${d.sistemaOperacional || ''} ${d.versaoSO || ''}</div>
+                <div class="card-dispositivo-item">🌐 ${d.navegador || ''} ${d.versaoNavegador || ''}</div>
+                <div class="card-dispositivo-item">
+                  ${d.isPWA ? '📲 <strong style="color: #28a745;">PWA Instalado</strong>' : '🌍 Navegador Web'}
+                </div>
+              </div>
+            `;
+        }
+
+        const card = document.createElement('div');
+        card.className = `user-mobile-card ${statusClass}`;
+        card.innerHTML = `
+          <div class="card-header-mobile">
+            <div class="card-nome">${u.nome || 'Sem nome'}</div>
+            <span class="card-badge badge-${grupoClass}">${grupo}</span>
+          </div>
+
+          <div class="card-info-row">
+            <span class="card-info-icon">✉️</span>
+            <span class="card-info-text">${u.email || ''}</span>
+          </div>
+
+          <div class="card-info-row">
+            <span class="card-info-icon">${ativo ? '✅' : '❌'}</span>
+            <span class="card-info-text">${ativo ? 'Ativo' : 'Inativo'}</span>
+          </div>
+
+          <div class="card-info-row">
+            <span class="card-info-icon">🕒</span>
+            <span class="card-info-text">${ultimoAcessoTxt}</span>
+          </div>
+
+          ${dispositivoHTML}
+
+          <div class="card-actions">
+            <button class="btn-card btn-card-edit" onclick="editarUsuario('${u.id}', '${u.email || ''}')">✏️ Editar</button>
+            <button class="btn-card btn-card-delete" onclick="excluirUsuario('${u.id}', '${u.email || ''}')">🗑️ Excluir</button>
           </div>
         `;
-      }
 
-      const card = document.createElement('div');
-      card.className = `user-mobile-card ${statusClass}`;
-      card.innerHTML = `
-        <div class="card-header-mobile">
-          <div class="card-nome">${u.nome || 'Sem nome'}</div>
-          <span class="card-badge badge-${u.grupo.toLowerCase()}">${u.grupo}</span>
-        </div>
-
-        <div class="card-info-row">
-          <span class="card-info-icon">✉️</span>
-          <span class="card-info-text">${u.email}</span>
-        </div>
-
-        <div class="card-info-row">
-          <span class="card-info-icon">${ativo ? '✅' : '❌'}</span>
-          <span class="card-info-text">${ativo ? 'Ativo' : 'Inativo'}</span>
-        </div>
-
-        <div class="card-info-row">
-          <span class="card-info-icon">🕒</span>
-          <span class="card-info-text">${ultimoAcesso}</span>
-        </div>
-
-        ${dispositivoHTML}
-
-        <div class="card-actions">
-          <button class="btn-card btn-card-edit" onclick="editarUsuario('${u.email}')">
-            ✏️ Editar
-          </button>
-          <button class="btn-card btn-card-delete" onclick="excluirUsuario('${u.email}')">
-            🗑️ Excluir
-          </button>
-        </div>
-      `;
-
-      container.appendChild(card);
+        container.appendChild(card);
     });
   }
+
+
 
 
   </script>
