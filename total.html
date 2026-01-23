@@ -477,18 +477,19 @@ async function generate(){
     return;
   }
 
-  let items = [];
-  if(Array.isArray(indexData)) items = indexData;
-  else if(indexData && Array.isArray(indexData.items)) items = indexData.items;
-  else if(indexData && Array.isArray(indexData.data)) items = indexData.data;
-  else if(indexData && typeof indexData === "object") items = Object.values(indexData);
+ let items = [];
 
-  const codes = items.map(extractCode).filter(Boolean);
-  if(!codes.length){
-    $("btnRun").disabled = false;
-    setStatus("Index carregado, mas não encontrei códigos. Ajuste o formato (campo codigo/id) ou me envie um exemplo do index.", "err");
-    return;
-  }
+if (Array.isArray(indexData)) {
+  items = indexData;
+} 
+else if (indexData && Array.isArray(indexData.dados)) {
+  // ✅ FORMATO REAL DO SEU INDEX
+  items = indexData.dados;
+} 
+else {
+  items = [];
+}
+
 
   setStatus(`Index OK: ${codes.length} códigos. Lendo regulados em reg/00..43 (prefixo)…`, "warn");
 
