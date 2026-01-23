@@ -678,149 +678,6 @@ window.addEventListener('scroll', () => {
     </div>
 
     <script>
-        // ========== AUTENTICAÇÃO POR USUÁRIO (login.csv) ==========
-        const LOGIN_CSV_URL = 'data/login.csv'; // Na mesma pasta do HTML (RPF/)
-        let loginDB = [];
-        let tentativasErro = 0;
-        let usuarioLogado = null;
-
-        function normalizarTexto(s) {
-            return String(s || '').trim().toUpperCase();
-        }
-
-        function limparAcentos(str) {
-            return normalizarTexto(str)
-                .normalize('NFD')
-                .replace(/[̀-ͯ]/g, '');
-        }
-
-        function carregarLoginDB() {
-            return new Promise((resolve, reject) => {
-                Papa.parse(LOGIN_CSV_URL, {
-                    download: true,
-                    header: true,
-                    delimiter: ';',
-                    encoding: '',
-                    skipEmptyLines: true,
-                    complete: function(results) {
-                        loginDB = (results.data || []).map(r => ({
-                            UsuarioOriginal: String(r.Usuario || '').trim(),
-                            Usuario: limparAcentos(r.Usuario),
-                            Grupo: normalizarTexto(r.Grupo),
-                            Senha: String(r.Senha || '').trim(),
-                            Senha2: String(r.Senha2 || '').trim(),
-                            Senha3: String(r.Senha3 || '').trim()
-                        }));
-                        resolve();
-                    },
-                    error: function(err) {
-                        reject(err);
-                    }
-                });
-            });
-        }
-
-        function popularUsuariosLogin() {
-            const sel = document.getElementById('usuarioSelect');
-            if (!sel) return;
-
-            sel.innerHTML = '';
-            const opt0 = document.createElement('option');
-            opt0.value = '';
-            opt0.textContent = '-- Selecione seu nome --';
-            sel.appendChild(opt0);
-
-            const regs = (loginDB || [])
-                .filter(r => r.UsuarioOriginal && r.UsuarioOriginal.length > 0)
-                .sort((a,b) => a.UsuarioOriginal.localeCompare(b.UsuarioOriginal, 'pt-BR'));
-
-            regs.forEach(r => {
-                const o = document.createElement('option');
-                o.value = r.Usuario; // normalizado
-                o.textContent = r.UsuarioOriginal;
-                sel.appendChild(o);
-            });
-        }
-
-        async function prepararLoginUI() {
-            // ✅ Se a página não usa mais o modal CSV, não execute nada
-            if (!document.getElementById('authOverlay')) return;
-            try {
-                await carregarLoginDB();
-                popularUsuariosLogin();
-            } catch(e) {
-                console.error('Erro ao carregar login.csv:', e);
-                document.getElementById('authError').style.display = 'block';
-                
-            }
-        }
-
-        // ✅ Login é protegido por guard1.js (Firebase). Não usar login.csv aqui.
-        // window.addEventListener('load', prepararLoginUI);
-
-
-        async function verificarLogin() {
-            try {
-                document.getElementById('authError').style.display = 'none';
-                document.getElementById('authErrorPerm').style.display = 'none';
-
-                const usuario = limparAcentos(document.getElementById('usuarioSelect').value);
-                const senha = String(document.getElementById('senhaInput').value || '').trim();
-
-                if (!usuario || !senha) {
-                    document.getElementById('authError').style.display = 'block';
-                    return;
-                }
-
-                if (!loginDB || loginDB.length === 0) {
-                    await carregarLoginDB();
-                }
-
-                const reg = loginDB.find(r => r.Usuario === usuario);
-                if (!reg) {
-                    document.getElementById('authError').style.display = 'block';
-                    return;
-                }
-
-                const senhasValidas = [reg.Senha, reg.Senha2, reg.Senha3].filter(x => x && x.length > 0);
-                if (!senhasValidas.includes(senha)) {
-                    document.getElementById('authError').style.display = 'block';
-                    document.getElementById('senhaInput').value = '';
-                    document.getElementById('usuarioSelect').focus();
-                    tentativasErro++;
-
-                // Após 3 tentativas erradas, redireciona para index
-                if (tentativasErro >= 3) {
-                    alert('Número máximo de tentativas excedido. Redirecionando...');
-                    window.location.href = 'index.html';
-                }
-                    return;
-                }
-
-                if (reg.Grupo !== 'ADM' && reg.Grupo !== 'FIS') {
-                    document.getElementById('authErrorPerm').style.display = 'block';
-                    setTimeout(() => window.location.href = 'index.html', 1200);
-                    return;
-                }
-
-              
-                usuarioLogado = { nome: reg.Usuario, grupo: reg.Grupo };
-  tentativasErro = 0; // Resetar contador
-                document.getElementById('authOverlay').style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
-
-                popularFiscais();
-                carregarArquivos();
-                aplicarRestricaoFiscal();
-
-                if (typeof criarBotaoVoltar === 'function') setTimeout(criarBotaoVoltar, 300);
-            } catch (e) {
-                console.error('Erro no login:', e);
-                alert('Erro ao validar login. Veja o console.');
-            }
-        }
-
-
         // ========== SISTEMA PRINCIPAL ==========
 
         // Lista oficial de fiscais da VISAM Anápolis
@@ -876,6 +733,56 @@ window.addEventListener('scroll', () => {
         let dadosRegulados = [];
         let dadosInspecoes = [];
         let dataTable = null;
+
+        // ================== SEGURANÇA (perfil / dados individuais) ==================
+        function normNome(v) {
+            return String(v ?? '')
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .toUpperCase()
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function isAdmin() {
+            return !!(window.perfilGlobal && window.perfilGlobal.grupo === 'Administrador');
+        }
+
+        function getFiscalSeguro() {
+            const sel = document.getElementById('fiscal');
+            const escolhido = sel ? String(sel.value || '') : '';
+            const perfil = window.perfilGlobal;
+
+            // Se ainda não temos perfil, devolve o que estiver selecionado (fallback)
+            if (!perfil) return escolhido;
+
+            // Admin: respeita seleção (se vazio, mantém vazio para validação padrão)
+            if (perfil.grupo === 'Administrador') return escolhido;
+
+            // Fiscal: força o nome do próprio perfil
+            const alvo = normNome(perfil.nome);
+            let locked = '';
+
+            if (sel) {
+                for (let i = 0; i < sel.options.length; i++) {
+                    const opt = sel.options[i];
+                    if (normNome(opt.text) === alvo) {
+                        locked = String(opt.value || opt.text || '');
+                        break;
+                    }
+                }
+            }
+
+            // Se encontrou o locked, garante que o select volte para ele
+            if (locked) {
+                if (sel && escolhido !== locked) sel.value = locked;
+                return locked;
+            }
+
+            // Se não conseguiu determinar o fiscal, bloqueia consulta
+            return '';
+        }
+        // ============================================================================
+
 
         // Índices para performance (criados após carregar CSVs)
         let mapaRegulados = null; // CODIGO -> RAZAO
@@ -1047,20 +954,23 @@ window.addEventListener('scroll', () => {
             return null;
         }
 
+        
         function buscarInspecoes() {
-            let fiscalSelecionado = $('#fiscal').val();
-            const isAdmin = !!(window.perfilGlobal && String(window.perfilGlobal.grupo || '').toUpperCase() === 'ADMINISTRADOR');
-            if (isAdmin && (!fiscalSelecionado || fiscalSelecionado === '')) fiscalSelecionado = 'TODOS';
+            // Admin pode escolher um fiscal específico ou "TODOS"
+            let fiscalSelecionado = isAdmin()
+                ? (String($('#fiscal').val() || '') || 'TODOS')
+                : getFiscalSeguro();
+
             const dataInicial = $('#dataInicial').val();
             const dataFinal = $('#dataFinal').val();
 
             if (!fiscalSelecionado) {
-                // Admin pode consultar TODOS mesmo sem selecionar explicitamente
-                if (!isAdmin) {
+                if (!isAdmin()) {
+                    mostrarInfo('⛔ Acesso negado: perfil Fiscal só pode consultar seus próprios dados. Contate o administrador se houver divergência de cadastro.', 'warning');
+                } else {
                     mostrarInfo('⚠️ Por favor, selecione um fiscal.', 'warning');
-                    return;
                 }
-                fiscalSelecionado = 'TODOS';
+                return;
             }
 
             if (!dataInicial || !dataFinal) {
