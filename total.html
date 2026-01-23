@@ -3,10 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Relatório – Regulados (Alta Complexidade) por Área</title>
+  <title>Relatório Oficial – Regulados (Alta Complexidade) por Área</title>
 
   <meta name="theme-color" content="#1a3a6b" />
-  <link rel="stylesheet" href="./css/design-tokens.css">
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -16,7 +15,7 @@
       position: sticky; top:0; z-index: 50; box-shadow: 0 2px 6px rgba(0,0,0,.14);
     }
     header h1 { font-size: 1.55rem; font-weight: 900; }
-    header h2 { margin-top: 6px; font-weight: 600; opacity: .92; font-size: 1rem; }
+    header h2 { margin-top: 6px; font-weight: 650; opacity: .95; font-size: 1rem; }
     .btn-ok-header{
       position:absolute; top:50%; right:16px; transform:translateY(-50%);
       background:transparent; border:none; color:#34C759; font-size:17px; font-weight:800;
@@ -29,30 +28,28 @@
     }
     .grid { display: grid; gap: 12px; grid-template-columns: repeat(12, 1fr); }
     .col-12 { grid-column: span 12; }
+    .col-6 { grid-column: span 6; }
     .col-4 { grid-column: span 4; }
     .col-3 { grid-column: span 3; }
-    label { font-weight: 800; display:block; margin-bottom: 6px; }
+
+    .title { font-weight: 950; font-size: 1.08rem; }
+    .sub { color:#334155; font-weight: 650; line-height: 1.45; }
+    .pill { display:inline-block; padding: 2px 10px; border-radius: 999px; font-weight: 900; background: rgba(26,58,107,.10); color:#1a3a6b; }
+    .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+    .muted { color: #475569; font-weight: 650; }
+    .small { font-size: .92rem; }
+
+    label { font-weight: 850; display:block; margin-bottom: 6px; }
     input, select, button {
       width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #cfd3da; font-size: 1rem;
       background: #fff;
     }
-    input:focus, select:focus { outline: none; border-color:#1a3a6b; box-shadow: 0 0 0 3px rgba(26,58,107,.12); }
-    .btn {
-      background:#2c5aa0; color:#fff; border:none; font-weight: 900; cursor:pointer;
-    }
+    input:focus { outline: none; border-color:#1a3a6b; box-shadow: 0 0 0 3px rgba(26,58,107,.12); }
+
+    .btn { background:#2c5aa0; color:#fff; border:none; font-weight: 950; cursor:pointer; }
     .btn:disabled { opacity: .55; cursor: not-allowed; }
-    .btn-clear {
-      background:#eef2ff; color:#1a3a6b; border:1px solid #c7d2fe; font-weight:900; cursor:pointer;
-    }
-    .hint {
-      background: rgba(44,90,160,.08);
-      border-left: 4px solid #2c5aa0;
-      padding: 10px 12px;
-      border-radius: 12px;
-      color: #0f172a;
-      font-weight: 750;
-      line-height: 1.45;
-    }
+    .btn-clear { background:#eef2ff; color:#1a3a6b; border:1px solid #c7d2fe; font-weight:900; cursor:pointer; }
+
     .status {
       font-weight: 900;
       padding: 10px 12px;
@@ -63,8 +60,9 @@
     .status.ok { background: #ecfdf5; border-color: rgba(16,185,129,.25); }
     .status.warn { background: #fffbeb; border-color: rgba(245,158,11,.35); }
     .status.err { background: #fef2f2; border-color: rgba(239,68,68,.35); }
-    .table-wrap { overflow:auto; border-radius: 12px; border: 1px solid rgba(15,23,42,.10); }
-    table { width: max(100%, 820px); border-collapse: separate; border-spacing: 0; background: #fff; }
+
+    .table-wrap { overflow:auto; border-radius: 12px; border: 1px solid rgba(15,23,42,.10); margin-top: 12px; }
+    table { width: max(100%, 860px); border-collapse: separate; border-spacing: 0; background: #fff; }
     thead th {
       position: sticky; top: 0;
       background:#2c5aa0; color:#fff; padding: 10px; text-align:left; white-space: nowrap;
@@ -72,13 +70,7 @@
     }
     tbody td { padding: 10px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
     tbody tr:hover td { background: #f1f5ff; }
-    .pill {
-      display:inline-block; padding: 2px 10px; border-radius: 999px; font-weight: 900;
-      background: rgba(26,58,107,.10); color:#1a3a6b;
-    }
-    .muted { color: #475569; font-weight: 650; }
-    .small { font-size: .92rem; }
-    .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+
     .footer {
       margin-top: 10px;
       padding-top: 10px;
@@ -88,13 +80,13 @@
       font-size: .92rem;
       line-height: 1.45;
     }
+
     @media (max-width: 900px){
-      .col-4, .col-3 { grid-column: span 12; }
+      .col-6, .col-4, .col-3 { grid-column: span 12; }
       header { padding-right: 72px; }
     }
   </style>
 
-  <!-- Chart.js (CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 </head>
 
@@ -102,36 +94,61 @@
 <header>
   <a class="btn-ok-header" href="./index.html">OK</a>
   <h1>Vigilância Sanitária</h1>
-  <h2>Relatório – Regulados (Alta Complexidade) por Área de Atuação</h2>
+  <h2>Relatório Oficial – Regulados (Alta Complexidade) por Área de Atuação</h2>
 </header>
 
 <div class="wrap">
 
   <div class="card">
-    <div class="grid">
-      <div class="col-12 hint">
-        <div style="font-weight:900; margin-bottom:6px;">Metodologia (resumo)</div>
-        <div class="small">
-          Considera somente CNAEs com <span class="pill">Complexidade = ALTA</span>.
-          Cada regulado é contado <b>uma única vez</b>, classificado por prioridade de área:
-          <b>Medicamentos → Produtos para Saúde → Saneantes → Serviços de Saúde → Indústria de Alimentos</b>.
-          Se não cair em nenhuma dessas, escolhe <b>qualquer uma</b> das áreas restantes (aleatório puro).
-          <br><br>
-          <b>Mapeamento fixo dos JSON:</b> <span class="mono">reg/00..43</span>, onde a pasta é formada pelos
-          <b>dois primeiros dígitos</b> do código do contribuinte (ex.: <span class="mono">13022 → reg/13/13022.json</span>).
-        </div>
-      </div>
+    <div class="title">1) Identificação e Escopo</div>
+    <div class="sub small" style="margin-top:8px;">
+      Este relatório contabiliza a quantidade de <b>Regulados</b> classificados como <span class="pill">Alta Complexidade</span>
+      por <b>Área de Atuação</b>, a partir de arquivos JSON hospedados em repositório institucional (GitHub Pages).
+      <br><br>
+      <b>Premissa institucional:</b> todos os registros listados no <span class="mono">index_regulados.json</span> são considerados <b>ativos</b>
+      (logo, não há filtro de status).
+    </div>
+  </div>
 
-      <div class="col-4">
+  <div class="card">
+    <div class="title">2) Fonte de Dados e Regras de Cálculo (Auditável)</div>
+    <div class="sub small" style="margin-top:8px;">
+      <b>2.1 Fonte primária:</b> <span class="mono">data/index_regulados.json</span> (estrutura <span class="mono">{ meta, dados[] }</span>, com <span class="mono">dados[].codigo</span>).
+      <br>
+      <b>2.2 Fonte detalhada:</b> <span class="mono">reg/00..43/&lt;codigo&gt;.json</span>, onde a pasta é formada pelos <b>dois primeiros dígitos</b> do código
+      (ex.: <span class="mono">13022 → reg/13/13022.json</span>).
+      <br><br>
+
+      <b>2.3 Critério “Alta Complexidade”:</b> considera somente itens em <span class="mono">atividades[]</span> cujo campo
+      <span class="mono">complexidade</span> seja exatamente <b>“ALTA”</b>.
+      <br>
+      Se o regulado não possuir nenhuma atividade com “ALTA”, é <b>descartado</b> do universo deste relatório.
+      <br><br>
+
+      <b>2.4 Regra de contagem única por regulado:</b> cada regulado é contabilizado <b>apenas uma vez</b>, sendo classificado em uma única área.
+      <br>
+      <b>2.5 Prioridade de área (ordem fixa):</b>
+      <b>Medicamentos → Produtos para Saúde → Saneantes → Serviços de Saúde → Indústria de Alimentos</b>.
+      <br>
+      <b>2.6 Fallback:</b> quando nenhuma atividade “ALTA” estiver em uma das áreas acima, o regulado é atribuído a <b>qualquer uma</b> das áreas
+      remanescentes presentes nos seus CNAEs “ALTA” (seleção aleatória).
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="grid">
+      <div class="col-12 title">3) Execução</div>
+
+      <div class="col-6">
         <label>Index (regulados)</label>
         <input id="indexUrl" value="./data/index_regulados.json" />
-        <div class="muted small" style="margin-top:6px;">Ex.: <span class="mono">./data/index_regulados.json</span></div>
+        <div class="muted small" style="margin-top:6px;">Estrutura esperada: <span class="mono">{ meta, dados: [...] }</span></div>
       </div>
 
-      <div class="col-4">
+      <div class="col-6">
         <label>Diretório dos regulados</label>
         <input id="regDir" value="./reg" />
-        <div class="muted small" style="margin-top:6px;">Ex.: <span class="mono">./reg</span></div>
+        <div class="muted small" style="margin-top:6px;">Pastas esperadas: <span class="mono">00..43</span></div>
       </div>
 
       <div class="col-4">
@@ -143,23 +160,15 @@
         </select>
       </div>
 
-      <div class="col-3">
-        <label>Filtrar por “ATIVO”</label>
-        <select id="ativoMode">
-          <option value="auto" selected>Auto (tenta detectar)</option>
-          <option value="off">Não filtrar (considerar todos)</option>
-        </select>
-      </div>
-
-      <div class="col-3">
-        <label>Gerar com gráfico</label>
+      <div class="col-4">
+        <label>Gráfico</label>
         <select id="withChart">
           <option value="yes" selected>Sim</option>
           <option value="no">Não</option>
         </select>
       </div>
 
-      <div class="col-6">
+      <div class="col-4">
         <label>&nbsp;</label>
         <button id="btnRun" class="btn" type="button">Gerar relatório</button>
       </div>
@@ -172,30 +181,31 @@
 
   <div class="card" id="summaryCard" hidden>
     <div class="grid">
-      <div class="col-12">
-        <div style="font-weight:900; font-size: 1.05rem; margin-bottom: 8px;">Resumo</div>
-      </div>
-      <div class="col-3"><div class="status ok"><div>Total lidos</div><div id="sTotal" style="font-size:1.25rem;">0</div></div></div>
+      <div class="col-12 title">4) Resumo Estatístico</div>
+
+      <div class="col-3"><div class="status ok"><div>Total no index</div><div id="sTotal" style="font-size:1.25rem;">0</div></div></div>
       <div class="col-3"><div class="status warn"><div>Descartados (sem ALTA)</div><div id="sNoAlta" style="font-size:1.25rem;">0</div></div></div>
-      <div class="col-3"><div class="status warn"><div>Descartados (inativo)</div><div id="sInativo" style="font-size:1.25rem;">0</div></div></div>
+      <div class="col-3"><div class="status warn"><div>Fora do range 00..43</div><div id="sForaRange" style="font-size:1.25rem;">0</div></div></div>
       <div class="col-3"><div class="status ok"><div>Contabilizados</div><div id="sCounted" style="font-size:1.25rem;">0</div></div></div>
+
       <div class="col-12 footer" id="footerMeta"></div>
     </div>
   </div>
 
   <div class="card" id="tableCard" hidden>
     <div style="display:flex; align-items:center; justify-content:space-between; gap: 10px; flex-wrap: wrap;">
-      <div style="font-weight:900; font-size: 1.05rem;">Consolidado por Área</div>
+      <div class="title">5) Consolidado por Área</div>
       <div style="display:flex; gap: 10px; flex-wrap: wrap;">
         <button id="btnCsv" class="btn-clear" type="button">Exportar CSV</button>
       </div>
     </div>
-    <div style="margin-top: 12px;" class="table-wrap">
+
+    <div class="table-wrap">
       <table>
         <thead>
           <tr>
             <th>Área</th>
-            <th>Sigla (hint)</th>
+            <th>Sigla (referência)</th>
             <th>Quantidade (Regulados ALTA)</th>
             <th>%</th>
           </tr>
@@ -203,19 +213,23 @@
         <tbody id="tbody"></tbody>
       </table>
     </div>
+
     <div class="muted small" style="margin-top: 10px;" id="notes"></div>
   </div>
 
   <div class="card" id="chartCard" hidden>
-    <div style="font-weight:900; font-size: 1.05rem; margin-bottom: 12px;">Gráfico (barras)</div>
-    <canvas id="chart" height="120"></canvas>
+    <div class="title">6) Gráfico (barras)</div>
+    <div class="muted small" style="margin-top:6px;">Distribuição dos regulados (Alta Complexidade) por área.</div>
+    <canvas id="chart" height="120" style="margin-top:12px;"></canvas>
   </div>
 
 </div>
 
 <script>
 /* =========================================================
-   Siglas e nomes (baseado na sua página "Áreas")
+   Mapeamentos (institucionais)
+   - Para priorização por área, mapeamos siglas/equipe para
+     as 5 áreas fixas. Siglas fora disso permanecem pelo nome.
 ========================================================= */
 const SIGLA_TO_NOME = {
   "IA": "Indústrias Alimentícias",
@@ -268,7 +282,7 @@ function canonicalToSiglaHint(areaCanon){
 }
 
 /* =========================================================
-   Helpers
+   Utilitários
 ========================================================= */
 const $ = (id) => document.getElementById(id);
 
@@ -294,32 +308,12 @@ function shardFolderPrefix2(code){
   return { ok:true, folder: pad2(n) };
 }
 
-// Auto-detecção de "ativo" (ajusto quando você me disser o campo oficial)
-function isAtivoAuto(reg){
-  const candidates = [
-    reg.status, reg.situacao, reg.ativo, reg.isAtivo,
-    reg.cadastroStatus, reg.estado, reg.situacaoCadastro
-  ].filter(v => v !== undefined && v !== null);
-
-  if(!candidates.length) return true;
-
-  const v = candidates[0];
-  if(typeof v === "boolean") return v;
-
-  const t = norm(v);
-  if(t.includes("ATIV")) return true;
-  if(t.includes("INAT") || t.includes("BAIX") || t.includes("CANCEL") || t.includes("ENCERR")) return false;
-  return true;
-}
-
 function extractCode(item){
   if(item == null) return null;
   if(typeof item === "string" || typeof item === "number") return String(item).trim();
   const keys = ["codigo","CODIGO","id","ID","contribuinte","CONTRIBUINTE","cod","Cod"];
   for(const k of keys){
-    if(item[k] !== undefined && item[k] !== null){
-      return String(item[k]).trim();
-    }
+    if(item[k] !== undefined && item[k] !== null) return String(item[k]).trim();
   }
   return null;
 }
@@ -331,21 +325,17 @@ async function fetchJson(url){
 }
 
 async function runWithConcurrency(items, worker, limit){
-  const out = [];
-  let idx = 0;
-  let active = 0;
-
+  let idx = 0, active = 0;
   return new Promise((resolve) => {
     const next = () => {
       while(active < limit && idx < items.length){
         const current = idx++;
         active++;
         Promise.resolve(worker(items[current], current))
-          .then(r => out[current] = r)
-          .catch(e => out[current] = { error: e })
+          .catch(() => {})
           .finally(() => {
             active--;
-            if(idx >= items.length && active === 0) resolve(out);
+            if(idx >= items.length && active === 0) resolve();
             else next();
           });
       }
@@ -355,7 +345,11 @@ async function runWithConcurrency(items, worker, limit){
 }
 
 /* =========================================================
-   Classificação (suas regras)
+   Classificação (SEM heurística de status)
+   - Filtra CNAEs ALTA
+   - Mapeia para áreas
+   - Prioridade fixa
+   - Fallback aleatório puro
 ========================================================= */
 function classifyRegulado(reg){
   const atvs = Array.isArray(reg.atividades) ? reg.atividades : [];
@@ -373,17 +367,16 @@ function classifyRegulado(reg){
   if(!uniq.length) return { ok:false, reason:"SEM_AREA_MAPEADA" };
 
   for(const p of PRIORITY){
-    if(uniq.includes(p)){
-      return { ok:true, area: p, pickedBy: "PRIORIDADE" };
-    }
+    if(uniq.includes(p)) return { ok:true, area: p, pickedBy:"PRIORIDADE" };
   }
 
+  // fallback: qualquer uma
   const pick = uniq[Math.floor(Math.random() * uniq.length)];
-  return { ok:true, area: pick, pickedBy: "ALEATORIO" };
+  return { ok:true, area: pick, pickedBy:"ALEATORIO" };
 }
 
 /* =========================================================
-   UI
+   Render
 ========================================================= */
 let chartInstance = null;
 
@@ -398,14 +391,12 @@ function renderTable(counts, totalCounted){
     .map(([area, n]) => ({ area, n }))
     .sort((a,b) => b.n - a.n);
 
-  const tbody = $("tbody");
-  tbody.innerHTML = rows.map(r => {
+  $("tbody").innerHTML = rows.map(r => {
     const pct = totalCounted ? ((r.n / totalCounted) * 100).toFixed(1) : "0.0";
-    const siglaHint = canonicalToSiglaHint(r.area);
     return `
       <tr>
         <td><b>${r.area}</b></td>
-        <td>${siglaHint}</td>
+        <td>${canonicalToSiglaHint(r.area)}</td>
         <td>${r.n}</td>
         <td>${pct}%</td>
       </tr>
@@ -413,7 +404,7 @@ function renderTable(counts, totalCounted){
   }).join("");
 
   $("notes").textContent =
-    "Obs.: Quando os CNAEs ALTA não pertencem às 5 áreas priorizadas, a classificação cai em uma área escolhida aleatoriamente entre as áreas ALTA existentes no regulado (fallback).";
+    "Observação: quando os CNAEs (ALTA) não se enquadram nas 5 áreas priorizadas, a classificação do regulado é atribuída a uma das áreas remanescentes, por seleção aleatória (fallback).";
 }
 
 function renderChart(counts){
@@ -455,13 +446,12 @@ function downloadText(filename, text){
 }
 
 /* =========================================================
-   Execução
+   Execução principal (PARSE CORRETO do index: indexData.dados[])
 ========================================================= */
 async function generate(){
   const INDEX_URL = $("indexUrl").value.trim();
   const REG_DIR = $("regDir").value.trim().replace(/\/+$/,"");
   const conc = Number($("concurrency").value) || 10;
-  const ativoMode = $("ativoMode").value;
   const withChart = $("withChart").value === "yes";
 
   $("btnRun").disabled = true;
@@ -472,28 +462,25 @@ async function generate(){
     indexData = await fetchJson(INDEX_URL);
   } catch (e){
     $("btnRun").disabled = false;
-    setStatus("Falha ao carregar o index. Verifique o caminho e se está publicado no GitHub Pages.", "err");
+    setStatus("Falha ao carregar o index. Verifique o caminho e a publicação no GitHub Pages.", "err");
     console.error(e);
     return;
   }
 
- let items = [];
+  // ✅ SEU FORMATO REAL
+  const items = (indexData && Array.isArray(indexData.dados)) ? indexData.dados : [];
+  const codes = items.map(extractCode).filter(Boolean);
 
-if (Array.isArray(indexData)) {
-  items = indexData;
-} 
-else if (indexData && Array.isArray(indexData.dados)) {
-  // ✅ FORMATO REAL DO SEU INDEX
-  items = indexData.dados;
-} 
-else {
-  items = [];
-}
-
+  if(!codes.length){
+    $("btnRun").disabled = false;
+    setStatus("Index carregado, porém não foi possível extrair códigos em indexData.dados[].codigo. Verifique o formato do arquivo.", "err");
+    console.warn("Estrutura recebida:", indexData);
+    return;
+  }
 
   setStatus(`Index OK: ${codes.length} códigos. Lendo regulados em reg/00..43 (prefixo)…`, "warn");
 
-  let total = 0, descartNoAlta = 0, descartInativo = 0, descartForaRange = 0, counted = 0;
+  let total = 0, descartNoAlta = 0, descartForaRange = 0, counted = 0;
   const counts = {};
   const errors = [];
 
@@ -503,7 +490,7 @@ else {
     const shard = shardFolderPrefix2(code);
     if(!shard.ok){
       descartForaRange++;
-      return null;
+      return;
     }
 
     const url = `${REG_DIR}/${shard.folder}/${code}.json`;
@@ -513,24 +500,17 @@ else {
       reg = await fetchJson(url);
     } catch(e){
       errors.push({ code, url, err: String(e?.message || e) });
-      return null;
-    }
-
-    if(ativoMode === "auto" && !isAtivoAuto(reg)){
-      descartInativo++;
-      return null;
+      return;
     }
 
     const classified = classifyRegulado(reg);
     if(!classified.ok){
-      if(classified.reason === "SEM_ALTA") descartNoAlta++;
-      else descartNoAlta++;
-      return null;
+      descartNoAlta++;
+      return;
     }
 
     counted++;
     counts[classified.area] = (counts[classified.area] || 0) + 1;
-    return null;
   }, conc);
 
   $("summaryCard").hidden = false;
@@ -539,28 +519,26 @@ else {
 
   $("sTotal").textContent = total;
   $("sNoAlta").textContent = descartNoAlta;
-  $("sInativo").textContent = descartInativo;
+  $("sForaRange").textContent = descartForaRange;
   $("sCounted").textContent = counted;
 
   const now = new Date();
   const dt = now.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
-  const warnExtra = descartForaRange ? ` | Fora de 00..43: ${descartForaRange}` : "";
+
   $("footerMeta").innerHTML = `
-    <b>Fonte:</b> ${INDEX_URL} + ${REG_DIR}/00..43/*.json &nbsp;|&nbsp;
-    <b>Shard:</b> 2 primeiros dígitos (00..43) &nbsp;|&nbsp;
+    <b>Parâmetros de execução:</b>
+    <span class="mono">${INDEX_URL}</span> + <span class="mono">${REG_DIR}/00..43/&lt;codigo&gt;.json</span>
+    <br>
+    <b>Shard:</b> 2 primeiros dígitos do código (00..43) &nbsp;|&nbsp;
+    <b>Concorrência:</b> ${conc} &nbsp;|&nbsp;
     <b>Gerado em:</b> ${dt} (Horário de Brasília – UTC−3)
-    ${warnExtra ? `<br><b>Avisos:</b>${warnExtra}` : ""}
+    ${errors.length ? `<br><b>Avisos:</b> ${errors.length} arquivos não puderam ser lidos (ver console).` : ""}
   `;
 
   renderTable(counts, counted);
   if(withChart) renderChart(counts);
 
-  if(errors.length){
-    setStatus(`Concluído com avisos: ${counted} contabilizados. ${errors.length} arquivos não puderam ser lidos (ver console).`, "warn");
-    console.warn("Erros de leitura:", errors);
-  } else {
-    setStatus(`Concluído: ${counted} regulados (ALTA) contabilizados.`, "ok");
-  }
+  setStatus(`Concluído: ${counted} regulados (ALTA) contabilizados.`, errors.length ? "warn" : "ok");
 
   $("btnCsv").onclick = () => {
     const csv = toCsv(counts, counted);
