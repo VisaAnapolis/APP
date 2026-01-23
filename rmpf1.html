@@ -666,17 +666,23 @@
             });
         }
 
-        async function prepararLoginUI() {
-            try {
-                await carregarLoginDB();
-                popularUsuariosLogin();
-            } catch(e) {
-                console.error('Erro ao carregar login.csv:', e);
-                document.getElementById('authError').style.display = 'block';
-            }
-        }
+      async function prepararLoginUI() {
+  // ✅ Se a página não tem mais modal de login CSV, não executa nada
+  if (!document.getElementById('authOverlay')) return;
 
-        window.addEventListener('load', prepararLoginUI);
+  try {
+    await carregarLoginDB();
+    popularUsuariosLogin();
+  } catch(e) {
+    console.error('Erro ao carregar login.csv:', e);
+    const el = document.getElementById('authError');
+    if (el) el.style.display = 'block';
+  }
+}
+
+      // ✅ Login agora é pelo guard1.js (Firebase). Não usar login.csv.
+// window.addEventListener('load', prepararLoginUI);
+
 
 function aplicarRestricaoFiscal(perfil) {
   const sel = document.getElementById('fiscal');
