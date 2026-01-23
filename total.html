@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Relatório – Regulados (Alta Complexidade) por Área</title>
+
+  <meta name="theme-color" content="#1a3a6b" />
+  <link rel="stylesheet" href="./css/design-tokens.css">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, "Segoe UI", Arial; background: #f6f7fb; color: #0f172a; }
+    header {
+      background:#1a3a6b; color:#fff; padding: 26px 20px; text-align:center;
+      position: sticky; top:0; z-index: 50; box-shadow: 0 2px 6px rgba(0,0,0,.14);
+    }
+    header h1 { font-size: 1.55rem; font-weight: 900; }
+    header h2 { margin-top: 6px; font-weight: 600; opacity: .92; font-size: 1rem; }
+    .btn-ok-header{
+      position:absolute; top:50%; right:16px; transform:translateY(-50%);
+      background:transparent; border:none; color:#34C759; font-size:17px; font-weight:800;
+      padding:16px 12px; cursor:pointer; text-decoration:none;
+    }
+    .wrap { max-width: 1180px; margin: 18px auto; padding: 0 16px 28px; }
+    .card {
+      background:#fff; border-radius:16px; padding: 16px; margin-bottom: 14px;
+      box-shadow: 0 4px 14px rgba(0,0,0,.08); border: 1px solid rgba(15,23,42,.08);
+    }
+    .grid { display: grid; gap: 12px; grid-template-columns: repeat(12, 1fr); }
+    .col-12 { grid-column: span 12; }
+    .col-4 { grid-column: span 4; }
+    .col-3 { grid-column: span 3; }
+    label { font-weight: 800; display:block; margin-bottom: 6px; }
+    input, select, button {
+      width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #cfd3da; font-size: 1rem;
+      background: #fff;
+    }
+    input:focus, select:focus { outline: none; border-color:#1a3a6b; box-shadow: 0 0 0 3px rgba(26,58,107,.12); }
+    .btn {
+      background:#2c5aa0; color:#fff; border:none; font-weight: 900; cursor:pointer;
+    }
+    .btn:disabled { opacity: .55; cursor: not-allowed; }
+    .btn-clear {
+      background:#eef2ff; color:#1a3a6b; border:1px solid #c7d2fe; font-weight:900; cursor:pointer;
+    }
+    .hint {
+      background: rgba(44,90,160,.08);
+      border-left: 4px solid #2c5aa0;
+      padding: 10px 12px;
+      border-radius: 12px;
+      color: #0f172a;
+      font-weight: 750;
+      line-height: 1.45;
+    }
+    .status {
+      font-weight: 900;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f1f5ff;
+      border: 1px solid rgba(44,90,160,.25);
+    }
+    .status.ok { background: #ecfdf5; border-color: rgba(16,185,129,.25); }
+    .status.warn { background: #fffbeb; border-color: rgba(245,158,11,.35); }
+    .status.err { background: #fef2f2; border-color: rgba(239,68,68,.35); }
+    .table-wrap { overflow:auto; border-radius: 12px; border: 1px solid rgba(15,23,42,.10); }
+    table { width: max(100%, 820px); border-collapse: separate; border-spacing: 0; background: #fff; }
+    thead th {
+      position: sticky; top: 0;
+      background:#2c5aa0; color:#fff; padding: 10px; text-align:left; white-space: nowrap;
+      z-index: 2;
+    }
+    tbody td { padding: 10px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+    tbody tr:hover td { background: #f1f5ff; }
+    .pill {
+      display:inline-block; padding: 2px 10px; border-radius: 999px; font-weight: 900;
+      background: rgba(26,58,107,.10); color:#1a3a6b;
+    }
+    .muted { color: #475569; font-weight: 650; }
+    .small { font-size: .92rem; }
+    .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+    .footer {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(15,23,42,.18);
+      color: #475569;
+      font-weight: 650;
+      font-size: .92rem;
+      line-height: 1.45;
+    }
+    @media (max-width: 900px){
+      .col-4, .col-3 { grid-column: span 12; }
+      header { padding-right: 72px; }
+    }
+  </style>
+
+  <!-- Chart.js (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+<header>
+  <a class="btn-ok-header" href="./index.html">OK</a>
+  <h1>Vigilância Sanitária</h1>
+  <h2>Relatório – Regulados (Alta Complexidade) por Área de Atuação</h2>
+</header>
+
+<div class="wrap">
+
+  <div class="card">
+    <div class="grid">
+      <div class="col-12 hint">
+        <div style="font-weight:900; margin-bottom:6px;">Metodologia (resumo)</div>
+        <div class="small">
+          Considera somente CNAEs com <span class="pill">Complexidade = ALTA</span>.
+          Cada regulado é contado <b>uma única vez</b>, classificado por prioridade de área:
+          <b>Medicamentos → Produtos para Saúde → Saneantes → Serviços de Saúde → Indústria de Alimentos</b>.
+          Se não cair em nenhuma dessas, escolhe <b>qualquer uma</b> das áreas restantes (aleatório puro).
+          <br><br>
+          <b>Mapeamento fixo dos JSON:</b> <span class="mono">reg/00..43</span>, onde a pasta é formada pelos
+          <b>dois primeiros dígitos</b> do código do contribuinte (ex.: <span class="mono">13022 → reg/13/13022.json</span>).
+        </div>
+      </div>
+
+      <div class="col-4">
+        <label>Index (regulados)</label>
+        <input id="indexUrl" value="./data/index_regulados.json" />
+        <div class="muted small" style="margin-top:6px;">Ex.: <span class="mono">./data/index_regulados.json</span></div>
+      </div>
+
+      <div class="col-4">
+        <label>Diretório dos regulados</label>
+        <input id="regDir" value="./reg" />
+        <div class="muted small" style="margin-top:6px;">Ex.: <span class="mono">./reg</span></div>
+      </div>
+
+      <div class="col-4">
+        <label>Concorrência (fetch)</label>
+        <select id="concurrency">
+          <option value="6">6</option>
+          <option value="10" selected>10</option>
+          <option value="16">16</option>
+        </select>
+      </div>
+
+      <div class="col-3">
+        <label>Filtrar por “ATIVO”</label>
+        <select id="ativoMode">
+          <option value="auto" selected>Auto (tenta detectar)</option>
+          <option value="off">Não filtrar (considerar todos)</option>
+        </select>
+      </div>
+
+      <div class="col-3">
+        <label>Gerar com gráfico</label>
+        <select id="withChart">
+          <option value="yes" selected>Sim</option>
+          <option value="no">Não</option>
+        </select>
+      </div>
+
+      <div class="col-6">
+        <label>&nbsp;</label>
+        <button id="btnRun" class="btn" type="button">Gerar relatório</button>
+      </div>
+
+      <div class="col-12">
+        <div id="statusBox" class="status warn">Aguardando execução…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="summaryCard" hidden>
+    <div class="grid">
+      <div class="col-12">
+        <div style="font-weight:900; font-size: 1.05rem; margin-bottom: 8px;">Resumo</div>
+      </div>
+      <div class="col-3"><div class="status ok"><div>Total lidos</div><div id="sTotal" style="font-size:1.25rem;">0</div></div></div>
+      <div class="col-3"><div class="status warn"><div>Descartados (sem ALTA)</div><div id="sNoAlta" style="font-size:1.25rem;">0</div></div></div>
+      <div class="col-3"><div class="status warn"><div>Descartados (inativo)</div><div id="sInativo" style="font-size:1.25rem;">0</div></div></div>
+      <div class="col-3"><div class="status ok"><div>Contabilizados</div><div id="sCounted" style="font-size:1.25rem;">0</div></div></div>
+      <div class="col-12 footer" id="footerMeta"></div>
+    </div>
+  </div>
+
+  <div class="card" id="tableCard" hidden>
+    <div style="display:flex; align-items:center; justify-content:space-between; gap: 10px; flex-wrap: wrap;">
+      <div style="font-weight:900; font-size: 1.05rem;">Consolidado por Área</div>
+      <div style="display:flex; gap: 10px; flex-wrap: wrap;">
+        <button id="btnCsv" class="btn-clear" type="button">Exportar CSV</button>
+      </div>
+    </div>
+    <div style="margin-top: 12px;" class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Área</th>
+            <th>Sigla (hint)</th>
+            <th>Quantidade (Regulados ALTA)</th>
+            <th>%</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="muted small" style="margin-top: 10px;" id="notes"></div>
+  </div>
+
+  <div class="card" id="chartCard" hidden>
+    <div style="font-weight:900; font-size: 1.05rem; margin-bottom: 12px;">Gráfico (barras)</div>
+    <canvas id="chart" height="120"></canvas>
+  </div>
+
+</div>
+
+<script>
+/* =========================================================
+   Siglas e nomes (baseado na sua página "Áreas")
+========================================================= */
+const SIGLA_TO_NOME = {
+  "IA": "Indústrias Alimentícias",
+  "AG": "Alimentos em Geral",
+  "ED": "Estabelecimentos de Ensino",
+  "OS": "Produtos para Saúde",
+  "SS": "Serviços de Saúde",
+  "OD": "Serviços Odontológicos",
+  "CS": "Cosméticos e Saneantes",
+  "AM": "Vigilância Ambiental",
+  "VT": "Serviços Veterinários",
+  "BI": "Outras Áreas I",
+  "LP": "Estabelecimentos Assistenciais à Saúde",
+  "AO": "Outras Áreas II",
+  "TR": "Serviços de Transporte",
+  "DR": "Comércio varejista de Medicamentos",
+  "MD": "Medicamentos"
+};
+
+const PRIORITY = [
+  "Medicamentos",
+  "Produtos para Saúde",
+  "Saneantes",
+  "Serviços de Saúde",
+  "Indústria de Alimentos"
+];
+
+function siglaToCanonical(sigla){
+  sigla = String(sigla || "").trim().toUpperCase();
+  if(!sigla) return null;
+
+  if(sigla === "MD" || sigla === "DR") return "Medicamentos";
+  if(sigla === "OS") return "Produtos para Saúde";
+  if(sigla === "CS") return "Saneantes";
+  if(sigla === "SS" || sigla === "LP") return "Serviços de Saúde";
+  if(sigla === "IA") return "Indústria de Alimentos";
+
+  return SIGLA_TO_NOME[sigla] || sigla;
+}
+
+function canonicalToSiglaHint(areaCanon){
+  switch(areaCanon){
+    case "Medicamentos": return "MD/DR";
+    case "Produtos para Saúde": return "OS";
+    case "Saneantes": return "CS";
+    case "Serviços de Saúde": return "SS/LP";
+    case "Indústria de Alimentos": return "IA";
+    default: return "—";
+  }
+}
+
+/* =========================================================
+   Helpers
+========================================================= */
+const $ = (id) => document.getElementById(id);
+
+function pad2(n){ return String(n).padStart(2, "0"); }
+
+function norm(s){
+  return String(s ?? "")
+    .replace(/\u00A0/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+// regra FIXA: pasta = 2 primeiros dígitos, range 00..43
+function shardFolderPrefix2(code){
+  const s = String(code).trim();
+  const folder = (s.length >= 2 ? s.slice(0,2) : "00");
+  const n = Number(folder);
+  if(!Number.isFinite(n)) return { ok:false, folder, reason:"NAO_NUMERICO" };
+  if(n < 0 || n > 43) return { ok:false, folder, reason:"FORA_DO_RANGE_00_43" };
+  return { ok:true, folder: pad2(n) };
+}
+
+// Auto-detecção de "ativo" (ajusto quando você me disser o campo oficial)
+function isAtivoAuto(reg){
+  const candidates = [
+    reg.status, reg.situacao, reg.ativo, reg.isAtivo,
+    reg.cadastroStatus, reg.estado, reg.situacaoCadastro
+  ].filter(v => v !== undefined && v !== null);
+
+  if(!candidates.length) return true;
+
+  const v = candidates[0];
+  if(typeof v === "boolean") return v;
+
+  const t = norm(v);
+  if(t.includes("ATIV")) return true;
+  if(t.includes("INAT") || t.includes("BAIX") || t.includes("CANCEL") || t.includes("ENCERR")) return false;
+  return true;
+}
+
+function extractCode(item){
+  if(item == null) return null;
+  if(typeof item === "string" || typeof item === "number") return String(item).trim();
+  const keys = ["codigo","CODIGO","id","ID","contribuinte","CONTRIBUINTE","cod","Cod"];
+  for(const k of keys){
+    if(item[k] !== undefined && item[k] !== null){
+      return String(item[k]).trim();
+    }
+  }
+  return null;
+}
+
+async function fetchJson(url){
+  const res = await fetch(url, { cache: "no-store" });
+  if(!res.ok) throw new Error(`HTTP ${res.status} em ${url}`);
+  return await res.json();
+}
+
+async function runWithConcurrency(items, worker, limit){
+  const out = [];
+  let idx = 0;
+  let active = 0;
+
+  return new Promise((resolve) => {
+    const next = () => {
+      while(active < limit && idx < items.length){
+        const current = idx++;
+        active++;
+        Promise.resolve(worker(items[current], current))
+          .then(r => out[current] = r)
+          .catch(e => out[current] = { error: e })
+          .finally(() => {
+            active--;
+            if(idx >= items.length && active === 0) resolve(out);
+            else next();
+          });
+      }
+    };
+    next();
+  });
+}
+
+/* =========================================================
+   Classificação (suas regras)
+========================================================= */
+function classifyRegulado(reg){
+  const atvs = Array.isArray(reg.atividades) ? reg.atividades : [];
+  const altas = atvs.filter(a => norm(a?.complexidade) === "ALTA");
+  if(!altas.length) return { ok:false, reason:"SEM_ALTA" };
+
+  const areas = [];
+  for(const a of altas){
+    const sigla = a?.equipe || a?.sigla || a?.area || a?.setor;
+    const canon = siglaToCanonical(sigla);
+    if(canon) areas.push(canon);
+  }
+
+  const uniq = Array.from(new Set(areas));
+  if(!uniq.length) return { ok:false, reason:"SEM_AREA_MAPEADA" };
+
+  for(const p of PRIORITY){
+    if(uniq.includes(p)){
+      return { ok:true, area: p, pickedBy: "PRIORIDADE" };
+    }
+  }
+
+  const pick = uniq[Math.floor(Math.random() * uniq.length)];
+  return { ok:true, area: pick, pickedBy: "ALEATORIO" };
+}
+
+/* =========================================================
+   UI
+========================================================= */
+let chartInstance = null;
+
+function setStatus(msg, kind="warn"){
+  const box = $("statusBox");
+  box.className = "status " + kind;
+  box.textContent = msg;
+}
+
+function renderTable(counts, totalCounted){
+  const rows = Object.entries(counts)
+    .map(([area, n]) => ({ area, n }))
+    .sort((a,b) => b.n - a.n);
+
+  const tbody = $("tbody");
+  tbody.innerHTML = rows.map(r => {
+    const pct = totalCounted ? ((r.n / totalCounted) * 100).toFixed(1) : "0.0";
+    const siglaHint = canonicalToSiglaHint(r.area);
+    return `
+      <tr>
+        <td><b>${r.area}</b></td>
+        <td>${siglaHint}</td>
+        <td>${r.n}</td>
+        <td>${pct}%</td>
+      </tr>
+    `;
+  }).join("");
+
+  $("notes").textContent =
+    "Obs.: Quando os CNAEs ALTA não pertencem às 5 áreas priorizadas, a classificação cai em uma área escolhida aleatoriamente entre as áreas ALTA existentes no regulado (fallback).";
+}
+
+function renderChart(counts){
+  const labels = Object.keys(counts);
+  const data = Object.values(counts);
+
+  const ctx = $("chart").getContext("2d");
+  if(chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(ctx, {
+    type: "bar",
+    data: { labels, datasets: [{ label: "Regulados (ALTA) por área", data }] },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: true } },
+      scales: { y: { beginAtZero: true, precision: 0 } }
+    }
+  });
+}
+
+function toCsv(counts, totalCounted){
+  const rows = Object.entries(counts).map(([area, n]) => {
+    const pct = totalCounted ? ((n/totalCounted)*100).toFixed(2) : "0.00";
+    return [area, canonicalToSiglaHint(area), n, pct].join(";");
+  });
+  return ["AREA;SIGLA_HINT;QUANTIDADE;PERCENTUAL", ...rows].join("\n");
+}
+
+function downloadText(filename, text){
+  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+/* =========================================================
+   Execução
+========================================================= */
+async function generate(){
+  const INDEX_URL = $("indexUrl").value.trim();
+  const REG_DIR = $("regDir").value.trim().replace(/\/+$/,"");
+  const conc = Number($("concurrency").value) || 10;
+  const ativoMode = $("ativoMode").value;
+  const withChart = $("withChart").value === "yes";
+
+  $("btnRun").disabled = true;
+  setStatus("Carregando index de regulados…", "warn");
+
+  let indexData;
+  try {
+    indexData = await fetchJson(INDEX_URL);
+  } catch (e){
+    $("btnRun").disabled = false;
+    setStatus("Falha ao carregar o index. Verifique o caminho e se está publicado no GitHub Pages.", "err");
+    console.error(e);
+    return;
+  }
+
+  let items = [];
+  if(Array.isArray(indexData)) items = indexData;
+  else if(indexData && Array.isArray(indexData.items)) items = indexData.items;
+  else if(indexData && Array.isArray(indexData.data)) items = indexData.data;
+  else if(indexData && typeof indexData === "object") items = Object.values(indexData);
+
+  const codes = items.map(extractCode).filter(Boolean);
+  if(!codes.length){
+    $("btnRun").disabled = false;
+    setStatus("Index carregado, mas não encontrei códigos. Ajuste o formato (campo codigo/id) ou me envie um exemplo do index.", "err");
+    return;
+  }
+
+  setStatus(`Index OK: ${codes.length} códigos. Lendo regulados em reg/00..43 (prefixo)…`, "warn");
+
+  let total = 0, descartNoAlta = 0, descartInativo = 0, descartForaRange = 0, counted = 0;
+  const counts = {};
+  const errors = [];
+
+  await runWithConcurrency(codes, async (code) => {
+    total++;
+
+    const shard = shardFolderPrefix2(code);
+    if(!shard.ok){
+      descartForaRange++;
+      return null;
+    }
+
+    const url = `${REG_DIR}/${shard.folder}/${code}.json`;
+
+    let reg;
+    try{
+      reg = await fetchJson(url);
+    } catch(e){
+      errors.push({ code, url, err: String(e?.message || e) });
+      return null;
+    }
+
+    if(ativoMode === "auto" && !isAtivoAuto(reg)){
+      descartInativo++;
+      return null;
+    }
+
+    const classified = classifyRegulado(reg);
+    if(!classified.ok){
+      if(classified.reason === "SEM_ALTA") descartNoAlta++;
+      else descartNoAlta++;
+      return null;
+    }
+
+    counted++;
+    counts[classified.area] = (counts[classified.area] || 0) + 1;
+    return null;
+  }, conc);
+
+  $("summaryCard").hidden = false;
+  $("tableCard").hidden = false;
+  $("chartCard").hidden = !withChart;
+
+  $("sTotal").textContent = total;
+  $("sNoAlta").textContent = descartNoAlta;
+  $("sInativo").textContent = descartInativo;
+  $("sCounted").textContent = counted;
+
+  const now = new Date();
+  const dt = now.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
+  const warnExtra = descartForaRange ? ` | Fora de 00..43: ${descartForaRange}` : "";
+  $("footerMeta").innerHTML = `
+    <b>Fonte:</b> ${INDEX_URL} + ${REG_DIR}/00..43/*.json &nbsp;|&nbsp;
+    <b>Shard:</b> 2 primeiros dígitos (00..43) &nbsp;|&nbsp;
+    <b>Gerado em:</b> ${dt} (Horário de Brasília – UTC−3)
+    ${warnExtra ? `<br><b>Avisos:</b>${warnExtra}` : ""}
+  `;
+
+  renderTable(counts, counted);
+  if(withChart) renderChart(counts);
+
+  if(errors.length){
+    setStatus(`Concluído com avisos: ${counted} contabilizados. ${errors.length} arquivos não puderam ser lidos (ver console).`, "warn");
+    console.warn("Erros de leitura:", errors);
+  } else {
+    setStatus(`Concluído: ${counted} regulados (ALTA) contabilizados.`, "ok");
+  }
+
+  $("btnCsv").onclick = () => {
+    const csv = toCsv(counts, counted);
+    downloadText("relatorio_regulados_alta_por_area.csv", csv);
+  };
+
+  $("btnRun").disabled = false;
+}
+
+$("btnRun").addEventListener("click", generate);
+</script>
+
+</body>
+</html>
