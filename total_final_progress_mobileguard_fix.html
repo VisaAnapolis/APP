@@ -510,7 +510,7 @@ function mobileGuardOrRedirect(){
   const isMobile = window.matchMedia('(max-width: 768px)').matches;
   if(!isMobile) return false;
 
-  alert("⚠️ Aviso: este relatório processa milhares de registros e pode demorar/parecer travado no celular. Recomendamos executar no computador. Você será redirecionado ao index.");
+  alert("⚠️ Aviso: este relatório processa milhares de registros e pode demorar/parecer travado no celular. Recomendamos executar no computador.");
   window.location.href = "./index.html";
   return true;
 }
