@@ -282,6 +282,57 @@
             border-left-color: #34C759;
         }
 
+        /* === ESTATÍSTICAS (ANTES DA TABELA) === */
+        .estatisticas-box{
+            margin: 6px 0 14px;
+            padding: 14px 14px 12px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: rgba(44, 90, 160, 0.05);
+        }
+        .estatisticas-box h3{
+            margin: 0 0 10px;
+            font-size: 0.98em;
+            color: var(--brand1);
+            font-weight: 800;
+            letter-spacing: .2px;
+        }
+        .estatisticas-grid{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+        }
+        .estat-card{
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 10px 12px;
+            box-shadow: var(--shadow2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            min-width: 0;
+        }
+        .estat-tipo{
+            font-size: 0.9em;
+            font-weight: 700;
+            color: var(--text);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .estat-qtd{
+            font-size: 1.15em;
+            font-weight: 900;
+            color: var(--brand1);
+            flex: 0 0 auto;
+        }
+        @media (max-width: 480px){
+            .estatisticas-grid{ grid-template-columns: 1fr; }
+            .estat-card{ padding: 10px 12px; }
+        }
+
         .loading {
             text-align: center;
             padding: 40px;
@@ -476,8 +527,66 @@ window.addEventListener('scroll', () => {
     lastScroll = currentScroll;
 });
 
-        
-    </style>
+/* User Info Bar - Padronizado */
+.user-info-bar {
+  background: rgba(52, 199, 89, 0.08);
+  padding: 8px 20px;
+  font-size: 0.75rem;
+  color: #34C759;
+  border-bottom: 1px solid rgba(52, 199, 89, 0.15);
+  text-align: left;
+  line-height: 1.4;
+}
+
+.user-info-bar .user-name {
+  font-weight: 700;
+  display: inline;
+  margin-right: 10px;
+  color: #1a3a6b;
+  font-size: 0.8rem;
+}
+
+.user-info-bar .user-name::after {
+  content: "•";
+  margin-left: 10px;
+  opacity: 0.5;
+  color: #64748b;
+}
+
+.user-info-bar .user-email {
+  font-weight: 400;
+  opacity: 0.85;
+  display: inline;
+  color: #5b6b83;
+  font-size: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .user-info-bar {
+    font-size: 0.7rem;
+    padding: 6px 12px;
+  }
+  
+  .user-info-bar .user-name {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 0.75rem;
+  }
+  
+  .user-info-bar .user-name::after {
+    display: none;
+  }
+  
+  .user-info-bar .user-email {
+    display: block;
+    font-size: 0.7rem;
+  }
+}
+    
+</style>
+
+
+    
     <!-- Bibliotecas de Exportação -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -490,20 +599,7 @@ window.addEventListener('scroll', () => {
         
 </head>
 <body>
-    <!-- Modal de Autenticação -->
-    <div class="auth-overlay" id="authOverlay">
-        <div class="auth-modal">
-            <h2>🔒 Acesso Restrito</h2>
-            <p>Selecione seu nome e digite a senha</p>
-            <select id="usuarioSelect"></select>
-            <input type="password" id="senhaInput" placeholder="Senha" autocomplete="current-password" onkeypress="if(event.key==='Enter') verificarLogin()">
-            <button onclick="verificarLogin()">Entrar</button>
-            <div class="auth-error" id="authError">❌ Usuário ou senha inválidos.</div>
-            <div class="auth-error" id="authErrorPerm" style="display:none;">⛔ Não autorizado para este relatório.</div>
-        </div>
-    </div>
-    </div>
-
+    
     <!-- Conteúdo Principal -->
     <div class="main-content" id="mainContent">
         <header>
@@ -512,6 +608,8 @@ window.addEventListener('scroll', () => {
             <h2>Relatório Inspeções por fiscal e período</h2>
         </header>
 
+<div id="userInfo" class="user-info-bar"></div>
+        
         <div class="container">
             <div class="card">
                 <div class="filter-row">
@@ -556,6 +654,8 @@ window.addEventListener('scroll', () => {
                     Processando dados...
                 </div>
                 
+                <div id="estatisticasBox" class="estatisticas-box" style="display:none;"></div>
+
                 <div class="table-responsive">
                     <table id="tabelaInspecoes" class="display" style="display: none; width: 100%;">
                         <thead>
@@ -654,31 +754,47 @@ window.addEventListener('scroll', () => {
 
         window.addEventListener('load', prepararLoginUI);
 
-        function aplicarRestricaoFiscal() {
-            const sel = document.getElementById('fiscal');
-            if (!sel || !usuarioLogado) return;
-
-            if (usuarioLogado.grupo === 'ADM') {
-                sel.disabled = false;
-                return;
-            }
-
-            if (usuarioLogado.grupo === 'FIS') {
-                const alvo = usuarioLogado.nome;
-                let achou = false;
-                for (let i = 0; i < sel.options.length; i++) {
-                    const opt = limparAcentos(sel.options[i].text);
-                    if (opt === alvo) {
-                        sel.selectedIndex = i;
-                        achou = true;
-                        break;
-                    }
-                }
-                sel.disabled = true;
-                if (!achou) alert('⛔ Seu usuário não foi encontrado na lista de fiscais.');
-            }
-        }
-
+function aplicarRestricaoFiscal(perfil) {
+  const sel = document.getElementById('fiscal');
+  if (!sel || !perfil) {
+    console.warn('⚠️ Select ou perfil inexistente');
+    return;
+  }
+  
+  console.log('🔍 Total de opções no select:', sel.options.length);
+  
+  // ADM tem acesso total
+  if (perfil.grupo === 'Administrador') {
+    sel.disabled = false;
+    console.log('✅ Acesso total:', perfil.grupo);
+    return;
+  }
+  
+  // FISCAL: deve encontrar seu nome na lista
+  const nomeFirestore = perfil.nome.toUpperCase().trim();
+  console.log('🔍 Procurando por:', nomeFirestore);
+  
+  for (let i = 0; i < sel.options.length; i++) {
+    const nomeOpcao = sel.options[i].text.toUpperCase().trim();
+    console.log(`  [${i}] Comparando: "${nomeOpcao}"`);
+    
+    if (nomeOpcao.includes(nomeFirestore) || nomeFirestore.includes(nomeOpcao)) {
+      sel.selectedIndex = i;
+      sel.disabled = true;
+      console.log('✅ Fiscal filtrado:', sel.options[i].text);
+      return;
+    }
+  }
+  
+  // ❌ NOME NÃO ENCONTRADO = BLOQUEAR ACESSO
+  console.error('❌ ACESSO NEGADO: Nome não encontrado na lista:', nomeFirestore);
+  alert(`⛔ ACESSO NEGADO\n\nSeu nome não consta na lista de fiscais desta página.\n\nNome do perfil: ${perfil.nome}\nGrupo: ${perfil.grupo}\n\nContate o administrador.`);
+  
+  // Redireciona para index
+  setTimeout(() => {
+    window.location.href = 'index.html';
+  }, 1000);
+}
         async function verificarLogin() {
             try {
                 document.getElementById('authError').style.display = 'none';
@@ -799,11 +915,64 @@ window.addEventListener('scroll', () => {
 
         function popularFiscais() {
             const select = $('#fiscal');
+            select.empty();
+
+            // ✅ ADMIN: opção "TODOS OS FISCAIS" vem antes do primeiro nome (mais intuitivo)
+            if (window.perfilGlobal && window.perfilGlobal.grupo === 'Administrador') {
+                select.append(`<option value="TODOS" selected>TODOS OS FISCAIS</option>`);
+            } else {
+                // Fiscal/Outros: mantém opção padrão
+                select.append(`<option value="">-- Selecione um fiscal --</option>`);
+            }
+
             fiscaisOficiais.forEach(fiscal => {
                 select.append(`<option value="${fiscal}">${fiscal}</option>`);
             });
         }
 
+
+        function aplicarRestricaoFiscal(perfil) {
+  if (!perfil) {
+    console.warn('Perfil não fornecido');
+    return;
+  }
+  
+  const sel = document.getElementById('fiscal');
+  if (!sel) {
+    console.warn('Select #fiscal não encontrado');
+    return;
+  }
+  
+  console.log('Aplicando restrição para:', perfil.nome, perfil.grupo);
+  
+  // ADM  veem todos
+  if (perfil.grupo === 'Administrador') {
+    sel.disabled = false;
+    console.log('Usuário ADM/Administrativo - acesso total');
+    return;
+  }
+  
+  // Fiscal só vê seu nome
+  const nomeTarget = perfil.nome.toUpperCase();
+  let encontrado = false;
+  
+  for (let i = 0; i < sel.options.length; i++) {
+    const optText = sel.options[i].text.toUpperCase();
+    if (optText.includes(nomeTarget)) {
+      sel.selectedIndex = i;
+      sel.disabled = true;
+      encontrado = true;
+      console.log('Fiscal filtrado:', sel.options[i].text);
+      break;
+    }
+  }
+  
+  if (!encontrado) {
+    console.warn('Nome do fiscal não encontrado na lista:', nomeTarget);
+  }
+}
+        
+       
         function carregarArquivos() {
             let arquivosCarregados = 0;
             const totalArquivos = 3;
@@ -826,6 +995,8 @@ window.addEventListener('scroll', () => {
                 }
             });
 
+
+            
             // Carregar Regulados
             Papa.parse(`data/regulados.csv?v=${timestamp}`, {
                 download: true,
@@ -910,7 +1081,9 @@ window.addEventListener('scroll', () => {
 
             dadosInspecoes.forEach(insp => {
                 // Verificar se o fiscal participou
-                const participou = insp.Fiscal1 === fiscal || 
+                // ADMIN + "TODOS": não filtra por fiscal (pega de todos)
+                const fiscalEhTodos = (fiscal === 'TODOS');
+                const participou = fiscalEhTodos || insp.Fiscal1 === fiscal || 
                                   insp.Fiscal2 === fiscal || 
                                   insp.Fiscal3 === fiscal;
 
@@ -986,12 +1159,19 @@ window.addEventListener('scroll', () => {
             $('#loading').hide();
 
             if (resultados.length === 0) {
-                mostrarInfo(`❌ Nenhuma inspeção encontrada para <strong>${fiscal}</strong> no período de ${formatarDataBR(dataIni)} a ${formatarDataBR(dataFim)}.`, 'warning');
+                const fiscalLabel = (fiscal === 'TODOS') ? 'TODOS OS FISCAIS' : fiscal;
+                mostrarInfo(`❌ Nenhuma inspeção encontrada para <strong>${fiscalLabel}</strong> no período de ${formatarDataBR(dataIni)} a ${formatarDataBR(dataFim)}.`, 'warning');
+                const box = document.getElementById('estatisticasBox');
+                if (box) { box.style.display = 'none'; box.innerHTML = ''; }
                 $('#tabelaInspecoes').hide();
                 return;
             }
 
-            mostrarInfo(`✅ Encontradas <strong>${resultados.length}</strong> inspeções de <strong>${fiscal}</strong> no período de ${formatarDataBR(dataIni)} a ${formatarDataBR(dataFim)}.`, 'success');
+            const fiscalLabel = (fiscal === 'TODOS') ? 'TODOS OS FISCAIS' : fiscal;
+            mostrarInfo(`✅ Encontradas <strong>${resultados.length}</strong> inspeções de <strong>${fiscalLabel}</strong> no período de ${formatarDataBR(dataIni)} a ${formatarDataBR(dataFim)}.`, 'success');
+
+            // Estatísticas (antes da tabela)
+            renderizarEstatisticas(resultados);
 
             // Destruir DataTable anterior se existir
             if (dataTable) {
@@ -1038,6 +1218,52 @@ window.addEventListener('scroll', () => {
             if (!dataISO) return '';
             const partes = dataISO.split('-');
             return `${partes[2]}/${partes[1]}/${partes[0]}`;
+        }
+
+        // ========== ESTATÍSTICAS (ANTES DA TABELA) ==========
+        function escapeHtml(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function calcularEstatisticasPorTipo(resultados) {
+            const totais = {};
+            (resultados || []).forEach(r => {
+                const tipo = (r.tipo || 'Não informado').toString().trim() || 'Não informado';
+                totais[tipo] = (totais[tipo] || 0) + 1;
+            });
+            return Object.entries(totais).sort((a, b) => b[1] - a[1]);
+        }
+
+        function renderizarEstatisticas(resultados) {
+            const box = document.getElementById('estatisticasBox');
+            if (!box) return;
+
+            const itens = calcularEstatisticasPorTipo(resultados);
+            if (!itens.length) {
+                box.style.display = 'none';
+                box.innerHTML = '';
+                return;
+            }
+
+            let html = '<h3>📊 Estatísticas do período (por tipo de documento)</h3>';
+            html += '<div class="estatisticas-grid">';
+            itens.forEach(([tipo, qtd]) => {
+                html += `
+                    <div class="estat-card" title="${escapeHtml(tipo)}">
+                        <div class="estat-tipo">${escapeHtml(tipo)}</div>
+                        <div class="estat-qtd">${qtd}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+
+            box.innerHTML = html;
+            box.style.display = 'block';
         }
     
 
@@ -1262,8 +1488,6 @@ window.addEventListener('scroll', () => {
     </script>
 
 <script type="module">
-  import { protectPage } from "./guard.js";
-
   const firebaseConfig = {
     apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
     authDomain: "visam-3a30b.firebaseapp.com",
@@ -1271,14 +1495,46 @@ window.addEventListener('scroll', () => {
     messagingSenderId: "308899251430",
     appId: "1:308899251430:web:0053cdbd0bed7f0de76727"
   };
-
-  protectPage({
-    firebaseConfig,
-    onAuthorized: () => {
-      // opcional: liberar UI, etc.
+  
+  import { protectPage } from './js/guard1.js';
+  
+  protectPage(firebaseConfig, (user, auth, perfil) => {
+    if (perfil) {
+      console.log('✅ Perfil carregado:', perfil);
+      window.perfilGlobal = perfil;
     }
+
+// Mostra usuário no header
+    const userInfo = document.getElementById('userInfo');
+    if (userInfo) {
+      userInfo.innerHTML = `
+        <span class="user-name">${perfil.nome}</span>
+        <span class="user-email">${user.email}</span>
+      `;
+    }      
+    
+    // 1. Remove modal CSV
+    const authOverlay = document.getElementById('authOverlay');
+    if (authOverlay) authOverlay.remove();
+    
+    // 2. Mostra conteúdo
+    const mainContent = document.getElementById('mainContent');
+    if (mainContent) mainContent.style.display = 'block';
+    
+    // 3. PRIMEIRO popula fiscais
+    popularFiscais();
+    carregarArquivos();
+    
+    // 4. DEPOIS aplica restrição (aguarda DOM atualizar)
+    setTimeout(() => {
+      if (window.perfilGlobal) {
+        console.log('🔒 Aplicando restrição...');
+        aplicarRestricaoFiscal(window.perfilGlobal);
+      }
+    }, 500);
   });
 </script>
+
 
     
 </body>
