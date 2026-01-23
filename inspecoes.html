@@ -649,6 +649,7 @@ window.addEventListener('scroll', () => {
             <!-- Card de Resultados -->
             <div class="results-card">
                 <div id="infoBox"></div>
+                <div id="estatisticas" class="estatisticas-box" style="display:none;"></div>
                 <div id="loading" class="loading" style="display: none;">
                     <div class="spinner"></div>
                     Processando dados...
@@ -741,66 +742,23 @@ window.addEventListener('scroll', () => {
             });
         }
 
-       async function prepararLoginUI() {
-  // ✅ Se a página não tem mais modal de login CSV, não executa nada
-  if (!document.getElementById('authOverlay')) return;
+        async function prepararLoginUI() {
+            // ✅ Se a página não usa mais o modal CSV, não execute nada
+            if (!document.getElementById('authOverlay')) return;
+            try {
+                await carregarLoginDB();
+                popularUsuariosLogin();
+            } catch(e) {
+                console.error('Erro ao carregar login.csv:', e);
+                document.getElementById('authError').style.display = 'block';
+                
+            }
+        }
 
-  try {
-    await carregarLoginDB();
-    popularUsuariosLogin();
-  } catch(e) {
-    console.error('Erro ao carregar login.csv:', e);
-    const el = document.getElementById('authError');
-    if (el) el.style.display = 'block';
-  }
-}
-
-
-        // ✅ Login agora é pelo guard1.js (Firebase). Não usar login.csv.
-// window.addEventListener('load', prepararLoginUI);
+        // ✅ Login é protegido por guard1.js (Firebase). Não usar login.csv aqui.
+        // window.addEventListener('load', prepararLoginUI);
 
 
-function aplicarRestricaoFiscal(perfil) {
-  const sel = document.getElementById('fiscal');
-  if (!sel || !perfil) {
-    console.warn('⚠️ Select ou perfil inexistente');
-    return;
-  }
-  
-  console.log('🔍 Total de opções no select:', sel.options.length);
-  
-  // ADM tem acesso total
-  if (perfil.grupo === 'Administrador') {
-    sel.disabled = false;
-    console.log('✅ Acesso total:', perfil.grupo);
-    return;
-  }
-  
-  // FISCAL: deve encontrar seu nome na lista
-  const nomeFirestore = perfil.nome.toUpperCase().trim();
-  console.log('🔍 Procurando por:', nomeFirestore);
-  
-  for (let i = 0; i < sel.options.length; i++) {
-    const nomeOpcao = sel.options[i].text.toUpperCase().trim();
-    console.log(`  [${i}] Comparando: "${nomeOpcao}"`);
-    
-    if (nomeOpcao.includes(nomeFirestore) || nomeFirestore.includes(nomeOpcao)) {
-      sel.selectedIndex = i;
-      sel.disabled = true;
-      console.log('✅ Fiscal filtrado:', sel.options[i].text);
-      return;
-    }
-  }
-  
-  // ❌ NOME NÃO ENCONTRADO = BLOQUEAR ACESSO
-  console.error('❌ ACESSO NEGADO: Nome não encontrado na lista:', nomeFirestore);
-  alert(`⛔ ACESSO NEGADO\n\nSeu nome não consta na lista de fiscais desta página.\n\nNome do perfil: ${perfil.nome}\nGrupo: ${perfil.grupo}\n\nContate o administrador.`);
-  
-  // Redireciona para index
-  setTimeout(() => {
-    window.location.href = 'index.html';
-  }, 1000);
-}
         async function verificarLogin() {
             try {
                 document.getElementById('authError').style.display = 'none';
@@ -919,12 +877,19 @@ function aplicarRestricaoFiscal(perfil) {
         let dadosInspecoes = [];
         let dataTable = null;
 
+        // Índices para performance (criados após carregar CSVs)
+        let mapaRegulados = null; // CODIGO -> RAZAO
+        let mapaCNAE = null;      // Subclasse -> {Subclasse, Complexidade}
+
         function popularFiscais() {
             const select = $('#fiscal');
             select.empty();
 
-            // ✅ ADMIN: opção "TODOS OS FISCAIS" vem antes do primeiro nome (mais intuitivo)
-            if (window.perfilGlobal && window.perfilGlobal.grupo === 'Administrador') {
+            const perfil = window.perfilGlobal || null;
+            const isAdmin = !!(perfil && String(perfil.grupo || '').toUpperCase() === 'ADMINISTRADOR');
+
+            // ✅ Admin: opção "TODOS OS FISCAIS" aparece antes do primeiro nome (mais inteligível)
+            if (isAdmin) {
                 select.append(`<option value="TODOS" selected>TODOS OS FISCAIS</option>`);
             } else {
                 // Fiscal/Outros: mantém opção padrão
@@ -952,7 +917,7 @@ function aplicarRestricaoFiscal(perfil) {
   console.log('Aplicando restrição para:', perfil.nome, perfil.grupo);
   
   // ADM  veem todos
-  if (perfil.grupo === 'Administrador') {
+  if (String(perfil.grupo || '').toUpperCase() === 'ADMINISTRADOR') {
     sel.disabled = false;
     console.log('Usuário ADM/Administrativo - acesso total');
     return;
@@ -1032,10 +997,36 @@ function aplicarRestricaoFiscal(perfil) {
             });
         }
 
+        function prepararIndices() {
+            // Monta mapas para evitar .find em loops (performance em "TODOS")
+            try {
+                mapaRegulados = new Map();
+                (dadosRegulados || []).forEach(r => {
+                    const cod = trimSafe(r.CODIGO);
+                    if (cod) mapaRegulados.set(cod, trimSafe(r.RAZAO));
+                });
+
+                mapaCNAE = new Map();
+                (dadosCNAE || []).forEach(c => {
+                    const sub = trimSafe(c.Subclasse);
+                    if (sub) mapaCNAE.set(sub, { Subclasse: sub, Complexidade: trimSafe(c.Complexidade) });
+                });
+            } catch (e) {
+                console.warn('⚠️ Falha ao preparar índices:', e);
+                mapaRegulados = null;
+                mapaCNAE = null;
+            }
+        }
+
         function verificarCarregamento(carregados, total) {
             if (carregados === total) {
+                prepararIndices();
                 mostrarInfo('✅ Dados carregados com sucesso! Selecione um fiscal e o período para consultar.', 'success');
             }
+        }
+
+        function trimSafe(v) {
+            return String(v ?? '').trim();
         }
 
         function mostrarInfo(mensagem, tipo) {
@@ -1057,13 +1048,19 @@ function aplicarRestricaoFiscal(perfil) {
         }
 
         function buscarInspecoes() {
-            const fiscalSelecionado = $('#fiscal').val();
+            let fiscalSelecionado = $('#fiscal').val();
+            const isAdmin = !!(window.perfilGlobal && String(window.perfilGlobal.grupo || '').toUpperCase() === 'ADMINISTRADOR');
+            if (isAdmin && (!fiscalSelecionado || fiscalSelecionado === '')) fiscalSelecionado = 'TODOS';
             const dataInicial = $('#dataInicial').val();
             const dataFinal = $('#dataFinal').val();
 
             if (!fiscalSelecionado) {
-                mostrarInfo('⚠️ Por favor, selecione um fiscal.', 'warning');
-                return;
+                // Admin pode consultar TODOS mesmo sem selecionar explicitamente
+                if (!isAdmin) {
+                    mostrarInfo('⚠️ Por favor, selecione um fiscal.', 'warning');
+                    return;
+                }
+                fiscalSelecionado = 'TODOS';
             }
 
             if (!dataInicial || !dataFinal) {
@@ -1085,64 +1082,83 @@ function aplicarRestricaoFiscal(perfil) {
         function processarInspecoes(fiscal, dataIni, dataFim) {
             const resultados = [];
 
-            dadosInspecoes.forEach(insp => {
-                // Verificar se o fiscal participou
-                // ADMIN + "TODOS": não filtra por fiscal (pega de todos)
-                const fiscalEhTodos = (fiscal === 'TODOS');
-                const participou = fiscalEhTodos || insp.Fiscal1 === fiscal || 
-                                  insp.Fiscal2 === fiscal || 
-                                  insp.Fiscal3 === fiscal;
+            // Admin + "TODOS" (ou vazio) => não filtra por fiscal
+            const fiscalKey = trimSafe(fiscal);
+            const fiscalEhTodos = (fiscalKey === '' || fiscalKey === 'TODOS');
 
-                if (!participou) return;
+            (dadosInspecoes || []).forEach(insp => {
+                // 1) Filtro por fiscal (se não for TODOS)
+                if (!fiscalEhTodos) {
+                    const f1 = trimSafe(insp.Fiscal1);
+                    const f2 = trimSafe(insp.Fiscal2);
+                    const f3 = trimSafe(insp.Fiscal3);
 
-                // Verificar período
-                const dataInspecao = converterData(insp.DT_VISITA);
+                    const participou = (f1 === fiscalKey || f2 === fiscalKey || f3 === fiscalKey);
+                    if (!participou) return;
+                }
+
+                // 2) Filtro por período
+                const dataInspecao = converterData(trimSafe(insp.DT_VISITA));
                 if (!dataInspecao || dataInspecao < dataIni || dataInspecao > dataFim) return;
 
-                // Buscar dados do regulado
-                const regulado = dadosRegulados.find(r => String(r.CODIGO).trim() === String(insp.CODIGO).trim());
-                const razaoSocial = regulado ? regulado.RAZAO : '';
+                // 3) Dados do regulado (por CODIGO)
+                const cod = trimSafe(insp.CODIGO);
+                let razaoSocial = '';
+                if (mapaRegulados && cod) {
+                    razaoSocial = mapaRegulados.get(cod) || '';
+                } else if (cod) {
+                    const regulado = (dadosRegulados || []).find(r => trimSafe(r.CODIGO) === cod);
+                    razaoSocial = regulado ? trimSafe(regulado.RAZAO) : '';
+                }
 
-                // Buscar dados do CNAE
+                // 4) CNAE / Complexidade (por Subclasse = Atividade)
                 let cnaeSubclasse = '';
                 let complexidade = '';
+                const atividade = trimSafe(insp.Atividade);
 
-                if (insp.Atividade && insp.Atividade.trim() !== '') {
-                    const cnae = dadosCNAE.find(c => c.Subclasse.trim() === insp.Atividade.trim());
-                    if (cnae) {
-                        cnaeSubclasse = cnae.Subclasse;
-                        complexidade = cnae.Complexidade;
+                if (atividade !== '') {
+                    if (mapaCNAE) {
+                        const cnae = mapaCNAE.get(atividade);
+                        if (cnae) {
+                            cnaeSubclasse = cnae.Subclasse || '';
+                            complexidade = cnae.Complexidade || '';
+                        }
+                    } else {
+                        const cnae = (dadosCNAE || []).find(c => trimSafe(c.Subclasse) === atividade);
+                        if (cnae) {
+                            cnaeSubclasse = trimSafe(cnae.Subclasse);
+                            complexidade = trimSafe(cnae.Complexidade);
+                        }
                     }
                 }
 
-                // Extrair dados de OS e formatar
+                // 5) OS / Modalidade (prioridade: Denúncia > OS > Ofício > Protocolo)
                 let osNumero = '';
                 let osModalidade = '';
 
-                // Função helper para formatar número
                 const formatarOS = (num) => {
-                    if (!num) return '';
-                    const limpo = num.replace(/\s+/g, '');
-                    if (limpo.length > 4) {
-                        return limpo.substring(0, 4) + ' ' + limpo.substring(4);
-                    }
-                    return limpo;
+                    const limpo = trimSafe(num).replace(/\s+/g, '');
+                    if (!limpo) return '';
+                    return (limpo.length > 4) ? (limpo.substring(0, 4) + ' ' + limpo.substring(4)) : limpo;
                 };
 
-                if (insp.Denuncia && insp.Denuncia.trim() !== '') {
-                    osNumero = formatarOS(insp.Denuncia.trim());
+                const denuncia = trimSafe(insp.Denuncia);
+                const os = trimSafe(insp.OS);
+                const oficio = trimSafe(insp.Oficio);
+                const protocolo = trimSafe(insp.Protocolo);
+                const modalidade = trimSafe(insp.Modalidade).toUpperCase();
+
+                if (denuncia) {
+                    osNumero = formatarOS(denuncia);
                     osModalidade = 'Denúncia';
-                } else if (insp.OS && insp.OS.trim() !== '') {
-                    osNumero = formatarOS(insp.OS.trim());
-                    // Se modalidade é REQUERIMENTO, exibe "Requerimento", senão "OS"
-                    osModalidade = (insp.Modalidade && insp.Modalidade.trim().toUpperCase() === 'REQUERIMENTO') 
-                        ? 'Requerimento' 
-                        : 'OS';
-                } else if (insp.Oficio && insp.Oficio.trim() !== '') {
-                    osNumero = formatarOS(insp.Oficio.trim());
+                } else if (os) {
+                    osNumero = formatarOS(os);
+                    osModalidade = (modalidade === 'REQUERIMENTO') ? 'Requerimento' : 'OS';
+                } else if (oficio) {
+                    osNumero = formatarOS(oficio);
                     osModalidade = 'Ofício';
-                } else if (insp.Protocolo && insp.Protocolo.trim() !== '') {
-                    osNumero = formatarOS(insp.Protocolo.trim());
+                } else if (protocolo) {
+                    osNumero = formatarOS(protocolo);
                     osModalidade = 'Protocolo';
                 }
 
@@ -1150,8 +1166,8 @@ function aplicarRestricaoFiscal(perfil) {
                     data: dataInspecao,
                     osNumero: osNumero,
                     osModalidade: osModalidade,
-                    tipo: insp.TIPO || '',
-                    numero: insp.NUMERO || '',
+                    tipo: trimSafe(insp.TIPO),
+                    numero: trimSafe(insp.NUMERO),
                     razao: razaoSocial,
                     cnae: cnaeSubclasse,
                     complexidade: complexidade
@@ -1161,10 +1177,44 @@ function aplicarRestricaoFiscal(perfil) {
             return resultados;
         }
 
+        function calcularEstatisticasTipo(registros) {
+            const totais = {};
+            (registros || []).forEach(r => {
+                const tipo = trimSafe(r.tipo) || 'Não informado';
+                totais[tipo] = (totais[tipo] || 0) + 1;
+            });
+            return totais;
+        }
+
+        function renderizarEstatisticas(totais) {
+            const box = document.getElementById('estatisticas');
+            if (!box) return;
+
+            const chaves = Object.keys(totais || {});
+            if (chaves.length === 0) {
+                box.style.display = 'none';
+                box.innerHTML = '';
+                return;
+            }
+
+            // Ordena por quantidade desc
+            chaves.sort((a,b) => (totais[b]||0) - (totais[a]||0));
+
+            let html = `<h3>📊 Estatísticas do período</h3><div class="estatisticas-grid">`;
+            chaves.forEach(k => {
+                html += `<div class="estat-card"><strong>${k}</strong><span>${totais[k]}</span></div>`;
+            });
+            html += `</div>`;
+
+            box.innerHTML = html;
+            box.style.display = 'block';
+        }
+
         function exibirResultados(resultados, fiscal, dataIni, dataFim) {
             $('#loading').hide();
 
             if (resultados.length === 0) {
+                renderizarEstatisticas({});
                 const fiscalLabel = (fiscal === 'TODOS') ? 'TODOS OS FISCAIS' : fiscal;
                 mostrarInfo(`❌ Nenhuma inspeção encontrada para <strong>${fiscalLabel}</strong> no período de ${formatarDataBR(dataIni)} a ${formatarDataBR(dataFim)}.`, 'warning');
                 const box = document.getElementById('estatisticasBox');
