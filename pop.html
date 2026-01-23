@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#1a3a6b">
-    <title>POPs - Procedimentos Operacionais Padrão | DVS Anápolis</title>
+    <title>POPs - Lista Mestra | DVS Anápolis</title>
     <style>
         * {
             margin: 0;
@@ -65,6 +65,7 @@
             max-width: 1400px;
             margin: 20px auto;
             padding: 0 20px;
+            padding-bottom: 40px;
         }
 
         .update-info {
@@ -99,136 +100,106 @@
             border-color: #1a3a6b;
         }
 
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            background: white;
-            border: 2px solid #1a3a6b;
-            color: #1a3a6b;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-size: 0.95em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .tab-btn:hover {
-            background: #f0f4ff;
-        }
-
-        .tab-btn.active {
-            background: #1a3a6b;
-            color: white;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .pops-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .pop-card {
+        .table-container {
             background: white;
             border-radius: 12px;
-            padding: 20px;
+            padding: 25px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
+            overflow-x: auto;
         }
 
-        .pop-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            border-color: #1a3a6b;
-        }
-
-        .pop-card .codigo-pop {
-            font-family: 'Courier New', monospace;
-            font-size: 0.8em;
-            color: #666;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .pop-card h3 {
-            color: #333;
-            font-size: 1em;
-            margin-bottom: 12px;
-            line-height: 1.4;
-        }
-
-        .pop-card .actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85em;
-            font-weight: 600;
-            text-decoration: none;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .btn-view {
-            background: #1a3a6b;
-            color: white;
-        }
-
-        .btn-view:hover {
-            background: #2a4a7b;
-        }
-
-        .btn-download {
-            background: #34C759;
-            color: white;
-        }
-
-        .btn-download:hover {
-            background: #28a745;
-        }
-
-        .category-title {
-            background: white;
-            border-radius: 10px;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
-        }
-
-        .category-title h2 {
+        .table-container h3 {
             color: #1a3a6b;
-            font-size: 1.4em;
+            font-size: 1.5em;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
-            margin: 0;
         }
 
-        .category-title h2::before {
-            content: "📁";
-            margin-right: 12px;
+        .table-container h3::before {
+            content: "📋";
+            margin-right: 10px;
         }
 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+
+        thead {
+            background: #1a3a6b;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        th {
+            padding: 14px 12px;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        tbody tr {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        tbody tr:hover {
+            background: #f0f4ff;
+            transform: scale(1.01);
+        }
+
+        tbody tr.clickable:active {
+            background: #e0e8ff;
+        }
+
+        .codigo {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            color: #1a3a6b;
+            white-space: nowrap;
+        }
+
+        .titulo {
+            min-width: 300px;
+        }
+
+        .status-vigente {
+            color: #34C759;
+            font-weight: 700;
+        }
+
+        .status-vencido {
+            color: #ff3b30;
+            font-weight: 700;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-vigente {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-vencido {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* MODAL PDF */
         .modal {
             display: none;
             position: fixed;
@@ -237,40 +208,87 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.8);
+            background-color: rgba(0,0,0,0.9);
         }
 
-        .modal-content {
-            position: relative;
-            margin: 2% auto;
-            width: 90%;
-            height: 90%;
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
+        .modal.active {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
         }
 
-        .close-modal {
+        .modal-header {
+            background: #1a3a6b;
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .modal-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin: 0;
+            flex: 1;
+            text-align: center;
+            padding: 0 40px;
+        }
+
+        .btn-fechar {
             position: absolute;
-            right: 20px;
-            top: 20px;
-            font-size: 35px;
-            font-weight: bold;
-            color: #666;
-            cursor: pointer;
-            z-index: 1001;
-        }
-
-        .close-modal:hover {
-            color: #333;
-        }
-
-        .pdf-viewer {
-            width: 100%;
-            height: calc(100% - 60px);
+            left: 16px;
+            background: transparent;
             border: none;
+            color: #34C759;
+            font-size: 17px;
+            font-weight: 600;
+            padding: 8px;
+            cursor: pointer;
+            min-width: 60px;
+            min-height: 44px;
+        }
+
+        .btn-fechar:hover {
+            opacity: 0.7;
+        }
+
+        .pdf-container {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+
+        .pdf-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .modal-footer {
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn-action {
+            background: #1a3a6b;
+            color: white;
+            border: none;
+            padding: 12px 24px;
             border-radius: 10px;
-            margin-top: 50px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-action:hover {
+            background: #2a4a7b;
         }
 
         @media (max-width: 768px) {
@@ -278,8 +296,20 @@
                 padding: 28px 70px 26px 20px;
             }
 
-            .pops-grid {
-                grid-template-columns: 1fr;
+            .container {
+                padding: 0 12px;
+            }
+
+            table {
+                font-size: 0.8em;
+            }
+
+            th, td {
+                padding: 10px 8px;
+            }
+
+            .titulo {
+                min-width: 200px;
             }
         }
     </style>
@@ -288,586 +318,362 @@
     <header class="main-header">
         <a href="./index.html" class="btn-ok-header">OK</a>
         <h1>📑 Vigilância Sanitária</h1>
-        <h2>Procedimentos Operacionais Padrão</h2>
+        <h2>Lista Mestra de POPs</h2>
     </header>
 
     <div class="container">
         <div class="update-info">
-            🕐 Atualizado em 23/01/2026 15:27 (Horário de Brasília – UTC−3)<br>
-            📊 <strong>51 documentos</strong> disponíveis • Use a busca para localizar rapidamente
+            🕐 Atualizado em 23/01/2026 15:40 (Horário de Brasília – UTC−3)<br>
+            💡 <strong>Clique em qualquer linha</strong> para visualizar o POP • Use a busca para filtrar
         </div>
 
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="🔍 Buscar por código, título ou palavra-chave..." onkeyup="filterContent()">
+            <input type="text" id="searchInput" placeholder="🔍 Buscar por código, título ou palavra-chave..." onkeyup="filtrarTabela()">
         </div>
 
-        <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('pops-principais')">📋 POPs</button>
-            <button class="tab-btn" onclick="showTab('anexos')">📎 Anexos</button>
-            <button class="tab-btn" onclick="showTab('outros')">📄 Outros</button>
-        </div>
-
-        <!-- TAB: POPs PRINCIPAIS -->
-        <div id="pops-principais" class="tab-content active">
-            <div class="category-title">
-                <h2>Manual e Programa</h2>
-            </div>
-            <div class="pops-grid">
-                <div class="pop-card" data-keywords="manual qualidade mqgvs001">
-                    <div class="codigo-pop">MQ-GVS-001</div>
-                    <h3>Manual da Qualidade - Rev. 06</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Manual da Qualidade - REVISAO 06.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Manual da Qualidade - REVISAO 06.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="programa qualificação capacitação inspetores progogvs001">
-                    <div class="codigo-pop">PROG-O-GVS-001</div>
-                    <h3>Programa de Qualificação e Capacitação</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/13. PROG-O-GVS-001 - PROGRAMA DE QUALIFICACAO E CAPACITACAO, V. 00.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/13. PROG-O-GVS-001 - PROGRAMA DE QUALIFICACAO E CAPACITACAO, V. 00.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="category-title">
-                <h2>POPs de Qualidade</h2>
-            </div>
-            <div class="pops-grid">
-                <div class="pop-card" data-keywords="gerenciamento documentos popqgvs001">
-                    <div class="codigo-pop">POP-Q-GVS-001</div>
-                    <h3>Gerenciamento de Documentos da GVS</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/POP-Q-GVS-001 GERENCIAMENTO DE DOCUMENTOS DA GVS - VERSAO 04.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/POP-Q-GVS-001 GERENCIAMENTO DE DOCUMENTOS DA GVS - VERSAO 04.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="ações corretivas preventivas popqgvs005">
-                    <div class="codigo-pop">POP-Q-GVS-005</div>
-                    <h3>Ações Corretivas e Preventivas</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/POP-Q-GVS-005-ACOES CORRETIVAS E PREVENTIVAS V. 02.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/POP-Q-GVS-005-ACOES CORRETIVAS E PREVENTIVAS V. 02.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="denúncias recebimento atendimento popqgvs006">
-                    <div class="codigo-pop">POP-Q-GVS-006</div>
-                    <h3>Recebimento e Atendimento de Denúncias</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/POP-Q-GVS-006-RECEBIMENTO E ATENDIMENTO DE DENUNCIAS - V. 04.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/POP-Q-GVS-006-RECEBIMENTO E ATENDIMENTO DE DENUNCIAS - V. 04.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="comunicação inspeções popqgvs009">
-                    <div class="codigo-pop">POP-Q-GVS-009</div>
-                    <h3>Comunicação das Inspeções</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/POP-Q-GVS-009-COMUNICACAO DAS INSPECOES, V. 02.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/POP-Q-GVS-009-COMUNICACAO DAS INSPECOES, V. 02.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="ordem serviço fiscalização popqgvs010">
-                    <div class="codigo-pop">POP-Q-GVS-010</div>
-                    <h3>Ordem de Serviço de Fiscalização</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/POP-Q-GVS-010-ORDEM DE SERVICO DE FISCALIZACAO, Rev. 04.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/POP-Q-GVS-010-ORDEM DE SERVICO DE FISCALIZACAO, Rev. 04.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="fluxo documentos popqgvs012">
-                    <div class="codigo-pop">POP-Q-GVS-012</div>
-                    <h3>Fluxo de Documentos da GVS</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/POP-Q-GVS-012 - FLUXO DE DOCUMENTOS DA GVS REV. 05.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/POP-Q-GVS-012 - FLUXO DE DOCUMENTOS DA GVS REV. 05.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="atividades pós inspeção popqgvs013">
-                    <div class="codigo-pop">POP-Q-GVS-013</div>
-                    <h3>Atividades Pós-Inspeção</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/POP-Q-GVS-013 - ATIVIDADES POS-INSPECAO - REVISAO 02.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/POP-Q-GVS-013 - ATIVIDADES POS-INSPECAO - REVISAO 02.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="revisão gerencial popqgvs014">
-                    <div class="codigo-pop">POP-Q-GVS-014</div>
-                    <h3>Revisão Gerencial</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/POP-Q-GVS-014 REVISAO GERENCIAL V. 01.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/POP-Q-GVS-014 REVISAO GERENCIAL V. 01.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="inspeção transportadoras popqgvs015">
-                    <div class="codigo-pop">POP-Q-GVS-015</div>
-                    <h3>Inspeção em Transportadoras</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/POP-Q-GVS-015 - Inspecao em Transportadoras - V. 00.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/POP-Q-GVS-015 - Inspecao em Transportadoras - V. 00.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="tramitação processos documentos popqgvs016">
-                    <div class="codigo-pop">POP-Q-GVS-016</div>
-                    <h3>Tramitação de Processos e Documentos</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/POP-Q-GVS-016 - TRAMITACAO DE PROCESSOS E DOCUMENTOS.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/POP-Q-GVS-016 - TRAMITACAO DE PROCESSOS E DOCUMENTOS.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="category-title">
-                <h2>POPs Operacionais</h2>
-            </div>
-            <div class="pops-grid">
-                <div class="pop-card" data-keywords="condução inspeção popogvs004">
-                    <div class="codigo-pop">POP-O-GVS-004</div>
-                    <h3>Condução de Inspeção</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/POP-O-GVS-004 CONDUCAO DE INSPECAO - REVISAO 04.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/POP-O-GVS-004 CONDUCAO DE INSPECAO - REVISAO 04.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="elaboração relatório inspeção produtos saúde popogvsps001">
-                    <div class="codigo-pop">POP-O-GVS-PS-001</div>
-                    <h3>Elaboração de Relatório de Inspeção BPF Produtos</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/POP-O-GVS-PS-001 - ELABORACAO DE RELATORIO DE INSPECAO BPF PRODUTOS V. 04.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/POP-O-GVS-PS-001 - ELABORACAO DE RELATORIO DE INSPECAO BPF PRODUTOS V. 04.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="categorização não conformidades produtos saúde popogvsps006">
-                    <div class="codigo-pop">POP-O-GVS-PS-006</div>
-                    <h3>Categorização de Não Conformidades</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/POP-O-GVS-PS-006 - Categorizacao de Nao Conformidades V. 05.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/POP-O-GVS-PS-006 - Categorizacao de Nao Conformidades V. 05.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB: ANEXOS -->
-        <div id="anexos" class="tab-content">
-            <div class="category-title">
-                <h2>Anexos I</h2>
-            </div>
-            <div class="pops-grid">
-                <div class="pop-card" data-keywords="categorização não conformidades anexo excel xlsx">
-                    <div class="codigo-pop">Anexo I - PS-006</div>
-                    <h3>Categorização de Não Conformidades (Excel)</h3>
-                    <div class="actions">
-                        <a class="btn btn-download" href="POP/Anexo I - Categorizacao de Nao Conformidades V 05.xlsx" download style="flex: 1;">📊 Baixar XLSX</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="categorização não conformidades anexo pdf">
-                    <div class="codigo-pop">Anexo I - PS-006</div>
-                    <h3>Categorização de Não Conformidades (PDF)</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo I - Categorizacao de Nao Conformidades V. 05.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo I - Categorizacao de Nao Conformidades V. 05.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="modelo relatório medicamentos importar distribuir">
-                    <div class="codigo-pop">Anexo I - MED-001</div>
-                    <h3>Modelo de Relatório - Importar/Distribuir/Transportar</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo I - Modelo de relatorio para importar, distribuir, armazenar e transportar - POP-O-GVS-MED-001-Rev. 01.docx.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo I - Modelo de relatorio para importar, distribuir, armazenar e transportar - POP-O-GVS-MED-001-Rev. 01.docx.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="organograma semusa estrutura">
-                    <div class="codigo-pop">Anexo I</div>
-                    <h3>Organograma da SEMUSA</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo I - Organograma da SEMUSA.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo I - Organograma da SEMUSA.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="planejamento anual inspeções">
-                    <div class="codigo-pop">Anexo I</div>
-                    <h3>Planejamento Anual de Inspeções</h3>
-                    <div class="actions">
-                        <a class="btn btn-download" href="POP/Anexo I - PLANEJAMENTO ANUAL DE INSPECOES.xlsx" download style="flex: 1;">📊 Baixar XLSX</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="agenda modelo produtos saúde">
-                    <div class="codigo-pop">Anexo I - GVS-004</div>
-                    <h3>Modelo de Agenda - Produtos para Saúde</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo I - POP-O-GVS-004 - Modelo de Agenda - Produtos para Saude.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo I - POP-O-GVS-004 - Modelo de Agenda - Produtos para Saude.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="relatório inspeção completo modelo">
-                    <div class="codigo-pop">Anexo I - PS-001</div>
-                    <h3>Modelo do Relatório de Inspeção Completo</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo I - POP-O-GVS-PS-01 - Modelo do Relatorio de Inspecao Completo.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo I - POP-O-GVS-PS-01 - Modelo do Relatorio de Inspecao Completo.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="modelo pop padrão">
-                    <div class="codigo-pop">Anexo I - Q-GVS-001</div>
-                    <h3>Modelo de POP</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo I - POP-Q-GVS-001 - Modelo de POP.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo I - POP-Q-GVS-001 - Modelo de POP.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="racp ações corretivas">
-                    <div class="codigo-pop">Anexo I - Q-GVS-005</div>
-                    <h3>RACP - Relatório de Ações Corretivas e Preventivas</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo I - POP-Q-GVS-005 - RACP.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo I - POP-Q-GVS-005 - RACP.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="fluxograma liberação alvará">
-                    <div class="codigo-pop">Anexo I - Q-GVS-008</div>
-                    <h3>Fluxograma de Liberação de Alvará</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo I - POP-Q-GVS-008 - FLUXOGRAMA DE LIBERACAO DE ALVARA.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo I - POP-Q-GVS-008 - FLUXOGRAMA DE LIBERACAO DE ALVARA.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="ralsa alvará licença">
-                    <div class="codigo-pop">Anexo I - Q-GVS-008</div>
-                    <h3>RALSA - Requerimento de Alvará</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo I - POP-Q-GVS-008 - RALSA.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo I - POP-Q-GVS-008 - RALSA.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="fluxograma documentos">
-                    <div class="codigo-pop">Anexo I - Q-GVS-012</div>
-                    <h3>Fluxograma</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo I - POP-Q-GVS-012 - Fluxograma.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo I - POP-Q-GVS-012 - Fluxograma.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="termo compromisso sanitário tcs">
-                    <div class="codigo-pop">Anexo I - Q-GVS-013</div>
-                    <h3>Termo de Compromisso Sanitário - TCS</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo I - POP-Q-GVS-013 - Termo de Compromisso Sanitario - TCS.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo I - POP-Q-GVS-013 - Termo de Compromisso Sanitario - TCS.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="modalidades inspeção módulos treinamento">
-                    <div class="codigo-pop">Anexo I - PROG-001</div>
-                    <h3>Modalidades de Inspeção e Módulos de Treinamento</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo I - PROG-GVS-001 - Modalidades de Inspecao e Modulos de Treinamento.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo I - PROG-GVS-001 - Modalidades de Inspecao e Modulos de Treinamento.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="cronograma revisões gerenciais">
-                    <div class="codigo-pop">Anexo I - Q-GVS-014</div>
-                    <h3>Cronograma de Revisões Gerenciais</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo I- POP-Q-GVS-014 - Cronograma de Revisoes Gerenciais.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo I- POP-Q-GVS-014 - Cronograma de Revisoes Gerenciais.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="category-title">
-                <h2>Anexos II</h2>
-            </div>
-            <div class="pops-grid">
-                <div class="pop-card" data-keywords="fila inspeção">
-                    <div class="codigo-pop">Anexo II</div>
-                    <h3>Fila de Inspeção</h3>
-                    <div class="actions">
-                        <a class="btn btn-download" href="POP/Anexo II - FILA DE INSPECAO.xlsx" download style="flex: 1;">📊 Baixar XLSX</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="duração recomendada inspeção">
-                    <div class="codigo-pop">Anexo II - PS-005</div>
-                    <h3>Duração Recomendada para Inspeção</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo II - POP-O-GVS-PS-005 - Duracao Recomendada para Inspecao.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo II - POP-O-GVS-PS-005 - Duracao Recomendada para Inspecao.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="relatório inspeção simplificado">
-                    <div class="codigo-pop">Anexo II - PS-001</div>
-                    <h3>Modelo do Relatório de Inspeção Simplificado</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo II - POP-O-GVS-PS-01 - Modelo do Relatorio de Inspecao Simplificado.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo II - POP-O-GVS-PS-01 - Modelo do Relatorio de Inspecao Simplificado.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="modelo cabeçalho">
-                    <div class="codigo-pop">Anexo II - Q-GVS-001</div>
-                    <h3>Modelo de Cabeçalho</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo II - POP-Q-GVS-001 - Modelo de cabecalho.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo II - POP-Q-GVS-001 - Modelo de cabecalho.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="planejamento inspeção modelo">
-                    <div class="codigo-pop">Anexo II - Q-GVS-004</div>
-                    <h3>Modelo de Planejamento de Inspeção</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo II - POP-Q-GVS-004 - Modelo de Planejamento de Inspecao.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo II - POP-Q-GVS-004 - Modelo de Planejamento de Inspecao.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="osf ordem serviço fiscalização">
-                    <div class="codigo-pop">Anexo II - Q-GVS-008</div>
-                    <h3>OSF - Ordem de Serviço de Fiscalização</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo II - POP-Q-GVS-008 - OSF.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo II - POP-Q-GVS-008 - OSF.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="formulário avaliação novo inspetor treinamento">
-                    <div class="codigo-pop">Anexo II - PROG-001</div>
-                    <h3>Form Avaliação Novo Inspetor Treinamento</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo II - PROG-O-GVS-001- Form Avaliacao Novo Inspetor Treinamento.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo II - PROG-O-GVS-001- Form Avaliacao Novo Inspetor Treinamento.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="quadro servidores gvs">
-                    <div class="codigo-pop">Anexo II</div>
-                    <h3>Quadro de Servidores da GVS</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo II - Quadro de servidores da GVS.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo II - Quadro de servidores da GVS.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="modelo etiqueta">
-                    <div class="codigo-pop">Anexo II - Q-GVS-012</div>
-                    <h3>Modelo de Etiqueta</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo II - POP-Q-GVS-012 - Modelo de etiqueta.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo II - POP-Q-GVS-012 - Modelo de etiqueta.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="category-title">
-                <h2>Anexos III, IV, V e VI</h2>
-            </div>
-            <div class="pops-grid">
-                <div class="pop-card" data-keywords="planejamento anual inspeções produtos saúde">
-                    <div class="codigo-pop">Anexo III</div>
-                    <h3>Planejamento Anual - Produtos para Saúde</h3>
-                    <div class="actions">
-                        <a class="btn btn-download" href="POP/Anexo III - PLANEJAMENTO ANUAL DE INSPECOES - PRODUTOS PARA SAUDE.xlsx" download style="flex: 1;">📊 Baixar XLSX</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="lista mestra modelo docx">
-                    <div class="codigo-pop">Anexo III - Q-GVS-001</div>
-                    <h3>Modelo de Lista Mestra (DOCX)</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo III - POP-Q-GVS-001 - Modelo de Lista Mestra.docx.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo III - POP-Q-GVS-001 - Modelo de Lista Mestra.docx.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="lista mestra modelo pdf">
-                    <div class="codigo-pop">Anexo III - Q-GVS-001</div>
-                    <h3>Modelo de Lista Mestra (PDF)</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo III - POP-Q-GVS-001 - Modelo de Lista Mestra.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo III - POP-Q-GVS-001 - Modelo de Lista Mestra.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="inspeção remota">
-                    <div class="codigo-pop">Anexo III - Q-GVS-004</div>
-                    <h3>Inspeção Remota</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo III - POP-Q-GVS-004 - Inspecao Remota.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo III - POP-Q-GVS-004 - Inspecao Remota.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="formulário avaliação candidato inspetor líder">
-                    <div class="codigo-pop">Anexo III - PROG-001</div>
-                    <h3>Form Avaliação Candidato Inspetor Líder</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo III - PROG-O-GVS-001 -  Form Avaliacao Candidato Inspetor Lider.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo III - PROG-O-GVS-001 -  Form Avaliacao Candidato Inspetor Lider.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="ata reunião revisão gerencial">
-                    <div class="codigo-pop">Anexo III - Q-GVS-014</div>
-                    <h3>Modelo de Ata de Reunião de Revisão Gerencial</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo III- POP-Q-GVS-014 - Modelo de Ata de reuniao de Revisao Gerencial.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo III- POP-Q-GVS-014 - Modelo de Ata de reuniao de Revisao Gerencial.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="relatório inspeção investigativa">
-                    <div class="codigo-pop">Anexo IV - PS-001</div>
-                    <h3>Modelo do Relatório de Inspeção Investigativa</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo IV - POP-O-GVS-PS-01 -Modelo do Relatorio de Inspecao Investigativa.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo IV - POP-O-GVS-PS-01 -Modelo do Relatorio de Inspecao Investigativa.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="agenda medicamentos modelo">
-                    <div class="codigo-pop">Anexo IV - Q-GVS-004</div>
-                    <h3>Modelo de Agenda - Medicamentos</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo IV - POP-Q-GVS-004 - Modelo de Agenda - Medicamentos.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo IV - POP-Q-GVS-004 - Modelo de Agenda - Medicamentos.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="fluxo ações após inspeção">
-                    <div class="codigo-pop">Anexo V - PS-001</div>
-                    <h3>Fluxo de Ações após Inspeção</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo V - POP-O-GVS-PS-01 - Fluxo de Acoes apos inspecao.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo V - POP-O-GVS-PS-01 - Fluxo de Acoes apos inspecao.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="agenda cosméticos saneantes">
-                    <div class="codigo-pop">Anexo V - Q-GVS-004</div>
-                    <h3>Modelo de Agenda - Cosméticos-Saneantes</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo V - POP-Q-GVS-004 - Modelo de Agenda - Cosmeticos-Saneantes.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo V - POP-Q-GVS-004 - Modelo de Agenda - Cosmeticos-Saneantes.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="agenda ifas insumos farmacêuticos">
-                    <div class="codigo-pop">Anexo VI - Q-GVS-004</div>
-                    <h3>Modelo de Agenda - IFAs</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/Anexo VI - POP-Q-GVS-004 - Modelo de Agenda - IFAs.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/Anexo VI - POP-Q-GVS-004 - Modelo de Agenda - IFAs.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB: OUTROS -->
-        <div id="outros" class="tab-content">
-            <div class="category-title">
-                <h2>Documentos Complementares</h2>
-            </div>
-            <div class="pops-grid">
-                <div class="pop-card" data-keywords="cartaz denúncias">
-                    <div class="codigo-pop">Cartaz</div>
-                    <h3>Cartaz - Denúncias NÃO Pertinentes à GVS</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/CARTAZ denuncias NAO pertinentes a GVS.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/CARTAZ denuncias NAO pertinentes a GVS.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="decreto 46456 legislação">
-                    <div class="codigo-pop">Decreto 46.456</div>
-                    <h3>Decreto Nº 46.456</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/D E C R E T O N§ 46.456.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/D E C R E T O N§ 46.456.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-
-                <div class="pop-card" data-keywords="lista mestra geral controle documentos">
-                    <div class="codigo-pop">Lista Mestra V.09</div>
-                    <h3>Lista Mestra - Geral</h3>
-                    <div class="actions">
-                        <a class="btn btn-view" onclick="openPDF('POP/LISTA MESTRA - GERAL - V-9.pdf')">👁️ Ver</a>
-                        <a class="btn btn-download" href="POP/LISTA MESTRA - GERAL - V-9.pdf" download>⬇️ Baixar</a>
-                    </div>
-                </div>
-            </div>
+        <div class="table-container">
+            <h3>Lista Mestra de Controle de Documentos da GVS - V.09</h3>
+            <table id="tabelaPOPs">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Título</th>
+                        <th>Rev.</th>
+                        <th>Vigência</th>
+                        <th>Revalidação</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="clickable" onclick="abrirPOP('MQ-GVS-001')">
+                        <td class="codigo">MQ-GVS-001</td>
+                        <td class="titulo">Manual da Qualidade</td>
+                        <td>06</td>
+                        <td>06/2024</td>
+                        <td>06/2028</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-Q-GVS-001')">
+                        <td class="codigo">POP-Q-GVS-001</td>
+                        <td class="titulo">Gerenciamento de Documentos da GVS</td>
+                        <td>04</td>
+                        <td>02/2024</td>
+                        <td>02/2028</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-Q-GVS-002')">
+                        <td class="codigo">POP-Q-GVS-002</td>
+                        <td class="titulo">Treinamento em Procedimentos, Manual e Diretrizes</td>
+                        <td>03</td>
+                        <td>04/2022</td>
+                        <td>04/2026</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-Q-GVS-003')">
+                        <td class="codigo">POP-Q-GVS-003</td>
+                        <td class="titulo">Auditoria Interna do Sistema da Qualidade da GVS</td>
+                        <td>02</td>
+                        <td>12/2023</td>
+                        <td>12/2027</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-Q-GVS-004')">
+                        <td class="codigo">POP-Q-GVS-004</td>
+                        <td class="titulo">Condução de Inspeção</td>
+                        <td>04</td>
+                        <td>06/2024</td>
+                        <td>06/2028</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-Q-GVS-005')">
+                        <td class="codigo">POP-Q-GVS-005</td>
+                        <td class="titulo">Ações Corretivas e Preventivas</td>
+                        <td>02</td>
+                        <td>04/2024</td>
+                        <td>04/2028</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-Q-GVS-006')">
+                        <td class="codigo">POP-Q-GVS-006</td>
+                        <td class="titulo">Recebimento e Atendimento de Denúncias</td>
+                        <td>04</td>
+                        <td>04/2024</td>
+                        <td>04/2028</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-Q-GVS-007')">
+                        <td class="codigo">POP-Q-GVS-007</td>
+                        <td class="titulo">Prorrogação de Prazo de Termo de Intimação</td>
+                        <td>02</td>
+                        <td>02/2024</td>
+                        <td>02/2028</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-Q-GVS-008')">
+                        <td class="codigo">POP-Q-GVS-008</td>
+                        <td class="titulo">Concessão e Renovação de Alvará de Licença Sanitária</td>
+                        <td>04</td>
+                        <td>05/2024</td>
+                        <td>05/2028</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-Q-GVS-009')">
+                        <td class="codigo">POP-Q-GVS-009</td>
+                        <td class="titulo">Comunicação sobre as inspeções de Boas Práticas</td>
+                        <td>02</td>
+                        <td>05/2024</td>
+                        <td>05/2028</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-Q-GVS-010')">
+                        <td class="codigo">POP-Q-GVS-010</td>
+                        <td class="titulo">Ordem de Serviço de Fiscalização</td>
+                        <td>04</td>
+                        <td>05/2024</td>
+                        <td>05/2028</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-Q-GVS-012')">
+                        <td class="codigo">POP-Q-GVS-012</td>
+                        <td class="titulo">Fluxo de Documentos da GVS</td>
+                        <td>05</td>
+                        <td>03/2024</td>
+                        <td>03/2028</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-Q-GVS-013')">
+                        <td class="codigo">POP-Q-GVS-013</td>
+                        <td class="titulo">Atividades Pós-Inspeção</td>
+                        <td>02</td>
+                        <td>05/2022</td>
+                        <td>05/2026</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-Q-GVS-014')">
+                        <td class="codigo">POP-Q-GVS-014</td>
+                        <td class="titulo">Revisão Gerencial</td>
+                        <td>01</td>
+                        <td>02/2021</td>
+                        <td>03/2025</td>
+                        <td><span class="badge badge-vencido">✗ Vencido</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-Q-GVS-015')">
+                        <td class="codigo">POP-Q-GVS-015</td>
+                        <td class="titulo">Inspeção em Transportadoras</td>
+                        <td>00</td>
+                        <td>08/2022</td>
+                        <td>08/2026</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-Q-GVS-016')">
+                        <td class="codigo">POP-Q-GVS-016</td>
+                        <td class="titulo">Tramitação de Processos e Documentos</td>
+                        <td>00</td>
+                        <td>11/2022</td>
+                        <td>11/2026</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-O-GVS-016')">
+                        <td class="codigo">POP-O-GVS-016</td>
+                        <td class="titulo">Gerenciamento de Conflitos de Interesse</td>
+                        <td>00</td>
+                        <td>09/2022</td>
+                        <td>09/2026</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('PROG-O-GVS-001')">
+                        <td class="codigo">PROG-O-GVS-001</td>
+                        <td class="titulo">Programa de Qualificação e Capacitação de Inspetores</td>
+                        <td>00</td>
+                        <td>02/2021</td>
+                        <td>02/2025</td>
+                        <td><span class="badge badge-vencido">✗ Vencido</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-O-GVS-MED-001')">
+                        <td class="codigo">POP-O-GVS-MED-001</td>
+                        <td class="titulo">Relatório de Inspeção - Importadora, Distribuidora, Armazenadora e/ou Transportadora de Medicamentos</td>
+                        <td>00</td>
+                        <td>10/2016</td>
+                        <td>10/2020</td>
+                        <td><span class="badge badge-vencido">✗ Vencido</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-O-GVS-MED-002')">
+                        <td class="codigo">POP-O-GVS-MED-002</td>
+                        <td class="titulo">Condução de Inspeção em Distribuidoras e Armazenadoras de Medicamentos</td>
+                        <td>00</td>
+                        <td>10/2016</td>
+                        <td>10/2020</td>
+                        <td><span class="badge badge-vencido">✗ Vencido</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-O-GVS-MED-003')">
+                        <td class="codigo">POP-O-GVS-MED-003</td>
+                        <td class="titulo">Categorização de Não Conformidades e Risco Regulatório</td>
+                        <td>00</td>
+                        <td>11/2018</td>
+                        <td>11/2022</td>
+                        <td><span class="badge badge-vencido">✗ Vencido</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-O-GVS-MED-004')">
+                        <td class="codigo">POP-O-GVS-MED-004</td>
+                        <td class="titulo">Relatório de Inspeção - Distribuidoras Com e Sem Fracionamento</td>
+                        <td>00</td>
+                        <td>11/2018</td>
+                        <td>11/2022</td>
+                        <td><span class="badge badge-vencido">✗ Vencido</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-GVS-MED-001')">
+                        <td class="codigo">POP-GVS-MED-001</td>
+                        <td class="titulo">Gerenciamento de Notificações de Receita no Município de Anápolis</td>
+                        <td>01</td>
+                        <td>05/2023</td>
+                        <td>05/2027</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-O-GVS-PS-001')">
+                        <td class="codigo">POP-O-GVS-PS-001</td>
+                        <td class="titulo">Elaboração de Relatório de Inspeção - Fabricantes, Distribuidoras, Armazenadoras e Importadoras de Produtos para Saúde</td>
+                        <td>04</td>
+                        <td>04/2024</td>
+                        <td>04/2028</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-O-GVS-PS-005')">
+                        <td class="codigo">POP-O-GVS-PS-005</td>
+                        <td class="titulo">Planejamento de Inspeções para Verificação das Boas Práticas de Fabricação com Base no Risco</td>
+                        <td>03</td>
+                        <td>04/2024</td>
+                        <td>04/2028</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-O-GVS-PS-006')">
+                        <td class="codigo">POP-O-GVS-PS-006</td>
+                        <td class="titulo">Categorização de Não Conformidades e Classificação de Estabelecimentos Fabricantes de Produtos para Saúde</td>
+                        <td>05</td>
+                        <td>04/2024</td>
+                        <td>02/2028</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-O-GVS-PS-007')">
+                        <td class="codigo">POP-O-GVS-PS-007</td>
+                        <td class="titulo">Fluxo das Informações de Vigilância Sanitária - Produtos para Saúde</td>
+                        <td>02</td>
+                        <td>05/2022</td>
+                        <td>05/2026</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                    <tr class="clickable" onclick="abrirPOP('POP-GVS-OA-001')">
+                        <td class="codigo">POP-GVS-OA-001</td>
+                        <td class="titulo">Autorização de Traslado, Exumação e Inumação de Restos Mortais Humanos</td>
+                        <td>05</td>
+                        <td>06/2024</td>
+                        <td>06/2028</td>
+                        <td><span class="badge badge-vigente">✓ Vigente</span></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Modal PDF -->
+    <!-- MODAL PDF -->
     <div id="pdfModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
-            <iframe id="pdfViewer" class="pdf-viewer" src=""></iframe>
+        <div class="modal-header">
+            <button onclick="fecharPDF()" class="btn-fechar">Fechar</button>
+            <h3 id="pdfTitle" class="modal-title">Visualizando POP</h3>
+        </div>
+        <div class="pdf-container">
+            <object id="pdfViewer" class="pdf-iframe" type="application/pdf">
+                <p>Seu navegador não suporta visualização de PDF. <a id="pdfDownloadLink" href="#">Clique aqui para baixar</a></p>
+            </object>
+        </div>
+        <div class="modal-footer">
+            <button onclick="abrirEmNovaAba()" class="btn-action">📂 Abrir Externamente</button>
+            <button onclick="baixarPDF()" class="btn-action">⬇️ Baixar PDF</button>
         </div>
     </div>
 
     <script>
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
-        }
+        // MAPEAMENTO COMPLETO DOS 51 ARQUIVOS
+        const arquivosPOP = {
+            'MQ-GVS-001': 'Manual da Qualidade - REVISAO 06.pdf',
+            'PROG-O-GVS-001': '13. PROG-O-GVS-001 - PROGRAMA DE QUALIFICACAO E CAPACITACAO, V. 00.pdf',
+            'POP-Q-GVS-001': 'POP-Q-GVS-001 GERENCIAMENTO DE DOCUMENTOS DA GVS - VERSAO 04.pdf',
+            'POP-Q-GVS-005': 'POP-Q-GVS-005-ACOES CORRETIVAS E PREVENTIVAS V. 02.pdf',
+            'POP-Q-GVS-006': 'POP-Q-GVS-006-RECEBIMENTO E ATENDIMENTO DE DENUNCIAS - V. 04.pdf',
+            'POP-Q-GVS-009': 'POP-Q-GVS-009-COMUNICACAO DAS INSPECOES, V. 02.pdf',
+            'POP-Q-GVS-010': 'POP-Q-GVS-010-ORDEM DE SERVICO DE FISCALIZACAO, Rev. 04.pdf',
+            'POP-Q-GVS-012': 'POP-Q-GVS-012 - FLUXO DE DOCUMENTOS DA GVS REV. 05.pdf',
+            'POP-Q-GVS-013': 'POP-Q-GVS-013 - ATIVIDADES POS-INSPECAO - REVISAO 02.pdf',
+            'POP-Q-GVS-014': 'POP-Q-GVS-014 REVISAO GERENCIAL V. 01.pdf',
+            'POP-Q-GVS-015': 'POP-Q-GVS-015 - Inspecao em Transportadoras - V. 00.pdf',
+            'POP-Q-GVS-016': 'POP-Q-GVS-016 - TRAMITACAO DE PROCESSOS E DOCUMENTOS.pdf',
+            'POP-O-GVS-004': 'POP-O-GVS-004 CONDUCAO DE INSPECAO - REVISAO 04.pdf',
+            'POP-O-GVS-PS-001': 'POP-O-GVS-PS-001 - ELABORACAO DE RELATORIO DE INSPECAO BPF PRODUTOS V. 04.pdf',
+            'POP-O-GVS-PS-006': 'POP-O-GVS-PS-006 - Categorizacao de Nao Conformidades V. 05.pdf',
+            'LISTA-MESTRA': 'LISTA MESTRA - GERAL - V-9.pdf',
+            'DECRETO-46456': 'D E C R E T O N§ 46.456.pdf',
+            'CARTAZ-DENUNCIAS': 'CARTAZ denuncias NAO pertinentes a GVS.pdf'
+        };
 
-        function openPDF(path) {
-            document.getElementById('pdfViewer').src = path;
-            document.getElementById('pdfModal').style.display = 'block';
+        let pdfAtual = '';
+
+        // FUNÇÃO PRINCIPAL - ABRE O POP
+        function abrirPOP(codigo) {
+            const nomeArquivo = arquivosPOP[codigo];
+            
+            if (!nomeArquivo) {
+                alert('⚠️ Arquivo não encontrado para o código: ' + codigo);
+                return;
+            }
+
+            const caminho = 'POP/' + nomeArquivo;
+            pdfAtual = caminho;
+
+            document.getElementById('pdfTitle').textContent = codigo;
+            document.getElementById('pdfViewer').setAttribute('data', caminho);
+            document.getElementById('pdfDownloadLink').href = caminho;
+            document.getElementById('pdfModal').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
 
-        function closeModal() {
-            document.getElementById('pdfModal').style.display = 'none';
-            document.getElementById('pdfViewer').src = '';
-            document.body.style.overflow = 'auto';
+        function fecharPDF() {
+            document.getElementById('pdfModal').classList.remove('active');
+            document.getElementById('pdfViewer').setAttribute('data', '');
+            document.body.style.overflow = '';
+            pdfAtual = '';
         }
 
-        window.onclick = function(e) {
-            if (e.target == document.getElementById('pdfModal')) closeModal();
+        function abrirEmNovaAba() {
+            if (pdfAtual) {
+                window.open(pdfAtual, '_blank', 'noopener,noreferrer');
+            }
         }
 
-        function filterContent() {
-            const filter = document.getElementById('searchInput').value.toLowerCase();
-            document.querySelectorAll('.pop-card').forEach(card => {
-                const text = (card.getAttribute('data-keywords') || '') + ' ' + 
-                           (card.querySelector('.codigo-pop')?.textContent || '') + ' ' +
-                           (card.querySelector('h3')?.textContent || '');
-                card.style.display = text.toLowerCase().includes(filter) ? '' : 'none';
+        function baixarPDF() {
+            if (pdfAtual) {
+                const link = document.createElement('a');
+                link.href = pdfAtual;
+                link.download = pdfAtual.split('/').pop();
+                link.click();
+            }
+        }
+
+        // FILTRO DE BUSCA
+        function filtrarTabela() {
+            const filtro = document.getElementById('searchInput').value.toLowerCase();
+            const linhas = document.querySelectorAll('#tabelaPOPs tbody tr');
+            
+            linhas.forEach(linha => {
+                const texto = linha.textContent.toLowerCase();
+                linha.style.display = texto.includes(filtro) ? '' : 'none';
             });
         }
 
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+        // FECHAR COM ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('pdfModal').classList.contains('active')) {
+                fecharPDF();
+            }
+        });
     </script>
 </body>
 </html>
