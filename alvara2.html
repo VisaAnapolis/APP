@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Alvarás Emitidos - CVS Vigilância Sanitária</title>
     <style>
         * {
@@ -17,6 +17,7 @@
             min-height: 100vh;
         }
 
+        /* ========== HEADER ========== */
         header {
             background: #1a3a6b;
             color: #ffffff;
@@ -52,16 +53,13 @@
             padding: 16px 12px;
             cursor: pointer;
             text-decoration: none;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .btn-ok-header:hover {
             opacity: 0.8;
         }
 
+        /* ========== CONTAINER ========== */
         .container {
             max-width: 1400px;
             margin: 22px auto 30px;
@@ -82,6 +80,7 @@
             font-size: 1.3em;
         }
 
+        /* ========== FILTROS ========== */
         .filter-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -151,6 +150,7 @@
             background: #5a6268;
         }
 
+        /* ========== ESTATÍSTICAS ========== */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -178,6 +178,7 @@
             font-weight: 600;
         }
 
+        /* ========== CACHE INFO ========== */
         .cache-info {
             display: flex;
             justify-content: space-between;
@@ -187,6 +188,8 @@
             border-radius: 8px;
             font-size: 0.9em;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .cache-info span {
@@ -194,6 +197,7 @@
             font-weight: 600;
         }
 
+        /* ========== PAGINAÇÃO ========== */
         .pagination-controls {
             display: flex;
             justify-content: space-between;
@@ -210,7 +214,12 @@
             font-size: 0.9em;
         }
 
-        /* Wrapper da tabela - SEM OVERFLOW */
+        /* ========== TABELA ========== */
+        .table-container {
+            position: relative;
+            width: 100%;
+        }
+
         .table-wrapper {
             width: 100%;
             overflow-x: auto;
@@ -239,6 +248,7 @@
             font-size: 0.9em;
             cursor: pointer;
             user-select: none;
+            white-space: nowrap;
         }
 
         th:hover {
@@ -266,6 +276,7 @@
             font-size: 0.85em;
             font-weight: 600;
             display: inline-block;
+            white-space: nowrap;
         }
 
         .badge-success {
@@ -278,6 +289,7 @@
             color: #721c24;
         }
 
+        /* ========== MODAL ========== */
         .modal {
             display: none;
             position: fixed;
@@ -287,6 +299,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.5);
+            overflow-y: auto;
         }
 
         .modal-content {
@@ -320,6 +333,7 @@
             font-weight: bold;
             color: white;
             cursor: pointer;
+            line-height: 1;
         }
 
         .close:hover {
@@ -390,164 +404,140 @@
             font-size: 1em;
         }
 
-        /* ========== MOBILE RESPONSIVO COM COLUNA FIXA - VERSÃO FINAL ========== */
-@media (max-width: 768px) {
-    header h1 {
-        font-size: 1.4em;
-    }
+        /* ========== RESPONSIVE MOBILE ========== */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.4em;
+            }
 
-    header h2 {
-        font-size: 0.95em;
-    }
+            header h2 {
+                font-size: 0.95em;
+            }
 
-    .filter-grid {
-        grid-template-columns: 1fr;
-    }
+            .container {
+                padding: 0 12px;
+            }
 
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
+            .card {
+                padding: 16px;
+                border-radius: 8px;
+            }
 
-    .modal-content {
-        width: 95%;
-        margin: 5% auto;
-    }
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
 
-    .info-grid {
-        grid-template-columns: 1fr;
-    }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
 
-    .card {
-        padding: 16px;
-    }
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
 
-    /* Wrapper com scroll FORÇADO para mobile */
-    .table-wrapper {
-        overflow-x: scroll !important;
-        overflow-y: visible;
-        -webkit-overflow-scrolling: touch;
-        width: 100%;
-        position: relative;
-        margin: 0 -16px;
-        padding: 0 16px;
-    }
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
 
-    /* Tabela com largura fixa maior que tela */
-    #alvarasTable {
-        border-collapse: separate;
-        border-spacing: 0;
-        width: 100%;
-        min-width: 750px !important;
-        max-width: none;
-    }
+            .btn-container {
+                flex-direction: column;
+            }
 
-    #alvarasTable th,
-    #alvarasTable td {
-        white-space: nowrap;
-        padding: 12px 10px;
-        font-size: 0.85em;
-        border-bottom: 1px solid #eee;
-    }
+            .btn {
+                width: 100%;
+            }
 
-    /* PRIMEIRA COLUNA FIXA COM SOMBRA */
-    #alvarasTable th:first-child,
-    #alvarasTable td:first-child {
-        position: sticky;
-        position: -webkit-sticky;
-        left: 0;
-        z-index: 10;
-        background: #1a3a6b;
-        min-width: 115px !important;
-        max-width: 115px !important;
-        width: 115px !important;
-        box-shadow: 3px 0 8px rgba(0,0,0,0.15);
-        border-right: 2px solid rgba(255,255,255,0.1);
-    }
+            .pagination-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
 
-    /* Header primeira coluna */
-    #alvarasTable thead th:first-child {
-        background: #1a3a6b !important;
-        color: white;
-        z-index: 11;
-        font-weight: 700;
-    }
+            #paginationInfo {
+                font-size: 0.85em;
+            }
 
-    /* Body primeira coluna */
-    #alvarasTable tbody td:first-child {
-        background: #ffffff !important;
-        font-weight: bold;
-        color: #1a3a6b;
-        border-right: 2px solid #e0e0e0;
-    }
+            /* TABELA MOBILE COM COLUNA FIXA */
+            .table-wrapper {
+                overflow-x: scroll;
+                -webkit-overflow-scrolling: touch;
+                margin: 0 -16px;
+                padding: 0 16px;
+            }
 
-    /* Hover primeira coluna */
-    #alvarasTable tbody tr:hover td:first-child {
-        background: #f5f8fa !important;
-    }
+            #alvarasTable {
+                border-collapse: separate;
+                border-spacing: 0;
+                min-width: 800px;
+            }
 
-    /* Headers demais colunas */
-    #alvarasTable thead th {
-        background: #1a3a6b;
-        color: white;
-        position: relative;
-    }
+            #alvarasTable th,
+            #alvarasTable td {
+                white-space: nowrap;
+                padding: 12px 10px;
+                font-size: 0.85em;
+            }
 
-    /* Larguras mínimas das colunas */
-    #alvarasTable th:nth-child(2),
-    #alvarasTable td:nth-child(2) {
-        min-width: 110px;
-        width: 110px;
-    }
+            /* PRIMEIRA COLUNA FIXA */
+            #alvarasTable th:first-child,
+            #alvarasTable td:first-child {
+                position: -webkit-sticky;
+                position: sticky;
+                left: 0;
+                z-index: 10;
+                background: #1a3a6b;
+                min-width: 120px;
+                max-width: 120px;
+                box-shadow: 3px 0 8px rgba(0,0,0,0.15);
+            }
 
-    #alvarasTable th:nth-child(3),
-    #alvarasTable td:nth-child(3) {
-        min-width: 100px;
-        width: 100px;
-        text-align: center;
-    }
+            #alvarasTable thead th:first-child {
+                background: #1a3a6b;
+                color: white;
+                z-index: 11;
+            }
 
-    #alvarasTable th:nth-child(4),
-    #alvarasTable td:nth-child(4) {
-        min-width: 160px;
-        width: 160px;
-    }
+            #alvarasTable tbody td:first-child {
+                background: #ffffff;
+                font-weight: bold;
+                color: #1a3a6b;
+            }
 
-    #alvarasTable th:nth-child(5),
-    #alvarasTable td:nth-child(5) {
-        min-width: 250px;
-        width: 250px;
-    }
+            #alvarasTable tbody tr:hover td:first-child {
+                background: #f5f8fa;
+            }
 
-    /* Badge adaptado */
-    .badge {
-        font-size: 0.7em;
-        padding: 4px 8px;
-        white-space: nowrap;
-    }
+            /* Larguras das colunas */
+            #alvarasTable th:nth-child(2),
+            #alvarasTable td:nth-child(2) {
+                min-width: 110px;
+            }
 
-    /* Botões em coluna */
-    .btn-container {
-        flex-direction: column;
-    }
+            #alvarasTable th:nth-child(3),
+            #alvarasTable td:nth-child(3) {
+                min-width: 100px;
+                text-align: center;
+            }
 
-    .btn {
-        width: 100%;
-    }
+            #alvarasTable th:nth-child(4),
+            #alvarasTable td:nth-child(4) {
+                min-width: 160px;
+            }
 
-    /* Paginação adaptada */
-    .pagination-controls {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
+            #alvarasTable th:nth-child(5),
+            #alvarasTable td:nth-child(5) {
+                min-width: 280px;
+            }
 
-    #paginationInfo {
-        font-size: 0.85em;
-    }
-}
-
+            .badge {
+                font-size: 0.7em;
+                padding: 4px 8px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- HEADER -->
     <header>
         <a href="index.html" class="btn-ok-header">OK</a>
         <h1>Vigilância Sanitária</h1>
@@ -555,15 +545,16 @@
     </header>
 
     <div class="container">
+        <!-- FILTROS -->
         <div class="card">
             <h3>🔍 Filtros de Busca</h3>
             <div class="filter-grid">
                 <div class="filter-group">
-                    <label for="dataInicial">Data Inicial de Emissão:</label>
+                    <label for="dataInicial">Data Inicial:</label>
                     <input type="date" id="dataInicial">
                 </div>
                 <div class="filter-group">
-                    <label for="dataFinal">Data Final de Emissão:</label>
+                    <label for="dataFinal">Data Final:</label>
                     <input type="date" id="dataFinal">
                 </div>
                 <div class="filter-group">
@@ -585,6 +576,7 @@
             </div>
         </div>
 
+        <!-- ESTATÍSTICAS -->
         <div class="stats-grid">
             <div class="stat-card">
                 <h3 id="totalAlvaras">0</h3>
@@ -600,17 +592,19 @@
             </div>
         </div>
 
+        <!-- CACHE INFO -->
         <div class="cache-info">
-            <span>💾 Cache: <span id="cacheStatus">Nenhum dado carregado</span></span>
-            <button onclick="forcarAtualizacao()" style="padding: 8px 16px; background: #34C759; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9em;">
-                🔄 Forçar Atualização
+            <span>💾 <span id="cacheStatus">Carregando...</span></span>
+            <button onclick="forcarAtualizacao()" style="padding: 8px 16px; background: #34C759; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                🔄 Atualizar
             </button>
         </div>
 
+        <!-- TABELA -->
         <div class="card">
             <div class="pagination-controls">
                 <div>
-                    <label for="pageSize">Registros por página: </label>
+                    <label for="pageSize">Por página: </label>
                     <select id="pageSize" onchange="alterarTamanhoPagina()">
                         <option value="25">25</option>
                         <option value="50" selected>50</option>
@@ -624,28 +618,30 @@
                 Carregando dados...
             </div>
 
-            <!-- WRAPPER COM SCROLL -->
-            <div class="table-wrapper">
-                <table id="alvarasTable" style="display: none;">
-                    <thead>
-                        <tr>
-                            <th onclick="ordenarTabela('numero')">Número ▼</th>
-                            <th onclick="ordenarTabela('dt_emite')">Data Emissão ▼</th>
-                            <th onclick="ordenarTabela('cancelado')">Status ▼</th>
-                            <th onclick="ordenarTabela('cnpj')">CNPJ ▼</th>
-                            <th onclick="ordenarTabela('razao')">Razão Social ▼</th>
-                        </tr>
-                    </thead>
-                    <tbody id="alvarasTableBody"></tbody>
-                </table>
+            <div class="table-container">
+                <div class="table-wrapper">
+                    <table id="alvarasTable" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th onclick="ordenarTabela('numero')">Nº Alvará ▼</th>
+                                <th onclick="ordenarTabela('dt_emite')">Dt. Emissão ▼</th>
+                                <th onclick="ordenarTabela('cancelado')">Status ▼</th>
+                                <th onclick="ordenarTabela('cnpj')">CNPJ ▼</th>
+                                <th onclick="ordenarTabela('razao')">Razão Social ▼</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alvarasTableBody"></tbody>
+                    </table>
+                </div>
             </div>
 
             <div id="noResults" class="no-results" style="display: none;">
-                Nenhum alvará encontrado com os filtros selecionados.
+                Nenhum alvará encontrado.
             </div>
         </div>
     </div>
 
+    <!-- MODAL -->
     <div id="detalhesModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -657,6 +653,7 @@
     </div>
 
     <script>
+        // VARIÁVEIS GLOBAIS
         let dadosAlvara = [];
         let dadosAlvlib = [];
         let dadosRegulados = [];
@@ -667,6 +664,7 @@
         let tamanhoPagina = 50;
         let ordenacao = { campo: 'numero', direcao: 'desc' };
 
+        // FUNÇÕES AUXILIARES
         function limparCodigo(codigo) {
             if (!codigo) return '';
             return codigo.toString().replace(/\u00A0/g, '').replace(/\s/g, '').trim();
@@ -675,56 +673,6 @@
         function limparNumeroAlvara(numero) {
             if (!numero) return '';
             return numero.toString().replace(/\u00A0/g, '').replace(/\s/g, '');
-        }
-
-        async function carregarCSV(arquivo) {
-            try {
-                const response = await fetch(arquivo);
-                const texto = await response.text();
-                const linhas = texto.split('\n');
-                
-                const cabecalhoOriginal = linhas[0].split(';').map(campo => 
-                    campo.replace(/"/g, '').replace(/\uFEFF/g, '').trim()
-                );
-                
-                const cabecalhoLower = cabecalhoOriginal.map(c => c.toLowerCase());
-                
-                const dados = [];
-                for (let i = 1; i < linhas.length; i++) {
-                    if (linhas[i].trim() === '') continue;
-                    
-                    const valores = [];
-                    let dentroAspas = false;
-                    let valorAtual = '';
-                    
-                    for (let char of linhas[i]) {
-                        if (char === '"') {
-                            dentroAspas = !dentroAspas;
-                        } else if (char === ';' && !dentroAspas) {
-                            valores.push(valorAtual.trim());
-                            valorAtual = '';
-                        } else {
-                            valorAtual += char;
-                        }
-                    }
-                    valores.push(valorAtual.trim());
-                    
-                    const obj = {};
-                    cabecalhoLower.forEach((campo, index) => {
-                        let valor = valores[index] ? valores[index].replace(/"/g, '').trim() : '';
-                        if (campo === 'codigo' || campo === 'cdbai') {
-                            valor = limparCodigo(valor);
-                        }
-                        obj[campo] = valor;
-                    });
-                    dados.push(obj);
-                }
-                
-                return dados;
-            } catch (erro) {
-                console.error(`Erro ao carregar ${arquivo}:`, erro);
-                return [];
-            }
         }
 
         function validarFormatoAlvara(numero) {
@@ -770,6 +718,56 @@
             return dadosBairros.find(b => limparCodigo(b.codigo) === codigoLimpo);
         }
 
+        // CARREGAR CSV
+        async function carregarCSV(arquivo) {
+            try {
+                const response = await fetch(arquivo);
+                const texto = await response.text();
+                const linhas = texto.split('\n');
+                
+                const cabecalhoLower = linhas[0].split(';').map(campo => 
+                    campo.replace(/"/g, '').replace(/\uFEFF/g, '').trim().toLowerCase()
+                );
+                
+                const dados = [];
+                for (let i = 1; i < linhas.length; i++) {
+                    if (linhas[i].trim() === '') continue;
+                    
+                    const valores = [];
+                    let dentroAspas = false;
+                    let valorAtual = '';
+                    
+                    for (let char of linhas[i]) {
+                        if (char === '"') {
+                            dentroAspas = !dentroAspas;
+                        } else if (char === ';' && !dentroAspas) {
+                            valores.push(valorAtual.trim());
+                            valorAtual = '';
+                        } else {
+                            valorAtual += char;
+                        }
+                    }
+                    valores.push(valorAtual.trim());
+                    
+                    const obj = {};
+                    cabecalhoLower.forEach((campo, index) => {
+                        let valor = valores[index] ? valores[index].replace(/"/g, '').trim() : '';
+                        if (campo === 'codigo' || campo === 'cdbai') {
+                            valor = limparCodigo(valor);
+                        }
+                        obj[campo] = valor;
+                    });
+                    dados.push(obj);
+                }
+                
+                return dados;
+            } catch (erro) {
+                console.error(`Erro ao carregar ${arquivo}:`, erro);
+                return [];
+            }
+        }
+
+        // INICIALIZAR
         async function inicializar() {
             document.getElementById('loadingMessage').style.display = 'block';
             
@@ -786,12 +784,13 @@
             );
             
             document.getElementById('cacheStatus').textContent = 
-                `${dadosAlvara.length} alvarás emitidos carregados em ${new Date().toLocaleString('pt-BR')}`;
+                `${dadosAlvara.length} alvarás carregados`;
             
             document.getElementById('loadingMessage').style.display = 'none';
             limparFiltros();
         }
 
+        // BUSCAR
         function buscarAlvaras() {
             const dataInicial = document.getElementById('dataInicial').value;
             const dataFinal = document.getElementById('dataFinal').value;
@@ -800,15 +799,11 @@
             const fantasia = document.getElementById('fantasia').value.toLowerCase().trim();
             
             alvarasFiltrados = dadosAlvara.filter(alvara => {
-                if (numeroAlvara) {
-                    const numeroAlvaraLimpo = limparNumeroAlvara(alvara.numero);
-                    if (!numeroAlvaraLimpo.includes(numeroAlvara)) return false;
-                }
+                if (numeroAlvara && !limparNumeroAlvara(alvara.numero).includes(numeroAlvara)) return false;
                 
                 if (dataInicial || dataFinal) {
                     const dataEmissao = parseData(alvara.dt_emite);
                     if (!dataEmissao) return false;
-                    
                     if (dataInicial && dataEmissao < new Date(dataInicial)) return false;
                     if (dataFinal && dataEmissao > new Date(dataFinal)) return false;
                 }
@@ -816,7 +811,6 @@
                 if (razaoSocial || fantasia) {
                     const regulado = buscarRegulado(alvara.codigo);
                     if (!regulado) return false;
-                    
                     if (razaoSocial && !regulado.razao.toLowerCase().includes(razaoSocial)) return false;
                     if (fantasia && !regulado.fantasia.toLowerCase().includes(fantasia)) return false;
                 }
@@ -829,6 +823,7 @@
             renderizarTabela();
         }
 
+        // ESTATÍSTICAS
         function atualizarEstatisticas() {
             const total = alvarasFiltrados.length;
             const cancelados = alvarasFiltrados.filter(a => a.cancelado === 'true' || a.cancelado === 'True').length;
@@ -838,6 +833,7 @@
             document.getElementById('alvarasCancelados').textContent = cancelados;
         }
 
+        // ORDENAR
         function ordenarTabela(campo) {
             if (ordenacao.campo === campo) {
                 ordenacao.direcao = ordenacao.direcao === 'asc' ? 'desc' : 'asc';
@@ -861,14 +857,8 @@
                 } else {
                     const reguladoA = buscarRegulado(a.codigo);
                     const reguladoB = buscarRegulado(b.codigo);
-                    
-                    if (campo === 'cnpj') {
-                        valorA = reguladoA ? reguladoA.cgc : '';
-                        valorB = reguladoB ? reguladoB.cgc : '';
-                    } else if (campo === 'razao') {
-                        valorA = reguladoA ? reguladoA.razao : '';
-                        valorB = reguladoB ? reguladoB.razao : '';
-                    }
+                    valorA = reguladoA ? (campo === 'cnpj' ? reguladoA.cgc : reguladoA.razao) : '';
+                    valorB = reguladoB ? (campo === 'cnpj' ? reguladoB.cgc : reguladoB.razao) : '';
                 }
                 
                 if (valorA < valorB) return ordenacao.direcao === 'asc' ? -1 : 1;
@@ -879,6 +869,7 @@
             renderizarTabela();
         }
 
+        // RENDERIZAR TABELA
         function renderizarTabela() {
             const tbody = document.getElementById('alvarasTableBody');
             const table = document.getElementById('alvarasTable');
@@ -919,9 +910,10 @@
             
             const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina);
             document.getElementById('paginationInfo').textContent = 
-                `Página ${paginaAtual} de ${totalPaginas} | Exibindo ${inicio + 1}-${fim} de ${alvarasFiltrados.length}`;
+                `Pág. ${paginaAtual}/${totalPaginas} | ${inicio + 1}-${fim} de ${alvarasFiltrados.length}`;
         }
 
+        // MOSTRAR DETALHES
         function mostrarDetalhes(alvara) {
             const regulado = buscarRegulado(alvara.codigo);
             const bairro = regulado ? buscarBairro(regulado.cdbai) : null;
@@ -933,8 +925,8 @@
                     <h3>📋 Dados do Alvará</h3>
                     <div class="info-grid">
                         <div class="info-item"><strong>Número:</strong> <span>${limparNumeroAlvara(alvara.numero)}</span></div>
-                        <div class="info-item"><strong>Data Emissão:</strong> <span>${formatarData(alvara.dt_emite)}</span></div>
-                        <div class="info-item"><strong>Data Validade:</strong> <span>${formatarData(alvara.dt_validade)}</span></div>
+                        <div class="info-item"><strong>Emissão:</strong> <span>${formatarData(alvara.dt_emite)}</span></div>
+                        <div class="info-item"><strong>Validade:</strong> <span>${formatarData(alvara.dt_validade)}</span></div>
                         <div class="info-item"><strong>Status:</strong> <span class="badge ${isCancelado ? 'badge-danger' : 'badge-success'}">${isCancelado ? 'Cancelado' : 'Válido'}</span></div>
                     </div>
                 </div>
@@ -943,7 +935,7 @@
             if (regulado) {
                 html += `
                     <div class="info-section">
-                        <h3>🏢 Dados do Estabelecimento</h3>
+                        <h3>🏢 Estabelecimento</h3>
                         <div class="info-grid">
                             <div class="info-item"><strong>CNPJ:</strong> <span>${formatarCNPJ(regulado.cgc)}</span></div>
                             <div class="info-item"><strong>Razão Social:</strong> <span>${regulado.razao || '-'}</span></div>
@@ -957,23 +949,13 @@
             }
             
             if (liberacoes.length > 0) {
-                html += `
-                    <div class="info-section">
-                        <h3>✅ Atividades Liberadas (${liberacoes.length})</h3>
-                        <div class="activities-table"><table>
-                            <thead><tr><th>Data</th><th>CNAE</th><th>Autoridade</th><th>Fiscal</th><th>Documento</th><th>Data Doc.</th></tr></thead>
-                            <tbody>
-                `;
+                html += `<div class="info-section"><h3>✅ Atividades (${liberacoes.length})</h3><div class="activities-table"><table>
+                    <thead><tr><th>Data</th><th>CNAE</th><th>Autoridade</th><th>Fiscal</th><th>Documento</th><th>Dt. Doc.</th></tr></thead><tbody>`;
                 liberacoes.forEach(lib => {
                     const cnae = dadosCnae.find(c => c.subclasse === lib.atividade);
-                    html += `<tr>
-                        <td>${formatarData(lib.data)}</td>
-                        <td>${cnae ? `${cnae.subclasse} - ${cnae.atividade}` : lib.atividade}</td>
-                        <td>${lib.autoridade || '-'}</td>
-                        <td>${lib.liberante || '-'}</td>
-                        <td>${lib.documento || '-'}</td>
-                        <td>${formatarData(lib.dt_documento)}</td>
-                    </tr>`;
+                    html += `<tr><td>${formatarData(lib.data)}</td><td>${cnae ? `${cnae.subclasse} - ${cnae.atividade}` : lib.atividade}</td>
+                        <td>${lib.autoridade || '-'}</td><td>${lib.liberante || '-'}</td><td>${lib.documento || '-'}</td>
+                        <td>${formatarData(lib.dt_documento)}</td></tr>`;
                 });
                 html += `</tbody></table></div></div>`;
             }
@@ -982,6 +964,7 @@
             document.getElementById('detalhesModal').style.display = 'block';
         }
 
+        // MODAL
         function fecharModal() {
             document.getElementById('detalhesModal').style.display = 'none';
         }
@@ -990,6 +973,7 @@
             if (event.target === document.getElementById('detalhesModal')) fecharModal();
         }
 
+        // OUTRAS FUNÇÕES
         function limparFiltros() {
             document.getElementById('dataInicial').value = '';
             document.getElementById('dataFinal').value = '';
@@ -1010,93 +994,7 @@
             await inicializar();
         }
 
-            // Forçar scroll horizontal no mobile
-function ajustarScrollMobile() {
-    if (window.innerWidth <= 768) {
-        const wrapper = document.querySelector('.table-wrapper');
-        if (wrapper) {
-            // Forçar propriedades de scroll
-            wrapper.style.overflowX = 'scroll';
-            wrapper.style.webkitOverflowScrolling = 'touch';
-            
-            // Adicionar evento de toque para garantir scroll
-            wrapper.addEventListener('touchstart', function(e) {
-                this.style.overflowX = 'scroll';
-            }, { passive: true });
-        }
-    }
-}
-
-// Chamar ao renderizar tabela
-function renderizarTabela() {
-    const tbody = document.getElementById('alvarasTableBody');
-    const table = document.getElementById('alvarasTable');
-    const noResults = document.getElementById('noResults');
-    
-    tbody.innerHTML = '';
-    
-    if (alvarasFiltrados.length === 0) {
-        table.style.display = 'none';
-        noResults.style.display = 'block';
-        document.getElementById('paginationInfo').textContent = '';
-        return;
-    }
-    
-    table.style.display = 'table';
-    noResults.style.display = 'none';
-    
-    const inicio = (paginaAtual - 1) * tamanhoPagina;
-    const fim = Math.min(inicio + tamanhoPagina, alvarasFiltrados.length);
-    
-    alvarasFiltrados.slice(inicio, fim).forEach(alvara => {
-        const regulado = buscarRegulado(alvara.codigo);
-        const tr = document.createElement('tr');
-        tr.onclick = () => mostrarDetalhes(alvara);
-        
-        const isCancelado = alvara.cancelado === 'true' || alvara.cancelado === 'True';
-        
-        tr.innerHTML = `
-            <td><strong>${limparNumeroAlvara(alvara.numero)}</strong></td>
-            <td>${formatarData(alvara.dt_emite)}</td>
-            <td><span class="badge ${isCancelado ? 'badge-danger' : 'badge-success'}">${isCancelado ? 'Cancelado' : 'Válido'}</span></td>
-            <td>${regulado ? formatarCNPJ(regulado.cgc) : '-'}</td>
-            <td>${regulado ? regulado.razao : '-'}</td>
-        `;
-        
-        tbody.appendChild(tr);
-    });
-    
-    const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina);
-    document.getElementById('paginationInfo').textContent = 
-        `Página ${paginaAtual} de ${totalPaginas} | Exibindo ${inicio + 1}-${fim} de ${alvarasFiltrados.length}`;
-    
-    // ADICIONAR ESTA LINHA:
-    ajustarScrollMobile();
-}
-
-// Também chamar no resize
-window.addEventListener('resize', ajustarScrollMobile);
-// Detectar scroll e remover indicador
-function monitorarScroll() {
-    const wrapper = document.querySelector('.table-wrapper');
-    if (wrapper && window.innerWidth <= 768) {
-        wrapper.addEventListener('scroll', function() {
-            if (this.scrollLeft > 10) {
-                this.classList.add('scrolled');
-            } else {
-                this.classList.remove('scrolled');
-            }
-        });
-    }
-}
-
-// Chamar no inicializar
-window.onload = function() {
-    inicializar();
-    monitorarScroll();
-};
-
-
+        // INICIAR
         window.onload = inicializar;
     </script>
 </body>
