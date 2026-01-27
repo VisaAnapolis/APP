@@ -12,55 +12,82 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
             min-height: 100vh;
-            padding: 20px;
+        }
+
+        /* HEADER PADRÃO - Banner Azul com botão OK verde iOS */
+        header {
+            background: #1a3a6b;
+            color: #ffffff;
+            padding: 28px 20px 26px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 1.8em;
+            margin-bottom: 4px;
+        }
+
+        header h2 {
+            font-size: 1.1em;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        /* BOTÃO OK - Verde iOS */
+        .btn-ok-header {
+            position: absolute;
+            top: 50%;
+            right: 16px;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: #34C759;
+            font-size: 17px;
+            font-weight: 600;
+            padding: 16px 12px;
+            cursor: pointer;
+            text-decoration: none;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-ok-header:hover {
+            opacity: 0.8;
         }
 
         .container {
             max-width: 1400px;
-            margin: 0 auto;
+            margin: 22px auto 30px;
+            padding: 0 16px;
+        }
+
+        .card {
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-
-        .filters {
-            background: #f8f9fa;
-            padding: 30px;
-            border-bottom: 3px solid #667eea;
-        }
-
-        .filters h2 {
-            color: #667eea;
+            border-radius: 10px;
+            padding: 24px;
             margin-bottom: 20px;
-            font-size: 1.5em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .card h3 {
+            color: #1a3a6b;
+            margin-bottom: 20px;
+            font-size: 1.3em;
         }
 
         .filter-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            gap: 16px;
             margin-bottom: 20px;
         }
 
@@ -73,46 +100,48 @@
             font-weight: 600;
             color: #333;
             margin-bottom: 8px;
-            font-size: 0.95em;
+            font-size: 0.9em;
         }
 
         .filter-group input,
         .filter-group select {
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: all 0.3s;
+            padding: 10px 12px;
+            border: 1px solid #ccd6e0;
+            border-radius: 6px;
+            font-size: 0.95em;
+            transition: all 0.2s;
         }
 
         .filter-group input:focus,
         .filter-group select:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #1a3a6b;
+            box-shadow: 0 0 0 3px rgba(26, 58, 107, 0.1);
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
         }
 
         .btn {
-            padding: 12px 30px;
+            padding: 10px 24px;
             border: none;
-            border-radius: 8px;
-            font-size: 1em;
+            border-radius: 6px;
+            font-size: 0.95em;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            transition: all 0.2s;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1a3a6b;
             color: white;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            background: #2c5aa0;
         }
 
         .btn-secondary {
@@ -124,95 +153,84 @@
             background: #5a6268;
         }
 
-        .btn-container {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .stats-container {
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            padding: 30px;
-            background: #f8f9fa;
+            gap: 16px;
+            margin-bottom: 20px;
         }
 
         .stat-card {
             background: white;
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 8px;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .stat-card h3 {
-            font-size: 2.5em;
-            color: #667eea;
-            margin-bottom: 5px;
+            font-size: 2.2em;
+            color: #1a3a6b;
+            margin-bottom: 8px;
         }
 
         .stat-card p {
             color: #666;
-            font-size: 0.95em;
+            font-size: 0.9em;
             font-weight: 600;
         }
 
         .cache-info {
-            padding: 15px 30px;
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 12px;
+            background: rgba(26, 58, 107, 0.05);
+            border-radius: 8px;
+            font-size: 0.9em;
+            margin-bottom: 20px;
         }
 
         .cache-info span {
-            color: #856404;
+            color: #1a3a6b;
             font-weight: 600;
-        }
-
-        .table-container {
-            padding: 30px;
-            overflow-x: auto;
         }
 
         .pagination-controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 12px;
         }
 
         .pagination-controls select {
-            padding: 8px 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 0.95em;
+            padding: 8px 12px;
+            border: 1px solid #ccd6e0;
+            border-radius: 6px;
+            font-size: 0.9em;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         thead {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1a3a6b;
             color: white;
         }
 
         th {
-            padding: 15px;
+            padding: 14px 12px;
             text-align: left;
             font-weight: 600;
-            font-size: 0.95em;
+            font-size: 0.9em;
             cursor: pointer;
             user-select: none;
         }
@@ -222,9 +240,9 @@
         }
 
         td {
-            padding: 15px;
+            padding: 14px 12px;
             border-bottom: 1px solid #eee;
-            font-size: 0.95em;
+            font-size: 0.9em;
         }
 
         tbody tr {
@@ -234,13 +252,11 @@
 
         tbody tr:hover {
             background: #f8f9fa;
-            transform: scale(1.01);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .badge {
-            padding: 5px 12px;
-            border-radius: 20px;
+            padding: 4px 10px;
+            border-radius: 12px;
             font-size: 0.85em;
             font-weight: 600;
             display: inline-block;
@@ -265,143 +281,124 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.5);
-            animation: fadeIn 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         .modal-content {
             background: white;
-            margin: 2% auto;
+            margin: 3% auto;
             padding: 0;
             width: 90%;
             max-width: 1000px;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            animation: slideIn 0.3s;
-            max-height: 90vh;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            max-height: 85vh;
             overflow-y: auto;
         }
 
-        @keyframes slideIn {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
         .modal-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1a3a6b;
             color: white;
-            padding: 25px 30px;
-            border-radius: 15px 15px 0 0;
+            padding: 20px 24px;
+            border-radius: 10px 10px 0 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .modal-header h2 {
-            font-size: 1.8em;
+            font-size: 1.5em;
         }
 
         .close {
-            font-size: 2em;
+            font-size: 1.8em;
             font-weight: bold;
             color: white;
             cursor: pointer;
-            transition: all 0.3s;
         }
 
         .close:hover {
-            transform: scale(1.2);
+            opacity: 0.8;
         }
 
         .modal-body {
-            padding: 30px;
+            padding: 24px;
         }
 
         .info-section {
-            margin-bottom: 30px;
+            margin-bottom: 24px;
         }
 
         .info-section h3 {
-            color: #667eea;
-            font-size: 1.3em;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
+            color: #1a3a6b;
+            font-size: 1.2em;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #1a3a6b;
         }
 
         .info-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
+            gap: 12px;
         }
 
         .info-item {
-            padding: 15px;
+            padding: 12px;
             background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
+            border-radius: 6px;
+            border-left: 3px solid #1a3a6b;
         }
 
         .info-item strong {
             display: block;
             color: #333;
-            margin-bottom: 5px;
-            font-size: 0.9em;
+            margin-bottom: 4px;
+            font-size: 0.85em;
         }
 
         .info-item span {
             color: #666;
-            font-size: 1em;
+            font-size: 0.95em;
         }
 
         .activities-table {
-            margin-top: 20px;
+            margin-top: 16px;
             overflow-x: auto;
         }
 
         .activities-table table {
-            font-size: 0.9em;
+            font-size: 0.85em;
         }
 
         .loading {
             text-align: center;
             padding: 40px;
-            color: #667eea;
-            font-size: 1.2em;
+            color: #1a3a6b;
+            font-size: 1.1em;
         }
 
         .no-results {
             text-align: center;
             padding: 40px;
             color: #666;
-            font-size: 1.1em;
+            font-size: 1em;
         }
 
         @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8em;
+            header h1 {
+                font-size: 1.4em;
+            }
+
+            header h2 {
+                font-size: 0.95em;
             }
 
             .filter-grid {
                 grid-template-columns: 1fr;
             }
 
-            .stats-container {
+            .stats-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .table-container {
-                padding: 15px;
             }
 
             .modal-content {
@@ -416,14 +413,17 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>📋 Alvarás Sanitários Emitidos</h1>
-            <p>Sistema de Consulta de Alvarás - CVS Vigilância Sanitária de Anápolis</p>
-        </div>
+    <!-- HEADER PADRÃO COM BOTÃO OK VERDE iOS -->
+    <header>
+        <a href="index.html" class="btn-ok-header">OK</a>
+        <h1>Vigilância Sanitária</h1>
+        <h2>Consulta Alvarás Sanitários</h2>
+    </header>
 
-        <div class="filters">
-            <h2>🔍 Filtros de Busca</h2>
+    <div class="container">
+        <!-- Filtros -->
+        <div class="card">
+            <h3>🔍 Filtros de Busca</h3>
             <div class="filter-grid">
                 <div class="filter-group">
                     <label for="dataInicial">Data Inicial de Emissão:</label>
@@ -448,11 +448,12 @@
             </div>
             <div class="btn-container">
                 <button class="btn btn-primary" onclick="buscarAlvaras()">🔍 Buscar</button>
-                <button class="btn btn-secondary" onclick="limparFiltros()">🔄 Limpar Filtros</button>
+                <button class="btn btn-secondary" onclick="limparFiltros()">🔄 Limpar</button>
             </div>
         </div>
 
-        <div class="stats-container">
+        <!-- Estatísticas -->
+        <div class="stats-grid">
             <div class="stat-card">
                 <h3 id="totalAlvaras">0</h3>
                 <p>Total de Alvarás</p>
@@ -467,12 +468,16 @@
             </div>
         </div>
 
+        <!-- Cache Info -->
         <div class="cache-info">
             <span>💾 Cache: <span id="cacheStatus">Nenhum dado carregado</span></span>
-            <button class="btn btn-secondary" onclick="forcarAtualizacao()">🔄 Forçar Atualização</button>
+            <button onclick="forcarAtualizacao()" style="padding: 8px 16px; background: #34C759; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9em;">
+                🔄 Forçar Atualização
+            </button>
         </div>
 
-        <div class="table-container">
+        <!-- Tabela -->
+        <div class="card">
             <div class="pagination-controls">
                 <div>
                     <label for="pageSize">Registros por página: </label>
@@ -508,16 +513,14 @@
         </div>
     </div>
 
-    <!-- Modal de Detalhes -->
+    <!-- Modal -->
     <div id="detalhesModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>📄 Detalhes do Alvará</h2>
                 <span class="close" onclick="fecharModal()">&times;</span>
             </div>
-            <div class="modal-body" id="modalBody">
-                <!-- Conteúdo será preenchido dinamicamente -->
-            </div>
+            <div class="modal-body" id="modalBody"></div>
         </div>
     </div>
 
@@ -611,7 +614,7 @@
         async function inicializar() {
             document.getElementById('loadingMessage').style.display = 'block';
             
-            // Carregar todos os CSVs
+            // Carregar todos os CSVs do subdiretório data/
             [dadosAlvara, dadosAlvlib, dadosRegulados, dadosBairros, dadosCnae] = await Promise.all([
                 carregarCSV('data/alvara.csv'),
                 carregarCSV('data/alvlib.csv'),
