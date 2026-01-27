@@ -613,11 +613,11 @@
             
             // Carregar todos os CSVs
             [dadosAlvara, dadosAlvlib, dadosRegulados, dadosBairros, dadosCnae] = await Promise.all([
-                carregarCSV('alvara.csv'),
-                carregarCSV('alvlib.csv'),
-                carregarCSV('regulados.csv'),
-                carregarCSV('bairros.csv'),
-                carregarCSV('cnae.csv')
+                carregarCSV('data/alvara.csv'),
+                carregarCSV('data/alvlib.csv'),
+                carregarCSV('data/regulados.csv'),
+                carregarCSV('data/bairros.csv'),
+                carregarCSV('data/cnae.csv')
             ]);
             
             // Filtrar apenas alvarás com formato válido
