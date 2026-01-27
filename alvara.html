@@ -410,6 +410,64 @@
                 grid-template-columns: 1fr;
             }
         }
+
+ /* Tabela com scroll horizontal e primeira coluna fixa em mobile */
+    @media (max-width: 768px) {
+        .card {
+            padding: 16px;
+        }
+        
+        #alvarasTable {
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        #alvarasTable thead,
+        #alvarasTable tbody {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+        
+        #alvarasTable thead tr,
+        #alvarasTable tbody tr {
+            display: table-row;
+        }
+        
+        #alvarasTable th,
+        #alvarasTable td {
+            display: table-cell;
+        }
+        
+        /* Primeira coluna fixa */
+        #alvarasTable th:first-child,
+        #alvarasTable td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 10;
+            background: #1a3a6b;
+            min-width: 120px;
+            max-width: 120px;
+        }
+        
+        #alvarasTable tbody td:first-child {
+            background: white;
+            font-weight: bold;
+            border-right: 2px solid #eee;
+        }
+        
+        #alvarasTable tbody tr:hover td:first-child {
+            background: #f8f9fa;
+        }
+        
+        /* Demais colunas com largura mínima */
+        #alvarasTable th:not(:first-child),
+        #alvarasTable td:not(:first-child) {
+            min-width: 150px;
+        }
+    }
+        
     </style>
 </head>
 <body>
@@ -523,6 +581,68 @@
             <div class="modal-body" id="modalBody"></div>
         </div>
     </div>
+<style>
+    /* ... (mantenha todo o CSS anterior) ... */
+    
+    /* ADICIONAR NO FINAL DO CSS: */
+    
+    /* Tabela com scroll horizontal e primeira coluna fixa em mobile */
+    @media (max-width: 768px) {
+        .card {
+            padding: 16px;
+        }
+        
+        #alvarasTable {
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        #alvarasTable thead,
+        #alvarasTable tbody {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+        
+        #alvarasTable thead tr,
+        #alvarasTable tbody tr {
+            display: table-row;
+        }
+        
+        #alvarasTable th,
+        #alvarasTable td {
+            display: table-cell;
+        }
+        
+        /* Primeira coluna fixa */
+        #alvarasTable th:first-child,
+        #alvarasTable td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 10;
+            background: #1a3a6b;
+            min-width: 120px;
+            max-width: 120px;
+        }
+        
+        #alvarasTable tbody td:first-child {
+            background: white;
+            font-weight: bold;
+            border-right: 2px solid #eee;
+        }
+        
+        #alvarasTable tbody tr:hover td:first-child {
+            background: #f8f9fa;
+        }
+        
+        /* Demais colunas com largura mínima */
+        #alvarasTable th:not(:first-child),
+        #alvarasTable td:not(:first-child) {
+            min-width: 150px;
+        }
+    }
+</style>
 
 <script>
     // Variáveis globais
@@ -596,10 +716,6 @@
             }
             
             console.log(`${arquivo} carregado:`, dados.length, 'registros');
-            if (dados.length > 0) {
-                console.log('Primeiros campos:', Object.keys(dados[0]).slice(0, 10));
-                console.log('Exemplo registro:', dados[0]);
-            }
             
             return dados;
         } catch (erro) {
@@ -613,6 +729,11 @@
         if (!numero) return false;
         const numeroLimpo = limparNumeroAlvara(numero);
         return /^\d{8}$/.test(numeroLimpo);
+    }
+
+    // Função para verificar se alvará foi emitido (dt_emite preenchida)
+    function alvaraEmitido(alvara) {
+        return alvara.dt_emite && alvara.dt_emite.trim() !== '';
     }
 
     // Função para formatar data DD.MM.YYYY para Date
@@ -642,35 +763,15 @@
     // Função melhorada para buscar regulado
     function buscarRegulado(codigoAlvara) {
         if (!codigoAlvara) return null;
-        
         const codigoLimpo = limparCodigo(codigoAlvara);
-        
-        // Buscar com código limpo
-        const regulado = dadosRegulados.find(r => limparCodigo(r.codigo) === codigoLimpo);
-        
-        if (regulado) {
-            console.log('✓ Regulado encontrado para código:', codigoLimpo, '→', regulado.razao);
-        } else {
-            console.warn('✗ Regulado NÃO encontrado para código:', codigoLimpo);
-        }
-        
-        return regulado;
+        return dadosRegulados.find(r => limparCodigo(r.codigo) === codigoLimpo);
     }
 
     // Função melhorada para buscar bairro
     function buscarBairro(codigoBairro) {
         if (!codigoBairro) return null;
-        
         const codigoLimpo = limparCodigo(codigoBairro);
-        
-        // Buscar com código limpo
-        const bairro = dadosBairros.find(b => limparCodigo(b.codigo) === codigoLimpo);
-        
-        if (bairro) {
-            console.log('✓ Bairro encontrado:', bairro.nome);
-        }
-        
-        return bairro;
+        return dadosBairros.find(b => limparCodigo(b.codigo) === codigoLimpo);
     }
 
     // Inicializar aplicação
@@ -688,37 +789,25 @@
             carregarCSV('data/cnae.csv')
         ]);
         
-        // Filtrar apenas alvarás com formato válido
+        // Filtrar apenas alvarás EMITIDOS (com dt_emite preenchida)
         const totalAlvaras = dadosAlvara.length;
-        dadosAlvara = dadosAlvara.filter(alvara => validarFormatoAlvara(alvara.numero));
+        dadosAlvara = dadosAlvara.filter(alvara => 
+            validarFormatoAlvara(alvara.numero) && alvaraEmitido(alvara)
+        );
         
         console.log('=== DADOS CARREGADOS COM SUCESSO ===');
         console.log('- Alvarás totais:', totalAlvaras);
-        console.log('- Alvarás válidos (8 dígitos):', dadosAlvara.length);
+        console.log('- Alvarás EMITIDOS (com data de emissão):', dadosAlvara.length);
         console.log('- Regulados:', dadosRegulados.length);
         console.log('- Bairros:', dadosBairros.length);
         console.log('- CNAEs:', dadosCnae.length);
         console.log('- Liberações:', dadosAlvlib.length);
         
-        // Teste de match
-        if (dadosAlvara.length > 0 && dadosRegulados.length > 0) {
-            console.log('\n=== TESTE DE MATCH ===');
-            const primeiroAlvara = dadosAlvara[0];
-            console.log('Primeiro alvará - código:', primeiroAlvara.codigo);
-            const regulado = buscarRegulado(primeiroAlvara.codigo);
-            if (regulado) {
-                console.log('✓ Match OK! Razão:', regulado.razao);
-            } else {
-                console.log('✗ Match FALHOU!');
-            }
-        }
-        
         document.getElementById('cacheStatus').textContent = 
-            `${dadosAlvara.length} alvarás carregados em ${new Date().toLocaleString('pt-BR')}`;
+            `${dadosAlvara.length} alvarás emitidos carregados em ${new Date().toLocaleString('pt-BR')}`;
         
         document.getElementById('loadingMessage').style.display = 'none';
         
-        // Limpar filtros e buscar todos os alvarás
         limparFiltros();
     }
 
@@ -730,11 +819,7 @@
         const razaoSocial = document.getElementById('razaoSocial').value.toLowerCase().trim();
         const fantasia = document.getElementById('fantasia').value.toLowerCase().trim();
         
-        console.log('=== INICIANDO BUSCA ===');
-        console.log('Filtros:', { dataInicial, dataFinal, numeroAlvara, razaoSocial, fantasia });
-        
         alvarasFiltrados = dadosAlvara.filter(alvara => {
-            // Filtro por número
             if (numeroAlvara) {
                 const numeroAlvaraLimpo = limparNumeroAlvara(alvara.numero);
                 if (!numeroAlvaraLimpo.includes(numeroAlvara)) {
@@ -742,7 +827,6 @@
                 }
             }
             
-            // Filtro por data
             if (dataInicial || dataFinal) {
                 const dataEmissao = parseData(alvara.dt_emite);
                 if (!dataEmissao) return false;
@@ -758,7 +842,6 @@
                 }
             }
             
-            // Filtro por razão social ou fantasia
             if (razaoSocial || fantasia) {
                 const regulado = buscarRegulado(alvara.codigo);
                 if (!regulado) return false;
@@ -774,8 +857,6 @@
             
             return true;
         });
-        
-        console.log('Alvarás encontrados:', alvarasFiltrados.length);
         
         atualizarEstatisticas();
         paginaAtual = 1;
@@ -879,7 +960,6 @@
             tbody.appendChild(tr);
         });
         
-        // Atualizar informações de paginação
         const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina);
         document.getElementById('paginationInfo').textContent = 
             `Página ${paginaAtual} de ${totalPaginas} | Exibindo ${inicio + 1}-${fim} de ${alvarasFiltrados.length} registros`;
@@ -887,9 +967,6 @@
 
     // Mostrar detalhes do alvará
     function mostrarDetalhes(alvara) {
-        console.log('=== ABRINDO DETALHES DO ALVARÁ ===');
-        console.log('Código do alvará:', alvara.codigo);
-        
         const regulado = buscarRegulado(alvara.codigo);
         const bairro = regulado ? buscarBairro(regulado.cdbai) : null;
         const liberacoes = dadosAlvlib.filter(lib => limparNumeroAlvara(lib.alvara) === limparNumeroAlvara(alvara.numero));
@@ -952,15 +1029,6 @@
                             <span>${bairro ? bairro.nome : (regulado.bairro || '-')}</span>
                         </div>
                     </div>
-                </div>
-            `;
-        } else {
-            html += `
-                <div class="info-section">
-                    <h3>⚠️ Dados do Estabelecimento</h3>
-                    <p style="color: #856404; background: #fff3cd; padding: 15px; border-radius: 8px;">
-                        Dados do estabelecimento não encontrados para o código: ${alvara.codigo}
-                    </p>
                 </div>
             `;
         }
