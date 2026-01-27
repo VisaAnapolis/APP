@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <title>Alvarás Emitidos - Vigilância Sanitária</title>
+
+    <!-- MESMOS CSS/JS DO APP PRINCIPAL E DO OS2 -->
+    <link rel="stylesheet" href="css/estilos.css" />
+    <link rel="stylesheet" href="css/tabelas.css" />
+    <link rel="stylesheet" href="css/modais.css" />
+    <script src="js/jquery.min.js"></script>
+    <script src="js/app.js"></script>
+
+    <style>
+        /* Ajustes pontuais, se necessário */
+        .filtros-container {
+            margin-bottom: 15px;
+        }
+        .filtro-label {
+            font-weight: bold;
+            margin-right: 4px;
+        }
+        .filtro-grupo {
+            margin-right: 15px;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        .resumo-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .card-resumo {
+            padding: 8px 14px;
+            border-radius: 4px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            font-size: 13px;
+        }
+        .tabela-alvaras {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .tabela-alvaras th,
+        .tabela-alvaras td {
+            border: 1px solid #ddd;
+            padding: 4px 6px;
+            font-size: 12px;
+        }
+        .tabela-alvaras th {
+            background-color: #f0f0f0;
+        }
+        .linha-clicavel:hover {
+            background-color: #e8f3ff;
+            cursor: pointer;
+        }
+        .icone-cancelado {
+            color: red;
+            font-weight: bold;
+        }
+
+        /* Modal */
+        .modal {
+            display: none; /* será controlado via JS */
+            position: fixed;
+            z-index: 9999;
+            padding-top: 40px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-conteudo {
+            background-color: #fff;
+            margin: auto;
+            padding: 15px 20px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 900px;
+            border-radius: 4px;
+        }
+        .modal-header {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .modal-fechar {
+            float: right;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .modal-bloco {
+            margin-bottom: 10px;
+        }
+        .modal-bloco h4 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+        }
+        .tabela-atividades {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+        .tabela-atividades th,
+        .tabela-atividades td {
+            border: 1px solid #ddd;
+            padding: 3px 4px;
+        }
+        .tabela-atividades th {
+            background-color: #f3f3f3;
+        }
+        .botoes-modal {
+            margin-top: 10px;
+            text-align: right;
+        }
+        .btn {
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 3px;
+            border: 1px solid #999;
+            background-color: #f5f5f5;
+            cursor: pointer;
+        }
+        .btn-primario {
+            background-color: #007bff;
+            color: #fff;
+            border-color: #007bff;
+        }
+        .btn-perigo {
+            background-color: #dc3545;
+            color: #fff;
+            border-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER GERAL DO APP (AJUSTE PARA O MESMO DO OS2) -->
+    <header>
+        <h1>Diretoria de Vigilância em Saúde - Anápolis</h1>
+        <h2>Sistema CVS - Alvarás Emitidos</h2>
+    </header>
+
+    <main>
+
+        <!-- FILTROS (PADRÃO OS2) -->
+        <section class="filtros-container">
+            <h3>🔍 Filtros de Busca</h3>
+
+            <div class="filtro-grupo">
+                <label for="filtroDataIni" class="filtro-label">Data de Emissão (Inicial):</label>
+                <input type="date" id="filtroDataIni" />
+            </div>
+
+            <div class="filtro-grupo">
+                <label for="filtroDataFim" class="filtro-label">Data de Emissão (Final):</label>
+                <input type="date" id="filtroDataFim" />
+            </div>
+
+            <div class="filtro-grupo">
+                <label for="filtroRazao" class="filtro-label">Razão Social:</label>
+                <input type="text" id="filtroRazao" size="30" />
+            </div>
+
+            <div class="filtro-grupo">
+                <label for="filtroFantasia" class="filtro-label">Nome Fantasia:</label>
+                <input type="text" id="filtroFantasia" size="30" />
+            </div>
+
+            <div class="filtro-grupo">
+                <label for="filtroNumero" class="filtro-label">Número do Alvará:</label>
+                <input type="text" id="filtroNumero" size="10" maxlength="8" />
+            </div>
+
+            <div class="filtro-grupo">
+                <button id="btnBuscar" class="btn btn-primario">🔍 Buscar</button>
+            </div>
+        </section>
+
+        <!-- CARDS DE RESUMO (PADRÃO OS2) -->
+        <section class="resumo-cards">
+            <div class="card-resumo">
+                <div><strong>Total de Alvarás</strong></div>
+                <div id="totalAlvaras">0</div>
+            </div>
+            <!-- Se quiser futuramente: ativos/cancelados, etc. -->
+        </section>
+
+        <!-- TABELA PRINCIPAL DE ALVARÁS -->
+        <section>
+            <table class="tabela-alvaras">
+                <thead>
+                    <tr>
+                        <th>Número</th>
+                        <th>Data Emissão</th>
+                        <th>Data Validade</th>
+                        <th>Autenticador</th>
+                        <th>Razão Social</th>
+                        <th>Nome Fantasia</th>
+                        <th>Cancelado</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyAlvaras">
+                    <!-- Linhas preenchidas via JS -->
+                    <!-- Exemplo de linha:
+                    <tr class="linha-clicavel" data-numero="20260150">
+                        <td>20260150</td>
+                        <td>15/01/2026</td>
+                        <td>31/12/2026</td>
+                        <td>ABCD1234</td>
+                        <td>EMPRESA X LTDA</td>
+                        <td>EMPRESA X</td>
+                        <td><span class="icone-cancelado">✖</span></td>
+                    </tr>
+                    -->
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+    <!-- MODAL DE DETALHES DO ALVARÁ -->
+    <div id="modalAlvara" class="modal">
+        <div class="modal-conteudo">
+            <span class="modal-fechar" id="fecharModal">&times;</span>
+            <div class="modal-header">
+                Detalhes do Alvará
+            </div>
+
+            <!-- BLOCO DADOS GERAIS -->
+            <div class="modal-bloco" id="blocoDadosGerais">
+                <h4>Dados do Alvará e do Estabelecimento</h4>
+                <div><strong>Número do Alvará:</strong> <span id="detNumero"></span></div>
+                <div><strong>Autenticador:</strong> <span id="detAutenticador"></span></div>
+                <div><strong>Data Emissão:</strong> <span id="detDtEmite"></span></div>
+                <div><strong>Data Validade:</strong> <span id="detDtValidade"></span></div>
+                <div><strong>Cancelado:</strong> <span id="detCancelado"></span></div>
+                <div><strong>CNPJ:</strong> <span id="detCnpj"></span></div>
+                <div><strong>Razão Social:</strong> <span id="detRazao"></span></div>
+                <div><strong>Nome Fantasia:</strong> <span id="detFantasia"></span></div>
+                <div><strong>Endereço:</strong> <span id="detLogradouro"></span>, <span id="detComplemento"></span> - <span id="detBairro"></span></div>
+            </div>
+
+            <!-- BLOCO ATIVIDADES / LIBERAÇÕES -->
+            <div class="modal-bloco" id="blocoAtividades">
+                <h4>Atividades Econômicas Liberadas</h4>
+                <table class="tabela-atividades">
+                    <thead>
+                        <tr>
+                            <th>Exercício</th>
+                            <th>Data Liberação</th>
+                            <th>CNAE</th>
+                            <th>Descrição</th>
+                            <th>Autoridade</th>
+                            <th>Fiscal (Liberante)</th>
+                            <th>Nº Documento</th>
+                            <th>Data Documento</th>
+                            <th>Autenticador</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyAtividades">
+                        <!-- Preenchido via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="botoes-modal">
+                <button id="btnImprimir" class="btn btn-primario">🖨️ Imprimir</button>
+                <button id="btnFechar" class="btn">Voltar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ======= CONFIGURAÇÃO BÁSICA / HOOKS JS =======
+    // Aqui você pluga chamadas ao backend (Delphi/CSV) para:
+    // - Buscar a lista de alvarás com filtros
+    // - Buscar detalhes (alvara + regulados + bairros + alvlib + cnae) de um número
+
+    // Exemplo de estrutura esperada para uma linha na tabela principal:
+    // {
+    //   numero: '20260150',
+    //   dt_emite: '2026-01-15',      // ou '15/01/2026' (ajuste formatação)
+    //   dt_validade: '2026-12-31',
+    //   autenticador: 'ABC123',
+    //   cancelado: true/false,
+    //   razao_social: 'EMPRESA X LTDA',
+    //   nome_fantasia: 'EMPRESA X'
+    // }
+
+    function formatarData(iso) {
+        if (!iso) return '';
+        // aceita 'YYYY-MM-DD' ou 'DD.MM.YYYY' etc; ajuste se necessário
+        if (iso.indexOf('-') > -1) {
+            const [y,m,d] = iso.split('-');
+            return d + '/' + m + '/' + y;
+        }
+        if (iso.indexOf('.') > -1) {
+            const partes = iso.split('.');
+            if (partes.length === 3) return partes[0] + '/' + partes[1] + '/' + partes[2];
+        }
+        return iso;
+    }
+
+    function iconeCancelado(flag) {
+        return flag ? '<span class="icone-cancelado" title="Cancelado">✖</span>' : '';
+    }
+
+    function carregarAlvaras() {
+        const dtIni = $('#filtroDataIni').val();
+        const dtFim = $('#filtroDataFim').val();
+        const razao = $('#filtroRazao').val();
+        const fantasia = $('#filtroFantasia').val();
+        const numero = $('#filtroNumero').val();
+
+        // Aqui você chama sua API / rotina Delphi que lê alvara.csv + regulados
+        // e retorna JSON com os campos descritos acima, já filtrados.
+        //
+        // Exemplo de chamada fictícia via AJAX:
+        //
+        // $.getJSON('api/alvaras', { dt_ini: dtIni, dt_fim: dtFim, razao: razao, fantasia: fantasia, numero: numero }, function(res) {
+        //     preencherTabelaAlvaras(res.lista);
+        //     $('#totalAlvaras').text(res.total);
+        // });
+        //
+        // Para este template, vou simular com um array vazio:
+        const lista = []; // substituir pelo retorno real
+        preencherTabelaAlvaras(lista);
+        $('#totalAlvaras').text(lista.length);
+    }
+
+    function preencherTabelaAlvaras(lista) {
+        const tbody = $('#tbodyAlvaras');
+        tbody.empty();
+
+        lista.forEach(function(item) {
+            const tr = $('<tr></tr>')
+                .addClass('linha-clicavel')
+                .attr('data-numero', item.numero);
+
+            tr.append('<td>' + item.numero + '</td>');
+            tr.append('<td>' + formatarData(item.dt_emite) + '</td>');
+            tr.append('<td>' + formatarData(item.dt_validade) + '</td>');
+            tr.append('<td>' + (item.autenticador || '') + '</td>');
+            tr.append('<td>' + (item.razao_social || '') + '</td>');
+            tr.append('<td>' + (item.nome_fantasia || '') + '</td>');
+            tr.append('<td style="text-align:center;">' + iconeCancelado(item.cancelado) + '</td>');
+
+            tbody.append(tr);
+        });
+    }
+
+    function abrirModal(numero) {
+        // Chamar backend para buscar detalhes:
+        //
+        // $.getJSON('api/alvara_detalhe', { numero: numero }, function(det) {
+        //    preencherModal(det);
+        //    $('#modalAlvara').show();
+        // });
+        //
+        // Estrutura esperada em det:
+        // det.alvara = { numero, autenticador, dt_emite, dt_validade, cancelado, cnpj, razao_social, nome_fantasia, logradouro, complemento, bairro }
+        // det.atividades = [ { exercicio, dt_libera, atividade, desc_atividade, autoridade, liberante, documento, dt_documento, autenticador } ]
+
+        // Para efeito de template, vou montar um objeto fictício:
+        const det = {
+            alvara: {
+                numero: numero,
+                autenticador: 'AUT123456',
+                dt_emite: '2026-01-15',
+                dt_validade: '2026-12-31',
+                cancelado: false,
+                cnpj: '00.000.000/0001-00',
+                razao_social: 'EMPRESA EXEMPLO LTDA',
+                nome_fantasia: 'EMPRESA EXEMPLO',
+                logradouro: 'Av. Brasil, 1000',
+                complemento: 'Sala 101',
+                bairro: 'Centro'
+            },
+            atividades: [
+                {
+                    exercicio: '2026',
+                    dt_libera: '2026-01-15',
+                    atividade: '4711301',
+                    desc_atividade: 'Comércio varejista de mercadorias em geral',
+                    autoridade: 'Secretário de Saúde',
+                    liberante: 'Fiscal João da Silva',
+                    documento: 'PORTARIA 001/2026',
+                    dt_documento: '2026-01-10',
+                    autenticador: 'ATV123'
+                }
+            ]
+        };
+
+        preencherModal(det);
+        $('#modalAlvara').show();
+    }
+
+    function preencherModal(det) {
+        const a = det.alvara || {};
+        $('#detNumero').text(a.numero || '');
+        $('#detAutenticador').text(a.autenticador || '');
+        $('#detDtEmite').text(formatarData(a.dt_emite));
+        $('#detDtValidade').text(formatarData(a.dt_validade));
+        $('#detCancelado').text(a.cancelado ? 'Sim' : 'Não');
+        $('#detCnpj').text(a.cnpj || '');
+        $('#detRazao').text(a.razao_social || '');
+        $('#detFantasia').text(a.nome_fantasia || '');
+        $('#detLogradouro').text(a.logradouro || '');
+        $('#detComplemento').text(a.complemento || '');
+        $('#detBairro').text(a.bairro || '');
+
+        const tbody = $('#tbodyAtividades');
+        tbody.empty();
+
+        (det.atividades || []).forEach(function(atv) {
+            const tr = $('<tr></tr>');
+            tr.append('<td>' + (atv.exercicio || '') + '</td>');
+            tr.append('<td>' + formatarData(atv.dt_libera) + '</td>');
+            tr.append('<td>' + (atv.atividade || '') + '</td>');
+            tr.append('<td>' + (atv.desc_atividade || '') + '</td>');
+            tr.append('<td>' + (atv.autoridade || '') + '</td>');
+            tr.append('<td>' + (atv.liberante || '') + '</td>');
+            tr.append('<td>' + (atv.documento || '') + '</td>');
+            tr.append('<td>' + formatarData(atv.dt_documento) + '</td>');
+            tr.append('<td>' + (atv.autenticador || '') + '</td>');
+            tbody.append(tr);
+        });
+    }
+
+    function fecharModal() {
+        $('#modalAlvara').hide();
+    }
+
+    function imprimirDetalhe() {
+        // Você pode abrir uma nova janela com o conteúdo do modal formatado para impressão,
+        // ou acionar uma rota específica que gera um PDF/HTML de impressão do alvará.
+        window.print();
+    }
+
+    $(document).ready(function() {
+
+        // Clique em Buscar
+        $('#btnBuscar').on('click', function() {
+            carregarAlvaras();
+        });
+
+        // Clique na linha da tabela
+        $('#tbodyAlvaras').on('click', '.linha-clicavel', function() {
+            const numero = $(this).data('numero');
+            abrirModal(numero);
+        });
+
+        // Fechar modal (X e botão Voltar)
+        $('#fecharModal, #btnFechar').on('click', function() {
+            fecharModal();
+        });
+
+        // Imprimir
+        $('#btnImprimir').on('click', function() {
+            imprimirDetalhe();
+        });
+
+        // Carregar lista inicialmente (se desejar)
+        // carregarAlvaras();
+    });
+    </script>
+</body>
+</html>
