@@ -542,9 +542,14 @@
                 const response = await fetch(arquivo);
                 const texto = await response.text();
                 const linhas = texto.split('\n');
-                const cabecalho = linhas[0].split(';').map(campo => 
-                    campo.replace(/"/g, '').trim().toLowerCase()
+                
+                // Processar cabeçalho mantendo maiúsculas/minúsculas originais
+                const cabecalhoOriginal = linhas[0].split(';').map(campo => 
+                    campo.replace(/"/g, '').trim()
                 );
+                
+                // Criar versão lowercase para busca
+                const cabecalhoLower = cabecalhoOriginal.map(c => c.toLowerCase());
                 
                 const dados = [];
                 for (let i = 1; i < linhas.length; i++) {
@@ -567,11 +572,17 @@
                     valores.push(valorAtual.trim());
                     
                     const obj = {};
-                    cabecalho.forEach((campo, index) => {
-                        obj[campo] = valores[index] ? valores[index].replace(/"/g, '') : '';
+                    cabecalhoLower.forEach((campo, index) => {
+                        obj[campo] = valores[index] ? valores[index].replace(/"/g, '').trim() : '';
                     });
                     dados.push(obj);
                 }
+                
+                console.log(`${arquivo} carregado:`, dados.length, 'registros');
+                if (dados.length > 0) {
+                    console.log('Campos disponíveis:', Object.keys(dados[0]));
+                }
+                
                 return dados;
             } catch (erro) {
                 console.error(`Erro ao carregar ${arquivo}:`, erro);
@@ -610,9 +621,47 @@
             return cnpj;
         }
 
+        // Função melhorada para buscar regulado
+        function buscarRegulado(codigoAlvara) {
+            // Tentar match exato primeiro
+            let regulado = dadosRegulados.find(r => r.codigo === codigoAlvara);
+            
+            // Se não encontrar, tentar sem espaços/formatação
+            if (!regulado) {
+                const codigoLimpo = codigoAlvara.toString().trim();
+                regulado = dadosRegulados.find(r => r.codigo.toString().trim() === codigoLimpo);
+            }
+            
+            if (regulado) {
+                console.log('Regulado encontrado:', regulado.razao);
+            } else {
+                console.warn('Regulado não encontrado para código:', codigoAlvara);
+            }
+            
+            return regulado;
+        }
+
+        // Função melhorada para buscar bairro
+        function buscarBairro(codigoBairro) {
+            if (!codigoBairro) return null;
+            
+            // Tentar match exato
+            let bairro = dadosBairros.find(b => b.codigo === codigoBairro);
+            
+            // Se não encontrar, tentar sem espaços/formatação
+            if (!bairro) {
+                const codigoLimpo = codigoBairro.toString().trim();
+                bairro = dadosBairros.find(b => b.codigo.toString().trim() === codigoLimpo);
+            }
+            
+            return bairro;
+        }
+
         // Inicializar aplicação
         async function inicializar() {
             document.getElementById('loadingMessage').style.display = 'block';
+            
+            console.log('Iniciando carregamento dos dados...');
             
             // Carregar todos os CSVs do subdiretório data/
             [dadosAlvara, dadosAlvlib, dadosRegulados, dadosBairros, dadosCnae] = await Promise.all([
@@ -625,6 +674,13 @@
             
             // Filtrar apenas alvarás com formato válido
             dadosAlvara = dadosAlvara.filter(alvara => validarFormatoAlvara(alvara.numero));
+            
+            console.log('Dados carregados com sucesso!');
+            console.log('- Alvarás válidos:', dadosAlvara.length);
+            console.log('- Regulados:', dadosRegulados.length);
+            console.log('- Bairros:', dadosBairros.length);
+            console.log('- CNAEs:', dadosCnae.length);
+            console.log('- Liberações:', dadosAlvlib.length);
             
             document.getElementById('cacheStatus').textContent = 
                 `${dadosAlvara.length} alvarás carregados em ${new Date().toLocaleString('pt-BR')}`;
@@ -667,7 +723,7 @@
                 
                 // Filtro por razão social ou fantasia
                 if (razaoSocial || fantasia) {
-                    const regulado = dadosRegulados.find(r => r.codigo === alvara.codigo);
+                    const regulado = buscarRegulado(alvara.codigo);
                     if (!regulado) return false;
                     
                     if (razaoSocial && !regulado.razao.toLowerCase().includes(razaoSocial)) {
@@ -690,7 +746,7 @@
         // Atualizar estatísticas
         function atualizarEstatisticas() {
             const total = alvarasFiltrados.length;
-            const cancelados = alvarasFiltrados.filter(a => a.cancelado === 'true').length;
+            const cancelados = alvarasFiltrados.filter(a => a.cancelado === 'true' || a.cancelado === 'True').length;
             const validos = total - cancelados;
             
             document.getElementById('totalAlvaras').textContent = total;
@@ -717,11 +773,11 @@
                     valorA = parseData(a.dt_emite);
                     valorB = parseData(b.dt_emite);
                 } else if (campo === 'cancelado') {
-                    valorA = a.cancelado === 'true' ? 1 : 0;
-                    valorB = b.cancelado === 'true' ? 1 : 0;
+                    valorA = (a.cancelado === 'true' || a.cancelado === 'True') ? 1 : 0;
+                    valorB = (b.cancelado === 'true' || b.cancelado === 'True') ? 1 : 0;
                 } else {
-                    const reguladoA = dadosRegulados.find(r => r.codigo === a.codigo);
-                    const reguladoB = dadosRegulados.find(r => r.codigo === b.codigo);
+                    const reguladoA = buscarRegulado(a.codigo);
+                    const reguladoB = buscarRegulado(b.codigo);
                     
                     if (campo === 'cnpj') {
                         valorA = reguladoA ? reguladoA.cgc : '';
@@ -763,16 +819,18 @@
             const alvarasPagina = alvarasFiltrados.slice(inicio, fim);
             
             alvarasPagina.forEach(alvara => {
-                const regulado = dadosRegulados.find(r => r.codigo === alvara.codigo);
+                const regulado = buscarRegulado(alvara.codigo);
                 const tr = document.createElement('tr');
                 tr.onclick = () => mostrarDetalhes(alvara);
+                
+                const isCancelado = alvara.cancelado === 'true' || alvara.cancelado === 'True';
                 
                 tr.innerHTML = `
                     <td><strong>${alvara.numero}</strong></td>
                     <td>${formatarData(alvara.dt_emite)}</td>
                     <td>
-                        <span class="badge ${alvara.cancelado === 'true' ? 'badge-danger' : 'badge-success'}">
-                            ${alvara.cancelado === 'true' ? 'Cancelado' : 'Válido'}
+                        <span class="badge ${isCancelado ? 'badge-danger' : 'badge-success'}">
+                            ${isCancelado ? 'Cancelado' : 'Válido'}
                         </span>
                     </td>
                     <td>${formatarCNPJ(regulado ? regulado.cgc : '-')}</td>
@@ -790,9 +848,11 @@
 
         // Mostrar detalhes do alvará
         function mostrarDetalhes(alvara) {
-            const regulado = dadosRegulados.find(r => r.codigo === alvara.codigo);
-            const bairro = regulado ? dadosBairros.find(b => b.codigo === regulado.cdbai) : null;
+            const regulado = buscarRegulado(alvara.codigo);
+            const bairro = regulado ? buscarBairro(regulado.cdbai) : null;
             const liberacoes = dadosAlvlib.filter(lib => lib.alvara === alvara.numero);
+            
+            const isCancelado = alvara.cancelado === 'true' || alvara.cancelado === 'True';
             
             let html = `
                 <div class="info-section">
@@ -812,13 +872,9 @@
                         </div>
                         <div class="info-item">
                             <strong>Status:</strong>
-                            <span class="badge ${alvara.cancelado === 'true' ? 'badge-danger' : 'badge-success'}">
-                                ${alvara.cancelado === 'true' ? 'Cancelado' : 'Válido'}
+                            <span class="badge ${isCancelado ? 'badge-danger' : 'badge-success'}">
+                                ${isCancelado ? 'Cancelado' : 'Válido'}
                             </span>
-                        </div>
-                        <div class="info-item">
-                            <strong>Autenticador:</strong>
-                            <span>${alvara.autenticador || '-'}</span>
                         </div>
                     </div>
                 </div>
@@ -835,7 +891,7 @@
                             </div>
                             <div class="info-item">
                                 <strong>Razão Social:</strong>
-                                <span>${regulado.razao}</span>
+                                <span>${regulado.razao || '-'}</span>
                             </div>
                             <div class="info-item">
                                 <strong>Nome Fantasia:</strong>
@@ -851,7 +907,7 @@
                             </div>
                             <div class="info-item">
                                 <strong>Bairro:</strong>
-                                <span>${bairro ? bairro.nome : '-'}</span>
+                                <span>${bairro ? bairro.nome : (regulado.bairro || '-')}</span>
                             </div>
                         </div>
                     </div>
@@ -872,7 +928,6 @@
                                         <th>Fiscal Liberante</th>
                                         <th>Documento</th>
                                         <th>Data Doc.</th>
-                                        <th>Autenticador</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -890,7 +945,6 @@
                             <td>${lib.liberante || '-'}</td>
                             <td>${lib.documento || '-'}</td>
                             <td>${formatarData(lib.dt_documento)}</td>
-                            <td>${lib.autenticador || '-'}</td>
                         </tr>
                     `;
                 });
