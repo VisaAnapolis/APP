@@ -524,7 +524,7 @@
         </div>
     </div>
 
-    <script>
+<script>
     // Variáveis globais
     let dadosAlvara = [];
     let dadosAlvlib = [];
@@ -536,10 +536,16 @@
     let tamanhoPagina = 50;
     let ordenacao = { campo: 'numero', direcao: 'desc' };
 
+    // Função para limpar espaços especiais e normais
+    function limparCodigo(codigo) {
+        if (!codigo) return '';
+        return codigo.toString().replace(/\u00A0/g, '').replace(/\s/g, '').trim();
+    }
+
     // Função para limpar espaços do número do alvará
     function limparNumeroAlvara(numero) {
         if (!numero) return '';
-        return numero.toString().replace(/\s/g, '');
+        return numero.toString().replace(/\u00A0/g, '').replace(/\s/g, '');
     }
 
     // Função para carregar CSV
@@ -549,9 +555,9 @@
             const texto = await response.text();
             const linhas = texto.split('\n');
             
-            // Processar cabeçalho mantendo maiúsculas/minúsculas originais
+            // Processar cabeçalho
             const cabecalhoOriginal = linhas[0].split(';').map(campo => 
-                campo.replace(/"/g, '').trim()
+                campo.replace(/"/g, '').replace(/\uFEFF/g, '').trim()
             );
             
             // Criar versão lowercase para busca
@@ -579,14 +585,20 @@
                 
                 const obj = {};
                 cabecalhoLower.forEach((campo, index) => {
-                    obj[campo] = valores[index] ? valores[index].replace(/"/g, '').trim() : '';
+                    let valor = valores[index] ? valores[index].replace(/"/g, '').trim() : '';
+                    // Limpar espaços especiais dos códigos
+                    if (campo === 'codigo' || campo === 'cdbai') {
+                        valor = limparCodigo(valor);
+                    }
+                    obj[campo] = valor;
                 });
                 dados.push(obj);
             }
             
             console.log(`${arquivo} carregado:`, dados.length, 'registros');
             if (dados.length > 0) {
-                console.log('Campos disponíveis:', Object.keys(dados[0]));
+                console.log('Primeiros campos:', Object.keys(dados[0]).slice(0, 10));
+                console.log('Exemplo registro:', dados[0]);
             }
             
             return dados;
@@ -629,19 +641,17 @@
 
     // Função melhorada para buscar regulado
     function buscarRegulado(codigoAlvara) {
-        // Tentar match exato primeiro
-        let regulado = dadosRegulados.find(r => r.codigo === codigoAlvara);
+        if (!codigoAlvara) return null;
         
-        // Se não encontrar, tentar sem espaços/formatação
-        if (!regulado) {
-            const codigoLimpo = codigoAlvara.toString().trim();
-            regulado = dadosRegulados.find(r => r.codigo.toString().trim() === codigoLimpo);
-        }
+        const codigoLimpo = limparCodigo(codigoAlvara);
+        
+        // Buscar com código limpo
+        const regulado = dadosRegulados.find(r => limparCodigo(r.codigo) === codigoLimpo);
         
         if (regulado) {
-            console.log('Regulado encontrado:', regulado.razao);
+            console.log('✓ Regulado encontrado para código:', codigoLimpo, '→', regulado.razao);
         } else {
-            console.warn('Regulado não encontrado para código:', codigoAlvara);
+            console.warn('✗ Regulado NÃO encontrado para código:', codigoLimpo);
         }
         
         return regulado;
@@ -651,13 +661,13 @@
     function buscarBairro(codigoBairro) {
         if (!codigoBairro) return null;
         
-        // Tentar match exato
-        let bairro = dadosBairros.find(b => b.codigo === codigoBairro);
+        const codigoLimpo = limparCodigo(codigoBairro);
         
-        // Se não encontrar, tentar sem espaços/formatação
-        if (!bairro) {
-            const codigoLimpo = codigoBairro.toString().trim();
-            bairro = dadosBairros.find(b => b.codigo.toString().trim() === codigoLimpo);
+        // Buscar com código limpo
+        const bairro = dadosBairros.find(b => limparCodigo(b.codigo) === codigoLimpo);
+        
+        if (bairro) {
+            console.log('✓ Bairro encontrado:', bairro.nome);
         }
         
         return bairro;
@@ -667,7 +677,7 @@
     async function inicializar() {
         document.getElementById('loadingMessage').style.display = 'block';
         
-        console.log('Iniciando carregamento dos dados...');
+        console.log('=== INICIANDO CARREGAMENTO DOS DADOS ===');
         
         // Carregar todos os CSVs do subdiretório data/
         [dadosAlvara, dadosAlvlib, dadosRegulados, dadosBairros, dadosCnae] = await Promise.all([
@@ -679,22 +689,37 @@
         ]);
         
         // Filtrar apenas alvarás com formato válido
+        const totalAlvaras = dadosAlvara.length;
         dadosAlvara = dadosAlvara.filter(alvara => validarFormatoAlvara(alvara.numero));
         
-        console.log('Dados carregados com sucesso!');
-        console.log('- Alvarás válidos:', dadosAlvara.length);
+        console.log('=== DADOS CARREGADOS COM SUCESSO ===');
+        console.log('- Alvarás totais:', totalAlvaras);
+        console.log('- Alvarás válidos (8 dígitos):', dadosAlvara.length);
         console.log('- Regulados:', dadosRegulados.length);
         console.log('- Bairros:', dadosBairros.length);
         console.log('- CNAEs:', dadosCnae.length);
         console.log('- Liberações:', dadosAlvlib.length);
+        
+        // Teste de match
+        if (dadosAlvara.length > 0 && dadosRegulados.length > 0) {
+            console.log('\n=== TESTE DE MATCH ===');
+            const primeiroAlvara = dadosAlvara[0];
+            console.log('Primeiro alvará - código:', primeiroAlvara.codigo);
+            const regulado = buscarRegulado(primeiroAlvara.codigo);
+            if (regulado) {
+                console.log('✓ Match OK! Razão:', regulado.razao);
+            } else {
+                console.log('✗ Match FALHOU!');
+            }
+        }
         
         document.getElementById('cacheStatus').textContent = 
             `${dadosAlvara.length} alvarás carregados em ${new Date().toLocaleString('pt-BR')}`;
         
         document.getElementById('loadingMessage').style.display = 'none';
         
-        // Buscar automaticamente todos os alvarás
-        buscarAlvaras();
+        // Limpar filtros e buscar todos os alvarás
+        limparFiltros();
     }
 
     // Função de busca
@@ -704,6 +729,9 @@
         const numeroAlvara = document.getElementById('numeroAlvara').value.trim().replace(/\s/g, '');
         const razaoSocial = document.getElementById('razaoSocial').value.toLowerCase().trim();
         const fantasia = document.getElementById('fantasia').value.toLowerCase().trim();
+        
+        console.log('=== INICIANDO BUSCA ===');
+        console.log('Filtros:', { dataInicial, dataFinal, numeroAlvara, razaoSocial, fantasia });
         
         alvarasFiltrados = dadosAlvara.filter(alvara => {
             // Filtro por número
@@ -746,6 +774,8 @@
             
             return true;
         });
+        
+        console.log('Alvarás encontrados:', alvarasFiltrados.length);
         
         atualizarEstatisticas();
         paginaAtual = 1;
@@ -842,7 +872,7 @@
                         ${isCancelado ? 'Cancelado' : 'Válido'}
                     </span>
                 </td>
-                <td>${formatarCNPJ(regulado ? regulado.cgc : '-')}</td>
+                <td>${regulado ? formatarCNPJ(regulado.cgc) : '-'}</td>
                 <td>${regulado ? regulado.razao : '-'}</td>
             `;
             
@@ -857,6 +887,9 @@
 
     // Mostrar detalhes do alvará
     function mostrarDetalhes(alvara) {
+        console.log('=== ABRINDO DETALHES DO ALVARÁ ===');
+        console.log('Código do alvará:', alvara.codigo);
+        
         const regulado = buscarRegulado(alvara.codigo);
         const bairro = regulado ? buscarBairro(regulado.cdbai) : null;
         const liberacoes = dadosAlvlib.filter(lib => limparNumeroAlvara(lib.alvara) === limparNumeroAlvara(alvara.numero));
@@ -921,6 +954,15 @@
                     </div>
                 </div>
             `;
+        } else {
+            html += `
+                <div class="info-section">
+                    <h3>⚠️ Dados do Estabelecimento</h3>
+                    <p style="color: #856404; background: #fff3cd; padding: 15px; border-radius: 8px;">
+                        Dados do estabelecimento não encontrados para o código: ${alvara.codigo}
+                    </p>
+                </div>
+            `;
         }
         
         if (liberacoes.length > 0) {
@@ -983,7 +1025,7 @@
         }
     }
 
-    // Limpar filtros
+    // Limpar filtros e fazer refresh
     function limparFiltros() {
         document.getElementById('dataInicial').value = '';
         document.getElementById('dataFinal').value = '';
@@ -1009,6 +1051,6 @@
     // Inicializar ao carregar a página
     window.onload = inicializar;
 </script>
-
+    
 </body>
 </html>
