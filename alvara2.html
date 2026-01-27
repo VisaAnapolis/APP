@@ -681,9 +681,11 @@
             return /^\d{8}$/.test(numeroLimpo);
         }
 
-        function alvaraEmitido(alvara) {
-            return alvara.dt_emite && alvara.dt_emite.trim() !== '';
-        }
+  function alvaraEmitido(alvara) {
+  const dtemite = alvara.dtemite ? String(alvara.dtemite).trim() : '';
+  return dtemite.length >= 8 && /^\d{2}\.\d{2}\.\d{4}$/.test(dtemite);
+}
+
 
         function parseData(dataStr) {
             if (!dataStr) return null;
