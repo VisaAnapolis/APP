@@ -525,480 +525,490 @@
     </div>
 
     <script>
-        // Variáveis globais
-        let dadosAlvara = [];
-        let dadosAlvlib = [];
-        let dadosRegulados = [];
-        let dadosBairros = [];
-        let dadosCnae = [];
-        let alvarasFiltrados = [];
-        let paginaAtual = 1;
-        let tamanhoPagina = 50;
-        let ordenacao = { campo: 'numero', direcao: 'desc' };
+    // Variáveis globais
+    let dadosAlvara = [];
+    let dadosAlvlib = [];
+    let dadosRegulados = [];
+    let dadosBairros = [];
+    let dadosCnae = [];
+    let alvarasFiltrados = [];
+    let paginaAtual = 1;
+    let tamanhoPagina = 50;
+    let ordenacao = { campo: 'numero', direcao: 'desc' };
 
-        // Função para carregar CSV
-        async function carregarCSV(arquivo) {
-            try {
-                const response = await fetch(arquivo);
-                const texto = await response.text();
-                const linhas = texto.split('\n');
+    // Função para limpar espaços do número do alvará
+    function limparNumeroAlvara(numero) {
+        if (!numero) return '';
+        return numero.toString().replace(/\s/g, '');
+    }
+
+    // Função para carregar CSV
+    async function carregarCSV(arquivo) {
+        try {
+            const response = await fetch(arquivo);
+            const texto = await response.text();
+            const linhas = texto.split('\n');
+            
+            // Processar cabeçalho mantendo maiúsculas/minúsculas originais
+            const cabecalhoOriginal = linhas[0].split(';').map(campo => 
+                campo.replace(/"/g, '').trim()
+            );
+            
+            // Criar versão lowercase para busca
+            const cabecalhoLower = cabecalhoOriginal.map(c => c.toLowerCase());
+            
+            const dados = [];
+            for (let i = 1; i < linhas.length; i++) {
+                if (linhas[i].trim() === '') continue;
                 
-                // Processar cabeçalho mantendo maiúsculas/minúsculas originais
-                const cabecalhoOriginal = linhas[0].split(';').map(campo => 
-                    campo.replace(/"/g, '').trim()
-                );
+                const valores = [];
+                let dentroAspas = false;
+                let valorAtual = '';
                 
-                // Criar versão lowercase para busca
-                const cabecalhoLower = cabecalhoOriginal.map(c => c.toLowerCase());
-                
-                const dados = [];
-                for (let i = 1; i < linhas.length; i++) {
-                    if (linhas[i].trim() === '') continue;
-                    
-                    const valores = [];
-                    let dentroAspas = false;
-                    let valorAtual = '';
-                    
-                    for (let char of linhas[i]) {
-                        if (char === '"') {
-                            dentroAspas = !dentroAspas;
-                        } else if (char === ';' && !dentroAspas) {
-                            valores.push(valorAtual.trim());
-                            valorAtual = '';
-                        } else {
-                            valorAtual += char;
-                        }
+                for (let char of linhas[i]) {
+                    if (char === '"') {
+                        dentroAspas = !dentroAspas;
+                    } else if (char === ';' && !dentroAspas) {
+                        valores.push(valorAtual.trim());
+                        valorAtual = '';
+                    } else {
+                        valorAtual += char;
                     }
-                    valores.push(valorAtual.trim());
-                    
-                    const obj = {};
-                    cabecalhoLower.forEach((campo, index) => {
-                        obj[campo] = valores[index] ? valores[index].replace(/"/g, '').trim() : '';
-                    });
-                    dados.push(obj);
+                }
+                valores.push(valorAtual.trim());
+                
+                const obj = {};
+                cabecalhoLower.forEach((campo, index) => {
+                    obj[campo] = valores[index] ? valores[index].replace(/"/g, '').trim() : '';
+                });
+                dados.push(obj);
+            }
+            
+            console.log(`${arquivo} carregado:`, dados.length, 'registros');
+            if (dados.length > 0) {
+                console.log('Campos disponíveis:', Object.keys(dados[0]));
+            }
+            
+            return dados;
+        } catch (erro) {
+            console.error(`Erro ao carregar ${arquivo}:`, erro);
+            return [];
+        }
+    }
+
+    // Função para validar formato de alvará (AAAANNNN)
+    function validarFormatoAlvara(numero) {
+        if (!numero) return false;
+        const numeroLimpo = limparNumeroAlvara(numero);
+        return /^\d{8}$/.test(numeroLimpo);
+    }
+
+    // Função para formatar data DD.MM.YYYY para Date
+    function parseData(dataStr) {
+        if (!dataStr) return null;
+        const partes = dataStr.split('.');
+        if (partes.length !== 3) return null;
+        return new Date(partes[2], partes[1] - 1, partes[0]);
+    }
+
+    // Função para formatar data para exibição
+    function formatarData(dataStr) {
+        if (!dataStr) return '-';
+        return dataStr;
+    }
+
+    // Função para formatar CNPJ
+    function formatarCNPJ(cnpj) {
+        if (!cnpj) return '-';
+        const numeros = cnpj.replace(/\D/g, '');
+        if (numeros.length === 14) {
+            return numeros.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+        }
+        return cnpj;
+    }
+
+    // Função melhorada para buscar regulado
+    function buscarRegulado(codigoAlvara) {
+        // Tentar match exato primeiro
+        let regulado = dadosRegulados.find(r => r.codigo === codigoAlvara);
+        
+        // Se não encontrar, tentar sem espaços/formatação
+        if (!regulado) {
+            const codigoLimpo = codigoAlvara.toString().trim();
+            regulado = dadosRegulados.find(r => r.codigo.toString().trim() === codigoLimpo);
+        }
+        
+        if (regulado) {
+            console.log('Regulado encontrado:', regulado.razao);
+        } else {
+            console.warn('Regulado não encontrado para código:', codigoAlvara);
+        }
+        
+        return regulado;
+    }
+
+    // Função melhorada para buscar bairro
+    function buscarBairro(codigoBairro) {
+        if (!codigoBairro) return null;
+        
+        // Tentar match exato
+        let bairro = dadosBairros.find(b => b.codigo === codigoBairro);
+        
+        // Se não encontrar, tentar sem espaços/formatação
+        if (!bairro) {
+            const codigoLimpo = codigoBairro.toString().trim();
+            bairro = dadosBairros.find(b => b.codigo.toString().trim() === codigoLimpo);
+        }
+        
+        return bairro;
+    }
+
+    // Inicializar aplicação
+    async function inicializar() {
+        document.getElementById('loadingMessage').style.display = 'block';
+        
+        console.log('Iniciando carregamento dos dados...');
+        
+        // Carregar todos os CSVs do subdiretório data/
+        [dadosAlvara, dadosAlvlib, dadosRegulados, dadosBairros, dadosCnae] = await Promise.all([
+            carregarCSV('data/alvara.csv'),
+            carregarCSV('data/alvlib.csv'),
+            carregarCSV('data/regulados.csv'),
+            carregarCSV('data/bairros.csv'),
+            carregarCSV('data/cnae.csv')
+        ]);
+        
+        // Filtrar apenas alvarás com formato válido
+        dadosAlvara = dadosAlvara.filter(alvara => validarFormatoAlvara(alvara.numero));
+        
+        console.log('Dados carregados com sucesso!');
+        console.log('- Alvarás válidos:', dadosAlvara.length);
+        console.log('- Regulados:', dadosRegulados.length);
+        console.log('- Bairros:', dadosBairros.length);
+        console.log('- CNAEs:', dadosCnae.length);
+        console.log('- Liberações:', dadosAlvlib.length);
+        
+        document.getElementById('cacheStatus').textContent = 
+            `${dadosAlvara.length} alvarás carregados em ${new Date().toLocaleString('pt-BR')}`;
+        
+        document.getElementById('loadingMessage').style.display = 'none';
+        
+        // Buscar automaticamente todos os alvarás
+        buscarAlvaras();
+    }
+
+    // Função de busca
+    function buscarAlvaras() {
+        const dataInicial = document.getElementById('dataInicial').value;
+        const dataFinal = document.getElementById('dataFinal').value;
+        const numeroAlvara = document.getElementById('numeroAlvara').value.trim().replace(/\s/g, '');
+        const razaoSocial = document.getElementById('razaoSocial').value.toLowerCase().trim();
+        const fantasia = document.getElementById('fantasia').value.toLowerCase().trim();
+        
+        alvarasFiltrados = dadosAlvara.filter(alvara => {
+            // Filtro por número
+            if (numeroAlvara) {
+                const numeroAlvaraLimpo = limparNumeroAlvara(alvara.numero);
+                if (!numeroAlvaraLimpo.includes(numeroAlvara)) {
+                    return false;
+                }
+            }
+            
+            // Filtro por data
+            if (dataInicial || dataFinal) {
+                const dataEmissao = parseData(alvara.dt_emite);
+                if (!dataEmissao) return false;
+                
+                if (dataInicial) {
+                    const dataIni = new Date(dataInicial);
+                    if (dataEmissao < dataIni) return false;
                 }
                 
-                console.log(`${arquivo} carregado:`, dados.length, 'registros');
-                if (dados.length > 0) {
-                    console.log('Campos disponíveis:', Object.keys(dados[0]));
+                if (dataFinal) {
+                    const dataFim = new Date(dataFinal);
+                    if (dataEmissao > dataFim) return false;
                 }
+            }
+            
+            // Filtro por razão social ou fantasia
+            if (razaoSocial || fantasia) {
+                const regulado = buscarRegulado(alvara.codigo);
+                if (!regulado) return false;
                 
-                return dados;
-            } catch (erro) {
-                console.error(`Erro ao carregar ${arquivo}:`, erro);
-                return [];
-            }
-        }
-
-        // Função para validar formato de alvará (AAAANNNN)
-        function validarFormatoAlvara(numero) {
-            if (!numero) return false;
-            const numeroLimpo = numero.toString().replace(/\s/g, '');
-            return /^\d{8}$/.test(numeroLimpo);
-        }
-
-        // Função para formatar data DD.MM.YYYY para Date
-        function parseData(dataStr) {
-            if (!dataStr) return null;
-            const partes = dataStr.split('.');
-            if (partes.length !== 3) return null;
-            return new Date(partes[2], partes[1] - 1, partes[0]);
-        }
-
-        // Função para formatar data para exibição
-        function formatarData(dataStr) {
-            if (!dataStr) return '-';
-            return dataStr;
-        }
-
-        // Função para formatar CNPJ
-        function formatarCNPJ(cnpj) {
-            if (!cnpj) return '-';
-            const numeros = cnpj.replace(/\D/g, '');
-            if (numeros.length === 14) {
-                return numeros.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
-            }
-            return cnpj;
-        }
-
-        // Função melhorada para buscar regulado
-        function buscarRegulado(codigoAlvara) {
-            // Tentar match exato primeiro
-            let regulado = dadosRegulados.find(r => r.codigo === codigoAlvara);
-            
-            // Se não encontrar, tentar sem espaços/formatação
-            if (!regulado) {
-                const codigoLimpo = codigoAlvara.toString().trim();
-                regulado = dadosRegulados.find(r => r.codigo.toString().trim() === codigoLimpo);
-            }
-            
-            if (regulado) {
-                console.log('Regulado encontrado:', regulado.razao);
-            } else {
-                console.warn('Regulado não encontrado para código:', codigoAlvara);
-            }
-            
-            return regulado;
-        }
-
-        // Função melhorada para buscar bairro
-        function buscarBairro(codigoBairro) {
-            if (!codigoBairro) return null;
-            
-            // Tentar match exato
-            let bairro = dadosBairros.find(b => b.codigo === codigoBairro);
-            
-            // Se não encontrar, tentar sem espaços/formatação
-            if (!bairro) {
-                const codigoLimpo = codigoBairro.toString().trim();
-                bairro = dadosBairros.find(b => b.codigo.toString().trim() === codigoLimpo);
-            }
-            
-            return bairro;
-        }
-
-        // Inicializar aplicação
-        async function inicializar() {
-            document.getElementById('loadingMessage').style.display = 'block';
-            
-            console.log('Iniciando carregamento dos dados...');
-            
-            // Carregar todos os CSVs do subdiretório data/
-            [dadosAlvara, dadosAlvlib, dadosRegulados, dadosBairros, dadosCnae] = await Promise.all([
-                carregarCSV('data/alvara.csv'),
-                carregarCSV('data/alvlib.csv'),
-                carregarCSV('data/regulados.csv'),
-                carregarCSV('data/bairros.csv'),
-                carregarCSV('data/cnae.csv')
-            ]);
-            
-            // Filtrar apenas alvarás com formato válido
-            dadosAlvara = dadosAlvara.filter(alvara => validarFormatoAlvara(alvara.numero));
-            
-            console.log('Dados carregados com sucesso!');
-            console.log('- Alvarás válidos:', dadosAlvara.length);
-            console.log('- Regulados:', dadosRegulados.length);
-            console.log('- Bairros:', dadosBairros.length);
-            console.log('- CNAEs:', dadosCnae.length);
-            console.log('- Liberações:', dadosAlvlib.length);
-            
-            document.getElementById('cacheStatus').textContent = 
-                `${dadosAlvara.length} alvarás carregados em ${new Date().toLocaleString('pt-BR')}`;
-            
-            document.getElementById('loadingMessage').style.display = 'none';
-            
-            // Buscar automaticamente todos os alvarás
-            buscarAlvaras();
-        }
-
-        // Função de busca
-        function buscarAlvaras() {
-            const dataInicial = document.getElementById('dataInicial').value;
-            const dataFinal = document.getElementById('dataFinal').value;
-            const numeroAlvara = document.getElementById('numeroAlvara').value.trim();
-            const razaoSocial = document.getElementById('razaoSocial').value.toLowerCase().trim();
-            const fantasia = document.getElementById('fantasia').value.toLowerCase().trim();
-            
-            alvarasFiltrados = dadosAlvara.filter(alvara => {
-                // Filtro por número
-                if (numeroAlvara && !alvara.numero.includes(numeroAlvara)) {
+                if (razaoSocial && !regulado.razao.toLowerCase().includes(razaoSocial)) {
                     return false;
                 }
                 
-                // Filtro por data
-                if (dataInicial || dataFinal) {
-                    const dataEmissao = parseData(alvara.dt_emite);
-                    if (!dataEmissao) return false;
-                    
-                    if (dataInicial) {
-                        const dataIni = new Date(dataInicial);
-                        if (dataEmissao < dataIni) return false;
-                    }
-                    
-                    if (dataFinal) {
-                        const dataFim = new Date(dataFinal);
-                        if (dataEmissao > dataFim) return false;
-                    }
+                if (fantasia && !regulado.fantasia.toLowerCase().includes(fantasia)) {
+                    return false;
                 }
-                
-                // Filtro por razão social ou fantasia
-                if (razaoSocial || fantasia) {
-                    const regulado = buscarRegulado(alvara.codigo);
-                    if (!regulado) return false;
-                    
-                    if (razaoSocial && !regulado.razao.toLowerCase().includes(razaoSocial)) {
-                        return false;
-                    }
-                    
-                    if (fantasia && !regulado.fantasia.toLowerCase().includes(fantasia)) {
-                        return false;
-                    }
-                }
-                
-                return true;
-            });
+            }
             
-            atualizarEstatisticas();
-            paginaAtual = 1;
-            renderizarTabela();
-        }
+            return true;
+        });
+        
+        atualizarEstatisticas();
+        paginaAtual = 1;
+        renderizarTabela();
+    }
 
-        // Atualizar estatísticas
-        function atualizarEstatisticas() {
-            const total = alvarasFiltrados.length;
-            const cancelados = alvarasFiltrados.filter(a => a.cancelado === 'true' || a.cancelado === 'True').length;
-            const validos = total - cancelados;
+    // Atualizar estatísticas
+    function atualizarEstatisticas() {
+        const total = alvarasFiltrados.length;
+        const cancelados = alvarasFiltrados.filter(a => a.cancelado === 'true' || a.cancelado === 'True').length;
+        const validos = total - cancelados;
+        
+        document.getElementById('totalAlvaras').textContent = total;
+        document.getElementById('alvarasValidos').textContent = validos;
+        document.getElementById('alvarasCancelados').textContent = cancelados;
+    }
+
+    // Ordenar tabela
+    function ordenarTabela(campo) {
+        if (ordenacao.campo === campo) {
+            ordenacao.direcao = ordenacao.direcao === 'asc' ? 'desc' : 'asc';
+        } else {
+            ordenacao.campo = campo;
+            ordenacao.direcao = 'asc';
+        }
+        
+        alvarasFiltrados.sort((a, b) => {
+            let valorA, valorB;
             
-            document.getElementById('totalAlvaras').textContent = total;
-            document.getElementById('alvarasValidos').textContent = validos;
-            document.getElementById('alvarasCancelados').textContent = cancelados;
-        }
-
-        // Ordenar tabela
-        function ordenarTabela(campo) {
-            if (ordenacao.campo === campo) {
-                ordenacao.direcao = ordenacao.direcao === 'asc' ? 'desc' : 'asc';
+            if (campo === 'numero') {
+                valorA = limparNumeroAlvara(a.numero);
+                valorB = limparNumeroAlvara(b.numero);
+            } else if (campo === 'dt_emite') {
+                valorA = parseData(a.dt_emite);
+                valorB = parseData(b.dt_emite);
+            } else if (campo === 'cancelado') {
+                valorA = (a.cancelado === 'true' || a.cancelado === 'True') ? 1 : 0;
+                valorB = (b.cancelado === 'true' || b.cancelado === 'True') ? 1 : 0;
             } else {
-                ordenacao.campo = campo;
-                ordenacao.direcao = 'asc';
-            }
-            
-            alvarasFiltrados.sort((a, b) => {
-                let valorA, valorB;
+                const reguladoA = buscarRegulado(a.codigo);
+                const reguladoB = buscarRegulado(b.codigo);
                 
-                if (campo === 'numero') {
-                    valorA = a.numero;
-                    valorB = b.numero;
-                } else if (campo === 'dt_emite') {
-                    valorA = parseData(a.dt_emite);
-                    valorB = parseData(b.dt_emite);
-                } else if (campo === 'cancelado') {
-                    valorA = (a.cancelado === 'true' || a.cancelado === 'True') ? 1 : 0;
-                    valorB = (b.cancelado === 'true' || b.cancelado === 'True') ? 1 : 0;
-                } else {
-                    const reguladoA = buscarRegulado(a.codigo);
-                    const reguladoB = buscarRegulado(b.codigo);
-                    
-                    if (campo === 'cnpj') {
-                        valorA = reguladoA ? reguladoA.cgc : '';
-                        valorB = reguladoB ? reguladoB.cgc : '';
-                    } else if (campo === 'razao') {
-                        valorA = reguladoA ? reguladoA.razao : '';
-                        valorB = reguladoB ? reguladoB.razao : '';
-                    }
+                if (campo === 'cnpj') {
+                    valorA = reguladoA ? reguladoA.cgc : '';
+                    valorB = reguladoB ? reguladoB.cgc : '';
+                } else if (campo === 'razao') {
+                    valorA = reguladoA ? reguladoA.razao : '';
+                    valorB = reguladoB ? reguladoB.razao : '';
                 }
-                
-                if (valorA < valorB) return ordenacao.direcao === 'asc' ? -1 : 1;
-                if (valorA > valorB) return ordenacao.direcao === 'asc' ? 1 : -1;
-                return 0;
-            });
-            
-            renderizarTabela();
-        }
-
-        // Renderizar tabela
-        function renderizarTabela() {
-            const tbody = document.getElementById('alvarasTableBody');
-            const table = document.getElementById('alvarasTable');
-            const noResults = document.getElementById('noResults');
-            
-            tbody.innerHTML = '';
-            
-            if (alvarasFiltrados.length === 0) {
-                table.style.display = 'none';
-                noResults.style.display = 'block';
-                document.getElementById('paginationInfo').textContent = '';
-                return;
             }
             
-            table.style.display = 'table';
-            noResults.style.display = 'none';
-            
-            const inicio = (paginaAtual - 1) * tamanhoPagina;
-            const fim = Math.min(inicio + tamanhoPagina, alvarasFiltrados.length);
-            const alvarasPagina = alvarasFiltrados.slice(inicio, fim);
-            
-            alvarasPagina.forEach(alvara => {
-                const regulado = buscarRegulado(alvara.codigo);
-                const tr = document.createElement('tr');
-                tr.onclick = () => mostrarDetalhes(alvara);
-                
-                const isCancelado = alvara.cancelado === 'true' || alvara.cancelado === 'True';
-                
-                tr.innerHTML = `
-                    <td><strong>${alvara.numero}</strong></td>
-                    <td>${formatarData(alvara.dt_emite)}</td>
-                    <td>
-                        <span class="badge ${isCancelado ? 'badge-danger' : 'badge-success'}">
-                            ${isCancelado ? 'Cancelado' : 'Válido'}
-                        </span>
-                    </td>
-                    <td>${formatarCNPJ(regulado ? regulado.cgc : '-')}</td>
-                    <td>${regulado ? regulado.razao : '-'}</td>
-                `;
-                
-                tbody.appendChild(tr);
-            });
-            
-            // Atualizar informações de paginação
-            const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina);
-            document.getElementById('paginationInfo').textContent = 
-                `Página ${paginaAtual} de ${totalPaginas} | Exibindo ${inicio + 1}-${fim} de ${alvarasFiltrados.length} registros`;
-        }
+            if (valorA < valorB) return ordenacao.direcao === 'asc' ? -1 : 1;
+            if (valorA > valorB) return ordenacao.direcao === 'asc' ? 1 : -1;
+            return 0;
+        });
+        
+        renderizarTabela();
+    }
 
-        // Mostrar detalhes do alvará
-        function mostrarDetalhes(alvara) {
+    // Renderizar tabela
+    function renderizarTabela() {
+        const tbody = document.getElementById('alvarasTableBody');
+        const table = document.getElementById('alvarasTable');
+        const noResults = document.getElementById('noResults');
+        
+        tbody.innerHTML = '';
+        
+        if (alvarasFiltrados.length === 0) {
+            table.style.display = 'none';
+            noResults.style.display = 'block';
+            document.getElementById('paginationInfo').textContent = '';
+            return;
+        }
+        
+        table.style.display = 'table';
+        noResults.style.display = 'none';
+        
+        const inicio = (paginaAtual - 1) * tamanhoPagina;
+        const fim = Math.min(inicio + tamanhoPagina, alvarasFiltrados.length);
+        const alvarasPagina = alvarasFiltrados.slice(inicio, fim);
+        
+        alvarasPagina.forEach(alvara => {
             const regulado = buscarRegulado(alvara.codigo);
-            const bairro = regulado ? buscarBairro(regulado.cdbai) : null;
-            const liberacoes = dadosAlvlib.filter(lib => lib.alvara === alvara.numero);
+            const tr = document.createElement('tr');
+            tr.onclick = () => mostrarDetalhes(alvara);
             
             const isCancelado = alvara.cancelado === 'true' || alvara.cancelado === 'True';
             
-            let html = `
+            tr.innerHTML = `
+                <td><strong>${limparNumeroAlvara(alvara.numero)}</strong></td>
+                <td>${formatarData(alvara.dt_emite)}</td>
+                <td>
+                    <span class="badge ${isCancelado ? 'badge-danger' : 'badge-success'}">
+                        ${isCancelado ? 'Cancelado' : 'Válido'}
+                    </span>
+                </td>
+                <td>${formatarCNPJ(regulado ? regulado.cgc : '-')}</td>
+                <td>${regulado ? regulado.razao : '-'}</td>
+            `;
+            
+            tbody.appendChild(tr);
+        });
+        
+        // Atualizar informações de paginação
+        const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina);
+        document.getElementById('paginationInfo').textContent = 
+            `Página ${paginaAtual} de ${totalPaginas} | Exibindo ${inicio + 1}-${fim} de ${alvarasFiltrados.length} registros`;
+    }
+
+    // Mostrar detalhes do alvará
+    function mostrarDetalhes(alvara) {
+        const regulado = buscarRegulado(alvara.codigo);
+        const bairro = regulado ? buscarBairro(regulado.cdbai) : null;
+        const liberacoes = dadosAlvlib.filter(lib => limparNumeroAlvara(lib.alvara) === limparNumeroAlvara(alvara.numero));
+        
+        const isCancelado = alvara.cancelado === 'true' || alvara.cancelado === 'True';
+        
+        let html = `
+            <div class="info-section">
+                <h3>📋 Dados do Alvará</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Número do Alvará:</strong>
+                        <span>${limparNumeroAlvara(alvara.numero)}</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Data de Emissão:</strong>
+                        <span>${formatarData(alvara.dt_emite)}</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Data de Validade:</strong>
+                        <span>${formatarData(alvara.dt_validade)}</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Status:</strong>
+                        <span class="badge ${isCancelado ? 'badge-danger' : 'badge-success'}">
+                            ${isCancelado ? 'Cancelado' : 'Válido'}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        if (regulado) {
+            html += `
                 <div class="info-section">
-                    <h3>📋 Dados do Alvará</h3>
+                    <h3>🏢 Dados do Estabelecimento</h3>
                     <div class="info-grid">
                         <div class="info-item">
-                            <strong>Número do Alvará:</strong>
-                            <span>${alvara.numero}</span>
+                            <strong>CNPJ:</strong>
+                            <span>${formatarCNPJ(regulado.cgc)}</span>
                         </div>
                         <div class="info-item">
-                            <strong>Data de Emissão:</strong>
-                            <span>${formatarData(alvara.dt_emite)}</span>
+                            <strong>Razão Social:</strong>
+                            <span>${regulado.razao || '-'}</span>
                         </div>
                         <div class="info-item">
-                            <strong>Data de Validade:</strong>
-                            <span>${formatarData(alvara.dt_validade)}</span>
+                            <strong>Nome Fantasia:</strong>
+                            <span>${regulado.fantasia || '-'}</span>
                         </div>
                         <div class="info-item">
-                            <strong>Status:</strong>
-                            <span class="badge ${isCancelado ? 'badge-danger' : 'badge-success'}">
-                                ${isCancelado ? 'Cancelado' : 'Válido'}
-                            </span>
+                            <strong>Logradouro:</strong>
+                            <span>${regulado.logradouro || '-'}</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Complemento:</strong>
+                            <span>${regulado.complement || '-'}</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Bairro:</strong>
+                            <span>${bairro ? bairro.nome : (regulado.bairro || '-')}</span>
                         </div>
                     </div>
                 </div>
             `;
+        }
+        
+        if (liberacoes.length > 0) {
+            html += `
+                <div class="info-section">
+                    <h3>✅ Atividades Liberadas (${liberacoes.length})</h3>
+                    <div class="activities-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Atividade CNAE</th>
+                                    <th>Autoridade</th>
+                                    <th>Fiscal Liberante</th>
+                                    <th>Documento</th>
+                                    <th>Data Doc.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
             
-            if (regulado) {
-                html += `
-                    <div class="info-section">
-                        <h3>🏢 Dados do Estabelecimento</h3>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <strong>CNPJ:</strong>
-                                <span>${formatarCNPJ(regulado.cgc)}</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>Razão Social:</strong>
-                                <span>${regulado.razao || '-'}</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>Nome Fantasia:</strong>
-                                <span>${regulado.fantasia || '-'}</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>Logradouro:</strong>
-                                <span>${regulado.logradouro || '-'}</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>Complemento:</strong>
-                                <span>${regulado.complement || '-'}</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>Bairro:</strong>
-                                <span>${bairro ? bairro.nome : (regulado.bairro || '-')}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            if (liberacoes.length > 0) {
-                html += `
-                    <div class="info-section">
-                        <h3>✅ Atividades Liberadas (${liberacoes.length})</h3>
-                        <div class="activities-table">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Data</th>
-                                        <th>Atividade CNAE</th>
-                                        <th>Autoridade</th>
-                                        <th>Fiscal Liberante</th>
-                                        <th>Documento</th>
-                                        <th>Data Doc.</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                `;
-                
-                liberacoes.forEach(lib => {
-                    const cnae = dadosCnae.find(c => c.subclasse === lib.atividade);
-                    const atividadeDesc = cnae ? `${cnae.subclasse} - ${cnae.atividade}` : lib.atividade;
-                    
-                    html += `
-                        <tr>
-                            <td>${formatarData(lib.data)}</td>
-                            <td>${atividadeDesc}</td>
-                            <td>${lib.autoridade || '-'}</td>
-                            <td>${lib.liberante || '-'}</td>
-                            <td>${lib.documento || '-'}</td>
-                            <td>${formatarData(lib.dt_documento)}</td>
-                        </tr>
-                    `;
-                });
+            liberacoes.forEach(lib => {
+                const cnae = dadosCnae.find(c => c.subclasse === lib.atividade);
+                const atividadeDesc = cnae ? `${cnae.subclasse} - ${cnae.atividade}` : lib.atividade;
                 
                 html += `
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <tr>
+                        <td>${formatarData(lib.data)}</td>
+                        <td>${atividadeDesc}</td>
+                        <td>${lib.autoridade || '-'}</td>
+                        <td>${lib.liberante || '-'}</td>
+                        <td>${lib.documento || '-'}</td>
+                        <td>${formatarData(lib.dt_documento)}</td>
+                    </tr>
                 `;
-            }
+            });
             
-            document.getElementById('modalBody').innerHTML = html;
-            document.getElementById('detalhesModal').style.display = 'block';
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
         }
+        
+        document.getElementById('modalBody').innerHTML = html;
+        document.getElementById('detalhesModal').style.display = 'block';
+    }
 
-        // Fechar modal
-        function fecharModal() {
-            document.getElementById('detalhesModal').style.display = 'none';
+    // Fechar modal
+    function fecharModal() {
+        document.getElementById('detalhesModal').style.display = 'none';
+    }
+
+    // Fechar modal ao clicar fora
+    window.onclick = function(event) {
+        const modal = document.getElementById('detalhesModal');
+        if (event.target === modal) {
+            fecharModal();
         }
+    }
 
-        // Fechar modal ao clicar fora
-        window.onclick = function(event) {
-            const modal = document.getElementById('detalhesModal');
-            if (event.target === modal) {
-                fecharModal();
-            }
-        }
+    // Limpar filtros
+    function limparFiltros() {
+        document.getElementById('dataInicial').value = '';
+        document.getElementById('dataFinal').value = '';
+        document.getElementById('numeroAlvara').value = '';
+        document.getElementById('razaoSocial').value = '';
+        document.getElementById('fantasia').value = '';
+        buscarAlvaras();
+    }
 
-        // Limpar filtros
-        function limparFiltros() {
-            document.getElementById('dataInicial').value = '';
-            document.getElementById('dataFinal').value = '';
-            document.getElementById('numeroAlvara').value = '';
-            document.getElementById('razaoSocial').value = '';
-            document.getElementById('fantasia').value = '';
-            buscarAlvaras();
-        }
+    // Alterar tamanho da página
+    function alterarTamanhoPagina() {
+        tamanhoPagina = parseInt(document.getElementById('pageSize').value);
+        paginaAtual = 1;
+        renderizarTabela();
+    }
 
-        // Alterar tamanho da página
-        function alterarTamanhoPagina() {
-            tamanhoPagina = parseInt(document.getElementById('pageSize').value);
-            paginaAtual = 1;
-            renderizarTabela();
-        }
+    // Forçar atualização
+    async function forcarAtualizacao() {
+        document.getElementById('cacheStatus').textContent = 'Atualizando...';
+        await inicializar();
+    }
 
-        // Forçar atualização
-        async function forcarAtualizacao() {
-            document.getElementById('cacheStatus').textContent = 'Atualizando...';
-            await inicializar();
-        }
+    // Inicializar ao carregar a página
+    window.onload = inicializar;
+</script>
 
-        // Inicializar ao carregar a página
-        window.onload = inicializar;
-    </script>
 </body>
 </html>
