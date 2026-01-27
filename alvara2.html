@@ -1076,6 +1076,25 @@ function renderizarTabela() {
 
 // Também chamar no resize
 window.addEventListener('resize', ajustarScrollMobile);
+// Detectar scroll e remover indicador
+function monitorarScroll() {
+    const wrapper = document.querySelector('.table-wrapper');
+    if (wrapper && window.innerWidth <= 768) {
+        wrapper.addEventListener('scroll', function() {
+            if (this.scrollLeft > 10) {
+                this.classList.add('scrolled');
+            } else {
+                this.classList.remove('scrolled');
+            }
+        });
+    }
+}
+
+// Chamar no inicializar
+window.onload = function() {
+    inicializar();
+    monitorarScroll();
+};
 
 
         window.onload = inicializar;
