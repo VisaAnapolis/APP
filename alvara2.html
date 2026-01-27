@@ -390,129 +390,162 @@
             font-size: 1em;
         }
 
-        /* ========== MOBILE RESPONSIVO COM COLUNA FIXA ========== */
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 1.4em;
-            }
+        /* ========== MOBILE RESPONSIVO COM COLUNA FIXA - VERSÃO FINAL ========== */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.4em;
+    }
 
-            header h2 {
-                font-size: 0.95em;
-            }
+    header h2 {
+        font-size: 0.95em;
+    }
 
-            .filter-grid {
-                grid-template-columns: 1fr;
-            }
+    .filter-grid {
+        grid-template-columns: 1fr;
+    }
 
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
 
-            .modal-content {
-                width: 95%;
-                margin: 5% auto;
-            }
+    .modal-content {
+        width: 95%;
+        margin: 5% auto;
+    }
 
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
 
-            .card {
-                padding: 16px;
-            }
+    .card {
+        padding: 16px;
+    }
 
-            /* Wrapper com scroll - IMPORTANTE: não aplicar overflow no card */
-            .table-wrapper {
-                margin: 0 -16px;
-                padding: 0 16px;
-            }
+    /* Wrapper com scroll FORÇADO para mobile */
+    .table-wrapper {
+        overflow-x: scroll !important;
+        overflow-y: visible;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+        position: relative;
+        margin: 0 -16px;
+        padding: 0 16px;
+    }
 
-            /* Tabela com border-collapse separate para sticky funcionar */
-            #alvarasTable {
-                border-collapse: separate;
-                border-spacing: 0;
-                min-width: 700px;
-            }
+    /* Tabela com largura fixa maior que tela */
+    #alvarasTable {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        min-width: 750px !important;
+        max-width: none;
+    }
 
-            #alvarasTable th,
-            #alvarasTable td {
-                white-space: nowrap;
-                padding: 10px 8px;
-                font-size: 0.85em;
-            }
+    #alvarasTable th,
+    #alvarasTable td {
+        white-space: nowrap;
+        padding: 12px 10px;
+        font-size: 0.85em;
+        border-bottom: 1px solid #eee;
+    }
 
-            /* PRIMEIRA COLUNA FIXA */
-            #alvarasTable th:first-child,
-            #alvarasTable td:first-child {
-                position: sticky;
-                position: -webkit-sticky;
-                left: 0;
-                z-index: 10;
-                background: #1a3a6b;
-                min-width: 110px;
-                max-width: 110px;
-                box-shadow: 2px 0 5px rgba(0,0,0,0.15);
-            }
+    /* PRIMEIRA COLUNA FIXA COM SOMBRA */
+    #alvarasTable th:first-child,
+    #alvarasTable td:first-child {
+        position: sticky;
+        position: -webkit-sticky;
+        left: 0;
+        z-index: 10;
+        background: #1a3a6b;
+        min-width: 115px !important;
+        max-width: 115px !important;
+        width: 115px !important;
+        box-shadow: 3px 0 8px rgba(0,0,0,0.15);
+        border-right: 2px solid rgba(255,255,255,0.1);
+    }
 
-            /* Header da primeira coluna */
-            #alvarasTable thead th:first-child {
-                background: #1a3a6b;
-                color: white;
-                z-index: 11;
-            }
+    /* Header primeira coluna */
+    #alvarasTable thead th:first-child {
+        background: #1a3a6b !important;
+        color: white;
+        z-index: 11;
+        font-weight: 700;
+    }
 
-            /* Células body da primeira coluna */
-            #alvarasTable tbody td:first-child {
-                background: #ffffff;
-                font-weight: bold;
-                color: #1a3a6b;
-            }
+    /* Body primeira coluna */
+    #alvarasTable tbody td:first-child {
+        background: #ffffff !important;
+        font-weight: bold;
+        color: #1a3a6b;
+        border-right: 2px solid #e0e0e0;
+    }
 
-            /* Hover na primeira coluna */
-            #alvarasTable tbody tr:hover td:first-child {
-                background: #f8f9fa;
-            }
+    /* Hover primeira coluna */
+    #alvarasTable tbody tr:hover td:first-child {
+        background: #f5f8fa !important;
+    }
 
-            /* Demais colunas */
-            #alvarasTable th:nth-child(2),
-            #alvarasTable td:nth-child(2) {
-                min-width: 100px;
-            }
+    /* Headers demais colunas */
+    #alvarasTable thead th {
+        background: #1a3a6b;
+        color: white;
+        position: relative;
+    }
 
-            #alvarasTable th:nth-child(3),
-            #alvarasTable td:nth-child(3) {
-                min-width: 90px;
-            }
+    /* Larguras mínimas das colunas */
+    #alvarasTable th:nth-child(2),
+    #alvarasTable td:nth-child(2) {
+        min-width: 110px;
+        width: 110px;
+    }
 
-            #alvarasTable th:nth-child(4),
-            #alvarasTable td:nth-child(4) {
-                min-width: 140px;
-            }
+    #alvarasTable th:nth-child(3),
+    #alvarasTable td:nth-child(3) {
+        min-width: 100px;
+        width: 100px;
+        text-align: center;
+    }
 
-            #alvarasTable th:nth-child(5),
-            #alvarasTable td:nth-child(5) {
-                min-width: 180px;
-            }
+    #alvarasTable th:nth-child(4),
+    #alvarasTable td:nth-child(4) {
+        min-width: 160px;
+        width: 160px;
+    }
 
-            .badge {
-                font-size: 0.75em;
-                padding: 3px 8px;
-            }
+    #alvarasTable th:nth-child(5),
+    #alvarasTable td:nth-child(5) {
+        min-width: 250px;
+        width: 250px;
+    }
 
-            .btn-container {
-                flex-direction: column;
-            }
+    /* Badge adaptado */
+    .badge {
+        font-size: 0.7em;
+        padding: 4px 8px;
+        white-space: nowrap;
+    }
 
-            .btn {
-                width: 100%;
-            }
+    /* Botões em coluna */
+    .btn-container {
+        flex-direction: column;
+    }
 
-            .pagination-controls {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-    </style>
+    .btn {
+        width: 100%;
+    }
+
+    /* Paginação adaptada */
+    .pagination-controls {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    #paginationInfo {
+        font-size: 0.85em;
+    }
+}
+
 </head>
 <body>
     <header>
@@ -976,6 +1009,74 @@
             document.getElementById('cacheStatus').textContent = 'Atualizando...';
             await inicializar();
         }
+
+            // Forçar scroll horizontal no mobile
+function ajustarScrollMobile() {
+    if (window.innerWidth <= 768) {
+        const wrapper = document.querySelector('.table-wrapper');
+        if (wrapper) {
+            // Forçar propriedades de scroll
+            wrapper.style.overflowX = 'scroll';
+            wrapper.style.webkitOverflowScrolling = 'touch';
+            
+            // Adicionar evento de toque para garantir scroll
+            wrapper.addEventListener('touchstart', function(e) {
+                this.style.overflowX = 'scroll';
+            }, { passive: true });
+        }
+    }
+}
+
+// Chamar ao renderizar tabela
+function renderizarTabela() {
+    const tbody = document.getElementById('alvarasTableBody');
+    const table = document.getElementById('alvarasTable');
+    const noResults = document.getElementById('noResults');
+    
+    tbody.innerHTML = '';
+    
+    if (alvarasFiltrados.length === 0) {
+        table.style.display = 'none';
+        noResults.style.display = 'block';
+        document.getElementById('paginationInfo').textContent = '';
+        return;
+    }
+    
+    table.style.display = 'table';
+    noResults.style.display = 'none';
+    
+    const inicio = (paginaAtual - 1) * tamanhoPagina;
+    const fim = Math.min(inicio + tamanhoPagina, alvarasFiltrados.length);
+    
+    alvarasFiltrados.slice(inicio, fim).forEach(alvara => {
+        const regulado = buscarRegulado(alvara.codigo);
+        const tr = document.createElement('tr');
+        tr.onclick = () => mostrarDetalhes(alvara);
+        
+        const isCancelado = alvara.cancelado === 'true' || alvara.cancelado === 'True';
+        
+        tr.innerHTML = `
+            <td><strong>${limparNumeroAlvara(alvara.numero)}</strong></td>
+            <td>${formatarData(alvara.dt_emite)}</td>
+            <td><span class="badge ${isCancelado ? 'badge-danger' : 'badge-success'}">${isCancelado ? 'Cancelado' : 'Válido'}</span></td>
+            <td>${regulado ? formatarCNPJ(regulado.cgc) : '-'}</td>
+            <td>${regulado ? regulado.razao : '-'}</td>
+        `;
+        
+        tbody.appendChild(tr);
+    });
+    
+    const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina);
+    document.getElementById('paginationInfo').textContent = 
+        `Página ${paginaAtual} de ${totalPaginas} | Exibindo ${inicio + 1}-${fim} de ${alvarasFiltrados.length}`;
+    
+    // ADICIONAR ESTA LINHA:
+    ajustarScrollMobile();
+}
+
+// Também chamar no resize
+window.addEventListener('resize', ajustarScrollMobile);
+
 
         window.onload = inicializar;
     </script>
