@@ -5,7 +5,7 @@ Horários em **Horário de Brasília (UTC−3)**.
 
 ---
 
-## v2.0.8 — 28/01/2026 19:56 (Horário de Brasília – UTC−3)
+## v2.0.8 — 28/01/2026 20:26 (Horário de Brasília – UTC−3)
 
 ### Correções críticas (tela inicial / index.html)
 - **Corrigido o atraso/intermitência no reconhecimento do perfil** ao entrar no sistema (desktop e mobile), que exigia “clicar em um link e voltar” para o perfil aparecer corretamente.
