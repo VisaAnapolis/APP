@@ -745,7 +745,7 @@
       for (let attempt = 1; attempt <= 2; attempt++) {
         try {
           // Atualiza mensagem no userInfo (opcional)
-          setUserInfoLoadingText(attempt === 1 ? 'Carregando perfil...' : 'Conexão lenta — tentando novamente...');
+          setUserInfoLoadingText(attempt === 1 ? 'Carregando perfil...' : 'Conexão lenta — tentando novamente...', emailNorm);
 
           const q = query(collection(db, "usuarios"), where("email", "==", emailNorm));
           const qs = await withTimeout(getDocs(q), PROFILE_TIMEOUT_MS, 'perfil');
@@ -810,6 +810,21 @@
       document.getElementById("login").style.display = "none";
       document.getElementById("conteudo").style.display = "block";
     }
+
+    // Atualiza a barra de usuário com um texto de carregamento (sem travar a central)
+    function setUserInfoLoadingText(msg, email) {
+      const userInfo = document.getElementById('userInfo');
+      if (!userInfo) return;
+      const emailTxt = (email || '').trim();
+      const safeMsg = (msg || 'Carregando...').trim();
+      if (emailTxt) {
+        userInfo.innerHTML = `<span class="user-name">${safeMsg}</span><span class="user-email">${emailTxt}</span>`;
+      } else {
+        userInfo.innerHTML = `<span class="user-name">${safeMsg}</span>`;
+      }
+    }
+
+
 
     /* modal não autorizado */
     function showUnauthorizedModal(user){
