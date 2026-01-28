@@ -655,11 +655,12 @@
             return numero.toString().replace(/\u00A0/g, '').replace(/\s/g, '');
         }
 
-        function validarFormatoAlvara(numero) {
-            if (!numero) return false;
-            const numeroLimpo = limparNumeroAlvara(numero);
-            return /^\d{8}$/.test(numeroLimpo);
-        }
+    function validarFormatoAlvara(numero) {
+    if (!numero) return false;
+    const numeroLimpo = limparNumeroAlvara(numero);
+    return /^\d{8,}$/.test(numeroLimpo);  // ← Aceita 8 ou MAIS dígitos
+}
+
 
         function alvaraEmitido(alvara) {
             return alvara.dt_emite && alvara.dt_emite.trim() !== '';
