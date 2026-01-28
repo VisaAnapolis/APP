@@ -776,4 +776,196 @@
             const fantasia = document.getElementById('fantasia').value.toLowerCase().trim();
             
             alvarasFiltrados = dadosAlvara.filter(alvara => {
-                if (numeroAlvara && !limparNumeroAlvara(alvara.numero).includes(numeroAlvara)) re
+                if (numeroAlvara && !limparNumeroAlvara(alvara.numero).includes(numeroAlvara)) return false;
+                
+                if (dataInicial || dataFinal) {
+                    const dataEmissao = parseData(alvara.dt_emite);
+                    if (!dataEmissao) return false;
+                    if (dataInicial && dataEmissao < new Date(dataInicial)) return false;
+                    if (dataFinal && dataEmissao > new Date(dataFinal)) return false;
+                }
+                
+                if (razaoSocial || fantasia) {
+                    const regulado = buscarRegulado(alvara.codigo);
+                    if (!regulado) return false;
+                    if (razaoSocial && !regulado.razao.toLowerCase().includes(razaoSocial)) return false;
+                    if (fantasia && !regulado.fantasia.toLowerCase().includes(fantasia)) return false;
+                }
+                
+                return true;
+            });
+            
+            atualizarEstatisticas();
+            paginaAtual = 1;
+            renderizarTabela();
+        }
+
+        function atualizarEstatisticas() {
+            const total = alvarasFiltrados.length;
+            const cancelados = alvarasFiltrados.filter(a => a.cancelado === 'true' || a.cancelado === 'True').length;
+            
+            document.getElementById('totalAlvaras').textContent = total;
+            document.getElementById('alvarasValidos').textContent = total - cancelados;
+            document.getElementById('alvarasCancelados').textContent = cancelados;
+        }
+
+        function ordenarTabela(campo) {
+            if (ordenacao.campo === campo) {
+                ordenacao.direcao = ordenacao.direcao === 'asc' ? 'desc' : 'asc';
+            } else {
+                ordenacao.campo = campo;
+                ordenacao.direcao = 'asc';
+            }
+            
+            alvarasFiltrados.sort((a, b) => {
+                let valorA, valorB;
+                
+                if (campo === 'numero') {
+                    valorA = limparNumeroAlvara(a.numero);
+                    valorB = limparNumeroAlvara(b.numero);
+                } else if (campo === 'dt_emite') {
+                    valorA = parseData(a.dt_emite);
+                    valorB = parseData(b.dt_emite);
+                } else if (campo === 'cancelado') {
+                    valorA = (a.cancelado === 'true' || a.cancelado === 'True') ? 1 : 0;
+                    valorB = (b.cancelado === 'true' || b.cancelado === 'True') ? 1 : 0;
+                } else {
+                    const reguladoA = buscarRegulado(a.codigo);
+                    const reguladoB = buscarRegulado(b.codigo);
+                    valorA = reguladoA ? (campo === 'cnpj' ? reguladoA.cgc : reguladoA.razao) : '';
+                    valorB = reguladoB ? (campo === 'cnpj' ? reguladoB.cgc : reguladoB.razao) : '';
+                }
+                
+                if (valorA < valorB) return ordenacao.direcao === 'asc' ? -1 : 1;
+                if (valorA > valorB) return ordenacao.direcao === 'asc' ? 1 : -1;
+                return 0;
+            });
+            
+            renderizarTabela();
+        }
+
+        function renderizarTabela() {
+            const tbody = document.getElementById('alvarasTableBody');
+            const table = document.getElementById('alvarasTable');
+            const noResults = document.getElementById('noResults');
+            
+            tbody.innerHTML = '';
+            
+            if (alvarasFiltrados.length === 0) {
+                table.style.display = 'none';
+                noResults.style.display = 'block';
+                document.getElementById('paginationInfo').textContent = '';
+                return;
+            }
+            
+            table.style.display = 'table';
+            noResults.style.display = 'none';
+            
+            const inicio = (paginaAtual - 1) * tamanhoPagina;
+            const fim = Math.min(inicio + tamanhoPagina, alvarasFiltrados.length);
+            
+            alvarasFiltrados.slice(inicio, fim).forEach(alvara => {
+                const regulado = buscarRegulado(alvara.codigo);
+                const tr = document.createElement('tr');
+                tr.onclick = () => mostrarDetalhes(alvara);
+                
+                const isCancelado = alvara.cancelado === 'true' || alvara.cancelado === 'True';
+                
+                tr.innerHTML = `
+                    <td><strong>${limparNumeroAlvara(alvara.numero)}</strong></td>
+                    <td>${formatarData(alvara.dt_emite)}</td>
+                    <td><span class="badge ${isCancelado ? 'badge-danger' : 'badge-success'}">${isCancelado ? 'Cancelado' : 'Válido'}</span></td>
+                    <td>${regulado ? formatarCNPJ(regulado.cgc) : '-'}</td>
+                    <td>${regulado ? regulado.razao : '-'}</td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+            
+            const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina);
+            document.getElementById('paginationInfo').textContent = 
+                `Pág. ${paginaAtual}/${totalPaginas} | ${inicio + 1}-${fim} de ${alvarasFiltrados.length}`;
+        }
+
+        function mostrarDetalhes(alvara) {
+            const regulado = buscarRegulado(alvara.codigo);
+            const bairro = regulado ? buscarBairro(regulado.cdbai) : null;
+            const liberacoes = dadosAlvlib.filter(lib => limparNumeroAlvara(lib.alvara) === limparNumeroAlvara(alvara.numero));
+            const isCancelado = alvara.cancelado === 'true' || alvara.cancelado === 'True';
+            
+            let html = `
+                <div class="info-section">
+                    <h3>📋 Dados do Alvará</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><strong>Número:</strong> <span>${limparNumeroAlvara(alvara.numero)}</span></div>
+                        <div class="info-item"><strong>Emissão:</strong> <span>${formatarData(alvara.dt_emite)}</span></div>
+                        <div class="info-item"><strong>Validade:</strong> <span>${formatarData(alvara.dt_validade)}</span></div>
+                        <div class="info-item"><strong>Status:</strong> <span class="badge ${isCancelado ? 'badge-danger' : 'badge-success'}">${isCancelado ? 'Cancelado' : 'Válido'}</span></div>
+                    </div>
+                </div>
+            `;
+            
+            if (regulado) {
+                html += `
+                    <div class="info-section">
+                        <h3>🏢 Estabelecimento</h3>
+                        <div class="info-grid">
+                            <div class="info-item"><strong>CNPJ:</strong> <span>${formatarCNPJ(regulado.cgc)}</span></div>
+                            <div class="info-item"><strong>Razão Social:</strong> <span>${regulado.razao || '-'}</span></div>
+                            <div class="info-item"><strong>Fantasia:</strong> <span>${regulado.fantasia || '-'}</span></div>
+                            <div class="info-item"><strong>Logradouro:</strong> <span>${regulado.logradouro || '-'}</span></div>
+                            <div class="info-item"><strong>Complemento:</strong> <span>${regulado.complement || '-'}</span></div>
+                            <div class="info-item"><strong>Bairro:</strong> <span>${bairro ? bairro.nome : '-'}</span></div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (liberacoes.length > 0) {
+                html += `<div class="info-section"><h3>✅ Atividades (${liberacoes.length})</h3><div class="activities-table"><table>
+                    <thead><tr><th>Data</th><th>CNAE</th><th>Autoridade</th><th>Fiscal</th><th>Documento</th><th>Dt. Doc.</th></tr></thead><tbody>`;
+                liberacoes.forEach(lib => {
+                    const cnae = dadosCnae.find(c => c.subclasse === lib.atividade);
+                    html += `<tr><td>${formatarData(lib.data)}</td><td>${cnae ? `${cnae.subclasse} - ${cnae.atividade}` : lib.atividade}</td>
+                        <td>${lib.autoridade || '-'}</td><td>${lib.liberante || '-'}</td><td>${lib.documento || '-'}</td>
+                        <td>${formatarData(lib.dtdocumento)}</td></tr>`;
+                });
+                html += `</tbody></table></div></div>`;
+            }
+            
+            document.getElementById('modalBody').innerHTML = html;
+            document.getElementById('detalhesModal').style.display = 'block';
+        }
+
+        function fecharModal() {
+            document.getElementById('detalhesModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target === document.getElementById('detalhesModal')) fecharModal();
+        }
+
+        function limparFiltros() {
+            document.getElementById('dataInicial').value = '';
+            document.getElementById('dataFinal').value = '';
+            document.getElementById('numeroAlvara').value = '';
+            document.getElementById('razaoSocial').value = '';
+            document.getElementById('fantasia').value = '';
+            buscarAlvaras();
+        }
+
+        function alterarTamanhoPagina() {
+            tamanhoPagina = parseInt(document.getElementById('pageSize').value);
+            paginaAtual = 1;
+            renderizarTabela();
+        }
+
+        async function forcarAtualizacao() {
+            document.getElementById('cacheStatus').textContent = 'Atualizando...';
+            await inicializar();
+        }
+
+        window.onload = inicializar;
+    </script>
+</body>
+</html>
