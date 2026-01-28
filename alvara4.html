@@ -396,146 +396,157 @@
             font-size: 1em;
         }
 
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 1.4em;
-            }
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.4em;
+    }
 
-            header h2 {
-                font-size: 0.95em;
-            }
+    header h2 {
+        font-size: 0.95em;
+    }
 
-            .container {
-                padding: 0 12px;
-            }
+    .container {
+        padding: 0 12px;
+    }
 
-            .card {
-                padding: 16px;
-                border-radius: 8px;
-            }
+    .card {
+        padding: 16px;
+        border-radius: 8px;
+    }
 
-            .filter-grid {
-                grid-template-columns: 1fr;
-            }
+    .filter-grid {
+        grid-template-columns: 1fr;
+    }
 
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
 
-            .modal-content {
-                width: 95%;
-                margin: 5% auto;
-            }
+    .modal-content {
+        width: 95%;
+        margin: 5% auto;
+    }
 
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
 
-            .btn-container {
-                flex-direction: column;
-            }
+    .btn-container {
+        flex-direction: column;
+    }
 
-            .btn {
-                width: 100%;
-            }
+    .btn {
+        width: 100%;
+    }
 
-            .pagination-controls {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+    .pagination-controls {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-            #paginationInfo {
-                font-size: 0.85em;
-            }
+    #paginationInfo {
+        font-size: 0.85em;
+    }
 
-            .table-wrapper {
-                overflow-x: scroll !important;
-                -webkit-overflow-scrolling: touch;
-                margin: 0 -16px;
-                padding: 0 16px;
-                position: relative;
-            }
+    /* FIX PRINCIPAL: remover overflow do wrapper */
+    .table-wrapper {
+        overflow-x: visible !important;
+        overflow-y: visible !important;
+        -webkit-overflow-scrolling: touch;
+        margin: 0;
+        padding: 0;
+    }
 
-            #alvarasTable {
-                border-collapse: separate;
-                border-spacing: 0;
-                min-width: 950px !important;
-            }
+    /* Adicionar overflow no container da table */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        position: relative;
+    }
 
-            #alvarasTable th,
-            #alvarasTable td {
-                white-space: nowrap;
-                padding: 12px 10px;
-                font-size: 0.85em;
-                border-bottom: 1px solid #eee;
-            }
+    #alvarasTable {
+        border-collapse: separate;
+        border-spacing: 0;
+        min-width: 950px !important;
+    }
 
-            #alvarasTable th:first-child,
-            #alvarasTable td:first-child {
-                position: -webkit-sticky;
-                position: sticky;
-                left: 0;
-                z-index: 10;
-                min-width: 115px !important;
-                max-width: 115px !important;
-                box-shadow: 3px 0 8px rgba(0,0,0,0.15);
-                border-right: 2px solid rgba(26, 58, 107, 0.2);
-            }
+    #alvarasTable th,
+    #alvarasTable td {
+        white-space: nowrap;
+        padding: 12px 10px;
+        font-size: 0.85em;
+        border-bottom: 1px solid #eee;
+    }
 
-            #alvarasTable thead th:first-child {
-                background: #1a3a6b !important;
-                color: white !important;
-                z-index: 11;
-                font-weight: 700;
-            }
+    /* Coluna sticky - CORRIGIDO */
+    #alvarasTable th:first-child,
+    #alvarasTable td:first-child {
+        position: -webkit-sticky; /* Safari */
+        position: sticky;
+        left: 0;
+        z-index: 10;
+        min-width: 115px !important;
+        max-width: 115px !important;
+        box-shadow: 3px 0 8px rgba(0,0,0,0.15);
+        border-right: 2px solid rgba(26, 58, 107, 0.2);
+    }
 
-            #alvarasTable tbody td:first-child {
-                background: #ffffff !important;
-                font-weight: bold;
-                color: #1a3a6b;
-            }
+    #alvarasTable thead th:first-child {
+        background: #1a3a6b !important;
+        color: white !important;
+        z-index: 11;
+        font-weight: 700;
+        position: -webkit-sticky; /* Safari */
+        position: sticky;
+    }
 
-            #alvarasTable tbody tr:hover td:first-child {
-                background: #f5f8fa !important;
-            }
+    #alvarasTable tbody td:first-child {
+        background: #ffffff !important;
+        font-weight: bold;
+        color: #1a3a6b;
+    }
 
-            #alvarasTable th:nth-child(2),
-            #alvarasTable td:nth-child(2) {
-                min-width: 110px;
-                width: 110px;
-            }
+    #alvarasTable tbody tr:hover td:first-child {
+        background: #f5f8fa !important;
+    }
 
-            #alvarasTable th:nth-child(3),
-            #alvarasTable td:nth-child(3) {
-                min-width: 110px;
-                width: 110px;
-            }
+    #alvarasTable th:nth-child(2),
+    #alvarasTable td:nth-child(2) {
+        min-width: 110px;
+        width: 110px;
+    }
 
-            #alvarasTable th:nth-child(4),
-            #alvarasTable td:nth-child(4) {
-                min-width: 95px;
-                width: 95px;
-                text-align: center;
-            }
+    #alvarasTable th:nth-child(3),
+    #alvarasTable td:nth-child(3) {
+        min-width: 110px;
+        width: 110px;
+    }
 
-            #alvarasTable th:nth-child(5),
-            #alvarasTable td:nth-child(5) {
-                min-width: 160px;
-                width: 160px;
-            }
+    #alvarasTable th:nth-child(4),
+    #alvarasTable td:nth-child(4) {
+        min-width: 95px;
+        width: 95px;
+        text-align: center;
+    }
 
-            #alvarasTable th:nth-child(6),
-            #alvarasTable td:nth-child(6) {
-                min-width: 300px;
-                width: 300px;
-            }
+    #alvarasTable th:nth-child(5),
+    #alvarasTable td:nth-child(5) {
+        min-width: 160px;
+        width: 160px;
+    }
 
-            .badge {
-                font-size: 0.7em;
-                padding: 4px 8px;
-                white-space: nowrap;
-            }
-        }
+    #alvarasTable th:nth-child(6),
+    #alvarasTable td:nth-child(6) {
+        min-width: 300px;
+        width: 300px;
+    }
+
+    .badge {
+        font-size: 0.7em;
+        padding: 4px 8px;
+        white-space: nowrap;
+    }
+}
     </style>
 </head>
 <body>
