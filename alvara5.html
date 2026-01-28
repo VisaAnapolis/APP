@@ -727,7 +727,7 @@
         }
 
         function verificarStatus(alvara) {
-            const isCancelado = alvara.cancelado === 'true' || alvara.cancelado === 'True';
+            const isCancelado = alvara.cancela === 'true' || alvara.cancela === 'True';
             if (isCancelado) {
                 return { tipo: 'cancelado', texto: 'Cancelado', classe: 'badge-danger' };
             }
