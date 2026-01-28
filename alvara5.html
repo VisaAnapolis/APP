@@ -642,7 +642,7 @@
                                 <th onclick="ordenarTabela('numero')">Nº Alvará ▼</th>
                                 <th onclick="ordenarTabela('dt_emite')">Dt. Emissão ▼</th>
                                 <th onclick="ordenarTabela('dt_validade')">Dt. Validade ▼</th>
-                                <th onclick="ordenarTabela('cancelado')">Status ▼</th>
+                                <th onclick="ordenarTabela('cancela')">Status ▼</th>
                                 <th onclick="ordenarTabela('cnpj')">CNPJ ▼</th>
                                 <th onclick="ordenarTabela('razao')">Razão Social ▼</th>
                             </tr>
@@ -923,7 +923,7 @@
                 } else if (campo === 'dt_validade') {
                     valorA = parseData(a.dt_validade);
                     valorB = parseData(b.dt_validade);
-                } else if (campo === 'cancelado') {
+                } else if (campo === 'cancela') {
                     const statusA = verificarStatus(a);
                     const statusB = verificarStatus(b);
                     valorA = statusA.tipo === 'cancelado' ? 2 : (statusA.tipo === 'expirado' ? 1 : 0);
