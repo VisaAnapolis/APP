@@ -675,16 +675,15 @@
             return numero.toString().replace(/\u00A0/g, '').replace(/\s/g, '');
         }
 
-        // APAGUE essa validação ou mude para:
-function validarFormatoAlvara(numero) {
-  return numero && numero.trim().length > 0; // Aceita qualquer número
-}
+        function validarFormatoAlvara(numero) {
+            if (!numero) return false;
+            const numeroLimpo = limparNumeroAlvara(numero);
+            return /^\d{8}$/.test(numeroLimpo);
+        }
 
-
-  function alvaraEmitido(alvara) {
-  const dtemite = (alvara.dt_emite || alvara.dtemite || '').toString().trim();
-  return dtemite.length >= 8; // Só verifica se tem data
-}
+        function alvaraEmitido(alvara) {
+            return alvara.dt_emite && alvara.dt_emite.trim() !== '';
+        }
 
         function parseData(dataStr) {
             if (!dataStr) return null;
