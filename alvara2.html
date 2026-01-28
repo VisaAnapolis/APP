@@ -675,17 +675,16 @@
             return numero.toString().replace(/\u00A0/g, '').replace(/\s/g, '');
         }
 
-        function validarFormatoAlvara(numero) {
-            if (!numero) return false;
-            const numeroLimpo = limparNumeroAlvara(numero);
-            return /^\d{8}$/.test(numeroLimpo);
-        }
-
-  function alvaraEmitido(alvara) {
-  const dtemite = alvara.dtemite ? String(alvara.dtemite).trim() : '';
-  return dtemite.length >= 8 && /^\d{2}\.\d{2}\.\d{4}$/.test(dtemite);
+        // APAGUE essa validação ou mude para:
+function validarFormatoAlvara(numero) {
+  return numero && numero.trim().length > 0; // Aceita qualquer número
 }
 
+
+  function alvaraEmitido(alvara) {
+  const dtemite = (alvara.dt_emite || alvara.dtemite || '').toString().trim();
+  return dtemite.length >= 8; // Só verifica se tem data
+}
 
         function parseData(dataStr) {
             if (!dataStr) return null;
