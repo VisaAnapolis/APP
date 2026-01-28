@@ -501,21 +501,26 @@
                 min-width: 110px;
             }
 
-            #alvarasTable th:nth-child(3),
-            #alvarasTable td:nth-child(3) {
-                min-width: 100px;
-                text-align: center;
-            }
+           #alvarasTable th:nth-child(3),
+#alvarasTable td:nth-child(3) {
+    min-width: 110px;
+}
 
-            #alvarasTable th:nth-child(4),
-            #alvarasTable td:nth-child(4) {
-                min-width: 160px;
-            }
+#alvarasTable th:nth-child(4),
+#alvarasTable td:nth-child(4) {
+    min-width: 100px;
+    text-align: center;
+}
 
-            #alvarasTable th:nth-child(5),
-            #alvarasTable td:nth-child(5) {
-                min-width: 280px;
-            }
+#alvarasTable th:nth-child(5),
+#alvarasTable td:nth-child(5) {
+    min-width: 160px;
+}
+
+#alvarasTable th:nth-child(6),
+#alvarasTable td:nth-child(6) {
+    min-width: 300px;
+}
 
             .badge {
                 font-size: 0.7em;
@@ -828,6 +833,9 @@
                 } else if (campo === 'dt_emite') {
                     valorA = parseData(a.dt_emite);
                     valorB = parseData(b.dt_emite);
+                } else if (campo === 'dt_validade') {
+                    valorA = parseData(a.dt_validade);
+                    valorB = parseData(b.dt_validade);
                 } else if (campo === 'cancelado') {
                     valorA = (a.cancelado === 'true' || a.cancelado === 'True') ? 1 : 0;
                     valorB = (b.cancelado === 'true' || b.cancelado === 'True') ? 1 : 0;
@@ -876,6 +884,7 @@
                 tr.innerHTML = `
                     <td><strong>${limparNumeroAlvara(alvara.numero)}</strong></td>
                     <td>${formatarData(alvara.dt_emite)}</td>
+                    <td>${formatarData(alvara.dt_validade)}</td>
                     <td><span class="badge ${isCancelado ? 'badge-danger' : 'badge-success'}">${isCancelado ? 'Cancelado' : 'Válido'}</span></td>
                     <td>${regulado ? formatarCNPJ(regulado.cgc) : '-'}</td>
                     <td>${regulado ? regulado.razao : '-'}</td>
