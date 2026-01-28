@@ -682,16 +682,17 @@ function validarFormatoAlvara(numero) {
 
 
   function alvaraEmitido(alvara) {
-  const dtemite = (alvara.dt_emite || alvara.dtemite || '').toString().trim();
-  return dtemite.length >= 8; // Só verifica se tem data
+  return alvara.dt_emite && alvara.dt_emite.trim() !== '';
 }
 
+
         function parseData(dataStr) {
-            if (!dataStr) return null;
-            const partes = dataStr.split('.');
-            if (partes.length !== 3) return null;
-            return new Date(partes[2], partes[1] - 1, partes[0]);
-        }
+  if (!dataStr) return null;
+  const partes = dataStr.split('.');
+  if (partes.length !== 3) return null;
+  return new Date(partes[2], partes[1] - 1, partes[0]);
+}
+
 
         function formatarData(dataStr) {
             if (!dataStr) return '-';
@@ -791,13 +792,13 @@ function validarFormatoAlvara(numero) {
             limparFiltros();
         }
 
-        // BUSCAR
-        function buscarAlvaras() {
-            const dataInicial = document.getElementById('dataInicial').value;
-            const dataFinal = document.getElementById('dataFinal').value;
-            const numeroAlvara = document.getElementById('numeroAlvara').value.trim().replace(/\s/g, '');
-            const razaoSocial = document.getElementById('razaoSocial').value.toLowerCase().trim();
-            const fantasia = document.getElementById('fantasia').value.toLowerCase().trim();
+        /if (dataInicial || dataFinal) {
+  const dataEmissao = parseData(alvara.dt_emite); // ← Troca aqui
+  if (!dataEmissao) return false;
+  if (dataInicial && dataEmissao < new Date(dataInicial)) return false;
+  if (dataFinal && dataEmissao > new Date(dataFinal)) return false;
+}
+
             
             alvarasFiltrados = dadosAlvara.filter(alvara => {
                 if (numeroAlvara && !limparNumeroAlvara(alvara.numero).includes(numeroAlvara)) return false;
