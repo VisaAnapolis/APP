@@ -427,6 +427,22 @@
       .stat-label { font-size: 0.7rem; }
       .stat-detalhe { font-size: .7rem; }
     }
+
+  /* ... todo CSS existente ... */
+
+  /* === ALERTAS VISUAIS DOS CARDS DE OS (Paleta C) === */
+  .stat-card.alert-red {
+    background: #FFF2F2;
+  }
+
+  .stat-card.alert-yellow {
+    background: #FFFBEB;
+  }
+
+  .stat-card.alert-ok {
+    background: #F0FFF4;
+  }
+    
   </style>
 
   <!-- Sistema de Design - VISA Anápolis -->
@@ -1252,6 +1268,27 @@
       }
     }
 
+function aplicarCorCard(cardEl, vencidas, aVencer) {
+  if (!cardEl) return;
+
+  cardEl.classList.remove('alert-red', 'alert-yellow', 'alert-ok');
+
+  if (vencidas > 0) {
+    cardEl.classList.add('alert-red');
+  } else if (aVencer > 0) {
+    cardEl.classList.add('alert-yellow');
+  } else {
+    cardEl.classList.add('alert-ok');
+  }
+}
+
+const cards = document.querySelectorAll('#fiscalStats .stat-card');
+
+aplicarCorCard(cards[0], protocolos.vencidas, protocolos.aVencer);
+aplicarCorCard(cards[1], requerimentos.vencidas, requerimentos.aVencer);
+aplicarCorCard(cards[2], denuncias.vencidas, denuncias.aVencer);
+aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
+    
     // ===== Indicadores (NÃO auto-carrega; só Admin chama) =====
     window.carregarIndicadores = function carregarIndicadores() {
       const container = document.getElementById('indicadores-content');
