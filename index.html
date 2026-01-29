@@ -1262,11 +1262,6 @@
             `${denuncias.vencidas} vencidas | ${denuncias.aVencer} próximas`;
           document.getElementById('detOficios').textContent =
             `${oficios.vencidas} vencidas | ${oficios.aVencer} próximas`;
-        }
-      } catch(e) {
-        console.error('Erro ao carregar OS:', e);
-      }
-    }
 
 function aplicarCorCard(cardEl, vencidas, aVencer) {
   if (!cardEl) return;
@@ -1281,14 +1276,19 @@ function aplicarCorCard(cardEl, vencidas, aVencer) {
     cardEl.classList.add('alert-ok');
   }
 }
-
 const cards = document.querySelectorAll('#fiscalStats .stat-card');
 
 aplicarCorCard(cards[0], protocolos.vencidas, protocolos.aVencer);
 aplicarCorCard(cards[1], requerimentos.vencidas, requerimentos.aVencer);
 aplicarCorCard(cards[2], denuncias.vencidas, denuncias.aVencer);
 aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
-    
+   
+        }
+      } catch(e) {
+        console.error('Erro ao carregar OS:', e);
+      }
+    }
+
     // ===== Indicadores (NÃO auto-carrega; só Admin chama) =====
     window.carregarIndicadores = function carregarIndicadores() {
       const container = document.getElementById('indicadores-content');
