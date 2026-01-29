@@ -2,6 +2,10 @@
 <html lang="pt-BR">
 <head>
 <link rel="stylesheet" href="./css/design-tokens.css">
+
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/layouts.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vigilância Sanitária Municipal – Consulta Institucional</title>
@@ -9,80 +13,106 @@
 
 
   <style>
-    /* Botão Voltar - iOS e Android Nativos */
-    .topbar .btn {
-      background: transparent !important;
-      border: none !important;
-      color: var(--text, #1a202c) !important;
-      padding: 6px 12px !important;
-      font-size: 17px !important;
-      font-weight: 400 !important;
+header.main-header {
+      background: #1a3a6b;
+      color: #ffffff;
+      padding: 28px 20px 26px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    
-    .topbar .btn::before {
-      content: "←";
-      margin-right: 4px;
-      font-size: 20px;
+
+header.main-header h1 {
+      margin: 0;
+      font-size: clamp(1.4rem, 2.4vw, 2.3rem);
+      font-weight: 900;
+      letter-spacing: 0.2px;
+      color: #ffffff;
     }
-    
-    /* iOS: Setinha fina azul */
-    @supports (-webkit-touch-callout: none) {
-      .topbar .btn {
-        color: #007AFF !important;
-        font-weight: 400 !important;
+
+header.main-header h2 {
+      margin: 8px 0 0;
+      font-size: clamp(1rem, 1.5vw, 1.15rem);
+      font-weight: 500;
+      opacity: 0.92;
+      color: #ffffff;
+    }
+
+.btn-ok-header {
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #34C759;
+      font-size: 17px;
+      font-weight: 600;
+      padding: 16px 12px;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+.btn-ok-header:hover {
+      opacity: 0.7;
+    }
+
+@media (max-width: 768px) {
+      header.main-header {
+        padding: 28px 70px 26px 20px;
       }
-      .topbar .btn::before {
-        content: "‹";
-        font-size: 32px;
-        font-weight: 300;
-        margin-right: 0px;
-        vertical-align: middle;
-      }
-    }
-    
-    /* Ocultar topbar no desktop */
-    @media (min-width: 769px) {
-      .topbar--mobile-only {
-        display: none !important;
-      }
-    }
-  </style>
+
+/* === Topbar padrão iOS (APP) === */
+.iosTopbar{
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #f9f9f9;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+.iosTopbar__inner{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+}
+.iosTitle{
+  font-size: 17px;
+  font-weight: 600;
+  color: #1a3a6b;
+}
+.iosBtn{
+  text-decoration: none;
+  font-size: 17px;
+  font-weight: 600;
+  padding: 6px 12px;
+}
+.iosBtn--ok{
+  color: #34C759; /* verde iOS */
+}
+
+    </style>
 </head>
 
 <body>
-  <!-- Topbar Padrão VISA -->
-  
-  <!-- Topbar - Apenas Mobile -->
-  <header class="topbar topbar--mobile-only">
-    <div class="wrap topbar__inner">
-      <div class="brand">
-        <div class="brand__title">VISA Anápolis</div>
-        <div class="brand__subtitle">Vigilância Sanitária</div>
-      </div>
-      <div class="actions">
-                <a class="btn btn--ghost btn--back" href="./index.html">
-          Voltar
-        </a>
-      </div>
-    </div>
-  </header>
 
-  <style>
-    /* Topbar visível APENAS em mobile */
-    @media (min-width: 769px) {
-      .topbar--mobile-only {
-        display: none !important;
-      }
-    }
-  </style>
-
-
+<header class="main-header">
+  <a href="./index.html" class="btn-ok-header">OK</a>
+  <h1>Vigilância Sanitária</h1>
+  <h2>Aviso Institucional</h2>
+</header>
 
 <!-- ✅ Topbar com Voltar/OK -->
 <div class="iosTopbar">
   <div class="iosTopbar__inner">
       <div class="iosTitle">Aviso Institucional</div>
-    <button class="iosBtn" type="button" onclick="goBackOrHome()">OK</button>
+    <a href="index.html" class="iosBtn iosBtn--ok">OK</a>
   </div>
 </div>
 
@@ -176,19 +206,7 @@
   </div>
 </div>
 
-<script>
-  function goBackOrHome(){
-    try{
-      if (window.history.length > 1) window.history.back();
-      else window.location.href = "index.html";
-    }catch(e){
-      window.location.href = "index.html";
-    }
-  }
-</script>
-
-
-  <!-- Platform Detector -->
+<!-- Platform Detector -->
   <script src="./js/platform-detector.js"></script>
 </body>
 </html>
