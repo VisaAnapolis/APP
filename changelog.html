@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Novidades da versão</title>
+
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/layouts.css">
+
+  <style>
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    header{
+      background:#1a3a6b;
+      color:#fff;
+      padding: 18px 16px;
+      text-align:center;
+    }
+    .container{
+      max-width: 900px;
+      margin: 18px auto;
+      padding: 0 16px 28px;
+    }
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: var(--shadow2);
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 12px;
+    }
+    .btnVoltar{
+      appearance:none;
+      border: 1px solid rgba(44,90,160,.25);
+      background: rgba(44,90,160,.08);
+      color: #2c5aa0;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 800;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .btnVoltar:active{ transform: scale(0.99); }
+    h2{ margin: 0; font-size: 1.05rem; }
+    h3{ margin: 16px 0 8px; color: #2c5aa0; }
+    .muted{ color: var(--muted); font-size: .9rem; }
+    ul{ margin: 8px 0 0 18px; }
+    code{ background: rgba(0,0,0,.05); padding: 2px 6px; border-radius: 6px; }
+    hr{ border: none; border-top: 1px solid rgba(0,0,0,.08); margin: 16px 0; }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div style="font-weight:900; font-size:1.1rem;">Vigilância Sanitária</div>
+    <div style="opacity:.9; font-size:.95rem;">Novidades da versão</div>
+  </header>
+
+  <div class="container">
+    <div class="topbar">
+      <a class="btnVoltar" href="index.html">← Voltar</a>
+      <div class="muted">Horário de Brasília – UTC−3</div>
+    </div>
+
+    <div class="card">
+      <h2>CHANGELOG — VISA Anápolis</h2>
+      <p class="muted">Registro das alterações publicadas no WebCVS/VISA App.</p>
+
+      <hr>
+
+      <h3>v2.0.8 — 28/01/2026 19:56 (Horário de Brasília – UTC−3)</h3>
+
+      <strong>Correções críticas (tela inicial / index.html)</strong>
+      <ul>
+        <li>Correção do atraso/intermitência no reconhecimento de perfil ao entrar (desktop e mobile).</li>
+        <li>Unificação do fluxo de autenticação/perfil para evitar disputa de ordem (race condition).</li>
+        <li>Central de Trabalho aparece rapidamente, mantendo links sensíveis bloqueados até o perfil carregar.</li>
+      </ul>
+
+      <br>
+
+      <strong>Controle de permissões por perfil (Firestore)</strong>
+      <ul>
+        <li>Fiscal: exibe resumo de OS pendentes e oculta indicadores.</li>
+        <li>Administrador: exibe indicadores e oculta resumo de OS.</li>
+        <li>Administrativo: oculta indicadores e resumo de OS (conteúdo institucional).</li>
+        <li>Links sensíveis: <code>rmpf.html</code>, <code>inspecoes.html</code> e <code>admin.html</code> protegidos por perfil.</li>
+      </ul>
+
+      <br>
+
+      <strong>Resiliência em rede instável</strong>
+      <ul>
+        <li>Timeout + retry na busca de perfil no Firestore, com mensagem ao usuário.</li>
+      </ul>
+
+      <br>
+
+      <strong>Estabilidade</strong>
+      <ul>
+        <li>Removida duplicidade do PapaParse.</li>
+        <li>Correções de HTML/CSS inconsistentes (tags/chaves sobressalentes).</li>
+        <li>Correção do erro <code>setUserInfoLoadingText is not defined</code>.</li>
+      </ul>
+
+      <hr>
+
+      <h3>v2.0.7 — baseline anterior</h3>
+      <ul>
+        <li>Versão anterior de referência, antes das correções de carregamento do perfil.</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
