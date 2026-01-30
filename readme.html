@@ -12,6 +12,11 @@
   <link rel="stylesheet" href="./css/layouts.css">
 
   <style>
+    /* Reset de possíveis regras externas */
+    * {
+      box-sizing: border-box;
+    }
+
     /* Header padrão */
     header.main-header {
       background: #1a3a6b;
@@ -63,71 +68,85 @@
       opacity: 0.7;
     }
 
-    /* Container e Card centralizados */
+    /* Container e Card - FORÇAR LARGURA TOTAL */
     .container {
-      max-width: 900px;
-      margin: 22px auto 30px;
-      padding: 0 16px;
-      padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+      max-width: 900px !important;
+      margin: 22px auto 30px !important;
+      padding: 0 16px !important;
+      padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+      width: 100% !important;
     }
 
     .card {
-      background: var(--card, #ffffff);
-      border-radius: 16px;
-      padding: 20px 24px;
-      margin-bottom: 16px;
-      border: 1px solid var(--line, #e2e8f0);
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      background: var(--card, #ffffff) !important;
+      border-radius: 16px !important;
+      padding: 20px 24px !important;
+      margin-bottom: 16px !important;
+      border: 1px solid var(--line, #e2e8f0) !important;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1) !important;
+      width: 100% !important;
+      max-width: none !important;
     }
 
-    /* Texto justificado ocupando toda largura */
-    .card p {
-      text-align: justify;
-      text-justify: inter-word;
-      line-height: 1.6;
-      margin: 0 0 16px 0;
-      width: 100%;
+    /* Forçar texto justificado e largura completa */
+    .container .card p {
+      text-align: justify !important;
+      text-justify: inter-word !important;
+      line-height: 1.6 !important;
+      margin: 0 0 16px 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      max-width: none !important;
     }
 
-    .card li {
-      text-align: justify;
-      text-justify: inter-word;
-      line-height: 1.6;
-      margin: 6px 0;
+    .container .card li {
+      text-align: justify !important;
+      text-justify: inter-word !important;
+      line-height: 1.6 !important;
+      margin: 6px 0 !important;
+      padding: 0 !important;
     }
 
-    .card h1 {
-      color: var(--brand1, #1a3a6b);
-      font-size: 1.4rem;
-      font-weight: 900;
-      margin: 0 0 20px 0;
-      padding-bottom: 12px;
-      border-bottom: 2px solid var(--brand1, #1a3a6b);
-      width: 100%;
+    .container .card h1 {
+      color: var(--brand1, #1a3a6b) !important;
+      font-size: 1.4rem !important;
+      font-weight: 900 !important;
+      margin: 0 0 20px 0 !important;
+      padding: 0 0 12px 0 !important;
+      border-bottom: 2px solid var(--brand1, #1a3a6b) !important;
+      width: 100% !important;
+      max-width: none !important;
+      text-align: left !important;
     }
 
-    .card h2 {
-      color: var(--brand1, #1a3a6b);
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin: 24px 0 12px 0;
-      width: 100%;
+    .container .card h2 {
+      color: var(--brand1, #1a3a6b) !important;
+      font-size: 1.1rem !important;
+      font-weight: 700 !important;
+      margin: 24px 0 12px 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      max-width: none !important;
+      text-align: left !important;
     }
 
-    .card ul {
-      margin: 8px 0 16px 0;
-      padding-left: 24px;
-      width: 100%;
+    .container .card ul {
+      margin: 8px 0 16px 0 !important;
+      padding-left: 24px !important;
+      width: 100% !important;
+      max-width: none !important;
+      list-style-position: outside !important;
     }
 
     .footer {
-      margin-top: 32px;
-      padding-top: 20px;
-      border-top: 1px solid var(--line, #e2e8f0);
-      text-align: center;
-      color: var(--muted, #64748b);
-      font-size: 0.9em;
-      line-height: 1.6;
+      margin-top: 32px !important;
+      padding-top: 20px !important;
+      border-top: 1px solid var(--line, #e2e8f0) !important;
+      text-align: center !important;
+      color: var(--muted, #64748b) !important;
+      font-size: 0.9em !important;
+      line-height: 1.6 !important;
+      width: 100% !important;
     }
 
     @media (max-width: 768px) {
@@ -136,7 +155,7 @@
       }
       
       .card {
-        padding: 18px 20px;
+        padding: 18px 20px !important;
       }
     }
   </style>
