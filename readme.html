@@ -80,11 +80,20 @@
       box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     }
 
-    /* Texto justificado em parágrafos e listas */
-    .card p,
+    /* Texto justificado ocupando toda largura */
+    .card p {
+      text-align: justify;
+      text-justify: inter-word;
+      line-height: 1.6;
+      margin: 0 0 16px 0;
+      width: 100%;
+    }
+
     .card li {
       text-align: justify;
+      text-justify: inter-word;
       line-height: 1.6;
+      margin: 6px 0;
     }
 
     .card h1 {
@@ -94,6 +103,7 @@
       margin: 0 0 20px 0;
       padding-bottom: 12px;
       border-bottom: 2px solid var(--brand1, #1a3a6b);
+      width: 100%;
     }
 
     .card h2 {
@@ -101,15 +111,13 @@
       font-size: 1.1rem;
       font-weight: 700;
       margin: 24px 0 12px 0;
+      width: 100%;
     }
 
     .card ul {
-      margin: 8px 0 0 18px;
-      padding-left: 10px;
-    }
-
-    .card li {
-      margin: 6px 0;
+      margin: 8px 0 16px 0;
+      padding-left: 24px;
+      width: 100%;
     }
 
     .footer {
@@ -125,6 +133,10 @@
     @media (max-width: 768px) {
       header.main-header {
         padding: 28px 70px 26px 20px;
+      }
+      
+      .card {
+        padding: 18px 20px;
       }
     }
   </style>
