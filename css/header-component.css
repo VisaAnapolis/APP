@@ -1,15 +1,19 @@
 /* ===================================================================
-   HEADER GLOBAL - VISA ANÁPOLIS
+   HEADER GLOBAL - VISA ANÁPOLIS (VERSÃO PADRONIZADA)
    Header adaptativo para todas as páginas
+   Atualizado: 01/02/2026
    ================================================================ */
 
 .app-header {
-  background: linear-gradient(135deg, var(--header-bg-start), var(--header-bg-end));
-  color: var(--header-text);
-  padding: var(--space-6) var(--space-4);
+  background: #1a3a6b;  /* Azul escuro fixo - padrão Anápolis */
+  color: #ffffff;
+  padding: 28px 20px 26px;
   text-align: center;
-  box-shadow: var(--shadow-md);
-  position: relative;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  position: relative;  /* Para posicionamento absoluto dos botões */
 }
 
 .app-header__title {
@@ -18,42 +22,78 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.2;
+  color: #ffffff;
 }
 
 .app-header__subtitle {
-  margin: var(--space-2) 0 0;
+  margin: 8px 0 0;
   font-size: clamp(0.875rem, 1.5vw, 1rem);
   font-weight: 400;
-  opacity: 0.9;
-  color: var(--header-text-secondary);
+  opacity: 0.92;
+  color: #ffffff;
   line-height: 1.3;
 }
 
 /* ===================================================================
-   BOTÕES DE NAVEGAÇÃO iOS-STYLE
+   BOTÃO OK/DONE - VISÍVEL EM TODAS AS TELAS
    ================================================================ */
 
-/* Botão Voltar (esquerda) */
-.btn-back-ios {
+.btn-done-ios {
   position: absolute;
   top: 50%;
-  left: var(--space-4);
+  right: 16px;
   transform: translateY(-50%);
   
   background: transparent;
   border: none;
-  color: var(--primary);
+  color: #34C759;  /* Verde iOS */
+  
+  font-size: 17px;
+  font-weight: 600;
+  padding: 16px 12px;
+  
+  display: inline-flex;  /* Sempre visível */
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  
+  transition: opacity 0.15s ease;
+  
+  /* Área de toque mínima (acessibilidade) */
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.btn-done-ios:hover {
+  opacity: 0.7;
+}
+
+.btn-done-ios:active {
+  opacity: 0.5;
+}
+
+/* Botão Voltar (esquerda) - opcional para futuro uso */
+.btn-back-ios {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  
+  background: transparent;
+  border: none;
+  color: #34C759;
   
   font-size: 17px;
   font-weight: 400;
-  padding: var(--space-2) 0;
+  padding: 16px 12px;
   
   text-decoration: none;
-  display: none;  /* Só mobile */
+  display: none;  /* Oculto por padrão */
   align-items: center;
   gap: 2px;
   
-  transition: opacity var(--transition-fast);
+  transition: opacity 0.15s ease;
   cursor: pointer;
 }
 
@@ -69,42 +109,28 @@
   vertical-align: middle;
 }
 
-/* Botão OK/Done (direita) */
-.btn-done-ios {
-  position: absolute;
-  top: 50%;
-  right: var(--space-4);
-  transform: translateY(-50%);
-  
-  background: transparent;
-  border: none;
-  color: var(--success);
-  
-  font-size: 17px;
-  font-weight: 600;
-  padding: var(--space-2) 0;
-  
-  display: none;  /* Só mobile */
-  cursor: pointer;
-  
-  transition: opacity var(--transition-fast);
-}
+/* ===================================================================
+   DARK MODE - PADRONIZADO
+   ================================================================ */
 
-.btn-done-ios:hover {
-  opacity: 0.7;
-}
-
-/* Mostrar botões apenas em mobile */
-@media (max-width: 768px) {
-  .btn-back-ios,
-  .btn-done-ios {
-    display: inline-flex;
+@media (prefers-color-scheme: dark) {
+  .app-header {
+    background: #2a2a31;  /* Fundo escuro consistente */
+    border-bottom: 1px solid rgba(168, 162, 158, 0.15);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
   }
   
-  /* Ajustar padding do header para acomodar botões */
-  .app-header {
-    padding-left: 60px;
-    padding-right: 60px;
+  .app-header__title,
+  .app-header__subtitle {
+    color: #e8e6e3;  /* Texto claro */
+  }
+  
+  .btn-done-ios {
+    color: #32D74B;  /* Verde iOS dark mode */
+  }
+  
+  .btn-back-ios {
+    color: #32D74B;
   }
 }
 
@@ -112,18 +138,10 @@
    AJUSTES ESPECÍFICOS POR PLATAFORMA
    ================================================================ */
 
-/* iOS: Ajustar para safe areas */
+/* iOS: Ajustar para safe areas (notch) */
 @supports (-webkit-touch-callout: none) {
   .app-header {
-    padding-top: calc(var(--safe-area-inset-top) + var(--space-6));
-  }
-  
-  .btn-back-ios {
-    color: #007AFF;  /* Azul iOS padrão */
-  }
-  
-  .btn-done-ios {
-    color: #34C759;  /* Verde iOS padrão */
+    padding-top: calc(28px + env(safe-area-inset-top, 0px));
   }
 }
 
@@ -132,53 +150,9 @@ html.platform-android .app-header {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-html.platform-android .btn-back-ios,
-html.platform-android .btn-done-ios {
+html.platform-android .btn-done-ios,
+html.platform-android .btn-back-ios {
   font-weight: 500;
-}
-
-/* ===================================================================
-   DARK MODE - AJUSTES DO HEADER
-   ================================================================ */
-
-@media (prefers-color-scheme: dark) {
-  /* Web Dark */
-  :root:not(.platform-ios):not(.platform-android) .app-header {
-    background: linear-gradient(135deg, var(--header-bg-start), var(--header-bg-end));
-    color: var(--header-text);
-  }
-}
-
-/* iOS Dark Mode */
-@supports (-webkit-touch-callout: none) {
-  @media (prefers-color-scheme: dark) {
-    .app-header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border-primary);
-      box-shadow: none;
-    }
-    
-    .btn-back-ios {
-      color: #0A84FF;  /* Azul iOS dark */
-    }
-    
-    .btn-done-ios {
-      color: #32D74B;  /* Verde iOS dark */
-    }
-  }
-}
-
-/* Android Dark Mode */
-@media (prefers-color-scheme: dark) {
-  html.platform-android .app-header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border-primary);
-  }
-  
-  html.platform-android .btn-back-ios,
-  html.platform-android .btn-done-ios {
-    color: var(--primary);
-  }
 }
 
 /* ===================================================================
@@ -186,7 +160,7 @@ html.platform-android .btn-done-ios {
    ================================================================ */
 
 .app-header {
-  animation: slideDown 0.3s var(--transition-base);
+  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes slideDown {
@@ -204,5 +178,90 @@ html.platform-android .btn-done-ios {
 @media (prefers-reduced-motion: reduce) {
   .app-header {
     animation: none;
+  }
+  
+  .btn-done-ios,
+  .btn-back-ios {
+    transition: none;
+  }
+}
+
+/* ===================================================================
+   RESPONSIVIDADE
+   ================================================================ */
+
+/* Mobile: Ajustar padding do header para acomodar botões */
+@media (max-width: 768px) {
+  .app-header {
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+  
+  .app-header__title {
+    font-size: clamp(1.4rem, 2.4vw, 1.8rem);
+  }
+}
+
+/* Telas muito pequenas */
+@media (max-width: 360px) {
+  .app-header {
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+  
+  .btn-done-ios {
+    font-size: 16px;
+    padding: 12px 8px;
+  }
+}
+
+/* Desktop grande */
+@media (min-width: 1440px) {
+  .app-header__title {
+    font-size: 2.2rem;
+  }
+  
+  .app-header__subtitle {
+    font-size: 1.1rem;
+  }
+}
+
+/* ===================================================================
+   ACESSIBILIDADE
+   ================================================================ */
+
+/* Foco visível para navegação por teclado */
+.btn-done-ios:focus,
+.btn-back-ios:focus {
+  outline: 2px solid #34C759;
+  outline-offset: 2px;
+}
+
+/* Alto contraste */
+@media (prefers-contrast: high) {
+  .app-header {
+    border-bottom: 2px solid #ffffff;
+  }
+  
+  .btn-done-ios,
+  .btn-back-ios {
+    font-weight: 700;
+  }
+}
+
+/* ===================================================================
+   PRINT
+   ================================================================ */
+
+@media print {
+  .app-header {
+    position: static;
+    box-shadow: none;
+    border-bottom: 2px solid #1a3a6b;
+  }
+  
+  .btn-done-ios,
+  .btn-back-ios {
+    display: none;
   }
 }
