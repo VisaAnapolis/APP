@@ -122,6 +122,58 @@
       margin-left: 8px;
     }
 
+    /* ===== SCROLL HORIZONTAL COM PRIMEIRA COLUNA FIXA ===== */
+    .dataTables_wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table.dataTable {
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    /* Primeira coluna fixa */
+    table.dataTable thead th:first-child,
+    table.dataTable tbody td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      background: var(--card);
+    }
+
+    table.dataTable thead th:first-child {
+      background: var(--brand1);
+      z-index: 3;
+    }
+
+    /* Sombra sutil para indicar scroll */
+    table.dataTable thead th:first-child::after,
+    table.dataTable tbody td:first-child::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: -8px;
+      bottom: 0;
+      width: 8px;
+      background: linear-gradient(to right, rgba(0,0,0,0.08), transparent);
+      pointer-events: none;
+    }
+
+    /* Ajustes para linhas de agrupamento */
+    tr.group-row td:first-child {
+      background: rgba(26, 58, 107, 0.10);
+    }
+
+    /* Garantir que células stickytenham fundo consistente */
+    table.dataTable tbody tr:hover td:first-child {
+      background: rgba(44, 90, 160, 0.05);
+    }
+
+    tr.tag-weekend td:first-child {
+      background: var(--card);
+    }
+
   </style>
 </head>
 <body>
@@ -273,107 +325,82 @@
     if(p.length !== 3) return "";
     const dd = p[0].padStart(2,"0");
     const mm = p[1].padStart(2,"0");
-    const yy = p[2];
-    return `${yy}-${mm}-${dd}`;
-  }
-
-  async function carregarFeriasDeHTML(){
-    try{
-      const bust = Date.now();
-      const resp = await fetch(`./ferias.html?v=${bust}`, { cache: "no-store" });
-      if(!resp.ok) throw new Error("HTTP " + resp.status);
-      const html = await resp.text();
-      const doc = new DOMParser().parseFromString(html, "text/html");
-
-      const table = doc.querySelector("table");
-      if(!table) throw new Error("Tabela não encontrada em ferias.html");
-
-      const rows = Array.from(table.querySelectorAll("tr")).slice(1); // pula cabeçalho
-      const lista = [];
-
-      rows.forEach(tr => {
-        const tds = tr.querySelectorAll("td");
-        if(tds.length < 3) return;
-        const nome = (tds[0].textContent || "").trim().replace(/\s+/g," ");
-        const iniBR = (tds[1].textContent || "").trim();
-        const fimBR = (tds[2].textContent || "").trim();
-
-        const ini = ddmmyyyyToISO(iniBR);
-        const fim = ddmmyyyyToISO(fimBR);
-
-        if(nome && ini && fim){
-          lista.push({ nome, inicio: ini, fim: fim });
-        }
-      });
-
-      ferias = lista;
-      console.log(`✅ Férias carregadas de ferias.html: ${ferias.length} registros`);
-    }catch(err){
-      console.warn("⚠️ Não foi possível carregar ferias.html. Escala seguirá sem aplicar férias.", err);
-      ferias = [];
-    }
-  }
-
-  
-  // =========================================================
-  // Feriados (Nacionais + Municipais/Facultativos configuráveis)
-  // =========================================================
-  // ✅ NACIONAIS FIXOS (Brasil)
-  // Formato ISO: YYYY-MM-DD
-  function feriadosNacionaisFixos(ano){
-    const pad = (n) => String(n).padStart(2,'0');
-    return [
-      `${ano}-01-01`, // Confraternização Universal
-      `${ano}-04-21`, // Tiradentes
-      `${ano}-05-01`, // Dia do Trabalhador
-      `${ano}-09-07`, // Independência do Brasil
-      `${ano}-10-12`, // Nossa Senhora Aparecida
-      `${ano}-11-02`, // Finados
-      `${ano}-11-15`, // Proclamação da República
-      `${ano}-12-25`  // Natal
-    ];
-  }
-
-  // ✅ NACIONAL MÓVEL (Paixão de Cristo = Sexta-feira Santa)
-  // Calcula a Páscoa (algoritmo de Meeus/Jones/Butcher) e deriva a Sexta-feira Santa.
-  function easterDate(ano){
-    const a = ano % 19;
-    const b = Math.floor(ano / 100);
-    const c = ano % 100;
-    const d = Math.floor(b / 4);
-    const e = b % 4;
-    const f = Math.floor((b + 8) / 25);
-    const g = Math.floor((b - f + 1) / 3);
-    const h = (19 * a + b - d - g + 15) % 30;
-    const i = Math.floor(c / 4);
-    const k = c % 4;
-    const l = (32 + 2 * e + 2 * i - h - k) % 7;
-    const m = Math.floor((a + 11 * h + 22 * l) / 451);
-    const month = Math.floor((h + l - 7 * m + 114) / 31); // 3=Mar, 4=Abr
-    const day = ((h + l - 7 * m + 114) % 31) + 1;
-    return new Date(ano, month - 1, day);
-  }
-
-  function dateToISO(d){
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth()+1).padStart(2,'0');
-    const dd = String(d.getDate()).padStart(2,'0');
+    const yyyy = p[2];
     return `${yyyy}-${mm}-${dd}`;
   }
 
-  function paixaoDeCristoISO(ano){
-    const pascoa = easterDate(ano);
-    const sextaSanta = new Date(pascoa);
-    sextaSanta.setDate(pascoa.getDate() - 2);
-    return dateToISO(sextaSanta);
+  async function carregarFeriasDeHTML(){
+    try {
+      const resp = await fetch("ferias.html");
+      if(!resp.ok) throw new Error("Não encontrou ferias.html");
+      const html = await resp.text();
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+      const rows = doc.querySelectorAll("table tbody tr");
+
+      ferias = [];
+      rows.forEach(tr => {
+        const tds = tr.querySelectorAll("td");
+        if(tds.length >= 3){
+          const nome = tds[0].textContent.trim();
+          const iniStr = tds[1].textContent.trim();
+          const fimStr = tds[2].textContent.trim();
+          const inicio = ddmmyyyyToISO(iniStr);
+          const fim = ddmmyyyyToISO(fimStr);
+          if(nome && inicio && fim){
+            ferias.push({ nome, inicio, fim });
+          }
+        }
+      });
+    } catch(err){
+      console.warn("Erro ao carregar ferias.html. Escala rodará sem férias aplicadas.", err);
+    }
   }
 
-  // ✅ CONFIGURE AQUI OS FERIADOS MUNICIPAIS E PONTOS FACULTATIVOS
-  // Coloque no formato ISO: 'YYYY-MM-DD'
-  // Exemplos (APAGUE/EDITE):
-  // const feriadosMunicipais = ['2026-07-31']; // ex.: aniversário do município
-  // const pontosFacultativos = ['2026-02-16','2026-02-17']; // ex.: carnaval
-  const feriadosMunicipais = [];
+function easterDate(Y){
+  const C = Math.floor(Y / 100);
+  const N = Y - 19 * Math.floor(Y / 19);
+  const K = Math.floor((C - 17) / 25);
+  let I = C - Math.floor(C / 4) - Math.floor((C - K) / 3) + 19 * N + 15;
+  I = I - 30 * Math.floor(I / 30);
+  I = I - Math.floor(I / 28) * (1 - Math.floor(I / 28) * Math.floor(29 / (I + 1)) * Math.floor((21 - N) / 11));
+  let J = Y + Math.floor(Y / 4) + I + 2 - C + Math.floor(C / 4);
+  J = J - 7 * Math.floor(J / 7);
+  const L = I - J;
+  const M = 3 + Math.floor((L + 40) / 44);
+  const D = L + 28 - 31 * Math.floor(M / 4);
+  return new Date(Y, M - 1, D);
+}
+
+function feriadosNacionaisFixos(ano){
+  return [
+    `${ano}-01-01`, // Ano Novo
+    `${ano}-04-21`, // Tiradentes
+    `${ano}-05-01`, // Dia do Trabalho
+    `${ano}-09-07`, // Independência
+    `${ano}-10-12`, // N. Sra. Aparecida
+    `${ano}-11-02`, // Finados
+    `${ano}-11-15`, // Proclamação República
+    `${ano}-11-20`, // Consciência Negra
+    `${ano}-12-25`  // Natal
+  ];
+}
+
+function paixaoDeCristoISO(ano){
+  const pascoa = easterDate(ano);
+  const sexta = new Date(pascoa);
+  sexta.setDate(pascoa.getDate() - 2);
+  const yyyy = sexta.getFullYear();
+  const mm = String(sexta.getMonth()+1).padStart(2,"0");
+  const dd = String(sexta.getDate()).padStart(2,"0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+const feriadosMunicipais = [
+  '2026-07-25', // Aniversário de Anápolis
+  '2026-12-24'  // Véspera de Natal
+];
 
 // Pontos facultativos padronizados (já configurados)
 const pontosFacultativos = [

@@ -117,7 +117,7 @@
 
         .filter-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(5, minmax(0, 1fr));
             gap: 16px;
             margin-bottom: 16px;
         }
@@ -679,7 +679,7 @@
         <!-- Card de Filtros -->
         <div class="card">
             <h3>🔍 Filtros de Busca</h3>
-            <div class="filter-row">
+                        <div class="filter-row">
                 <div class="filter-group">
                     <label for="filterTipo">Tipo de OS:</label>
                     <select id="filterTipo">
@@ -712,14 +712,14 @@
                     <label for="filterDataReqFim">Data do Requerimento (Final):</label>
                     <input type="date" id="filterDataReqFim">
                 </div>
+            </div>
 
+            <div class="filter-row">
                 <div class="filter-group">
                     <label for="filterRazao">Razão Social:</label>
                     <input type="text" id="filterRazao" placeholder="Digite parte do nome...">
                 </div>
-            </div>
 
-            <div class="filter-row">
                 <div class="filter-group">
                     <label for="filterFantasia">Nome Fantasia:</label>
                     <input type="text" id="filterFantasia" placeholder="Digite parte do fantasia...">
@@ -746,6 +746,8 @@
                 <div class="filter-group">
                     <button class="btn-search">🔍 Buscar</button>
                 </div>
+            </div>
+
             </div>
         </div>
 

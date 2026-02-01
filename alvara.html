@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Alvarás Emitidos - CVS Vigilância Sanitária</title>
     <style>
+    /* Header agora usa header-component.css */
+
         * {
             margin: 0;
             padding: 0;
@@ -15,47 +17,6 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f5f5f5;
             min-height: 100vh;
-        }
-
-        header {
-            background: #1a3a6b;
-            color: #ffffff;
-            padding: 28px 20px 26px;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        header h1 {
-            font-size: 1.8em;
-            margin-bottom: 4px;
-        }
-
-        header h2 {
-            font-size: 1.1em;
-            font-weight: 400;
-            opacity: 0.9;
-        }
-
-        .btn-ok-header {
-            position: absolute;
-            top: 50%;
-            right: 16px;
-            transform: translateY(-50%);
-            background: transparent;
-            border: none;
-            color: #34C759;
-            font-size: 17px;
-            font-weight: 600;
-            padding: 16px 12px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .btn-ok-header:hover {
-            opacity: 0.8;
         }
 
         .container {
@@ -344,21 +305,7 @@
             overflow-y: auto;
         }
 
-        .modal-header {
-            background: #1a3a6b;
-            color: white;
-            padding: 20px 24px;
-            border-radius: 10px 10px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h2 {
-            font-size: 1.5em;
-        }
-
-        .close {
+        .modal-.modal-.close {
             font-size: 1.8em;
             font-weight: bold;
             color: white;
@@ -435,14 +382,6 @@
         }
 
         @media (max-width: 768px) {
-            header h1 {
-                font-size: 1.4em;
-            }
-
-            header h2 {
-                font-size: 0.95em;
-            }
-
             .container {
                 padding: 0 12px;
             }
@@ -639,13 +578,15 @@
   }
       
     </style>
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/header-component.css">
 </head>
 <body>
-    <header>
-        <a href="index.html" class="btn-ok-header">OK</a>
-        <h1>Vigilância Sanitária</h1>
-        <h2>Consulta Alvarás Sanitários</h2>
-    </header>
+    <header class="app-header">
+    <a href="index.html" class="btn-done-ios">OK</a>
+    <h1 class="app-header__title">Vigilância Sanitária</h1>
+    <h2 class="app-header__subtitle">Consulta Alvarás Sanitários</h2>
+  </header>
 
     <div class="container">
         <div class="card">

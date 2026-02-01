@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <link rel="stylesheet" href="./css/design-tokens.css" />
+  <link rel="stylesheet" href="./css/header-component.css" />
 
   <meta property="og:title" content="Vigilância Sanitária de Anápolis" />
   <meta property="og:description" content="Aplicativo interno da Vigilância Sanitária" />
@@ -99,29 +100,7 @@
       color:#fff;
     }
 
-    header {
-      background: #1a3a6b;
-      color: #ffffff;
-      padding: 28px 20px 26px;
-      text-align: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: clamp(1.7rem, 2.4vw, 2.3rem);
-      font-weight: 900;
-      letter-spacing: .2px;
-      color: #ffffff;
-    }
-
-    header h2 {
-      margin: 8px 0 0;
-      font-size: clamp(1rem, 1.5vw, 1.15rem);
-      font-weight: 500;
-      opacity: .92;
-      color: #ffffff;
-    }
+    /* Header agora usa header-component.css */
 
     .container{
       max-width: 1100px;
@@ -469,9 +448,9 @@
   </div>
 
   <div id="conteudo">
-    <header>
-      <h1>Vigilância Sanitária</h1>
-      <h2>Diretoria de Vigilância em Saúde — Anápolis</h2>
+    <header class="app-header">
+      <h1 class="app-header__title">Vigilância Sanitária</h1>
+      <h2 class="app-header__subtitle">Diretoria de Vigilância em Saúde — Anápolis</h2>
     </header>
 
     <!-- User info -->

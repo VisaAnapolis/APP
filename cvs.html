@@ -8,12 +8,15 @@
   
   <!-- Sistema de Design - VISA Anápolis -->
   <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/header-component.css">
   <link rel="stylesheet" href="./css/base.css">
   <link rel="stylesheet" href="./css/components.css">
   <link rel="stylesheet" href="./css/layouts.css">
   <link rel="stylesheet" href="./css/regulados.css" />
 
   <style>
+    /* Header agora usa header-component.css */
+
     /* ======================================
        RESET E BASE
        ====================================== */
@@ -41,58 +44,7 @@
     /* ========================================
        HEADER - Padrão VISA Anápolis
        ======================================== */
-    header.main-header {
-      background: #1a3a6b;
-      color: #ffffff;
-      padding: 28px 20px 26px;
-      text-align: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    header.main-header h1 {
-      margin: 0;
-      font-size: clamp(1.4rem, 2.4vw, 2.3rem);
-      font-weight: 900;
-      letter-spacing: 0.2px;
-      color: #ffffff;
-    }
-
-    header.main-header h2 {
-      margin: 8px 0 0;
-      font-size: clamp(1rem, 1.5vw, 1.15rem);
-      font-weight: 500;
-      opacity: 0.92;
-      color: #ffffff;
-    }
-
-    /* Botão OK - Voltar (Padrão iOS) */
-    .btn-ok-header {
-      position: absolute;
-      top: 50%;
-      right: 16px;
-      transform: translateY(-50%);
-      background: transparent;
-      border: none;
-      color: #34C759;
-      font-size: 17px;
-      font-weight: 600;
-      padding: 16px 12px;
-      cursor: pointer;
-      text-decoration: none;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .btn-ok-header:hover {
-      opacity: 0.7;
-    }
-
-    /* ========================================
+    header.main-header.main-header.main-/* ========================================
        CONTAINER PRINCIPAL
        ======================================== */
     .container {
@@ -790,10 +742,10 @@
   <!-- ========================================
        HEADER PADRONIZADO - VISA Anápolis
        ======================================== -->
-  <header class="main-header">
-    <a href="./index.html" class="btn-ok-header">OK</a>
-    <h1>Vigilância Sanitária</h1>
-    <h2>Histórico dos Regulados</h2>
+  <header class="app-header">
+    <a href="index.html" class="btn-done-ios">OK</a>
+    <h1 class="app-header__title">Vigilância Sanitária</h1>
+    <h2 class="app-header__subtitle">Histórico dos Regulados</h2>
   </header>
 
   <!-- ========================================

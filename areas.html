@@ -6,26 +6,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/header-component.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
 <style>
+    /* Header agora usa header-component.css */
+
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:system-ui,-apple-system,"Segoe UI",Arial;background:#f6f7fb}
-
-  header{
-    background:#1a3a6b;color:#fff;padding:26px 20px;text-align:center;
-    position:sticky;top:0;z-index:100;box-shadow:0 2px 4px rgba(0,0,0,.12)
-  }
-  header h1{margin:0;font-size:2rem;font-weight:900}
-  header h2{margin-top:6px;font-weight:500;opacity:.92}
-
-  /* Botão OK (voltar) */
-  .btn-ok-header{
-    position:absolute;top:50%;right:16px;transform:translateY(-50%);
-    background:transparent;border:none;color:#34C759;font-size:17px;font-weight:700;
-    padding:16px 12px;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;
-  }
-  .btn-ok-header:hover{opacity:.75}
 
   .container{max-width:1100px;margin:20px auto;padding:0 16px}
   .card{
@@ -142,9 +130,7 @@
   ========================= */
   @media (max-width: 768px){
     header{ padding-right: 72px; }
-    header h1{ font-size: 1.45rem; line-height: 1.2; }
-    header h2{ font-size: 0.95rem; line-height: 1.25; }
-  }
+    }
 
   /* =========================
      Botão "Aviso Legal"
@@ -179,11 +165,11 @@
 </head>
 
 <body>
-<header>
-  <a class="btn-ok-header" href="index.html">OK</a>
-  <h1>Vigilância Sanitária</h1>
-  <h2>Áreas de Atuação por Bairro</h2>
-</header>
+<header class="app-header">
+    <a href="index.html" class="btn-done-ios">OK</a>
+    <h1 class="app-header__title">Vigilância Sanitária</h1>
+    <h2 class="app-header__subtitle">Áreas de Atuação por Bairro</h2>
+  </header>
 
 <!-- ✅ Botão Aviso Legal (entre o banner e o primeiro box) -->
 <div class="legal-wrap">

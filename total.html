@@ -8,19 +8,10 @@
   <meta name="theme-color" content="#1a3a6b" />
 
   <style>
+    /* Header agora usa header-component.css */
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, -apple-system, "Segoe UI", Arial; background: #f6f7fb; color: #0f172a; }
-    header {
-      background:#1a3a6b; color:#fff; padding: 26px 20px; text-align:center;
-      position: sticky; top:0; z-index: 50; box-shadow: 0 2px 6px rgba(0,0,0,.14);
-    }
-    header h1 { font-size: 1.55rem; font-weight: 900; }
-    header h2 { margin-top: 6px; font-weight: 650; opacity: .95; font-size: 1rem; }
-    .btn-ok-header{
-      position:absolute; top:50%; right:16px; transform:translateY(-50%);
-      background:transparent; border:none; color:#34C759; font-size:17px; font-weight:800;
-      padding:16px 12px; cursor:pointer; text-decoration:none;
-    }
     .wrap { max-width: 1180px; margin: 18px auto; padding: 0 16px 28px; }
     .card {
       background:#fff; border-radius:16px; padding: 16px; margin-bottom: 14px;
@@ -88,14 +79,16 @@
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/header-component.css">
 </head>
 
 <body>
-<header>
-  <a class="btn-ok-header" href="./index.html">OK</a>
-  <h1>Vigilância Sanitária</h1>
-  <h2>Relatório Oficial – Regulados (Alta Complexidade) por Área de Atuação</h2>
-</header>
+<header class="app-header">
+    <a href="index.html" class="btn-done-ios">OK</a>
+    <h1 class="app-header__title">Vigilância Sanitária</h1>
+    <h2 class="app-header__subtitle">Relatório Oficial – Regulados (Alta Complexidade) por Área de Atuação</h2>
+  </header>
 
 <div class="wrap">
 

@@ -1,0 +1,165 @@
+ANÁLISE TÉCNICA DO REPOSITÓRIO VISA - VIGILÂNCIA SANITÁRIA DE ANÁPOLIS
+========================================================================
+
+1. ESTRUTURA DO PROJETO
+------------------------
+- Total de páginas HTML: 32
+- Diretórios principais: css/, js/, data/, docs/, icons/, normas/, POP/, check-lists
+- Sistema de autenticação: Firebase (Google Auth)
+- Armazenamento: Firestore
+- Versão atual: 2.0.9
+
+2. ARQUIVOS CSS IDENTIFICADOS
+------------------------------
+- design-tokens.css (9KB) - Variáveis CSS, tokens de design, suporte a dark mode
+- base.css (13KB) - Estilos base
+- components.css (17KB) - Componentes reutilizáveis
+- header-component.css (4.6KB) - Header padronizado (NÃO ESTÁ SENDO USADO)
+- layouts.css (16KB) - Layouts responsivos
+- regulados.css (9.2KB) - Específico para página de regulados
+
+3. ANÁLISE DO INDEX.HTML
+-------------------------
+- Header inline com estilo hardcoded:
+  * background: #1a3a6b
+  * padding: 28px 20px 26px
+  * color: #ffffff
+  * Sem botão de retorno (é a página principal)
+
+- Funcionalidades principais:
+  * Tela de loading
+  * Sistema de login com Google
+  * Dashboard com cards de links
+  * Indicadores administrativos
+  * Sistema de cache e versionamento
+  * Service Worker para PWA
+
+- Links para páginas secundárias:
+  * os2.html (Ordens de Serviço)
+  * alvara.html (Alvarás)
+  * cvs.html (Regulados)
+  * rmpf.html (Relatório Mensal)
+  * inspecoes.html (Inspeções)
+  * plantao.html (Plantão Fiscal)
+  * veiculos.html (Veículos)
+  * ferias.html (Férias)
+  * relatorio_plantao_fiscal.html (Ocorrências)
+  * legislacao.html (Legislação)
+  * pop.html (POPs)
+  * check.html (Check Lists)
+  * areas.html (Áreas)
+  * cnae.html (CNAEs)
+  * total.html (Totalização)
+  * admin.html (Painel Admin)
+
+4. ANÁLISE DAS PÁGINAS SECUNDÁRIAS
+-----------------------------------
+Todas as páginas analisadas (os2.html, alvara.html, cvs.html, plantao.html, ferias.html) apresentam:
+
+INCONSISTÊNCIAS IDENTIFICADAS:
+a) Header com estilos inline (não usam header-component.css)
+b) Estilos duplicados em cada página
+c) Variações sutis no padding, font-size e estrutura
+d) Botão "OK" verde presente, mas com implementações diferentes
+e) Algumas páginas usam design-tokens.css, outras não
+f) Algumas páginas importam base.css, components.css, layouts.css; outras não
+
+PADRÃO ATUAL DO HEADER (maioria das páginas):
+- background: #1a3a6b (azul escuro fixo)
+- color: #ffffff
+- padding: 28px 20px 26px
+- text-align: center
+- box-shadow: 0 2px 4px rgba(0,0,0,0.1)
+- position: sticky
+- top: 0
+- z-index: 100
+
+BOTÃO OK (padrão encontrado):
+- position: absolute
+- top: 50%
+- right: 16px
+- transform: translateY(-50%)
+- background: transparent
+- border: none
+- color: #34C759 (verde iOS)
+- font-size: 17px
+- font-weight: 600
+- Funcionalidade: window.location.href='index.html'
+
+5. DESIGN TOKENS DISPONÍVEIS (design-tokens.css)
+-------------------------------------------------
+O arquivo design-tokens.css já possui:
+- Variáveis CSS completas para light/dark mode
+- Suporte específico para iOS e Android
+- Header adaptativo com variáveis:
+  * --header-bg-start
+  * --header-bg-end
+  * --header-text
+  * --header-text-secondary
+- Cores de sucesso (--success: #38a169 / #4ade80 dark)
+- Sistema de sombras, espaçamentos, bordas
+- Transições e animações
+
+6. HEADER COMPONENT EXISTENTE (header-component.css)
+-----------------------------------------------------
+Já existe um arquivo header-component.css com:
+- Classe .app-header
+- Botões .btn-back-ios e .btn-done-ios
+- Suporte a dark mode
+- Suporte a safe areas (iOS)
+- Animações
+
+PROBLEMA: Este arquivo NÃO está sendo utilizado em nenhuma página!
+
+7. JAVASCRIPT IDENTIFICADO
+---------------------------
+- js/guard.js - Proteção de rotas
+- js/guard1.js - Variante de proteção
+- js/header-loader.js - Carregador de header (não está sendo usado)
+- js/platform-detector.js - Detecção de plataforma
+- js/regulados.js - Lógica específica da página regulados
+- service-worker.js - PWA
+
+8. PROBLEMAS IDENTIFICADOS
+---------------------------
+1. FALTA DE PADRONIZAÇÃO:
+   - Cada página tem seu próprio CSS inline para header
+   - Estilos duplicados em múltiplas páginas
+   - Inconsistências sutis em padding, cores, fontes
+
+2. RECURSOS NÃO UTILIZADOS:
+   - header-component.css existe mas não é usado
+   - js/header-loader.js existe mas não é usado
+   - Sistema de design tokens parcialmente implementado
+
+3. MANUTENÇÃO DIFÍCIL:
+   - Qualquer mudança no header requer edição de 30+ arquivos
+   - Risco de inconsistências ao fazer alterações
+   - Código duplicado dificulta debugging
+
+4. RESPONSIVIDADE:
+   - Algumas páginas têm media queries, outras não
+   - Comportamento mobile inconsistente
+   - Botão OK aparece em todas as resoluções (deveria ser só mobile)
+
+5. DARK MODE:
+   - design-tokens.css tem suporte completo
+   - Mas páginas com CSS inline não aproveitam
+   - Experiência inconsistente entre páginas
+
+9. ANÁLISE DE FUNCIONALIDADES
+------------------------------
+- Sistema de autenticação funcional (Firebase)
+- PWA configurado (manifest, service-worker)
+- DataTables para tabelas interativas
+- Consultas a CSV para dados
+- Sistema de permissões (Admin/Fiscal)
+- Versionamento e cache de aplicação
+- Indicadores dinâmicos
+
+10. COMPATIBILIDADE
+--------------------
+- Suporte a iOS (safe areas, estilos específicos)
+- Suporte a Android (Material Design)
+- Responsivo (com inconsistências)
+- PWA instalável
