@@ -112,8 +112,38 @@ header.main-header.main-header.main-.container {
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
       <div class="section">
+        <h3>v2.0.9 — 01/02/2026 18:45 (Horário de Brasília – UTC−3)</h3>
+        <strong>Padronização completa de headers em todas as páginas</strong>
+        <ul>
+          <li>Implementação de header unificado em todas as 22 páginas HTML do aplicativo.</li>
+          <li>Centralização de estilos do header em <code>header-component.css</code> (antes duplicado em cada página).</li>
+          <li>Remoção de ~1.500 linhas de CSS inline duplicado.</li>
+          <li>Padronização do botão "OK" verde (#34C759) visível em todas as telas (mobile e desktop).</li>
+          <li>Cor de fundo fixa azul escuro (#1a3a6b) em todos os headers.</li>
+          <li>Altura, tipografia e espaçamento consistentes para experiência de "app único".</li>
+          <li>Suporte completo a dark mode padronizado (sem campos invisíveis).</li>
+          <li>Suporte a safe areas para dispositivos iOS com notch.</li>
+          <li>Acessibilidade aprimorada: área de toque mínima 44x44px, contraste WCAG AA, foco visível.</li>
+          <li>Correção do admin.html que estava fora do padrão.</li>
+        </ul>
+        <strong>Limpeza de código</strong>
+        <ul>
+          <li>Deleção de 9 arquivos HTML obsoletos (indexold.html, indexB.html, os.html, os1.html, inspecoes1.html, rmpf1.html, veiculos-old.html, relatorio_plantao_fiscal_CORRIGIDO.html, total_final.html).</li>
+          <li>Backup manual criado em <code>backup_originais_20260201_182920/</code> com 6 arquivos originais.</li>
+          <li>Documentação técnica completa adicionada (RELATORIO_TECNICO_VISA.md, PROPOSTA_PADRONIZACAO.md, PADRONIZACAO_CONCLUIDA.md).</li>
+        </ul>
+        <strong>Resultado</strong>
+        <ul>
+          <li>Redução líquida de 6.265 linhas de código.</li>
+          <li>Manutenção centralizada: alterações no header agora em 1 arquivo vs 22.</li>
+          <li>Zero funcionalidades quebradas, 100% de compatibilidade mantida.</li>
+          <li>Experiência visual profissional e consistente em todas as páginas.</li>
+        </ul>
+      </div>
+
+      <div class="section">
         <h3>v2.0.9 — 29/01/2026 21:30 (Horário de Brasília – UTC−3)</h3>
-        <strong>Padronização visual e ajustes de layout</strong>
+        <strong>Padronização visual e ajustes de layout (versão anterior)</strong>
         <ul>
           <li>Padronização completa do layout do README.html com design do Changelog.</li>
           <li>Implementação de card centralizado com largura máxima de 900px.</li>
