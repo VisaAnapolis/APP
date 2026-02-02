@@ -43,12 +43,12 @@
     }
 
     .card__title {
-      color: var(--primary);
+      color: var(--brand1, #1a3a6b);
       font-size: 1.1em;
       font-weight: 700;
       margin-bottom: 16px;
       padding-bottom: 10px;
-      border-bottom: 2px solid var(--primary);
+      border-bottom: 2px solid var(--brand1, #1a3a6b);
     }
 
     /* ========================================
@@ -75,7 +75,7 @@
       gap: 12px;
       padding: 16px 12px;
       text-decoration: none;
-      color: var(--text-primary);
+      color: var(--text, #1a202c);
       font-weight: 600;
       transition: background 0.2s;
       border-radius: 8px;
@@ -95,7 +95,7 @@
       content: "›";
       margin-left: auto;
       font-size: 1.4em;
-      color: var(--text-secondary);
+      color: var(--muted, #64748b);
       font-weight: 300;
     }
 
@@ -104,17 +104,17 @@
        ======================================== */
     .obs-text {
       font-size: 0.9em;
-      color: var(--text-secondary);
+      color: var(--muted, #64748b);
       line-height: 1.5;
       padding: 16px;
       background: rgba(26, 58, 107, 0.04);
       border-radius: 8px;
-      border-left: 4px solid var(--primary);
+      border-left: 4px solid var(--brand1, #1a3a6b);
     }
 
     .update-info {
       font-size: 0.85em;
-      color: var(--text-secondary);
+      color: var(--muted, #64748b);
       margin-bottom: 16px;
     }
 
@@ -138,25 +138,13 @@
       display: grid;
     }
 
-    .pdf-modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      padding: 16px;
-      background: var(--primary);
-      border-bottom: 1px solid rgba(0,0,0,0.1);
-      min-height: 60px;
-    }
-
-    .pdf-modal-title {
+    .pdf-modal-.pdf-modal-title {
       font-size: 17px;
       font-weight: 600;
       margin: 0;
       flex: 1;
       text-align: center;
       padding: 0 40px;
-      color: #ffffff;
     }
 
     .btn-fechar-pdf {
@@ -230,11 +218,11 @@
     .pdf-iframe p {
       padding: 20px;
       text-align: center;
-      color: var(--text-primary);
+      color: var(--text, #1a202c);
     }
     
     .pdf-iframe a {
-      color: var(--primary);
+      color: var(--brand1, #1a3a6b);
       font-weight: 600;
     }
 
