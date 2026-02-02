@@ -15,7 +15,8 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f5f5;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
         }
 
@@ -26,11 +27,12 @@
         }
 
         .card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 10px;
             padding: 24px;
             margin-bottom: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid var(--card-border);
         }
 
         .card h3 {
@@ -116,7 +118,7 @@
         }
 
         .stat-card {
-            background: white;
+            background: var(--card-bg);
             padding: 20px;
             border-radius: 8px;
             text-align: center;
@@ -179,7 +181,7 @@
         .btn-page {
             padding: 8px 16px;
             border: 1px solid #1a3a6b;
-            background: white;
+            background: var(--card-bg);
             color: #1a3a6b;
             border-radius: 6px;
             font-size: 0.9em;
@@ -216,7 +218,7 @@
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            background: white;
+            background: var(--card-bg);
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -253,7 +255,7 @@
         }
 
         tbody tr:hover {
-            background: #f8f9fa;
+            background: var(--surface-variant);
         }
 
         .badge {
@@ -271,7 +273,7 @@
         }
 
         .badge-warning {
-            background: #fff3cd;
+            background: var(--warning-bg);
             color: #856404;
             border: 1px solid #ffc107;
         }
@@ -289,36 +291,73 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.7);
             overflow-y: auto;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal-content {
-            background: white;
-            margin: 3% auto;
+            background: var(--card-bg);
+            margin: 50px auto;
             padding: 0;
             width: 90%;
             max-width: 1000px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             max-height: 85vh;
-            overflow-y: auto;
+            overflow: hidden;
+            animation: slideIn 0.3s;
         }
 
-        .modal-.modal-.close {
-            font-size: 1.8em;
-            font-weight: bold;
+        @keyframes slideIn {
+            from { 
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to { 
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--brand1), var(--brand2));
             color: white;
+            padding: 25px;
+            position: relative;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.6em;
+            border: none;
+            color: white;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            color: white;
+            font-size: 2em;
+            font-weight: bold;
             cursor: pointer;
-            line-height: 1;
+            transition: transform 0.2s;
         }
 
         .close:hover {
-            opacity: 0.8;
+            transform: rotate(90deg) scale(1.2);
         }
 
         .modal-body {
-            padding: 24px;
+            padding: 25px;
+            max-height: calc(85vh - 180px);
+            overflow-y: auto;
         }
 
         .info-section {
@@ -341,9 +380,9 @@
 
         .info-item {
             padding: 12px;
-            background: #f8f9fa;
+            background: var(--surface-variant);
             border-radius: 6px;
-            border-left: 3px solid #1a3a6b;
+            border-left: 3px solid var(--primary);
         }
 
         .info-item strong {
@@ -491,7 +530,7 @@
             }
 
             #alvarasTable tbody td:first-child {
-                background: #ffffff !important;
+                background: var(--card-bg) !important;
                 font-weight: bold;
                 color: #1a3a6b;
             }
@@ -565,7 +604,7 @@
     position: sticky;
     left: 0;
     z-index: 5;
-    background: #fff;              /* essencial p/ não “vazar” conteúdo por trás */
+    background: var(--bg-primary);              /* essencial p/ não "vazar" conteúdo por trás */
     -webkit-transform: translateZ(0); /* reforço p/ Safari */
     transform: translateZ(0);
   }
@@ -590,7 +629,7 @@
 
     <div class="container">
         <div class="card">
-            <h3>🔍 Filtros de Busca</h3>
+            <div class="card__title">🔍 Filtros de Busca</div>
             <div class="filter-grid">
                 <div class="filter-group">
                     <label for="dataInicial">Data Inicial:</label>
@@ -613,6 +652,7 @@
                 <button class="btn btn-primary" onclick="buscarAlvaras()">🔍 Buscar</button>
                 <button class="btn btn-secondary" onclick="limparFiltros()">🔄 Limpar</button>
             </div>
+            <p class="small muted" style="margin-top: 12px;">💡 Preencha um ou mais filtros para refinar a busca de alvarás sanitários.</p>
         </div>
 
         <div class="stats-grid">

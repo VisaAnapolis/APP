@@ -266,7 +266,7 @@
         .badge-protocolo { background: #6f42c1; color: white; }
 
         .badge-complexidade-alta { background: #dc3545; color: white; }
-        .badge-complexidade-media { background: #ffc107; color: #333; }
+        .badge-complexidade-media { background: #ffc107; color: var(--text-primary); }
         .badge-complexidade-baixa { background: #28a745; color: white; }
         /* Badges de Prazo */
         .badge-prazo {
@@ -444,7 +444,7 @@
         }
 
         .modal-content {
-            background: white;
+            background: var(--card-bg);
             margin: 50px auto;
             padding: 0;
             border-radius: 15px;
@@ -521,18 +521,18 @@
 
         .detail-label {
             font-weight: 600;
-            color: #555;
+            color: var(--text-secondary);
             width: 200px;
             flex-shrink: 0;
         }
 
         .detail-value {
-            color: #333;
+            color: var(--text-primary);
             flex: 1;
         }
 
         .modal-footer {
-            background: #f8f9fa;
+            background: var(--surface-variant);
             padding: 20px 25px;
             display: flex;
             gap: 10px;
@@ -629,7 +629,7 @@
     <div class="container">
         <!-- Card de Filtros -->
         <div class="card">
-            <h3>🔍 Filtros de Busca</h3>
+            <div class="card__title">🔍 Filtros de Busca</div>
                         <div class="filter-row">
                 <div class="filter-group">
                     <label for="filterTipo">Tipo de OS:</label>
@@ -700,6 +700,7 @@
             </div>
 
             </div>
+            <p class="small muted" style="margin-top: 12px;">💡 Sistema pronto! Use os filtros e clique em Buscar para consultar ordens de serviço.</p>
         </div>
 
         <!-- Estatísticas -->

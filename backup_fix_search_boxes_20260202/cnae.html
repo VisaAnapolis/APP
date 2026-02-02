@@ -9,18 +9,13 @@
   <!-- Sistema de Design - VISA Anápolis -->
   <link rel="stylesheet" href="./css/design-tokens.css">
   <link rel="stylesheet" href="./css/header-component.css">
-  <link rel="stylesheet" href="./css/regulados.css">
+  <!-- regulados.css removido - conflita com dark mode -->
   <link rel="stylesheet" href="./css/base.css">
   <link rel="stylesheet" href="./css/components.css">
   <link rel="stylesheet" href="./css/layouts.css">
 
   <style>
-    /* Header agora usa header-component.css */
-
     /* ========================================
-       HEADER PADRONIZADO - VISA Anápolis
-       ======================================== */
-    header.main-header.main-header.main-/* ========================================
        CONTAINER
        ======================================== */
     .container {
@@ -100,7 +95,9 @@
       text-align: center;
     }
 
-    h2 {
+    /* Títulos de equipe (não afetar o header) */
+    .container h2,
+    .card h2 {
       color: var(--brand1, #1a3a6b);
       font-size: 1.15em;
       margin: 24px 0 12px;
@@ -165,7 +162,8 @@
         font-size: 0.9em;
       }
 
-      h2 {
+      .container h2,
+      .card h2 {
         font-size: 1.05em;
         padding: 10px 12px;
       }
@@ -198,6 +196,11 @@
         placeholder="Digite código CNAE ou parte da descrição…"
         autocomplete="off"
       >
+      <div style="margin-top: 12px;">
+        <button class="btn btn-secondary" onclick="limparBuscaCNAE()" style="width: 100%;">
+          🔄 Limpar
+        </button>
+      </div>
       <p class="small muted">💡 A busca filtra todas as tabelas abaixo em tempo real.</p>
     </section>
 
@@ -502,6 +505,15 @@
         });
       });
     })();
+
+    // Função para limpar a busca
+    function limparBuscaCNAE() {
+      const input = document.getElementById('cnaeSearchInput');
+      if (input) {
+        input.value = '';
+        input.dispatchEvent(new Event('input'));
+      }
+    }
   </script>
 
   <!-- Platform Detector -->
