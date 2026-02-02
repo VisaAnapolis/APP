@@ -18,7 +18,6 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            color: var(--text-primary);
         }
 
         header.main-header.main-header.main-.container {
@@ -35,7 +34,7 @@
             border-radius: 8px;
             margin-bottom: 30px;
             font-size: 0.9em;
-            color: var(--text-secondary);
+            color: #555;
             box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
 
@@ -53,8 +52,6 @@
             border: 2px solid #e2e8f0;
             border-radius: 8px;
             font-size: 1em;
-            background: var(--input-bg);
-            color: var(--text-primary);
         }
 
         .search-box input:focus {
@@ -71,7 +68,7 @@
         }
 
         .table-container h3 {
-            color: var(--primary);
+            color: #1a3a6b;
             font-size: 1.5em;
             margin-bottom: 20px;
             display: flex;
@@ -125,7 +122,7 @@
         .codigo {
             font-family: 'Courier New', monospace;
             font-weight: 700;
-            color: var(--primary);
+            color: #1a3a6b;
             white-space: nowrap;
         }
 
@@ -153,12 +150,12 @@
 
         .badge-vigente {
             background: #d4edda;
-            color: var(--success-text);
+            color: #155724;
         }
 
         .badge-vencido {
             background: var(--error-bg);
-            color: var(--error-text);
+            color: #721c24;
         }
 
         /* MODAL PDF */

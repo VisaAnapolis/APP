@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Vigilância Sanitária Municipal – Consulta Institucional</title>
+  <meta name="theme-color" content="#1a3a6b">
+
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/header-component.css">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/layouts.css">
+
+  <style>
+    /* Header agora usa header-component.css */
+
+    /* Reset de possíveis regras externas */
+    * {
+      box-sizing: border-box;
+    }
+
+    /* Header padrão */
+    header.main-header.main-header.main-/* Container e Card - FORÇAR LARGURA TOTAL */
+    .container {
+      max-width: 900px !important;
+      margin: 22px auto 30px !important;
+      padding: 0 16px !important;
+      padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+      width: 100% !important;
+    }
+
+    .card {
+      background: var(--card, #ffffff) !important;
+      border-radius: 16px !important;
+      padding: 20px 24px !important;
+      margin-bottom: 16px !important;
+      border: 1px solid var(--line, #e2e8f0) !important;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1) !important;
+      width: 100% !important;
+      max-width: none !important;
+    }
+
+    /* Forçar texto justificado e largura completa */
+    .container .card p {
+      text-align: justify !important;
+      text-justify: inter-word !important;
+      line-height: 1.6 !important;
+      margin: 0 0 16px 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      max-width: none !important;
+    }
+
+    .container .card li {
+      text-align: justify !important;
+      text-justify: inter-word !important;
+      line-height: 1.6 !important;
+      margin: 6px 0 !important;
+      padding: 0 !important;
+    }
+
+    .container .card h1 {
+      color: var(--brand1, #1a3a6b) !important;
+      font-size: 1.4rem !important;
+      font-weight: 900 !important;
+      margin: 0 0 20px 0 !important;
+      padding: 0 0 12px 0 !important;
+      border-bottom: 2px solid var(--brand1, #1a3a6b) !important;
+      width: 100% !important;
+      max-width: none !important;
+      text-align: left !important;
+    }
+
+    .container .card h2 {
+      color: var(--brand1, #1a3a6b) !important;
+      font-size: 1.1rem !important;
+      font-weight: 700 !important;
+      margin: 24px 0 12px 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      max-width: none !important;
+      text-align: left !important;
+    }
+
+    .container .card ul {
+      margin: 8px 0 16px 0 !important;
+      padding-left: 24px !important;
+      width: 100% !important;
+      max-width: none !important;
+      list-style-position: outside !important;
+    }
+
+    .footer {
+      margin-top: 32px !important;
+      padding-top: 20px !important;
+      border-top: 1px solid var(--line, #e2e8f0) !important;
+      text-align: center !important;
+      color: var(--muted, #64748b) !important;
+      font-size: 0.9em !important;
+      line-height: 1.6 !important;
+      width: 100% !important;
+    }
+
+    @media (max-width: 768px) {
+      header.main-header {
+        padding: 28px 70px 26px 20px;
+      }
+      
+      .card {
+        padding: 18px 20px !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="app-header">
+    <a href="index.html" class="btn-done-ios">OK</a>
+    <h1 class="app-header__title">Vigilância Sanitária</h1>
+    <h2 class="app-header__subtitle">Aviso Institucional</h2>
+  </header>
+
+  <div class="container">
+    <div class="card">
+
+      <h1>Vigilância Sanitária Municipal – Consulta Institucional de Estabelecimentos Regulados</h1>
+
+      <p>
+        Este ambiente hospeda uma aplicação web de natureza <strong>informativa e institucional</strong>,
+        disponibilizada por meio da plataforma GitHub Pages, destinada à
+        <strong>consulta interna por servidores da Vigilância Sanitária Municipal</strong>,
+        no exercício regular de suas atribuições legais e funcionais.
+      </p>
+
+      <p>
+        A iniciativa integra ações de modernização administrativa, controle interno,
+        padronização de informações e apoio operacional, não substituindo sistemas oficiais
+        nem produzindo efeitos jurídicos, normativos ou decisórios.
+      </p>
+
+      <h2>I – Finalidade Administrativa</h2>
+      <p>
+        A aplicação tem por finalidade facilitar o acesso a informações administrativas
+        consolidadas necessárias às atividades de fiscalização sanitária, análise técnica
+        e acompanhamento de estabelecimentos regulados, observando os princípios da
+        legalidade, eficiência, economicidade e publicidade administrativa.
+      </p>
+
+      <h2>II – Enquadramento Institucional</h2>
+      <p>
+        O projeto está vinculado às atividades da Vigilância Sanitária Municipal,
+        órgão integrante da Diretoria de Vigilância em Saúde, observando:
+      </p>
+      <ul>
+        <li>os princípios do art. 37 da Constituição Federal</li>
+        <li>as normas gerais de controle interno da administração pública</li>
+        <li>as orientações do Tribunal de Contas dos Municípios (TCM)</li>
+        <li>as boas práticas de governança pública</li>
+      </ul>
+
+      <h2>III – Público-Alvo e Uso Restrito</h2>
+      <p>
+        A utilização da aplicação é restrita aos servidores da Vigilância Sanitária Municipal,
+        incluindo fiscais sanitários, chefias, equipes técnicas e servidores autorizados.
+      </p>
+
+      <h2>IV – Conteúdo Disponibilizado</h2>
+      <ul>
+        <li>Identificação cadastral de estabelecimentos regulados</li>
+        <li>Razão social e nome fantasia</li>
+        <li>Endereço declarado</li>
+        <li>Classificação de atividades econômicas (CNAE)</li>
+        <li>Situação administrativa e vigência de alvarás sanitários</li>
+        <li>Registros objetivos de inspeções (datas e identificadores)</li>
+      </ul>
+
+      <h2>V – Natureza Jurídica das Informações</h2>
+      <p>
+        Os dados apresentados possuem caráter administrativo, informativo e auxiliar,
+        não constituindo certidão, não gerando direito subjetivo e não produzindo efeitos
+        jurídicos externos.
+      </p>
+
+      <h2>VI – Proteção de Dados</h2>
+      <p>
+        O ambiente observa integralmente a Lei nº 13.709/2018 – Lei Geral de Proteção de
+        Dados Pessoais (LGPD), assegurando que dados pessoais sensíveis ou informações
+        restritas não sejam expostos.
+      </p>
+
+      <h2>VII – Limitações Operacionais</h2>
+      <ul>
+        <li>Não permite inclusão ou edição de dados</li>
+        <li>Não opera em tempo real</li>
+        <li>Não substitui sistemas corporativos oficiais</li>
+      </ul>
+
+      <h2>VIII – Disposições Finais</h2>
+      <p>
+        Este projeto constitui ferramenta de apoio à gestão e fiscalização,
+        não configurando sistema oficial nem ato administrativo formal.
+      </p>
+
+      <div class="footer">
+        Vigilância Sanitária Municipal – Diretoria de Vigilância em Saúde<br>
+        Município de Anápolis – GO<br>
+        © 2025
+      </div>
+
+    </div>
+  </div>
+
+  <script src="./js/platform-detector.js"></script>
+</body>
+</html>
