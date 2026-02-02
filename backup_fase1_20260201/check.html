@@ -127,8 +127,8 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: var(--surface);
-      z-index: var(--z-modal, 1050);
+      background: #ffffff;
+      z-index: 9999;
       /* Grid layout para garantir altura fixa do header/footer */
       display: none;
       grid-template-rows: auto 1fr auto;
@@ -185,7 +185,7 @@
       border: none;
       width: 100%;
       height: 100%;
-      background: var(--bg-secondary);
+      background: #f5f5f5;
       /* Previne que o iframe expanda além do container */
       max-height: 100%;
       overflow: hidden;
@@ -198,7 +198,7 @@
       height: 100%;
       overflow: hidden;
       position: relative;
-      background: var(--bg-secondary);
+      background: #f5f5f5;
       /* Altura máxima explícita */
       max-height: calc(100vh - 120px);
     }
@@ -229,7 +229,7 @@
     .pdf-modal-footer {
       padding: 12px 16px;
       padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-      background: var(--surface-variant);
+      background: #f8f9fa;
       border-top: 1px solid #e2e8f0;
       display: flex;
       justify-content: center;
@@ -240,8 +240,8 @@
     }
 
     .btn-action-pdf {
-      background: var(--primary);
-      color: var(--text-primary);
+      background: #1a3a6b;
+      color: #ffffff;
       border: none;
       padding: 12px 24px;
       border-radius: 10px;
@@ -258,11 +258,11 @@
     }
 
     .btn-action-pdf:hover {
-      background: var(--primary-dark);
+      background: #2a4a7b;
     }
 
     .btn-action-pdf:active {
-      background: var(--primary-dark);
+      background: #0f2a4b;
     }
 
     /* ========================================
@@ -395,10 +395,7 @@
     </div>
     <div class="pdf-modal-footer">
       <button onclick="abrirEmNovaAba()" class="btn-action-pdf">
-        📂 Abrir Externamente
-      </button>
-      <button onclick="baixarPDF()" class="btn-action-pdf">
-        ⬇️ Baixar PDF
+        📥 Abrir Externamente
       </button>
     </div>
   </div>
@@ -427,10 +424,6 @@
       
       // Previne scroll do body quando modal está aberto
       document.body.style.overflow = 'hidden';
-      
-      // Oculta header principal para evitar sobreposição
-      const header = document.querySelector('.app-header');
-      if (header) header.style.display = 'none';
     }
 
     function fecharPDF() {
@@ -444,26 +437,11 @@
       
       // Restaura scroll do body
       document.body.style.overflow = '';
-      
-      // Mostra header novamente
-      const header = document.querySelector('.app-header');
-      if (header) header.style.display = '';
     }
 
     function abrirEmNovaAba() {
       if (pdfAtual) {
         window.open(pdfAtual, '_blank', 'noopener,noreferrer');
-      }
-    }
-
-    function baixarPDF() {
-      if (pdfAtual) {
-        const link = document.createElement('a');
-        link.href = pdfAtual;
-        link.download = pdfAtual.split('/').pop();
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
       }
     }
 
