@@ -121,7 +121,7 @@
       color:#fff;
     }
 
-    .btn--light{background:var(--card); color: var(--text)}
+    .btn--light{background:var(--surface-variant, #f1f5f9) !important; color: var(--text) !important}
     .btn--ghost{
       background: rgba(255,255,255,.14);
       color:#fff;
@@ -536,8 +536,8 @@
     /* Botão Limpar */
     .btn-clear {
       padding: 12px 24px;
-      background: #f1f5f9;
-      color: var(--text, #1a202c);
+      background: var(--surface-variant, #f1f5f9) !important;
+      color: var(--text, #1a202c) !important;
       border: 1px solid var(--line, #e2e8f0);
       border-radius: 12px;
       font-size: 1em;
