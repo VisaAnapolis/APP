@@ -1150,10 +1150,9 @@
     
     <!-- Card de Busca -->
     <section class="card">
-      <div class="card__title">Pesquisa de Regulados</div>
+      <div class="card__title">🔍 Pesquisa de Regulados</div>
       
       <div class="search-section">
-        <label class="search-label" for="q">Buscar por:</label>
         <div class="search-input-wrapper">
           <input
             id="q"
@@ -1163,16 +1162,16 @@
             autocomplete="off"
             inputmode="search"
           />
-          <button id="btnClear" class="btn-clear btn btn--light" type="button">
-            Limpar
+          <button id="btnClear" class="btn-clear btn btn-secondary" type="button">
+            🔄 Limpar
           </button>
         </div>
       </div>
 
       <div class="search-meta">
         <div id="status" class="status-text loading">Carregando índice...</div>
-        <div class="hint-text">Digite 3+ letras para refinar</div>
       </div>
+      <p class="small muted">💡 Digite 3+ letras para refinar os resultados em tempo real.</p>
 
       <!-- Resultados -->
       <div id="results" class="results results-container" aria-live="polite"></div>

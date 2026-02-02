@@ -496,6 +496,7 @@
 
         <div class="container">
             <div class="card">
+                <div class="card__title">🔍 Filtros de Busca</div>
                 <div class="filter-row">
                     <div class="filter-group">
                         <label for="fiscal">Fiscal Sanitário:</label>
@@ -507,12 +508,16 @@
                         <label for="mesAno">Mês/Ano:</label>
                         <input type="month" id="mesAno" min="2018-01" max="2026-12">
                     </div>
-                    <div class="filter-group">
-                        <button class="btn-search" onclick="buscarRPF()">
-                            🔍 Buscar
-                        </button>
-                    </div>
                 </div>
+                <div class="btn-container" style="display: flex; gap: 12px; margin-top: 16px;">
+                    <button class="btn-search" onclick="buscarRPF()" style="flex: 1;">
+                        🔍 Buscar
+                    </button>
+                    <button class="btn btn-secondary" onclick="limparFiltrosRPF()" style="flex: 1;">
+                        🔄 Limpar
+                    </button>
+                </div>
+                <p class="small muted" style="margin-top: 12px;">💡 Selecione o fiscal e o período para visualizar o relatório de produção.</p>
             </div>
 
             <!-- Botões de Exportação -->
@@ -1158,6 +1163,19 @@ function aplicarRestricaoFiscal(perfil) {
   });
 </script>
 
+
+<script>
+function limparFiltrosRPF() {
+  document.getElementById('fiscal').value = '';
+  document.getElementById('mesAno').value = '';
+  // Limpar tabela se existir
+  if ($.fn.DataTable.isDataTable('#tabelaRPF')) {
+    $('#tabelaRPF').DataTable().clear().draw();
+  }
+  // Esconder seção de exportação
+  document.getElementById('exportSection').style.display = 'none';
+}
+</script>
 
 </body>
 </html>

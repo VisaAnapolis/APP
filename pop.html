@@ -315,9 +315,19 @@
     </header>
 
     <div class="container">
-         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="🔍 Buscar por código, título ou palavra-chave..." onkeyup="filtrarTabela()">
-        </div>
+        <section class="card search-box">
+            <div class="card__title">🔍 Buscar POPs</div>
+            <input type="text" id="searchInput" 
+                   class="search-input input input--big"
+                   placeholder="Digite código, título ou palavra-chave..." 
+                   onkeyup="filtrarTabela()">
+            <div style="margin-top: 12px;">
+                <button class="btn btn-secondary" onclick="limparBuscaPOP()" style="width: 100%;">
+                    🔄 Limpar
+                </button>
+            </div>
+            <p class="small muted">💡 A busca filtra a lista de POPs em tempo real.</p>
+        </section>
 
         <div class="table-container">
             <h3>Lista Mestra de Controle de Documentos da GVS - V.09</h3>
@@ -718,9 +728,15 @@
         // FECHAR COM ESC
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && document.getElementById('pdfModal').classList.contains('active')) {
-                fecharPDF();
-            }
-        });
+                fecharPDF();            });
+        }
+
+        // Função para limpar a busca
+        function limparBuscaPOP() {
+            document.getElementById('searchInput').value = '';
+            filtrarTabela(); // Chama função existente
+        }
+
     </script>
 </body>
 </html>

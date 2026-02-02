@@ -196,6 +196,11 @@
         placeholder="Digite código CNAE ou parte da descrição…"
         autocomplete="off"
       >
+      <div style="margin-top: 12px;">
+        <button class="btn btn-secondary" onclick="limparBuscaCNAE()" style="width: 100%;">
+          🔄 Limpar
+        </button>
+      </div>
       <p class="small muted">💡 A busca filtra todas as tabelas abaixo em tempo real.</p>
     </section>
 
@@ -500,6 +505,15 @@
         });
       });
     })();
+
+    // Função para limpar a busca
+    function limparBuscaCNAE() {
+      const input = document.getElementById('cnaeSearchInput');
+      if (input) {
+        input.value = '';
+        input.dispatchEvent(new Event('input'));
+      }
+    }
   </script>
 
   <!-- Platform Detector -->

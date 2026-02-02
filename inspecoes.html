@@ -566,6 +566,7 @@ window.addEventListener('scroll', () => {
         
         <div class="container">
             <div class="card">
+                <div class="card__title">🔍 Filtros de Busca</div>
                 <div class="filter-row">
                     <div class="filter-group">
                         <label for="fiscal">Fiscal Sanitário:</label>
@@ -581,12 +582,16 @@ window.addEventListener('scroll', () => {
                         <label for="dataFinal">Data Final:</label>
                         <input type="date" id="dataFinal" min="2018-01-01" max="2026-12-31">
                     </div>
-                    <div class="filter-group">
-                        <button class="btn-search" onclick="buscarInspecoes()">
-                            🔍 Buscar
-                        </button>
-                    </div>
                 </div>
+                <div class="btn-container" style="display: flex; gap: 12px; margin-top: 16px;">
+                    <button class="btn-search" onclick="buscarInspecoes()" style="flex: 1;">
+                        🔍 Buscar
+                    </button>
+                    <button class="btn btn-secondary" onclick="limparFiltrosInspecoes()" style="flex: 1;">
+                        🔄 Limpar
+                    </button>
+                </div>
+                <p class="small muted" style="margin-top: 12px;">💡 Selecione o fiscal e o intervalo de datas para buscar inspeções realizadas.</p>
             </div>
 
             <!-- Botões de Exportação -->
@@ -1456,6 +1461,20 @@ window.addEventListener('scroll', () => {
 </script>
 
 
-    
+
+<script>
+function limparFiltrosInspecoes() {
+  document.getElementById('fiscal').value = '';
+  document.getElementById('dataInicial').value = '';
+  document.getElementById('dataFinal').value = '';
+  // Limpar tabela se existir
+  if ($.fn.DataTable.isDataTable('#tabelaInspecoes')) {
+    $('#tabelaInspecoes').DataTable().clear().draw();
+  }
+  // Esconder seção de exportação
+  document.getElementById('exportSection').style.display = 'none';
+}
+</script>
+
 </body>
 </html>
