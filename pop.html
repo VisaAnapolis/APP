@@ -514,12 +514,14 @@
     <script>
         let pdfAtual = '';
         let codigoAtual = '';
+        let pdfAnterior = ''; // Para voltar do anexo ao POP
 
         // FUNÇÃO PRINCIPAL - ABRE O POP (SIMPLIFICADA)
         function abrirPOP(codigo) {
             codigoAtual = codigo;
             const caminho = `pop/${codigo}.pdf`;
             pdfAtual = caminho;
+            pdfAnterior = ''; // Reseta ao abrir POP principal
 
             document.getElementById('pdfTitle').textContent = codigo;
             document.getElementById('pdfViewer').setAttribute('data', caminho);
@@ -535,48 +537,119 @@
             carregarAnexos(codigo);
         }
 
-        // NOVA FUNÇÃO - CARREGA ANEXOS AUTOMATICAMENTE
-        function carregarAnexos(codigo) {
+        // NOVA FUNÇÃO - CARREGA ANEXOS AUTOMATICAMENTE (CORRIGIDA)
+        async function carregarAnexos(codigo) {
             const container = document.getElementById('anexosContainer');
             const listaAnexos = document.getElementById('listaAnexos');
             
             listaAnexos.innerHTML = '';
-            let anexosEncontrados = 0;
             
-            // Tenta encontrar até 10 anexos
+            // Array para armazenar anexos encontrados com seus números
+            const anexosEncontrados = [];
+            
+            // Verifica anexos de 1 a 10
             const promessas = [];
-            
             for (let i = 1; i <= 10; i++) {
                 const caminhoAnexo = `pop/${codigo}_ANEXO_${i}.pdf`;
                 
                 const promessa = fetch(caminhoAnexo, { method: 'HEAD' })
                     .then(response => {
                         if (response.ok) {
-                            anexosEncontrados++;
-                            const link = document.createElement('a');
-                            link.href = caminhoAnexo;
-                            link.textContent = `📄 Anexo ${i}`;
-                            link.className = 'anexo-link';
-                            link.target = '_blank';
-                            link.rel = 'noopener noreferrer';
-                            listaAnexos.appendChild(link);
-                            return true;
+                            return { numero: i, caminho: caminhoAnexo };
                         }
-                        return false;
+                        return null;
                     })
-                    .catch(() => false);
+                    .catch(() => null);
                 
                 promessas.push(promessa);
             }
             
-            // Aguarda todas as verificações e exibe container se houver anexos
-            Promise.all(promessas).then(() => {
-                if (anexosEncontrados > 0) {
-                    container.classList.add('has-anexos');
-                } else {
-                    container.classList.remove('has-anexos');
-                }
+            // Aguarda todas as verificações
+            const resultados = await Promise.all(promessas);
+            
+            // Filtra apenas anexos existentes e ordena por número
+            const anexosValidos = resultados
+                .filter(r => r !== null)
+                .sort((a, b) => a.numero - b.numero);
+            
+            // Cria links ordenados
+            anexosValidos.forEach(anexo => {
+                const link = document.createElement('a');
+                link.href = '#';
+                link.textContent = `📄 Anexo ${anexo.numero}`;
+                link.className = 'anexo-link';
+                link.onclick = (e) => {
+                    e.preventDefault();
+                    abrirAnexo(anexo.caminho, anexo.numero);
+                };
+                listaAnexos.appendChild(link);
             });
+            
+            // Exibe container se houver anexos
+            if (anexosValidos.length > 0) {
+                container.classList.add('has-anexos');
+            } else {
+                container.classList.remove('has-anexos');
+            }
+        }
+
+        // NOVA FUNÇÃO - ABRE ANEXO NO MESMO MODAL
+        function abrirAnexo(caminhoAnexo, numeroAnexo) {
+            // Salva o PDF atual como anterior (para voltar)
+            pdfAnterior = pdfAtual;
+            pdfAtual = caminhoAnexo;
+            
+            // Atualiza título
+            document.getElementById('pdfTitle').textContent = `${codigoAtual} - Anexo ${numeroAnexo}`;
+            
+            // Carrega o anexo
+            document.getElementById('pdfViewer').setAttribute('data', caminhoAnexo);
+            document.getElementById('pdfDownloadLink').href = caminhoAnexo;
+            
+            // Oculta lista de anexos
+            document.getElementById('anexosContainer').classList.remove('has-anexos');
+            
+            // Exibe botão voltar
+            mostrarBotaoVoltar();
+        }
+
+        // NOVA FUNÇÃO - VOLTA DO ANEXO PARA O POP
+        function voltarAoPOP() {
+            if (pdfAnterior) {
+                pdfAtual = pdfAnterior;
+                pdfAnterior = '';
+                
+                // Restaura título
+                document.getElementById('pdfTitle').textContent = codigoAtual;
+                
+                // Carrega o POP novamente
+                document.getElementById('pdfViewer').setAttribute('data', pdfAtual);
+                document.getElementById('pdfDownloadLink').href = pdfAtual;
+                
+                // Mostra lista de anexos novamente
+                const container = document.getElementById('anexosContainer');
+                const listaAnexos = document.getElementById('listaAnexos');
+                if (listaAnexos.children.length > 0) {
+                    container.classList.add('has-anexos');
+                }
+                
+                // Oculta botão voltar
+                ocultarBotaoVoltar();
+            }
+        }
+
+        // NOVA FUNÇÃO - MOSTRA BOTÃO VOLTAR
+        function mostrarBotaoVoltar() {
+            const btnFechar = document.querySelector('.btn-fechar');
+            btnFechar.textContent = '← Voltar ao POP';
+            btnFechar.onclick = voltarAoPOP;
+        }
+
+        // NOVA FUNÇÃO - OCULTA BOTÃO VOLTAR
+        function ocultarBotaoVoltar() {
+            const btnFechar = document.querySelector('.btn-fechar');
+            btnFechar.textContent = 'Fechar';
+            btnFechar.onclick = fecharPDF;
         }
 
         function fecharPDF() {
