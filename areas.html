@@ -161,14 +161,6 @@
     color:var(--text-primary);
     font-weight:600;
   }
-        .card__title {
-            color: var(--brand1, #1a3a6b);
-            font-size: 1.1em;
-            font-weight: 700;
-            margin-bottom: 16px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--brand1, #1a3a6b);
-        }
 </style>
 </head>
 
@@ -187,7 +179,6 @@
 <div class="container">
 
   <div class="card">
-    <div class="card__title">🔍 Pesquisa</div>
     <div class="filters">
       <div>
         <label for="qBairro">Bairro / Local</label>
@@ -201,11 +192,13 @@
         <label for="fSigla">Área (opcional)</label>
         <select id="fSigla"><option value="">Todas</option></select>
       </div>
-      <div><button class="btn btn-primary" id="btnBuscar" type="button">🔍 Buscar</button></div>
-      <div><button class="btn-clear btn btn--light" id="btnLimpar" type="button">Limpar</button></div>
+      <div><button class="btn" id="btnBuscar" type="button">Buscar</button></div>
+      <div><button class="btn-clear" id="btnLimpar" type="button">Limpar</button></div>
     </div>
 
-    <p class="small muted" style="margin-top: 12px;">💡 Busque por bairro, fiscal ou área de atuação para filtrar a tabela. Clique nas áreas para ver CNAEs relacionados.</p>
+    <div class="hint">
+      💡 Clique na área de atuação pra ver CNAEs relacionados.
+    </div>
   </div>
 
   <div class="card">

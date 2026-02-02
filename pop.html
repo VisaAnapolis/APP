@@ -303,46 +303,6 @@
                 width: 100%;
             }
         }
-        .card__title {
-            color: var(--brand1, #1a3a6b);
-            font-size: 1.1em;
-            font-weight: 700;
-            margin-bottom: 16px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--brand1, #1a3a6b);
-        }
-
-        /* ========================================
-           CAMPO DE BUSCA - Responsivo
-           ======================================== */
-        .search-section {
-            margin-bottom: 16px;
-        }
-
-        .search-input-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .search-input {
-            flex: 1;
-        }
-
-        .btn-clear {
-            width: 100%;
-        }
-
-        @media (min-width: 769px) {
-            .search-input-wrapper {
-                flex-direction: row;
-                align-items: center;
-            }
-
-            .btn-clear {
-                width: auto;
-            }
-        }
     </style>
     <link rel="stylesheet" href="./css/design-tokens.css">
     <link rel="stylesheet" href="./css/header-component.css">
@@ -355,23 +315,9 @@
     </header>
 
     <div class="container">
-        <section class="card search-box">
-            <div class="card__title">🔍 Pesquisa</div>
-            
-            <div class="search-section">
-                <div class="search-input-wrapper">
-                    <input type="text" id="searchInput" 
-                           class="search-input input input--big"
-                           placeholder="Digite código, título ou palavra-chave..." 
-                           onkeyup="filtrarTabela()">
-                    <button class="btn-clear btn btn--light" onclick="limparBuscaPOP()" type="button">
-                        Limpar
-                    </button>
-                </div>
-            </div>
-            
-            <p class="small muted">💡 A busca filtra a lista de POPs em tempo real.</p>
-        </section>
+         <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Buscar por código, título ou palavra-chave..." onkeyup="filtrarTabela()">
+        </div>
 
         <div class="table-container">
             <h3>Lista Mestra de Controle de Documentos da GVS - V.09</h3>
@@ -772,15 +718,9 @@
         // FECHAR COM ESC
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && document.getElementById('pdfModal').classList.contains('active')) {
-                fecharPDF();            });
-        }
-
-        // Função para limpar a busca
-        function limparBuscaPOP() {
-            document.getElementById('searchInput').value = '';
-            filtrarTabela(); // Chama função existente
-        }
-
+                fecharPDF();
+            }
+        });
     </script>
 </body>
 </html>

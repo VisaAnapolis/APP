@@ -616,14 +616,6 @@
     color: #fff;
   }
       
-        .card__title {
-            color: var(--brand1, #1a3a6b);
-            font-size: 1.1em;
-            font-weight: 700;
-            margin-bottom: 16px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--brand1, #1a3a6b);
-        }
     </style>
   <link rel="stylesheet" href="./css/design-tokens.css">
   <link rel="stylesheet" href="./css/header-component.css">
@@ -637,7 +629,7 @@
 
     <div class="container">
         <div class="card">
-            <div class="card__title">🔍 Pesquisa</div>
+            <h3>🔍 Filtros de Busca</h3>
             <div class="filter-grid">
                 <div class="filter-group">
                     <label for="dataInicial">Data Inicial:</label>
@@ -658,9 +650,8 @@
             </div>
             <div class="btn-container">
                 <button class="btn btn-primary" onclick="buscarAlvaras()">🔍 Buscar</button>
-                <button class="btn-clear btn btn--light" onclick="limparFiltros()">Limpar</button>
+                <button class="btn btn-secondary" onclick="limparFiltros()">🔄 Limpar</button>
             </div>
-            <p class="small muted" style="margin-top: 12px;">💡 Preencha um ou mais filtros para refinar a busca de alvarás sanitários.</p>
         </div>
 
         <div class="stats-grid">

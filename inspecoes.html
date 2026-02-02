@@ -537,14 +537,6 @@ window.addEventListener('scroll', () => {
   }
 }
     
-        .card__title {
-            color: var(--brand1, #1a3a6b);
-            font-size: 1.1em;
-            font-weight: 700;
-            margin-bottom: 16px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--brand1, #1a3a6b);
-        }
 </style>
 
 
@@ -574,7 +566,6 @@ window.addEventListener('scroll', () => {
         
         <div class="container">
             <div class="card">
-                <div class="card__title">🔍 Pesquisa</div>
                 <div class="filter-row">
                     <div class="filter-group">
                         <label for="fiscal">Fiscal Sanitário:</label>
@@ -590,16 +581,12 @@ window.addEventListener('scroll', () => {
                         <label for="dataFinal">Data Final:</label>
                         <input type="date" id="dataFinal" min="2018-01-01" max="2026-12-31">
                     </div>
+                    <div class="filter-group">
+                        <button class="btn-search" onclick="buscarInspecoes()">
+                            🔍 Buscar
+                        </button>
+                    </div>
                 </div>
-                <div class="btn-container" style="display: flex; gap: 12px; margin-top: 16px;">
-                    <button class="btn-search" onclick="buscarInspecoes()" style="flex: 1;">
-                        🔍 Buscar
-                    </button>
-                    <button class="btn-clear btn btn--light" onclick="limparFiltrosInspecoes()" style="flex: 1;">
-                        Limpar
-                    </button>
-                </div>
-                <p class="small muted" style="margin-top: 12px;">💡 Selecione o fiscal e o intervalo de datas para buscar inspeções realizadas.</p>
             </div>
 
             <!-- Botões de Exportação -->
@@ -1367,14 +1354,6 @@ window.addEventListener('scroll', () => {
         th { background: #2c5aa0; color: white; padding: 10px; text-align: left; }
         td { border: 1px solid #ddd; padding: 8px; }
         tr:nth-child(even) { background: #f2f2f2; }
-        .card__title {
-            color: var(--brand1, #1a3a6b);
-            font-size: 1.1em;
-            font-weight: 700;
-            margin-bottom: 16px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--brand1, #1a3a6b);
-        }
     </style>
 </head>
 <body>
@@ -1477,20 +1456,6 @@ window.addEventListener('scroll', () => {
 </script>
 
 
-
-<script>
-function limparFiltrosInspecoes() {
-  document.getElementById('fiscal').value = '';
-  document.getElementById('dataInicial').value = '';
-  document.getElementById('dataFinal').value = '';
-  // Limpar tabela se existir
-  if ($.fn.DataTable.isDataTable('#tabelaInspecoes')) {
-    $('#tabelaInspecoes').DataTable().clear().draw();
-  }
-  // Esconder seção de exportação
-  document.getElementById('exportSection').style.display = 'none';
-}
-</script>
-
+    
 </body>
 </html>

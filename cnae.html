@@ -47,27 +47,6 @@
     }
 
     /* ========================================
-       CAMPO DE BUSCA - Responsivo
-       ======================================== */
-    .search-section {
-      margin-bottom: 16px;
-    }
-
-    .search-input-wrapper {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .search-input {
-      flex: 1;
-    }
-
-    .btn-clear {
-      width: 100%;
-    }
-
-    /* ========================================
        TABELAS
        ======================================== */
     .tableWrap {
@@ -163,17 +142,6 @@
     /* ========================================
        RESPONSIVO
        ======================================== */
-    @media (min-width: 769px) {
-      .search-input-wrapper {
-        flex-direction: row;
-        align-items: center;
-      }
-
-      .btn-clear {
-        width: auto;
-      }
-    }
-
     @media (max-width: 768px) {
       header.main-header {
         padding: 28px 70px 26px 20px;
@@ -220,23 +188,14 @@
     
     <!-- Card de Busca -->
     <section class="card" id="cnae-search">
-      <div class="card__title">🔍 Pesquisa</div>
-      
-      <div class="search-section">
-        <div class="search-input-wrapper">
-          <input 
-            id="cnaeSearchInput" 
-            class="search-input input input--big" 
-            type="search" 
-            placeholder="Digite código CNAE ou parte da descrição…"
-            autocomplete="off"
-          >
-          <button class="btn-clear btn btn--light" onclick="limparBuscaCNAE()" type="button">
-            Limpar
-          </button>
-        </div>
-      </div>
-      
+      <div class="card__title">🔍 Pesquisar CNAE</div>
+      <input 
+        id="cnaeSearchInput" 
+        class="search-input input input--big" 
+        type="search" 
+        placeholder="Digite código CNAE ou parte da descrição…"
+        autocomplete="off"
+      >
       <p class="small muted">💡 A busca filtra todas as tabelas abaixo em tempo real.</p>
     </section>
 
@@ -541,15 +500,6 @@
         });
       });
     })();
-
-    // Função para limpar a busca
-    function limparBuscaCNAE() {
-      const input = document.getElementById('cnaeSearchInput');
-      if (input) {
-        input.value = '';
-        input.dispatchEvent(new Event('input'));
-      }
-    }
   </script>
 
   <!-- Platform Detector -->
