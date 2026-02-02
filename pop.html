@@ -674,11 +674,37 @@
             }
         }
 
-        function baixarPDF() {
-            if (pdfAtual) {
+        async function baixarPDF() {
+            if (!pdfAtual) return;
+            
+            try {
+                // Busca o arquivo como blob
+                const response = await fetch(pdfAtual);
+                const blob = await response.blob();
+                
+                // Cria URL temporária do blob
+                const blobUrl = URL.createObjectURL(blob);
+                
+                // Cria link de download
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = pdfAtual.split('/').pop();
+                link.style.display = 'none';
+                
+                // Adiciona ao DOM, clica e remove
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Libera memória após 100ms
+                setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+            } catch (error) {
+                console.error('Erro ao baixar PDF:', error);
+                // Fallback: tenta método tradicional
                 const link = document.createElement('a');
                 link.href = pdfAtual;
                 link.download = pdfAtual.split('/').pop();
+                link.target = '_self'; // Força download na mesma aba
                 link.click();
             }
         }
