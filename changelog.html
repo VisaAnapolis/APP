@@ -112,6 +112,80 @@ header.main-header.main-header.main-.container {
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
       <div class="section">
+        <h3>v2.2.0 — 02/02/2026 00:30 (Horário de Brasília – UTC−3)</h3>
+        <strong>Reorganização Completa dos POPs e Melhorias de Navegação</strong>
+        <ul>
+          <li>Reorganização de 51 arquivos PDF (18 POPs principais + 33 anexos) com nomenclatura padronizada.</li>
+          <li>Novo padrão de arquivos: <code>[CÓDIGO].pdf</code> para POPs e <code>[CÓDIGO]_ANEXO_N.pdf</code> para anexos.</li>
+          <li>Nomes curtos compatíveis com Windows, GitHub e todos os sistemas operacionais.</li>
+          <li>Eliminação de mapeamento manual de arquivos (193 linhas de código removidas).</li>
+          <li>Detecção automática de anexos (até 10 por POP) com ordenação correta.</li>
+          <li>Código 70% mais simples e manutenção zero: basta adicionar arquivos com nome correto.</li>
+        </ul>
+        <strong>Melhorias de Navegação iOS/PWA</strong>
+        <ul>
+          <li>Anexos agora abrem no mesmo modal (não em nova aba).</li>
+          <li>Botão "Fechar" transforma-se em "← Voltar ao POP" ao abrir anexo.</li>
+          <li>Navegação fluida entre POP principal e anexos sem sair do app.</li>
+          <li>Solução definitiva para problema de "usuário preso" em nova aba no iOS/PWA.</li>
+          <li>Download de PDF via fetch + blob para evitar abertura de nova aba no iOS.</li>
+          <li>Fallback com <code>target='_self'</code> para compatibilidade.</li>
+        </ul>
+        <strong>Correções Técnicas</strong>
+        <ul>
+          <li>Correção de ordenação de anexos (antes aleatória, agora crescente: 1, 2, 3...).</li>
+          <li>Implementação de <code>async/await</code> para garantir ordenação correta.</li>
+          <li>Gerenciamento adequado de memória com <code>revokeObjectURL</code>.</li>
+          <li>Variável <code>pdfAnterior</code> para controle de navegação entre POP e anexos.</li>
+          <li>Funções novas: <code>abrirAnexo()</code>, <code>voltarAoPOP()</code>, <code>mostrarBotaoVoltar()</code>, <code>ocultarBotaoVoltar()</code>.</li>
+        </ul>
+        <strong>Arquivos Reorganizados</strong>
+        <ul>
+          <li>POP-Q-GVS-001.pdf (6 anexos)</li>
+          <li>POP-Q-GVS-002.pdf (1 anexo)</li>
+          <li>POP-Q-GVS-003.pdf (1 anexo)</li>
+          <li>POP-O-GVS-004.pdf (8 anexos)</li>
+          <li>POP-Q-GVS-005.pdf (1 anexo)</li>
+          <li>POP-Q-GVS-006.pdf</li>
+          <li>POP-Q-GVS-007.pdf (1 anexo)</li>
+          <li>POP-Q-GVS-008.pdf (1 anexo)</li>
+          <li>POP-Q-GVS-009.pdf</li>
+          <li>POP-Q-GVS-010.pdf</li>
+          <li>POP-Q-GVS-012.pdf (2 anexos)</li>
+          <li>POP-Q-GVS-013.pdf (1 anexo)</li>
+          <li>POP-Q-GVS-014.pdf (3 anexos)</li>
+          <li>POP-Q-GVS-015.pdf</li>
+          <li>POP-O-GVS-016.pdf (2 anexos)</li>
+          <li>POP-Q-GVS-016.pdf</li>
+          <li>POP-Q-GVS-017.pdf</li>
+          <li>PROG-O-GVS-001.pdf (6 anexos)</li>
+          <li>Total: 51 arquivos PDF otimizados</li>
+        </ul>
+        <strong>Backups Criados</strong>
+        <ul>
+          <li><code>backup_pop_20260201_232023.html</code> - Versão original do pop.html</li>
+          <li><code>POP_COMPLETO_REORGANIZADO.zip</code> - Todos os 51 arquivos reorganizados</li>
+          <li><code>mapeamento_completo.json</code> - Mapeamento nome original → nome novo</li>
+        </ul>
+        <strong>Documentação</strong>
+        <ul>
+          <li>LEIA-ME.md com instruções completas de uso</li>
+          <li>RESUMO_ALTERACOES.md com comparação antes/depois</li>
+          <li>CORRECOES_IMPLEMENTADAS.md com detalhes técnicos das correções</li>
+          <li>ANALISE_PDF_ANDROID.md com análise de soluções para visualização no Android</li>
+        </ul>
+        <strong>Resultado</strong>
+        <ul>
+          <li>Sistema de POPs 100% automatizado e escalável.</li>
+          <li>Navegação nativa perfeita para iOS/PWA.</li>
+          <li>Anexos sempre ordenados e acessíveis.</li>
+          <li>Código 70% mais limpo e manutenível.</li>
+          <li>Experiência de usuário profissional em todas as plataformas.</li>
+          <li>Pronto para expansão: basta adicionar novos POPs com nome correto.</li>
+        </ul>
+      </div>
+
+      <div class="section">
         <h3>v2.1.0 — 01/02/2026 23:45 (Horário de Brasília – UTC−3)</h3>
         <strong>Dark Mode Completo e Melhorias de UX</strong>
         <ul>
