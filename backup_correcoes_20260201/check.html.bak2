@@ -9,7 +9,7 @@
   <!-- Sistema de Design - VISA Anápolis -->
   <link rel="stylesheet" href="./css/design-tokens.css">
   <link rel="stylesheet" href="./css/header-component.css">
-  <!-- regulados.css removido - conflita com dark mode -->
+  <link rel="stylesheet" href="./css/regulados.css">
   <link rel="stylesheet" href="./css/base.css">
   <link rel="stylesheet" href="./css/components.css">
   <link rel="stylesheet" href="./css/layouts.css">
