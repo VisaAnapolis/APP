@@ -303,14 +303,6 @@
                 width: 100%;
             }
         }
-        .card__title {
-            color: var(--brand1, #1a3a6b);
-            font-size: 1.1em;
-            font-weight: 700;
-            margin-bottom: 16px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--brand1, #1a3a6b);
-        }
     </style>
     <link rel="stylesheet" href="./css/design-tokens.css">
     <link rel="stylesheet" href="./css/header-component.css">
@@ -325,19 +317,13 @@
     <div class="container">
         <section class="card search-box">
             <div class="card__title">🔍 Pesquisa</div>
-            
-            <div class="search-section">
-                <div class="search-input-wrapper">
-                    <input type="text" id="searchInput" 
-                           class="search-input input input--big"
-                           placeholder="Digite código, título ou palavra-chave..." 
-                           onkeyup="filtrarTabela()">
-                    <button class="btn-clear btn btn--light" onclick="limparBuscaPOP()" type="button">
-                        Limpar
-                    </button>
-                </div>
-            </div>
-            
+            <input type="text" id="searchInput" 
+                   class="search-input input input--big"
+                   placeholder="Digite código, título ou palavra-chave..." 
+                   onkeyup="filtrarTabela()">
+            <button class="btn-clear btn btn--light" onclick="limparBuscaPOP()" type="button">
+                Limpar
+            </button>
             <p class="small muted">💡 A busca filtra a lista de POPs em tempo real.</p>
         </section>
 
