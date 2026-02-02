@@ -112,6 +112,57 @@ header.main-header.main-header.main-.container {
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
       <div class="section">
+        <h3>v2.1.0 — 01/02/2026 23:45 (Horário de Brasília – UTC−3)</h3>
+        <strong>Dark Mode Completo e Melhorias de UX</strong>
+        <ul>
+          <li>Implementação de dark mode 100% funcional em todas as 22 páginas do aplicativo.</li>
+          <li>Correção de banner do header que ficava preto no dark mode (agora mantém azul escuro #2c5aa0).</li>
+          <li>Correção de modais e tabelas que ficavam brancos no dark mode em múltiplas páginas.</li>
+          <li>Correção de fontes invisíveis (branco sobre branco) em check.html, pop.html, areas.html, total.html e cvs.html.</li>
+          <li>Substituição de cores hardcoded por variáveis CSS adaptativas em ~15 páginas.</li>
+          <li>Remoção de <code>regulados.css</code> de 4 páginas (conflitava com dark mode).</li>
+          <li>Internalização do CSS de regulados.css em cvs.html com adaptação para dark mode.</li>
+          <li>Correção de botões "Buscar", "Fechar", "Voltar" e "Limpar" com texto invisível.</li>
+          <li>Correção de texto do modal de histórico em cvs.html (elemento <code>pre</code>).</li>
+        </ul>
+        <strong>Melhorias de Modais</strong>
+        <ul>
+          <li>Padronização do modal de alvara.html com padrão de os2.html.</li>
+          <li>Banner azul no topo com gradiente linear.</li>
+          <li>Botão "X" grande (2em) à direita com animação de rotação no hover.</li>
+          <li>Animações suaves de entrada: fadeIn (0.3s) e slideIn (0.3s).</li>
+          <li>Bordas arredondadas (15px) e sombra pronunciada.</li>
+          <li>Correção de erro de CSS: <code>.modal-.modal-.close</code> → <code>.close</code>.</li>
+        </ul>
+        <strong>Correções Técnicas</strong>
+        <ul>
+          <li>Correção de check.html e pop.html: header não sobrepõe mais modal de PDF.</li>
+          <li>Adição de botão "Baixar PDF" em check.html.</li>
+          <li>Correção de z-index em modais (1050) e safe-area para iOS.</li>
+          <li>Correção de margens brancas e fontes invisíveis em areas.html.</li>
+          <li>Correção de fontes invisíveis em tabelas de total.html.</li>
+          <li>cvs.html: 5 sessões de correções para dark mode completo.</li>
+        </ul>
+        <strong>Backups Criados</strong>
+        <ul>
+          <li><code>backup_fase1_20260201/</code> - Correções check/pop (2 arquivos)</li>
+          <li><code>backup_correcoes_20260201/</code> - Correções intermediárias (3 arquivos)</li>
+          <li><code>backup_darkmode_fix_20260201/</code> - Banner azul (2 arquivos)</li>
+          <li><code>backup_darkmode_all_20260201/</code> - Correções alvara/pop (7 arquivos)</li>
+          <li><code>backup_darkmode_final_20260201/</code> - Páginas finais (15 arquivos)</li>
+          <li><code>backup_etapa1_20260201/</code> - areas/total/cvs (3 arquivos)</li>
+          <li><code>backup_modal_alvara_20260201/</code> - Modal alvara (1 arquivo)</li>
+        </ul>
+        <strong>Resultado</strong>
+        <ul>
+          <li>Dark mode profissional e consistente em 100% do site (iOS, Android, Desktop).</li>
+          <li>Banner azul preservado em light e dark mode.</li>
+          <li>Texto legível em todas as condições de iluminação.</li>
+          <li>Modais padronizados com animações suaves.</li>
+          <li>Experiência de "app único" aprimorada.</li>
+          <li>Zero funcionalidades quebradas.</li>
+        </ul>
+
         <h3>v2.0.9 — 01/02/2026 18:45 (Horário de Brasília – UTC−3)</h3>
         <strong>Padronização completa de headers em todas as páginas</strong>
         <ul>
