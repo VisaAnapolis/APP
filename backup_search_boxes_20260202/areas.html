@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Áreas de Atuação – Vigilância Sanitária</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/header-component.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+<style>
+    /* Header agora usa header-component.css */
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Arial;background:var(--bg-primary);color:var(--text-primary)}
+
+  .container{max-width:1100px;margin:20px auto;padding:0 16px}
+  .card{
+    background: var(--card-bg);border-radius:16px;padding:18px;margin-bottom:16px;
+    box-shadow:0 4px 14px rgba(0,0,0,.08);
+  }
+
+  .filters{display:grid;grid-template-columns:2fr 2fr 1fr 140px 140px;gap:12px;align-items:end}
+  label{font-weight:800;margin-bottom:6px;display:block;color:var(--text-primary)}
+  input,select,button{padding:12px;border-radius:10px;border:1px solid #cfd3da;font-size:1rem;width:100%}
+  input:focus,select:focus{outline:none;border-color:#1a3a6b;box-shadow:0 0 0 3px rgba(26,58,107,.12)}
+
+  button{font-weight:900;cursor:pointer}
+  .btn{background:#2c5aa0;color:#fff;border:none}
+  .btn-clear{background:#eef2ff;color:#1a3a6b;border:1px solid #c7d2fe}
+  .btn:hover{filter:brightness(.98)}
+  .btn-clear:hover{filter:brightness(.98)}
+
+  /* Dica entre filtros e tabela */
+  .hint{
+    background:rgba(44,90,160,.08);
+    border-left:4px solid #2c5aa0;
+    padding:10px 12px;
+    border-radius:10px;
+    color:var(--text-primary);
+    font-weight:800;
+    margin-top:12px;
+  }
+
+  /* Tabela e scroll */
+  .table-wrap{overflow:auto;border-radius:12px;border:1px solid rgba(15,23,42,.10)}
+  table{
+    width:max(100%, 1050px);
+    border-collapse:separate; border-spacing:0;
+    background: var(--card-bg);
+  }
+
+  thead th{
+    background:#2c5aa0;color:#fff;padding:10px;
+    white-space:nowrap;
+    position:sticky;top:0;z-index:2;
+    text-align:left;
+  }
+  tbody td{
+    padding:10px;border-bottom:1px solid #e5e7eb;color:var(--text-primary);vertical-align:top
+  }
+  tbody tr:hover td{background:var(--surface-variant)}
+
+  /* ✅ Sticky primeira coluna (Bairro) sem deslocar */
+  th:first-child, td:first-child{
+    position:sticky; left:0;
+    background: var(--card-bg); z-index:3;
+    min-width:240px;
+  }
+  thead th:first-child{
+    background:#2c5aa0;color:#fff;z-index:6;
+  }
+  tr:hover td:first-child{background:var(--card-bg)}
+
+  /* Destaque fiscal */
+  .hit{
+    background:#ffe066;border-left:4px solid #1a3a6b;
+    padding:2px 6px;border-radius:6px;font-weight:900;color:#1a3a6b;display:inline-block
+  }
+
+  .col-hidden{display:none !important;}
+
+  /* Modal CNAE */
+  .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;padding:12px}
+  .modal-box{
+    background: var(--card-bg);max-width:760px;margin:5vh auto;border-radius:16px;padding:20px;
+    box-shadow:0 20px 60px rgba(0,0,0,.25);
+  }
+  .modal-box h3{color:#1a3a6b;margin-bottom:10px}
+  .modal-box ul{padding-left:20px;line-height:1.6}
+  .modal-actions{display:flex;justify-content:flex-end;margin-top:14px}
+
+  /* ✅ Rolagem interna no modal (desktop + celular) */
+  .modal-box{
+    max-height:80vh;
+    display:flex;
+    flex-direction:column;
+  }
+  .modal-scroll{
+    overflow:auto;
+    max-height:60vh;
+    padding-right:8px;
+  }
+
+  @media(max-width:1024px){
+    .filters{grid-template-columns:1fr}
+    th:first-child, td:first-child{min-width:200px}
+  }
+
+  /* =========================
+     AJUSTE RESPONSIVO – COLUNA BAIRRO
+  ========================= */
+  @media (max-width: 768px){
+    th:first-child,
+    td:first-child{
+      min-width: 140px;
+      max-width: 160px;
+      font-size: 0.85rem;
+      line-height: 1.2;
+      white-space: normal;
+      word-break: break-word;
+      padding: 8px;
+    }
+  }
+
+  /* =========================
+     AJUSTE RESPONSIVO – TÍTULO E SUBTÍTULO
+     (evita sobrepor o botão OK)
+  ========================= */
+  @media (max-width: 768px){
+    header{ padding-right: 72px; }
+    }
+
+  /* =========================
+     Botão "Aviso Legal"
+  ========================= */
+  .legal-wrap{
+    max-width:1100px;
+    margin:12px auto 0;
+    padding:0 16px;
+    display:flex;
+    justify-content:center;
+  }
+  .btn-legal{
+    width:auto;
+    padding:10px 16px;
+    border-radius:999px;
+    background:#fff3cd;
+    border:1px solid #f0ad4e;
+    color:#8a1f11;
+    font-weight:900;
+    cursor:pointer;
+    box-shadow:0 2px 6px rgba(0,0,0,.08);
+  }
+  .btn-legal:hover{filter:brightness(.97)}
+
+  .legal-text p{
+    margin-bottom:12px;
+    line-height:1.55;
+    color:var(--text-primary);
+    font-weight:600;
+  }
+</style>
+</head>
+
+<body>
+<header class="app-header">
+    <a href="index.html" class="btn-done-ios">OK</a>
+    <h1 class="app-header__title">Vigilância Sanitária</h1>
+    <h2 class="app-header__subtitle">Áreas de Atuação por Bairro</h2>
+  </header>
+
+<!-- ✅ Botão Aviso Legal (entre o banner e o primeiro box) -->
+<div class="legal-wrap">
+  <button class="btn-legal" id="btnAvisoLegal" type="button">⚠️ Aviso Legal</button>
+</div>
+
+<div class="container">
+
+  <div class="card">
+    <div class="filters">
+      <div>
+        <label for="qBairro">Bairro / Local</label>
+        <input id="qBairro" placeholder="Ex.: Centro, Jundiaí, Mercado...">
+      </div>
+      <div>
+        <label for="qFiscal">Fiscal</label>
+        <input id="qFiscal" placeholder="Ex.: LIDIANE, THIAGO, VIVIANE...">
+      </div>
+      <div>
+        <label for="fSigla">Área (opcional)</label>
+        <select id="fSigla"><option value="">Todas</option></select>
+      </div>
+      <div><button class="btn" id="btnBuscar" type="button">Buscar</button></div>
+      <div><button class="btn-clear" id="btnLimpar" type="button">Limpar</button></div>
+    </div>
+
+    <div class="hint">
+      💡 Clique na área de atuação pra ver CNAEs relacionados.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead><tr id="thead"></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL CNAE -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h3 id="modalTitle"></h3>
+    <ul id="modalList" class="modal-scroll"></ul>
+    <div class="modal-actions">
+      <button class="btn-clear" id="btnFecharModal" type="button">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ MODAL AVISO LEGAL -->
+<div class="modal" id="avisoLegalModal">
+  <div class="modal-box">
+    <h3 style="color:#8a1f11;">Aviso Legal</h3>
+
+    <div class="modal-scroll legal-text">
+      <p>
+        Informamos que a divisão dos fiscais por áreas de atuação não é fixa, não gerando direito adquirido
+        ou qualquer forma de vinculação permanente.
+      </p>
+
+      <p>
+        Nos termos da Lei Complementar nº 548/2023, compete ao Secretário Municipal de Saúde a organização
+        mensal das Ordens de Serviço, inclusive quanto à definição e à redistribuição das áreas de atuação.
+      </p>
+
+      <p>
+        Ressalta-se que essa atribuição foi formalmente delegada ao Gerente da Vigilância Sanitária, a quem
+        cabe organizar e ajustar mensalmente as Ordens de Serviço, conforme a necessidade do serviço público,
+        a demanda operacional e o interesse da Administração.
+      </p>
+
+      <p>
+        Dessa forma, eventuais alterações na definição das áreas de atuação são legais, legítimas e inerentes
+        ao poder de gestão administrativa, devendo ser observadas por todos.
+      </p>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-clear" id="btnFecharAvisoLegal" type="button">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================
+   Config
+========================= */
+const CSV_BAIRROS = "data/bairros.csv";
+const CSV_CNAE    = "data/cnae.csv";
+
+// Excluir definitivamente estas colunas (não aparecem e não entram como sigla)
+const IGNORE_COLS = new Set(["CODIGO","SETOR","SETORALIMENTO","FU","CONTROLE"]);
+
+// SIGLA -> Nome real da área
+const SIGLA_TO_NOME = {
+  "IA": "Indústrias Alimentícias",
+  "AG": "Alimentos em Geral",
+  "ED": "Estabelecimentos de Ensino",
+  "OS": "Produtos para Saúde",
+  "SS": "Serviços de Saúde",
+  "OD": "Serviços Odontológicos",
+  "CS": "Cosméticos e Saneantes",
+  "AM": "Vigilância Ambiental",
+  "VT": "Serviços Veterinários",
+  "BI": "Outras Áreas I",
+  "LP": "Estabelecimentos Assistenciais à Saúde",
+  "AO": "Outras Áreas II",
+  "TR": "Serviços de Transporte",
+  "DR": "Comércio varejista de Medicamentos",
+  "MD": "Medicamentos"
+};
+
+// DOM
+const qBairro = document.getElementById("qBairro");
+const qFiscal = document.getElementById("qFiscal");
+const fSigla  = document.getElementById("fSigla");
+const thead   = document.getElementById("thead");
+const tbody   = document.getElementById("tbody");
+
+// Modal CNAE
+const modal   = document.getElementById("modal");
+const modalTitle = document.getElementById("modalTitle");
+const modalList  = document.getElementById("modalList");
+
+// Modal Aviso Legal
+const avisoLegalModal = document.getElementById("avisoLegalModal");
+
+let dados = [];
+let siglas = [];
+let cnaeMap = {}; // SIGLA -> [atividades]
+
+function norm(s){
+  return String(s ?? "")
+    .replace(/\u00A0/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function labelArea(sigla){
+  return SIGLA_TO_NOME[sigla] || sigla;
+}
+
+/* =========================
+   CNAE loading
+========================= */
+function loadCSV(url){
+  return new Promise((resolve, reject) => {
+    Papa.parse(url, {
+      download: true,
+      header: true,
+      skipEmptyLines: true,
+      complete: res => resolve(res.data || []),
+      error: err => reject(err)
+    });
+  });
+}
+
+async function init(){
+  // Carrega CNAE e Bairros em paralelo
+  const [cnaeRows, bairrosRows] = await Promise.all([
+    loadCSV(CSV_CNAE),
+    loadCSV(CSV_BAIRROS)
+  ]);
+
+  // Monta mapa CNAE: Equipe (SIGLA) -> lista Atividade
+  cnaeMap = {};
+  cnaeRows.forEach(r => {
+    const sigla = String(r.Equipe || "").trim();
+    const atividade = String(r.Atividade || "").trim();
+    if(!sigla || !atividade) return;
+    if(!cnaeMap[sigla]) cnaeMap[sigla] = [];
+    cnaeMap[sigla].push(atividade);
+  });
+
+  // Dados bairros
+  dados = bairrosRows;
+
+  // Descobre colunas (siglas) a partir da primeira linha
+  const first = bairrosRows[0] || {};
+  const cols = Object.keys(first)
+    .map(c => String(c).trim())
+    .filter(c => c && !IGNORE_COLS.has(c));
+
+  // Queremos: primeira coluna visível é NOME (Bairro)
+  // Todas as demais viram "siglas" (áreas)
+  siglas = cols.filter(c => c !== "NOME");
+
+  montarHeader();
+  montarFiltroArea();
+  render();
+}
+
+function montarHeader(){
+  // Bairro NÃO clicável
+  let html = `<th>Bairro / Local</th>`;
+
+  // Áreas clicáveis para abrir CNAE
+  html += siglas.map(s => `
+    <th data-sigla="${s}" title="Clique para ver CNAEs relacionados">
+      <span style="cursor:pointer; font-weight:900;" onclick="openModal('${s}')">
+        ${labelArea(s)} ⓘ
+      </span>
+    </th>
+  `).join("");
+
+  thead.innerHTML = html;
+}
+
+function montarFiltroArea(){
+  fSigla.innerHTML =
+    `<option value="">Todas</option>` +
+    siglas.map(s => `<option value="${s}">${labelArea(s)}</option>`).join("");
+}
+
+/* =========================
+   Render + ocultação colunas
+========================= */
+function rowMatches(l){
+  const qb = norm(qBairro.value);
+  const qf = norm(qFiscal.value);
+  const fs = fSigla.value;
+
+  if(qb && !norm(l.NOME).includes(qb)) return false;
+
+  if(fs && !String(l[fs] || "").trim()) return false;
+
+  if(qf){
+    if(fs){
+      return norm(l[fs]).includes(qf);
+    }
+    return siglas.some(s => norm(l[s]).includes(qf));
+  }
+
+  return true;
+}
+
+function render(){
+  tbody.innerHTML = "";
+
+  const qf = norm(qFiscal.value);
+  const fs = fSigla.value;
+
+  const filtradas = dados.filter(rowMatches);
+
+  filtradas.forEach(l => {
+    const tds = siglas.map(s => {
+      let v = String(l[s] || "");
+      if(qf && norm(v).includes(qf)){
+        v = `<span class="hit">${v}</span>`;
+      }
+      return `<td>${v}</td>`;
+    }).join("");
+
+    tbody.innerHTML += `<tr><td>${String(l.NOME || "")}</td>${tds}</tr>`;
+  });
+
+  aplicarOcultacaoDeColunas(filtradas, qf, fs);
+}
+
+function aplicarOcultacaoDeColunas(linhasFiltradas, qfNorm, siglaSelecionada){
+  const ths = thead.querySelectorAll("th"); // 0 = Bairro, demais = siglas
+  const trs = tbody.querySelectorAll("tr");
+
+  // Se não há fiscal digitado: mostra todas as siglas
+  if(!qfNorm){
+    for(let i=1; i<ths.length; i++){
+      ths[i].classList.remove("col-hidden");
+      trs.forEach(tr => tr.children[i]?.classList.remove("col-hidden"));
+    }
+    return;
+  }
+
+  // Se área selecionada: mostra só ela
+  if(siglaSelecionada){
+    const idx = 1 + siglas.indexOf(siglaSelecionada);
+    for(let i=1; i<ths.length; i++){
+      const show = (i === idx);
+      ths[i].classList.toggle("col-hidden", !show);
+      trs.forEach(tr => tr.children[i]?.classList.toggle("col-hidden", !show));
+    }
+    return;
+  }
+
+  // Caso geral: mostrar apenas siglas que contenham o fiscal em pelo menos 1 linha filtrada
+  const visiveis = new Set();
+  siglas.forEach(s => {
+    for(const l of linhasFiltradas){
+      if(norm(l[s] || "").includes(qfNorm)){
+        visiveis.add(s);
+        break;
+      }
+    }
+  });
+
+  for(let i=1; i<ths.length; i++){
+    const sigla = siglas[i-1];
+    const show = visiveis.has(sigla);
+    ths[i].classList.toggle("col-hidden", !show);
+    trs.forEach(tr => tr.children[i]?.classList.toggle("col-hidden", !show));
+  }
+}
+
+/* =========================
+   Modal CNAE
+========================= */
+function openModal(sigla){
+  const list = cnaeMap[sigla] || [];
+  modalTitle.textContent = `Atividades Econômicas – ${labelArea(sigla)}`;
+  modalList.innerHTML = (list.length ? list : ["Nenhuma atividade cadastrada."])
+    .map(a => `<li>${a}</li>`).join("");
+  modal.style.display = "block";
+}
+function closeModal(){ modal.style.display = "none"; }
+
+// expõe para onclick do header
+window.openModal = openModal;
+
+/* =========================
+   Modal Aviso Legal
+========================= */
+function openAvisoLegal(){ avisoLegalModal.style.display = "block"; }
+function closeAvisoLegal(){ avisoLegalModal.style.display = "none"; }
+
+/* =========================
+   Eventos
+========================= */
+document.getElementById("btnBuscar").addEventListener("click", render);
+document.getElementById("btnLimpar").addEventListener("click", () => {
+  qBairro.value = "";
+  qFiscal.value = "";
+  fSigla.value  = "";
+  render();
+  qBairro.focus();
+});
+
+[qBairro, qFiscal].forEach(inp => {
+  inp.addEventListener("keydown", (e) => {
+    if(e.key === "Enter") render();
+  });
+});
+fSigla.addEventListener("change", render);
+
+// Modal CNAE
+document.getElementById("btnFecharModal").addEventListener("click", closeModal);
+modal.addEventListener("click", (e) => {
+  if(e.target === modal) closeModal();
+});
+
+// Aviso Legal
+document.getElementById("btnAvisoLegal").addEventListener("click", openAvisoLegal);
+document.getElementById("btnFecharAvisoLegal").addEventListener("click", closeAvisoLegal);
+avisoLegalModal.addEventListener("click", (e) => {
+  if(e.target === avisoLegalModal) closeAvisoLegal();
+});
+
+/* start */
+init().catch(err => {
+  console.error(err);
+  alert("Erro ao carregar dados. Verifique se data/bairros.csv e data/cnae.csv existem e se está abrindo via servidor (Live Server).");
+});
+</script>
+
+<script type="module">
+  import { protectPage } from "./guard.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
+    authDomain: "visam-3a30b.firebaseapp.com",
+    projectId: "visam-3a30b",
+    messagingSenderId: "308899251430",
+    appId: "1:308899251430:web:0053cdbd0bed7f0de76727"
+  };
+
+  protectPage({
+    firebaseConfig,
+    onAuthorized: () => {
+      // opcional: liberar UI, etc.
+    }
+  });
+</script>
+
+ 
+</body>
+</html>
+
+
