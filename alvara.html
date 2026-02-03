@@ -5,107 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Alvarás Emitidos - CVS Vigilância Sanitária</title>
     <style>
+    /* Variáveis CSS */
+    :root {
+        --bg-primary: #f5f5f5;
+        --card-bg: #ffffff;
+        --card-border: #e6e6e6;
+        --text-primary: #111111;
+        --text-secondary: #666666;
+        --surface-variant: #f7f8fa;
+        --brand1: #1a3a6b;
+        --brand2: #2c5aa0;
+        --warning-bg: #fff3cd;
+        --warning-text: #856404;
+        --success-bg: #d4edda;
+        --success-text: #155724;
+        --danger-bg: #f8d7da;
+        --danger-text: #721c24;
+    }
+
+    /* Dark Mode */
+    @media (prefers-color-scheme: dark) {
         :root {
-            --bg-primary: #f5f5f5;
-            --card-bg: #ffffff;
-            --card-border: #e6e6e6;
-            --text-primary: #111;
-            --surface-variant: #f7f8fa;
-            --brand1: #1a3a6b;
-            --brand2: #2c5aa0;
-            --primary: #1a3a6b;
-            --warning-bg: #fff3cd;
+            --bg-primary: #000000;
+            --card-bg: #1c1c1e;
+            --card-border: #38383a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --surface-variant: #2c2c2e;
+            --brand1: #0a84ff;
+            --brand2: #64d2ff;
+            --warning-bg: #4a3800;
+            --warning-text: #ffb700;
+            --success-bg: #1e3a1e;
+            --success-text: #4cd964;
+            --danger-bg: #3a1e1e;
+            --danger-text: #ff453a;
         }
 
-        /* Dark mode */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-primary: #000000;
-                --card-bg: #1c1c1e;
-                --card-border: #38383a;
-                --text-primary: #ffffff;
-                --surface-variant: #2c2c2e;
-                --brand1: #0a84ff;
-                --brand2: #64d2ff;
-                --primary: #0a84ff;
-                --warning-bg: #332800;
-            }
-            
-            .badge-success {
-                background: #1e3a1e !important;
-                color: #4cd964 !important;
-            }
-            
-            .badge-warning {
-                background: var(--warning-bg) !important;
-                color: #ff9f0a !important;
-                border-color: #ff9f0a !important;
-            }
-            
-            .badge-danger {
-                background: #3a1e1e !important;
-                color: #ff453a !important;
-            }
-            
-            input, select {
-                background: var(--surface-variant) !important;
-                color: var(--text-primary) !important;
-                border-color: var(--card-border) !important;
-            }
-            
-            .btn-secondary {
-                background: #48484a !important;
-            }
-            
-            .btn-secondary:hover {
-                background: #636366 !important;
-            }
+        .filter-group label {
+            color: var(--text-primary) !important;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+        .filter-group input,
+        .filter-group select {
+            background: var(--surface-variant) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--card-border) !important;
+        }
+
+        .btn-secondary {
+            background: #48484a !important;
+            color: #ffffff !important;
+        }
+
+        .btn-secondary:hover {
+            background: #636366 !important;
+        }
+
+        .stat-card p {
+            color: var(--text-secondary) !important;
+        }
+
+        .info-item strong {
+            color: var(--text-primary) !important;
+        }
+
+        .info-item span {
+            color: var(--text-secondary) !important;
+        }
+
+        td {
+            border-bottom: 1px solid var(--card-border) !important;
+        }
+    }
+
+    
+    /* Header agora usa header-component.css */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
-        }
-
-        header.app-header {
-            background: var(--brand1);
-            color: #fff;
-            padding: 28px 20px 26px;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.12);
-        }
-
-        header .btn-done-ios {
-            position: absolute;
-            top: 50%;
-            right: 16px;
-            transform: translateY(-50%);
-            background: transparent;
-            border: none;
-            color: #34C759;
-            font-size: 17px;
-            font-weight: 600;
-            padding: 16px 12px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        header h1 {
-            font-size: 1.8em;
-            margin-bottom: 4px;
-        }
-
-        header h2 {
-            font-size: 1.1em;
-            font-weight: 400;
-            opacity: 0.9;
         }
 
         .container {
@@ -151,12 +138,10 @@
         .filter-group input,
         .filter-group select {
             padding: 10px 12px;
-            border: 1px solid var(--card-border);
+            border: 1px solid #ccd6e0;
             border-radius: 6px;
             font-size: 0.95em;
             transition: all 0.2s;
-            background: var(--card-bg);
-            color: var(--text-primary);
         }
 
         .filter-group input:focus,
@@ -170,7 +155,6 @@
             display: flex;
             gap: 12px;
             margin-top: 20px;
-            flex-wrap: wrap;
         }
 
         .btn {
@@ -185,16 +169,16 @@
 
         .btn-primary {
             background: var(--brand1);
-            color: #fff;
+            color: white;
         }
 
         .btn-primary:hover {
-            background: var(--brand2);
+            background: #2c5aa0;
         }
 
         .btn-secondary {
             background: #6c757d;
-            color: #fff;
+            color: white;
         }
 
         .btn-secondary:hover {
@@ -223,7 +207,7 @@
         }
 
         .stat-card p {
-            color: #666;
+            color: var(--text-secondary);
             font-size: 0.9em;
             font-weight: 600;
         }
@@ -255,6 +239,13 @@
             gap: 12px;
         }
 
+        .pagination-controls select {
+            padding: 8px 12px;
+            border: 1px solid #ccd6e0;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+
         .pagination-buttons {
             display: flex;
             align-items: center;
@@ -264,7 +255,7 @@
 
         .btn-page {
             padding: 8px 16px;
-            border: 1px solid var(--brand1);
+            border: 1px solid #1a3a6b;
             background: var(--card-bg);
             color: var(--brand1);
             border-radius: 6px;
@@ -276,7 +267,7 @@
 
         .btn-page:hover:not(:disabled) {
             background: var(--brand1);
-            color: #fff;
+            color: white;
         }
 
         .btn-page:disabled {
@@ -289,8 +280,6 @@
         .table-container {
             position: relative;
             width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
         }
 
         .table-wrapper {
@@ -306,14 +295,13 @@
             border-spacing: 0;
             background: var(--card-bg);
             border-radius: 8px;
+            overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            overflow: visible;
-            min-width: 950px;
         }
 
         thead {
             background: var(--brand1);
-            color: #fff;
+            color: white;
         }
 
         th {
@@ -332,9 +320,8 @@
 
         td {
             padding: 14px 12px;
-            border-bottom: 1px solid var(--card-border);
+            border-bottom: 1px solid #eee;
             font-size: 0.9em;
-            white-space: nowrap;
         }
 
         tbody tr {
@@ -344,27 +331,6 @@
 
         tbody tr:hover {
             background: var(--surface-variant);
-        }
-
-        /* Sticky primeira coluna */
-        #alvarasTable th:first-child,
-        #alvarasTable td:first-child {
-            position: sticky;
-            position: -webkit-sticky;
-            left: 0;
-            z-index: 5;
-            background: var(--card-bg);
-            box-shadow: 3px 0 8px rgba(0,0,0,0.12);
-            border-right: 2px solid rgba(26, 58, 107, 0.2);
-            min-width: 130px;
-            max-width: 130px;
-            width: 130px;
-        }
-
-        #alvarasTable thead th:first-child {
-            background: var(--brand1);
-            color: #fff;
-            z-index: 6;
         }
 
         .badge {
@@ -377,8 +343,8 @@
         }
 
         .badge-success {
-            background: #d4edda;
-            color: #155724;
+            background: var(--success-bg);
+            color: var(--success-text);
         }
 
         .badge-warning {
@@ -388,25 +354,10 @@
         }
 
         .badge-danger {
-            background: #f8d7da;
-            color: #721c24;
+            background: var(--danger-bg);
+            color: var(--danger-text);
         }
 
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: var(--brand1);
-            font-size: 1.1em;
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-            font-size: 1em;
-        }
-
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -417,7 +368,7 @@
             height: 100%;
             background: rgba(0,0,0,0.7);
             overflow-y: auto;
-            animation: fadeIn 0.2s;
+            animation: fadeIn 0.3s;
         }
 
         @keyframes fadeIn {
@@ -435,11 +386,23 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             max-height: 85vh;
             overflow: hidden;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from { 
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to { 
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         .modal-header {
             background: linear-gradient(135deg, var(--brand1), var(--brand2));
-            color: #fff;
+            color: white;
             padding: 25px;
             position: relative;
         }
@@ -447,22 +410,28 @@
         .modal-header h2 {
             margin: 0;
             font-size: 1.6em;
+            border: none;
+            color: white;
         }
 
         .close {
             position: absolute;
             right: 20px;
-            top: 14px;
-            color: #fff;
+            top: 20px;
+            color: white;
             font-size: 2em;
             font-weight: bold;
             cursor: pointer;
-            line-height: 1;
+            transition: transform 0.2s;
+        }
+
+        .close:hover {
+            transform: rotate(90deg) scale(1.2);
         }
 
         .modal-body {
             padding: 25px;
-            max-height: calc(85vh - 120px);
+            max-height: calc(85vh - 180px);
             overflow-y: auto;
         }
 
@@ -475,7 +444,7 @@
             font-size: 1.2em;
             margin-bottom: 12px;
             padding-bottom: 8px;
-            border-bottom: 2px solid var(--brand1);
+            border-bottom: 2px solid #1a3a6b;
         }
 
         .info-grid {
@@ -499,7 +468,7 @@
         }
 
         .info-item span {
-            color: var(--text-primary);
+            color: var(--text-secondary);
             font-size: 0.95em;
         }
 
@@ -510,49 +479,247 @@
 
         .activities-table table {
             font-size: 0.85em;
-            min-width: 900px;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .container { padding: 0 12px; }
-            .card { padding: 16px; border-radius: 8px; }
-            .filter-grid { grid-template-columns: 1fr; }
-            .stats-grid { grid-template-columns: 1fr; }
-            .btn-container { flex-direction: column; }
-            .btn { width: 100%; }
-            .pagination-controls { flex-direction: column; align-items: flex-start; }
-            .pagination-buttons { width: 100%; justify-content: center; }
-            .btn-page { flex: 1; min-width: 70px; }
-            #paginationInfo { width: 100%; text-align: center; order: -1; margin: 0 0 8px 0 !important; }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--brand1);
+            font-size: 1.1em;
         }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-size: 1em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 12px;
+            }
+
+            .card {
+                padding: 16px;
+                border-radius: 8px;
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-container {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .pagination-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .pagination-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .btn-page {
+                padding: 10px 12px;
+                font-size: 0.85em;
+                flex: 1;
+                min-width: 70px;
+            }
+
+            #paginationInfo {
+                width: 100%;
+                text-align: center;
+                order: -1;
+                margin: 0 0 8px 0 !important;
+                font-size: 0.85em;
+            }
+
+            .table-wrapper {
+                overflow-x: visible !important;
+                overflow-y: visible !important;
+                -webkit-overflow-scrolling: touch;
+                margin: 0;
+                padding: 0;
+            }
+
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                position: relative;
+            }
+
+            #alvarasTable {
+                border-collapse: separate;
+                border-spacing: 0;
+                min-width: 950px !important;
+            }
+
+            #alvarasTable th,
+            #alvarasTable td {
+                white-space: nowrap;
+                padding: 12px 10px;
+                font-size: 0.85em;
+                border-bottom: 1px solid #eee;
+            }
+
+            #alvarasTable th:first-child,
+            #alvarasTable td:first-child {
+                position: -webkit-sticky;
+                position: sticky;
+                left: 0;
+                z-index: 10;
+                min-width: 115px !important;
+                max-width: 115px !important;
+                box-shadow: 3px 0 8px rgba(0,0,0,0.15);
+                border-right: 2px solid rgba(26, 58, 107, 0.2);
+            }
+
+            #alvarasTable thead th:first-child {
+                background: #1a3a6b !important;
+                color: white !important;
+                z-index: 11;
+                font-weight: 700;
+                position: -webkit-sticky;
+                position: sticky;
+            }
+
+            #alvarasTable tbody td:first-child {
+                background: var(--card-bg) !important;
+                font-weight: bold;
+                color: var(--brand1);
+            }
+
+            #alvarasTable tbody tr:hover td:first-child {
+                background: #f5f8fa !important;
+            }
+
+            #alvarasTable th:nth-child(2),
+            #alvarasTable td:nth-child(2) {
+                min-width: 110px;
+                width: 110px;
+            }
+
+            #alvarasTable th:nth-child(3),
+            #alvarasTable td:nth-child(3) {
+                min-width: 110px;
+                width: 110px;
+            }
+
+            #alvarasTable th:nth-child(4),
+            #alvarasTable td:nth-child(4) {
+                min-width: 95px;
+                width: 95px;
+                text-align: center;
+            }
+
+            #alvarasTable th:nth-child(5),
+            #alvarasTable td:nth-child(5) {
+                min-width: 160px;
+                width: 160px;
+            }
+
+            #alvarasTable th:nth-child(6),
+            #alvarasTable td:nth-child(6) {
+                min-width: 300px;
+                width: 300px;
+            }
+
+            .badge {
+                font-size: 0.7em;
+                padding: 4px 8px;
+                white-space: nowrap;
+            }
+    
+
+  /* 1) Um único lugar para scroll horizontal */
+  .table-container{
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+  }
+
+  .table-wrapper{
+    overflow-x: auto !important;   /* <- tira o visible */
+    overflow-y: visible !important;
+  }
+
+  /* 2) Não deixe a tabela "cortar" o sticky */
+  #alvarasTable{
+    min-width: 950px !important;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: visible !important;  /* <- antes ela herdava overflow hidden do "table" geral */
+  }
+
+  /* 3) Sticky na primeira coluna (com reforços p/ iOS) */
+  #alvarasTable th:first-child,
+  #alvarasTable td:first-child{
+    position: -webkit-sticky;
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background: var(--bg-primary);              /* essencial p/ não "vazar" conteúdo por trás */
+    -webkit-transform: translateZ(0); /* reforço p/ Safari */
+    transform: translateZ(0);
+  }
+
+  /* Cabeçalho precisa ficar acima das células */
+  #alvarasTable thead th:first-child{
+    z-index: 6;
+    background: var(--brand1);
+    color: #fff;
+  }
+      
     </style>
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/header-component.css">
 </head>
 <body>
     <header class="app-header">
-        <a href="index.html" class="btn-done-ios">OK</a>
-        <h1>Vigilância Sanitária</h1>
-        <h2>Consulta Alvarás Sanitários</h2>
-    </header>
+    <a href="index.html" class="btn-done-ios">OK</a>
+    <h1 class="app-header__title">Vigilância Sanitária</h1>
+    <h2 class="app-header__subtitle">Consulta Alvarás Sanitários</h2>
+  </header>
 
     <div class="container">
         <div class="card">
             <h3>🔍 Filtros de Busca</h3>
             <div class="filter-grid">
                 <div class="filter-group">
-                    <label for="dataInicial">Data Inicial</label>
+                    <label for="dataInicial">Data Inicial:</label>
                     <input type="date" id="dataInicial">
                 </div>
                 <div class="filter-group">
-                    <label for="dataFinal">Data Final</label>
+                    <label for="dataFinal">Data Final:</label>
                     <input type="date" id="dataFinal">
                 </div>
                 <div class="filter-group">
-                    <label for="numeroAlvara">Número do Alvará</label>
+                    <label for="numeroAlvara">Número do Alvará:</label>
                     <input type="text" id="numeroAlvara" placeholder="Ex: 20260150">
                 </div>
                 <div class="filter-group">
-                    <label for="razaoSocial">Razão Social</label>
+                    <label for="razaoSocial">Razão Social:</label>
                     <input type="text" id="razaoSocial" placeholder="Digite a razão social">
                 </div>
             </div>
@@ -582,20 +749,23 @@
         </div>
 
         <div class="cache-info">
-            <span><span id="cacheStatus">Carregando...</span></span>
-            <button onclick="forcarAtualizacao()" style="padding: 8px 16px; background: #34C759; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">🔄 Atualizar</button>
+            <span>💾 <span id="cacheStatus">Carregando...</span></span>
+            <button onclick="forcarAtualizacao()" style="padding: 8px 16px; background: #34C759; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                🔄 Atualizar
+            </button>
         </div>
 
         <div class="card">
             <div class="pagination-controls">
-                <div class="filter-group" style="max-width: 200px;">
-                    <label for="pageSize">Por página:</label>
+                <div>
+                    <label for="pageSize">Por página: </label>
                     <select id="pageSize" onchange="alterarTamanhoPagina()">
                         <option value="25">25</option>
                         <option value="50" selected>50</option>
                         <option value="100">100</option>
                     </select>
                 </div>
+                
                 <div class="pagination-buttons">
                     <button class="btn-page" onclick="irParaPrimeiraPagina()" id="btnPrimeira">⏮ Primeira</button>
                     <button class="btn-page" onclick="irParaPaginaAnterior()" id="btnAnterior">◀ Anterior</button>
@@ -605,19 +775,22 @@
                 </div>
             </div>
 
-            <div id="loadingMessage" class="loading" style="display: none;">Carregando dados...</div>
+            <div id="loadingMessage" class="loading" style="display: none;">
+                Carregando dados...
+            </div>
 
             <div class="table-container">
                 <div class="table-wrapper">
                     <table id="alvarasTable" style="display: none;">
                         <thead>
                             <tr>
-                                <th onclick="ordenarTabela('numero')" id="thNumero">Nº Alvará</th>
-                                <th onclick="ordenarTabela('dtemite')" id="thEmissao">Dt. Emissão</th>
-                                <th onclick="ordenarTabela('dtvalidade')" id="thValidade">Dt. Validade</th>
-                                <th onclick="ordenarTabela('cancelado')" id="thStatus">Status</th>
-                                <th onclick="ordenarTabela('cnpj')" id="thCnpj">CNPJ</th>
-                                <th onclick="ordenarTabela('razao')" id="thRazao">Razão Social</th>
+                                <th onclick="ordenarTabela('exercicio')">Exercício ▼</th>
+                                <th onclick="ordenarTabela('numero')">Nº Alvará ▼</th>
+                                <th onclick="ordenarTabela('dt_emite')">Dt. Emissão ▼</th>
+                                <th onclick="ordenarTabela('dt_validade')">Dt. Validade ▼</th>
+                                <th onclick="ordenarTabela('cancelado')">Status ▼</th>
+                                <th onclick="ordenarTabela('cnpj')">CNPJ ▼</th>
+                                <th onclick="ordenarTabela('razao')">Razão Social ▼</th>
                             </tr>
                         </thead>
                         <tbody id="alvarasTableBody"></tbody>
@@ -625,7 +798,9 @@
                 </div>
             </div>
 
-            <div id="noResults" class="no-results" style="display: none;">Nenhum alvará encontrado.</div>
+            <div id="noResults" class="no-results" style="display: none;">
+                Nenhum alvará encontrado.
+            </div>
         </div>
     </div>
 
@@ -640,8 +815,8 @@
     </div>
 
     <script>
-        "use strict";
-
+        'use strict';
+        
         let dadosAlvara = [];
         let dadosAlvlib = [];
         let dadosRegulados = [];
@@ -651,78 +826,89 @@
         let paginaAtual = 1;
         let tamanhoPagina = 50;
         let ordenacao = { campo: 'numero', direcao: 'desc' };
+        
         let cacheRegulados = new Map();
         let cacheBairros = new Map();
 
         function limparCodigo(codigo) {
-            if (!codigo) return "";
-            return codigo.toString().replace(/\u00A0/g, " ").replace(/\s/g, "").trim();
+            if (!codigo) return '';
+            return codigo.toString().replace(/\u00A0/g, '').replace(/\s/g, '').trim();
         }
 
         function limparNumeroAlvara(numero) {
-            if (!numero) return "";
-            return numero.toString().replace(/\u00A0/g, " ").replace(/\s/g, "").trim();
+            if (!numero) return '';
+            return numero.toString().replace(/\u00A0/g, '').replace(/\s/g, '');
         }
 
         function validarFormatoAlvara(numero) {
             if (!numero) return false;
-            const numeroLimpo = limparNumeroAlvara(numero).replace(/\D/g, "");
-            return /^\d{4,}$/.test(numeroLimpo);
+            const numeroLimpo = limparNumeroAlvara(numero);
+            return /^\d{8,}$/.test(numeroLimpo);
         }
 
         function alvaraEmitido(alvara) {
-            return alvara.dtemite && alvara.dtemite.trim() !== "" &&
-                   alvara.dtvalidade && alvara.dtvalidade.trim() !== "";
+            return alvara.dt_emite && alvara.dt_emite.trim() !== '' &&
+                   alvara.dt_validade && alvara.dt_validade.trim() !== '';
         }
 
         function parseData(dataStr) {
             if (!dataStr) return null;
-            const partes = dataStr.split(".");
+            const partes = dataStr.split('.');
             if (partes.length !== 3) return null;
-            const d = new Date(partes[2], partes[1] - 1, partes[0]);
-            return isNaN(d.getTime()) ? null : d;
+            return new Date(partes[2], partes[1] - 1, partes[0]);
         }
 
         function formatarData(dataStr) {
-            if (!dataStr) return "-";
+            if (!dataStr) return '-';
             return dataStr;
         }
 
         function formatarCNPJ(cnpj) {
-            if (!cnpj) return "-";
-            const numeros = cnpj.toString().replace(/\D/g, "");
-            if (numeros.length !== 14) return cnpj;
-            return numeros.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+            if (!cnpj) return '-';
+            const numeros = cnpj.replace(/\D/g, '');
+            if (numeros.length === 14) {
+                return numeros.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+            }
+            return cnpj;
         }
 
         function verificarStatus(alvara) {
-            const cancelaValue = (alvara.cancela ?? alvara.cancelado ?? "").toString().trim().toLowerCase();
-            const isCancelado = cancelaValue === "true" || cancelaValue === "1" || 
-                               cancelaValue === "s" || cancelaValue === "sim" || cancelaValue === "yes";
+            const cancelaValue = (alvara.cancela || '').toString().trim().toLowerCase();
+            
+            const isCancelado = cancelaValue === 'true' || 
+                                cancelaValue === '1' || 
+                                cancelaValue === 's' || 
+                                cancelaValue === 'sim' ||
+                                cancelaValue === 'yes';
             
             if (isCancelado) {
-                return { tipo: "cancelado", texto: "Cancelado", classe: "badge-danger" };
+                return { tipo: 'cancelado', texto: 'Cancelado', classe: 'badge-danger' };
             }
-
-            const dataValidade = parseData(alvara.dtvalidade);
+            
+            const dataValidade = parseData(alvara.dt_validade);
             const dataAtual = new Date();
+            
             dataAtual.setHours(0, 0, 0, 0);
-
             if (dataValidade) {
                 dataValidade.setHours(0, 0, 0, 0);
-                if (dataValidade < dataAtual) {
-                    return { tipo: "expirado", texto: "Expirado", classe: "badge-warning" };
-                }
             }
-
-            return { tipo: "valido", texto: "Válido", classe: "badge-success" };
+            
+            if (dataValidade && dataValidade < dataAtual) {
+                return { tipo: 'expirado', texto: 'Expirado', classe: 'badge-warning' };
+            }
+            
+            return { tipo: 'valido', texto: 'Válido', classe: 'badge-success' };
         }
 
         function buscarRegulado(codigoAlvara) {
             if (!codigoAlvara) return null;
             const codigoLimpo = limparCodigo(codigoAlvara);
-            if (cacheRegulados.has(codigoLimpo)) return cacheRegulados.get(codigoLimpo);
-            const regulado = dadosRegulados.find(r => limparCodigo(r.codigo) === codigoLimpo) || null;
+            
+            if (cacheRegulados.has(codigoLimpo)) {
+                return cacheRegulados.get(codigoLimpo);
+            }
+            
+            const regulado = dadosRegulados.find(r => limparCodigo(r.codigo) === codigoLimpo);
             cacheRegulados.set(codigoLimpo, regulado);
             return regulado;
         }
@@ -730,8 +916,12 @@
         function buscarBairro(codigoBairro) {
             if (!codigoBairro) return null;
             const codigoLimpo = limparCodigo(codigoBairro);
-            if (cacheBairros.has(codigoLimpo)) return cacheBairros.get(codigoLimpo);
-            const bairro = dadosBairros.find(b => limparCodigo(b.codigo) === codigoLimpo) || null;
+            
+            if (cacheBairros.has(codigoLimpo)) {
+                return cacheBairros.get(codigoLimpo);
+            }
+            
+            const bairro = dadosBairros.find(b => limparCodigo(b.codigo) === codigoLimpo);
             cacheBairros.set(codigoLimpo, bairro);
             return bairro;
         }
@@ -740,150 +930,128 @@
             try {
                 const response = await fetch(arquivo);
                 const texto = await response.text();
-                const linhas = texto.split("\n");
-                const cabecalhoLower = linhas[0].split(",").map(c => c.replace(/"/g, "").trim().toLowerCase());
+                const linhas = texto.split('\n');
+                
+                const cabecalhoLower = linhas[0].split(';').map(campo => 
+                    campo.replace(/"/g, '').replace(/\uFEFF/g, '').trim().toLowerCase()
+                );
+                
                 const dados = [];
-
                 for (let i = 1; i < linhas.length; i++) {
-                    const linha = linhas[i];
-                    if (!linha || !linha.trim()) continue;
-
+                    if (linhas[i].trim() === '') continue;
+                    
                     const valores = [];
                     let dentroAspas = false;
-                    let valorAtual = "";
-
-                    for (const ch of linha) {
-                        if (ch === '"') {
+                    let valorAtual = '';
+                    
+                    for (let char of linhas[i]) {
+                        if (char === '"') {
                             dentroAspas = !dentroAspas;
-                        } else if (ch === "," && !dentroAspas) {
+                        } else if (char === ';' && !dentroAspas) {
                             valores.push(valorAtual.trim());
-                            valorAtual = "";
+                            valorAtual = '';
                         } else {
-                            valorAtual += ch;
+                            valorAtual += char;
                         }
                     }
                     valores.push(valorAtual.trim());
-
+                    
                     const obj = {};
-                    cabecalhoLower.forEach((campo, idx) => {
-                        let v = valores[idx] ? valores[idx].replace(/"/g, "").trim() : "";
-                        if (campo === "codigo" || campo === "cdbai") v = limparCodigo(v);
-                        obj[campo] = v;
+                    cabecalhoLower.forEach((campo, index) => {
+                        let valor = valores[index] ? valores[index].replace(/"/g, '').trim() : '';
+                        if (campo === 'codigo' || campo === 'cdbai') {
+                            valor = limparCodigo(valor);
+                        }
+                        obj[campo] = valor;
                     });
                     dados.push(obj);
                 }
+                
                 return dados;
             } catch (erro) {
-                console.error("Erro ao carregar arquivo:", arquivo, erro);
+                console.error(`Erro ao carregar ${arquivo}:`, erro);
                 return [];
             }
         }
 
         async function inicializar() {
-            const loadingEl = document.getElementById("loadingMessage");
-            if (loadingEl) loadingEl.style.display = "block";
-
-            [dadosAlvara, dadosAlvlib, dadosRegulados, dadosBairros, dadosCnae] = await Promise.all([
-                carregarCSV("data/alvara.csv"),
-                carregarCSV("data/alvlib.csv"),
-                carregarCSV("data/regulados.csv"),
-                carregarCSV("data/bairros.csv"),
-                carregarCSV("data/cnae.csv")
-            ]);
-
-            // Filtro: apenas formato válido e alvará emitido
-            dadosAlvara = dadosAlvara
-                .filter(a => validarFormatoAlvara(a.numero))
-                .filter(a => alvaraEmitido(a));
-
-            const cacheEl = document.getElementById("cacheStatus");
-            if (cacheEl) cacheEl.textContent = `${dadosAlvara.length} alvarás carregados`;
-            if (loadingEl) loadingEl.style.display = "none";
+            const loadingEl = document.getElementById('loadingMessage');
+            if (loadingEl) loadingEl.style.display = 'block';
             
+            [dadosAlvara, dadosAlvlib, dadosRegulados, dadosBairros, dadosCnae] = await Promise.all([
+                carregarCSV('data/alvara.csv'),
+                carregarCSV('data/alvlib.csv'),
+                carregarCSV('data/regulados.csv'),
+                carregarCSV('data/bairros.csv'),
+                carregarCSV('data/cnae.csv')
+            ]);
+            
+            dadosAlvara = dadosAlvara.filter(alvara => 
+            validarFormatoAlvara(alvara.numero) && 
+            alvaraEmitido(alvara) &&
+            parseInt(alvara.exercicio || '0') >= 2018
+        );
+            
+            const cacheEl = document.getElementById('cacheStatus');
+            if (cacheEl) cacheEl.textContent = `${dadosAlvara.length} alvarás carregados`;
+            
+            if (loadingEl) loadingEl.style.display = 'none';
             limparFiltros();
         }
 
         function buscarAlvaras() {
-            const dataInicial = document.getElementById("dataInicial").value;
-            const dataFinal = document.getElementById("dataFinal").value;
-            const numeroAlvara = document.getElementById("numeroAlvara").value.trim().replace(/\s/g, "");
-            const razaoSocial = document.getElementById("razaoSocial").value.toLowerCase().trim();
-
+            const dataInicial = document.getElementById('dataInicial').value;
+            const dataFinal = document.getElementById('dataFinal').value;
+            const numeroAlvara = document.getElementById('numeroAlvara').value.trim().replace(/\s/g, '');
+            const razaoSocial = document.getElementById('razaoSocial').value.toLowerCase().trim();
+            
             alvarasFiltrados = dadosAlvara.filter(alvara => {
-                if (numeroAlvara) {
-                    const numLimpo = limparNumeroAlvara(alvara.numero).replace(/\D/g, "");
-                    if (!numLimpo.includes(numeroAlvara)) return false;
+                if (numeroAlvara && !limparNumeroAlvara(alvara.numero).includes(numeroAlvara)) {
+                    return false;
                 }
-
+                
                 if (dataInicial || dataFinal) {
-                    const dataEmissao = parseData(alvara.dtemite);
+                    const dataEmissao = parseData(alvara.dt_emite);
                     if (!dataEmissao) return false;
                     if (dataInicial && dataEmissao < new Date(dataInicial)) return false;
                     if (dataFinal && dataEmissao > new Date(dataFinal)) return false;
                 }
-
+                
                 if (razaoSocial) {
                     const regulado = buscarRegulado(alvara.codigo);
                     if (!regulado) return false;
-                    const rz = (regulado.razao || "").toLowerCase();
-                    if (!rz.includes(razaoSocial)) return false;
+                    if (!regulado.razao.toLowerCase().includes(razaoSocial)) return false;
                 }
-
+                
                 return true;
             });
-
+            
             atualizarEstatisticas();
             paginaAtual = 1;
-            
-            // Ordenação inicial: mais recente -> mais antigo
-            alvarasFiltrados.sort((a, b) => {
-                const na = parseInt(limparNumeroAlvara(a.numero).replace(/\D/g, ""), 10) || 0;
-                const nb = parseInt(limparNumeroAlvara(b.numero).replace(/\D/g, ""), 10) || 0;
-                return nb - na;
-            });
-            ordenacao = { campo: 'numero', direcao: 'desc' };
-            atualizarIndicadoresOrdenacao();
             renderizarTabela();
         }
 
         function atualizarEstatisticas() {
             const total = alvarasFiltrados.length;
-            let cancelados = 0, expirados = 0, validos = 0;
-
-            alvarasFiltrados.forEach(a => {
-                const st = verificarStatus(a);
-                if (st.tipo === "cancelado") cancelados++;
-                else if (st.tipo === "expirado") expirados++;
-                else validos++;
+            let cancelados = 0;
+            let expirados = 0;
+            let validos = 0;
+            
+            alvarasFiltrados.forEach(alvara => {
+                const status = verificarStatus(alvara);
+                if (status.tipo === 'cancelado') {
+                    cancelados++;
+                } else if (status.tipo === 'expirado') {
+                    expirados++;
+                } else {
+                    validos++;
+                }
             });
-
-            document.getElementById("totalAlvaras").textContent = total;
-            document.getElementById("alvarasValidos").textContent = validos;
-            document.getElementById("alvarasExpirados").textContent = expirados;
-            document.getElementById("alvarasCancelados").textContent = cancelados;
-        }
-
-        function atualizarIndicadoresOrdenacao() {
-            const map = {
-                'numero': 'thNumero',
-                'dtemite': 'thEmissao',
-                'dtvalidade': 'thValidade',
-                'cancelado': 'thStatus',
-                'cnpj': 'thCnpj',
-                'razao': 'thRazao'
-            };
-
-            Object.values(map).forEach(id => {
-                const el = document.getElementById(id);
-                if (!el) return;
-                el.textContent = el.textContent.replace(/ [▲▼]/g, "");
-            });
-
-            const thId = map[ordenacao.campo];
-            const th = document.getElementById(thId);
-            if (th) {
-                th.textContent = th.textContent.replace(/ [▲▼]/g, "") + (ordenacao.direcao === 'asc' ? ' ▲' : ' ▼');
-            }
+            
+            document.getElementById('totalAlvaras').textContent = total;
+            document.getElementById('alvarasValidos').textContent = validos;
+            document.getElementById('alvarasExpirados').textContent = expirados;
+            document.getElementById('alvarasCancelados').textContent = cancelados;
         }
 
         function ordenarTabela(campo) {
@@ -893,218 +1061,198 @@
                 ordenacao.campo = campo;
                 ordenacao.direcao = 'asc';
             }
-
+            
             alvarasFiltrados.sort((a, b) => {
                 let valorA, valorB;
-
+                
                 if (campo === 'numero') {
-                    valorA = parseInt(limparNumeroAlvara(a.numero).replace(/\D/g, ""), 10) || 0;
-                    valorB = parseInt(limparNumeroAlvara(b.numero).replace(/\D/g, ""), 10) || 0;
-                } else if (campo === 'dtemite') {
-                    valorA = parseData(a.dtemite) || new Date(0);
-                    valorB = parseData(b.dtemite) || new Date(0);
-                } else if (campo === 'dtvalidade') {
-                    valorA = parseData(a.dtvalidade) || new Date(0);
-                    valorB = parseData(b.dtvalidade) || new Date(0);
+                    valorA = limparNumeroAlvara(a.numero);
+                    valorB = limparNumeroAlvara(b.numero);
+                } else if (campo === 'dt_emite') {
+                    valorA = parseData(a.dt_emite);
+                    valorB = parseData(b.dt_emite);
+                } else if (campo === 'dt_validade') {
+                    valorA = parseData(a.dt_validade);
+                    valorB = parseData(b.dt_validade);
                 } else if (campo === 'cancelado') {
-                    const sa = verificarStatus(a);
-                    const sb = verificarStatus(b);
-                    valorA = sa.tipo === "cancelado" ? 2 : (sa.tipo === "expirado" ? 1 : 0);
-                    valorB = sb.tipo === "cancelado" ? 2 : (sb.tipo === "expirado" ? 1 : 0);
+                    const statusA = verificarStatus(a);
+                    const statusB = verificarStatus(b);
+                    valorA = statusA.tipo === 'cancelado' ? 2 : (statusA.tipo === 'expirado' ? 1 : 0);
+                    valorB = statusB.tipo === 'cancelado' ? 2 : (statusB.tipo === 'expirado' ? 1 : 0);
                 } else {
-                    const ra = buscarRegulado(a.codigo);
-                    const rb = buscarRegulado(b.codigo);
-                    if (campo === 'cnpj') {
-                        valorA = ra ? (ra.cgc || "") : "";
-                        valorB = rb ? (rb.cgc || "") : "";
-                    } else { // razao
-                        valorA = ra ? (ra.razao || "") : "";
-                        valorB = rb ? (rb.razao || "") : "";
-                    }
-                    valorA = valorA.toString().toLowerCase();
-                    valorB = valorB.toString().toLowerCase();
+                    const reguladoA = buscarRegulado(a.codigo);
+                    const reguladoB = buscarRegulado(b.codigo);
+                    valorA = reguladoA ? (campo === 'cnpj' ? reguladoA.cgc : reguladoA.razao) : '';
+                    valorB = reguladoB ? (campo === 'cnpj' ? reguladoB.cgc : reguladoB.razao) : '';
                 }
-
-                if (valorA > valorB) return ordenacao.direcao === 'asc' ? 1 : -1;
+                
                 if (valorA < valorB) return ordenacao.direcao === 'asc' ? -1 : 1;
+                if (valorA > valorB) return ordenacao.direcao === 'asc' ? 1 : -1;
                 return 0;
             });
-
-            atualizarIndicadoresOrdenacao();
+            
             renderizarTabela();
         }
 
         function renderizarTabela() {
-            const tbody = document.getElementById("alvarasTableBody");
-            const table = document.getElementById("alvarasTable");
-            const noResults = document.getElementById("noResults");
-            const info = document.getElementById("paginationInfo");
-            tbody.innerHTML = "";
-
+            const tbody = document.getElementById('alvarasTableBody');
+            const table = document.getElementById('alvarasTable');
+            const noResults = document.getElementById('noResults');
+            
+            tbody.innerHTML = '';
+            
             if (alvarasFiltrados.length === 0) {
-                table.style.display = "none";
-                noResults.style.display = "block";
-                if (info) info.textContent = "";
+                table.style.display = 'none';
+                noResults.style.display = 'block';
+                document.getElementById('paginationInfo').textContent = '';
                 atualizarBotoesPaginacao();
                 return;
             }
-
-            table.style.display = "table";
-            noResults.style.display = "none";
-
+            
+            table.style.display = 'table';
+            noResults.style.display = 'none';
+            
             const inicio = (paginaAtual - 1) * tamanhoPagina;
             const fim = Math.min(inicio + tamanhoPagina, alvarasFiltrados.length);
+            
             const fragment = document.createDocumentFragment();
-
+            
             alvarasFiltrados.slice(inicio, fim).forEach(alvara => {
                 const regulado = buscarRegulado(alvara.codigo);
-                const tr = document.createElement("tr");
+                const tr = document.createElement('tr');
                 tr.onclick = () => mostrarDetalhes(alvara);
-                const st = verificarStatus(alvara);
-
+                
+                const status = verificarStatus(alvara);
+                
                 tr.innerHTML = `
-                    <td><strong>${limparNumeroAlvara(alvara.numero)}</strong></td>
-                    <td>${formatarData(alvara.dtemite)}</td>
-                    <td>${formatarData(alvara.dtvalidade)}</td>
-                    <td><span class="badge ${st.classe}">${st.texto}</span></td>
-                    <td>${regulado ? formatarCNPJ(regulado.cgc) : "-"}</td>
-                    <td>${regulado ? regulado.razao : "-"}</td>
+                <td>${alvara.exercicio || '-'}</td>
+                <td><strong>${limparNumeroAlvara(alvara.numero)}</strong></td>
+                    <td>${formatarData(alvara.dt_emite)}</td>
+                    <td>${formatarData(alvara.dt_validade)}</td>
+                    <td><span class="badge ${status.classe}">${status.texto}</span></td>
+                    <td>${regulado ? formatarCNPJ(regulado.cgc) : '-'}</td>
+                    <td>${regulado ? regulado.razao : '-'}</td>
                 `;
+                
                 fragment.appendChild(tr);
             });
-
+            
             tbody.appendChild(fragment);
-
-            const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina) || 0;
-            if (info) {
-                info.textContent = `Pág. ${paginaAtual}/${totalPaginas} • Exibindo ${inicio + 1}-${fim} de ${alvarasFiltrados.length}`;
-            }
+            
+            const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina);
+            document.getElementById('paginationInfo').textContent = 
+                `Pág. ${paginaAtual}/${totalPaginas} | ${inicio + 1}-${fim} de ${alvarasFiltrados.length}`;
+            
             atualizarBotoesPaginacao();
         }
 
         function mostrarDetalhes(alvara) {
             const regulado = buscarRegulado(alvara.codigo);
             const bairro = regulado ? buscarBairro(regulado.cdbai) : null;
-            const liberacoes = dadosAlvlib.filter(lib => 
-                limparNumeroAlvara(lib.alvara).replace(/\D/g, "") === limparNumeroAlvara(alvara.numero).replace(/\D/g, "")
-            );
+            const liberacoes = dadosAlvlib.filter(lib => limparNumeroAlvara(lib.alvara) === limparNumeroAlvara(alvara.numero));
             const status = verificarStatus(alvara);
-
-            const obs = (alvara.obs || "").toString().trim();
-            const obsDuam = (alvara.obsduam || "").toString().trim();
-
+            
             let html = `
                 <div class="info-section">
-                    <h3>Dados do Alvará</h3>
+                    <h3>📋 Dados do Alvará</h3>
                     <div class="info-grid">
-                        <div class="info-item"><strong>Exercício</strong><span>${alvara.exercicio || "-"}</span></div>
-                        <div class="info-item"><strong>Número</strong><span>${limparNumeroAlvara(alvara.numero)}</span></div>
-                        <div class="info-item"><strong>Emissão</strong><span>${formatarData(alvara.dtemite)}</span></div>
-                        <div class="info-item"><strong>Validade</strong><span>${formatarData(alvara.dtvalidade)}</span></div>
-                        <div class="info-item"><strong>Status</strong><span class="badge ${status.classe}">${status.texto}</span></div>
-                        <div class="info-item"><strong>Autenticação</strong><span>${alvara.autenticador || "-"}</span></div>
+                        <div class="info-item"><strong>Número:</strong> <span>${limparNumeroAlvara(alvara.numero)}</span></div>
+                        <div class="info-item"><strong>Emissão:</strong> <span>${formatarData(alvara.dt_emite)}</span></div>
+                        <div class="info-item"><strong>Validade:</strong> <span>${formatarData(alvara.dt_validade)}</span></div>
+                        <div class="info-item"><strong>Status:</strong> <span class="badge ${status.classe}">${status.texto}</span></div>
+                        <div class="info-item"><strong>Autenticação:</strong> <span>${alvara.autenticador || '-'}</span></div>
                     </div>
                 </div>
             `;
-
+            
             if (regulado) {
                 html += `
                     <div class="info-section">
-                        <h3>Estabelecimento</h3>
+                        <h3>🏢 Estabelecimento</h3>
                         <div class="info-grid">
-                            <div class="info-item"><strong>CNPJ</strong><span>${formatarCNPJ(regulado.cgc)}</span></div>
-                            <div class="info-item"><strong>Razão Social</strong><span>${regulado.razao || "-"}</span></div>
-                            <div class="info-item"><strong>Fantasia</strong><span>${regulado.fantasia || "-"}</span></div>
-                            <div class="info-item"><strong>Logradouro</strong><span>${regulado.logradouro || "-"}</span></div>
-                            <div class="info-item"><strong>Complemento</strong><span>${regulado.complement || "-"}</span></div>
-                            <div class="info-item"><strong>Bairro</strong><span>${bairro ? bairro.nome : "-"}</span></div>
+                            <div class="info-item"><strong>CNPJ:</strong> <span>${formatarCNPJ(regulado.cgc)}</span></div>
+                            <div class="info-item"><strong>Razão Social:</strong> <span>${regulado.razao || '-'}</span></div>
+                            <div class="info-item"><strong>Fantasia:</strong> <span>${regulado.fantasia || '-'}</span></div>
+                            <div class="info-item"><strong>Logradouro:</strong> <span>${regulado.logradouro || '-'}</span></div>
+                            <div class="info-item"><strong>Complemento:</strong> <span>${regulado.complement || '-'}</span></div>
+                            <div class="info-item"><strong>Bairro:</strong> <span>${bairro ? bairro.nome : '-'}</span></div>
                         </div>
                     </div>
                 `;
             }
-
-            if (obs || obsDuam) {
-                html += `
-                    <div class="info-section">
-                        <h3>Observações</h3>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <strong>Obs</strong>
-                                <span style="white-space: pre-wrap;">${obs || "-"}</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>Obs DUAM</strong>
-                                <span style="white-space: pre-wrap;">${obsDuam || "-"}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-
+            
             if (liberacoes.length > 0) {
-                html += `
-                    <div class="info-section">
-                        <h3>Atividades Liberadas (${liberacoes.length})</h3>
-                        <div class="activities-table">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Data</th>
-                                        <th>CNAE</th>
-                                        <th>Autoridade</th>
-                                        <th>Fiscal</th>
-                                        <th>Documento</th>
-                                        <th>Dt. Doc.</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                `;
-
+                html += `<div class="info-section"><h3>✅ Atividades (${liberacoes.length})</h3><div class="activities-table"><table>
+                    <thead><tr><th>Data</th><th>CNAE</th><th>Autoridade</th><th>Fiscal</th><th>Documento</th><th>Dt. Doc.</th></tr></thead><tbody>`;
                 liberacoes.forEach(lib => {
                     const cnae = dadosCnae.find(c => c.subclasse === lib.atividade);
-                    html += `
-                        <tr>
-                            <td>${formatarData(lib.data)}</td>
-                            <td>${cnae ? `${cnae.subclasse} - ${cnae.atividade}` : lib.atividade || "-"}</td>
-                            <td>${lib.autoridade || "-"}</td>
-                            <td>${lib.liberante || "-"}</td>
-                            <td>${lib.documento || "-"}</td>
-                            <td>${formatarData(lib.dtdocumento)}</td>
-                        </tr>
-                    `;
+                    html += `<tr><td>${formatarData(lib.data)}</td><td>${cnae ? `${cnae.subclasse} - ${cnae.atividade}` : lib.atividade}</td>
+                        <td>${lib.autoridade || '-'}</td><td>${lib.liberante || '-'}</td><td>${lib.documento || '-'}</td>
+                        <td>${formatarData(lib.dtdocumento)}</td></tr>`;
                 });
+                html += `</tbody></table>
+                </div>
+            </div>
+        `;
+        }
 
+        // Adicionar observações se existirem
+        const obs = (alvara.obs || '').trim();
+        const obsduam = (alvara.obsduam || '').trim();
+
+        if (obs || obsduam) {
+            html += `
+                <div class="info-section">
+                    <h3>📝 Observações</h3>
+                    <div class="info-grid">
+            `;
+
+            if (obs) {
                 html += `
-                                </tbody>
-                            </table>
+                        <div class="info-item" style="grid-column: 1 / -1;">
+                            <strong>Observações:</strong>
+                            <span style="white-space: pre-wrap;">${obs}</span>
                         </div>
-                    </div>
                 `;
             }
 
-            document.getElementById("modalBody").innerHTML = html;
-            document.getElementById("detalhesModal").style.display = "block";
+            if (obsduam) {
+                html += `
+                        <div class="info-item" style="grid-column: 1 / -1;">
+                            <strong>Observações DUAM:</strong>
+                            <span style="white-space: pre-wrap;">${obsduam}</span>
+                        </div>
+                `;
+            }
+
+            html += `
+                    </div>
+                </div>
+            `;
+        }
+
+        document.getElementById('modalBody').innerHTML = html;
+            document.getElementById('detalhesModal').style.display = 'block';
         }
 
         function fecharModal() {
-            document.getElementById("detalhesModal").style.display = "none";
+            document.getElementById('detalhesModal').style.display = 'none';
         }
 
         window.onclick = function(event) {
-            const modal = document.getElementById("detalhesModal");
-            if (event.target === modal) fecharModal();
+            if (event.target === document.getElementById('detalhesModal')) fecharModal();
         };
 
         function limparFiltros() {
-            document.getElementById("dataInicial").value = "";
-            document.getElementById("dataFinal").value = "";
-            document.getElementById("numeroAlvara").value = "";
-            document.getElementById("razaoSocial").value = "";
+            document.getElementById('dataInicial').value = '';
+            document.getElementById('dataFinal').value = '';
+            document.getElementById('numeroAlvara').value = '';
+            document.getElementById('razaoSocial').value = '';
             buscarAlvaras();
         }
 
         function alterarTamanhoPagina() {
-            tamanhoPagina = parseInt(document.getElementById("pageSize").value, 10) || 50;
+            tamanhoPagina = parseInt(document.getElementById('pageSize').value);
             paginaAtual = 1;
             renderizarTabela();
         }
@@ -1122,7 +1270,7 @@
         }
 
         function irParaProximaPagina() {
-            const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina) || 0;
+            const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina);
             if (paginaAtual < totalPaginas) {
                 paginaAtual++;
                 renderizarTabela();
@@ -1130,27 +1278,22 @@
         }
 
         function irParaUltimaPagina() {
-            const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina) || 0;
-            paginaAtual = totalPaginas || 1;
+            const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina);
+            paginaAtual = totalPaginas;
             renderizarTabela();
         }
 
         function atualizarBotoesPaginacao() {
-            const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina) || 0;
-            const btnPrimeira = document.getElementById("btnPrimeira");
-            const btnAnterior = document.getElementById("btnAnterior");
-            const btnProxima = document.getElementById("btnProxima");
-            const btnUltima = document.getElementById("btnUltima");
-            const semPaginas = totalPaginas === 0;
-
-            if (btnPrimeira) btnPrimeira.disabled = semPaginas || paginaAtual === 1;
-            if (btnAnterior) btnAnterior.disabled = semPaginas || paginaAtual === 1;
-            if (btnProxima) btnProxima.disabled = semPaginas || paginaAtual === totalPaginas;
-            if (btnUltima) btnUltima.disabled = semPaginas || paginaAtual === totalPaginas;
+            const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina);
+            
+            document.getElementById('btnPrimeira').disabled = paginaAtual === 1;
+            document.getElementById('btnAnterior').disabled = paginaAtual === 1;
+            document.getElementById('btnProxima').disabled = paginaAtual >= totalPaginas || totalPaginas === 0;
+            document.getElementById('btnUltima').disabled = paginaAtual >= totalPaginas || totalPaginas === 0;
         }
 
         async function forcarAtualizacao() {
-            document.getElementById("cacheStatus").textContent = "Atualizando...";
+            document.getElementById('cacheStatus').textContent = 'Atualizando...';
             cacheRegulados.clear();
             cacheBairros.clear();
             await inicializar();
