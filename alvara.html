@@ -950,6 +950,16 @@
             
             atualizarEstatisticas();
             paginaAtual = 1;
+
+/ ordem inicial: mais recente -> mais antigo
+alvarasFiltrados.sort((a, b) => {
+  const na = parseInt(limparNumeroAlvara(a.numero), 10) || 0;
+  const nb = parseInt(limparNumeroAlvara(b.numero), 10) || 0;
+  return nb - na;
+});
+
+ordenacao = { campo: 'numero', direcao: 'desc' };
+            
             renderizarTabela();
         }
 
@@ -988,8 +998,8 @@
                 let valorA, valorB;
                 
                 if (campo === 'numero') {
-                    valorA = limparNumeroAlvara(a.numero);
-                    valorB = limparNumeroAlvara(b.numero);
+                    valorA = parseInt(limparNumeroAlvara(a.numero), 10) || 0;
+                    valorB = parseInt(limparNumeroAlvara(b.numero), 10) || 0;
                 } else if (campo === 'dt_emite') {
                     valorA = parseData(a.dt_emite);
                     valorB = parseData(b.dt_emite);
