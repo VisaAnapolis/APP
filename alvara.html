@@ -1073,9 +1073,9 @@
             const liberacoes = dadosAlvlib.filter(lib => limparNumeroAlvara(lib.alvara) === limparNumeroAlvara(alvara.numero));
             const status = verificarStatus(alvara);
 
-const obs = (alvara.obs || '').trim();
-const obsDuam = (alvara.obs_duam || '').trim();
-            
+           const obs = (alvara.obs || '').trim();
+           const obsDuam = (alvara.obs_duam || '').trim();
+             
             let html = `
                 <div class="info-section">
                     <h3>📋 Dados do Alvará</h3>
@@ -1127,12 +1127,12 @@ if (obs || obsDuam) {
             <h3>📝 Observações</h3>
             <div class="info-grid">
                 <div class="info-item">
-                    <strong>Obs</strong>
-                    <span style="white-space: pre-wrap;">${obs || '-'}</span>
-                </div>
-                <div class="info-item">
                     <strong>Obs DUAM</strong>
                     <span style="white-space: pre-wrap;">${obsDuam || '-'}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Obs</strong>
+                    <span style="white-space: pre-wrap;">${obs || '-'}</span>
                 </div>
             </div>
         </div>
