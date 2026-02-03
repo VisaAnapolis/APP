@@ -1083,9 +1083,6 @@ ordenacao = { campo: 'numero', direcao: 'desc' };
             const liberacoes = dadosAlvlib.filter(lib => limparNumeroAlvara(lib.alvara) === limparNumeroAlvara(alvara.numero));
             const status = verificarStatus(alvara);
 
-           const obs = (alvara.obs || '').trim();
-           const obsDuam = (alvara.ob_duam || '').trim();
-             
             let html = `
                 <div class="info-section">
                     <h3>📋 Dados do Alvará</h3>
@@ -1131,6 +1128,10 @@ ordenacao = { campo: 'numero', direcao: 'desc' };
             document.getElementById('detalhesModal').style.display = 'block';
         }
 
+           const obs = (alvara.obs || '').trim();
+           const obsDuam = (alvara.ob_duam || '').trim();
+        
+        
 if (obs || obsDuam) {
     html += `
         <div class="info-section">
