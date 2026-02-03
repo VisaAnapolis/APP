@@ -1,965 +1,1162 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Alvarás Emitidos - CVS Vigilância Sanitária</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Alvarás Emitidos - CVS Vigilância Sanitária</title>
+    <style>
+        :root {
+            --bg-primary: #f5f5f5;
+            --card-bg: #ffffff;
+            --card-border: #e6e6e6;
+            --text-primary: #111;
+            --surface-variant: #f7f8fa;
+            --brand1: #1a3a6b;
+            --brand2: #2c5aa0;
+            --primary: #1a3a6b;
+            --warning-bg: #fff3cd;
+        }
 
-  <style>
-    /* (mantive seu estilo geral; não alterei tokens externos) */
-    :root{
-      --bg-primary:#f5f5f5;
-      --card-bg:#ffffff;
-      --card-border:#e6e6e6;
-      --text-primary:#111;
-      --surface-variant:#f7f8fa;
-
-      --brand1:#1a3a6b;
-      --brand2:#2c5aa0;
-      --primary:#1a3a6b;
-
-      --warning-bg:#fff3cd;
-    }
-
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;
-      background:var(--bg-primary);
-      color:var(--text-primary);
-      min-height:100vh;
-    }
-
-    header.app-header{
-      background:var(--brand1);
-      color:#fff;
-      padding:28px 20px 26px;
-      text-align:center;
-      position:sticky;
-      top:0;
-      z-index:100;
-      box-shadow:0 2px 4px rgba(0,0,0,.12);
-    }
-    header .btn-done-ios{
-      position:absolute;
-      top:50%;
-      right:16px;
-      transform:translateY(-50%);
-      background:transparent;
-      border:none;
-      color:#34C759;
-      font-size:17px;
-      font-weight:600;
-      padding:16px 12px;
-      cursor:pointer;
-      text-decoration:none;
-    }
-    header h1{font-size:1.8em;margin-bottom:4px}
-    header h2{font-size:1.1em;font-weight:400;opacity:.9}
-
-    .container{max-width:1400px;margin:22px auto 30px;padding:0 16px}
-    .card{
-      background:var(--card-bg);
-      border-radius:10px;
-      padding:24px;
-      margin-bottom:20px;
-      box-shadow:0 2px 8px rgba(0,0,0,.08);
-      border:1px solid var(--card-border);
-    }
-    .card h3{color:var(--brand1);margin-bottom:20px;font-size:1.3em}
-
-    .filter-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-      gap:16px;
-      margin-bottom:20px;
-    }
-    .filter-group{display:flex;flex-direction:column}
-    .filter-group label{font-weight:600;color:#333;margin-bottom:8px;font-size:.9em}
-    .filter-group input,.filter-group select{
-      padding:10px 12px;
-      border:1px solid #ccd6e0;
-      border-radius:6px;
-      font-size:.95em;
-      transition:all .2s;
-      background:#fff;
-    }
-    .filter-group input:focus,.filter-group select:focus{
-      outline:none;
-      border-color:var(--brand1);
-      box-shadow:0 0 0 3px rgba(26,58,107,.1);
-    }
-
-    .btn-container{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
-    .btn{
-      padding:10px 24px;
-      border:none;
-      border-radius:6px;
-      font-size:.95em;
-      font-weight:600;
-      cursor:pointer;
-      transition:all .2s;
-    }
-    .btn-primary{background:var(--brand1);color:#fff}
-    .btn-primary:hover{background:var(--brand2)}
-    .btn-secondary{background:#6c757d;color:#fff}
-    .btn-secondary:hover{background:#5a6268}
-
-    .stats-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-      gap:16px;
-      margin-bottom:20px;
-    }
-    .stat-card{
-      background:var(--card-bg);
-      padding:20px;
-      border-radius:8px;
-      text-align:center;
-      box-shadow:0 2px 8px rgba(0,0,0,.08);
-    }
-    .stat-card h3{font-size:2.2em;color:var(--brand1);margin-bottom:8px}
-    .stat-card p{color:#666;font-size:.9em;font-weight:600}
-
-    .cache-info{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:12px;
-      background:rgba(26,58,107,.05);
-      border-radius:8px;
-      font-size:.9em;
-      margin-bottom:20px;
-      flex-wrap:wrap;
-      gap:10px;
-    }
-    .cache-info span{color:var(--brand1);font-weight:600}
-
-    .pagination-controls{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:16px;
-      flex-wrap:wrap;
-      gap:12px;
-    }
-    .pagination-buttons{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-    .btn-page{
-      padding:8px 16px;
-      border:1px solid var(--brand1);
-      background:var(--card-bg);
-      color:var(--brand1);
-      border-radius:6px;
-      font-size:.9em;
-      font-weight:600;
-      cursor:pointer;
-      transition:all .2s;
-    }
-    .btn-page:hover:not(:disabled){background:var(--brand1);color:#fff}
-    .btn-page:disabled{opacity:.4;cursor:not-allowed;border-color:#ccc;color:#999}
-
-    .table-container{position:relative;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
-    .table-wrapper{width:100%;overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch}
-
-    table{
-      width:100%;
-      border-collapse:separate;
-      border-spacing:0;
-      background:var(--card-bg);
-      border-radius:8px;
-      box-shadow:0 2px 8px rgba(0,0,0,.08);
-      overflow:visible;
-      min-width:950px;
-    }
-    thead{background:var(--brand1);color:#fff}
-    th{
-      padding:14px 12px;
-      text-align:left;
-      font-weight:600;
-      font-size:.9em;
-      cursor:pointer;
-      user-select:none;
-      white-space:nowrap;
-    }
-    th:hover{background:rgba(255,255,255,.1)}
-    td{
-      padding:14px 12px;
-      border-bottom:1px solid #eee;
-      font-size:.9em;
-      white-space:nowrap;
-    }
-    tbody tr{cursor:pointer;transition:all .2s}
-    tbody tr:hover{background:var(--surface-variant)}
-
-    /* sticky primeira coluna */
-    #alvarasTable th:first-child,
-    #alvarasTable td:first-child{
-      position:sticky;
-      position:-webkit-sticky;
-      left:0;
-      z-index:5;
-      background:var(--card-bg);
-      box-shadow:3px 0 8px rgba(0,0,0,.12);
-      border-right:2px solid rgba(26,58,107,.2);
-      min-width:130px;
-      max-width:130px;
-      width:130px;
-    }
-    #alvarasTable thead th:first-child{
-      background:var(--brand1);
-      color:#fff;
-      z-index:6;
-    }
-
-    .badge{
-      padding:4px 10px;
-      border-radius:12px;
-      font-size:.85em;
-      font-weight:600;
-      display:inline-block;
-      white-space:nowrap;
-    }
-    .badge-success{background:#d4edda;color:#155724}
-    .badge-warning{background:var(--warning-bg);color:#856404;border:1px solid #ffc107}
-    .badge-danger{background:#f8d7da;color:#721c24}
-
-    .loading{text-align:center;padding:40px;color:var(--brand1);font-size:1.1em}
-    .no-results{text-align:center;padding:40px;color:#666;font-size:1em}
-
-    .modal{
-      display:none;
-      position:fixed;
-      z-index:1000;
-      left:0;top:0;
-      width:100%;height:100%;
-      background:rgba(0,0,0,.7);
-      overflow-y:auto;
-      animation:fadeIn .2s;
-    }
-    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-    .modal-content{
-      background:var(--card-bg);
-      margin:50px auto;
-      padding:0;
-      width:90%;
-      max-width:1000px;
-      border-radius:15px;
-      box-shadow:0 20px 60px rgba(0,0,0,.3);
-      max-height:85vh;
-      overflow:hidden;
-    }
-    .modal-header{
-      background:linear-gradient(135deg,var(--brand1),var(--brand2));
-      color:#fff;
-      padding:25px;
-      position:relative;
-    }
-    .modal-header h2{margin:0;font-size:1.6em}
-    .close{
-      position:absolute;
-      right:20px;
-      top:14px;
-      color:#fff;
-      font-size:2em;
-      font-weight:bold;
-      cursor:pointer;
-      line-height:1;
-    }
-    .modal-body{
-      padding:25px;
-      max-height:calc(85vh - 120px);
-      overflow-y:auto;
-    }
-
-    .info-section{margin-bottom:24px}
-    .info-section h3{
-      color:var(--brand1);
-      font-size:1.2em;
-      margin-bottom:12px;
-      padding-bottom:8px;
-      border-bottom:2px solid var(--brand1);
-    }
-    .info-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-      gap:12px;
-    }
-    .info-item{
-      padding:12px;
-      background:var(--surface-variant);
-      border-radius:6px;
-      border-left:3px solid var(--primary);
-    }
-    .info-item strong{
-      display:block;
-      color:#333;
-      margin-bottom:4px;
-      font-size:.85em;
-    }
-    .info-item span{color:#666;font-size:.95em}
-
-    .activities-table{margin-top:16px;overflow-x:auto}
-    .activities-table table{font-size:.85em;min-width:900px}
-
-    @media (max-width:768px){
-      .container{padding:0 12px}
-      .card{padding:16px;border-radius:8px}
-      .filter-grid{grid-template-columns:1fr}
-      .stats-grid{grid-template-columns:1fr}
-      .btn-container{flex-direction:column}
-      .btn{width:100%}
-      .pagination-controls{flex-direction:column;align-items:flex-start}
-      .pagination-buttons{width:100%;justify-content:center}
-      .btn-page{flex:1;min-width:70px}
-      #paginationInfo{width:100%;text-align:center;order:-1;margin:0 0 8px 0 !important}
-    }
-  </style>
-</head>
-
-<body>
-  <header class="app-header">
-    <a href="index.html" class="btn-done-ios">OK</a>
-    <h1>Vigilância Sanitária</h1>
-    <h2>Consulta Alvarás Sanitários</h2>
-  </header>
-
-  <div class="container">
-    <div class="card">
-      <h3>🔍 Filtros de Busca</h3>
-      <div class="filter-grid">
-        <div class="filter-group">
-          <label for="dataInicial">Data Inicial</label>
-          <input type="date" id="dataInicial" />
-        </div>
-        <div class="filter-group">
-          <label for="dataFinal">Data Final</label>
-          <input type="date" id="dataFinal" />
-        </div>
-        <div class="filter-group">
-          <label for="numeroAlvara">Número do Alvará</label>
-          <input type="text" id="numeroAlvara" placeholder="Ex: 20260150" />
-        </div>
-        <div class="filter-group">
-          <label for="razaoSocial">Razão Social</label>
-          <input type="text" id="razaoSocial" placeholder="Digite a razão social" />
-        </div>
-      </div>
-
-      <div class="btn-container">
-        <button class="btn btn-primary" onclick="buscarAlvaras()">🔍 Buscar</button>
-        <button class="btn btn-secondary" onclick="limparFiltros()">🔄 Limpar</button>
-      </div>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-card"><h3 id="totalAlvaras">0</h3><p>Total de Alvarás</p></div>
-      <div class="stat-card"><h3 id="alvarasValidos">0</h3><p>Alvarás Válidos</p></div>
-      <div class="stat-card"><h3 id="alvarasExpirados">0</h3><p>Alvarás Expirados</p></div>
-      <div class="stat-card"><h3 id="alvarasCancelados">0</h3><p>Alvarás Cancelados</p></div>
-    </div>
-
-    <div class="cache-info">
-      <span><span id="cacheStatus">Carregando...</span></span>
-      <button onclick="forcarAtualizacao()" style="padding:8px 16px;background:#34C759;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600">
-        🔄 Atualizar
-      </button>
-    </div>
-
-    <div class="card">
-      <div class="pagination-controls">
-        <div class="filter-group" style="max-width:200px">
-          <label for="pageSize">Por página:</label>
-          <select id="pageSize" onchange="alterarTamanhoPagina()">
-            <option value="25">25</option>
-            <option value="50" selected>50</option>
-            <option value="100">100</option>
-          </select>
-        </div>
-
-        <div class="pagination-buttons">
-          <button class="btn-page" onclick="irParaPrimeiraPagina()" id="btnPrimeira">⏮ Primeira</button>
-          <button class="btn-page" onclick="irParaPaginaAnterior()" id="btnAnterior">◀ Anterior</button>
-          <span id="paginationInfo" style="margin:0 12px;font-weight:600"></span>
-          <button class="btn-page" onclick="irParaProximaPagina()" id="btnProxima">Próxima ▶</button>
-          <button class="btn-page" onclick="irParaUltimaPagina()" id="btnUltima">Última ⏭</button>
-        </div>
-      </div>
-
-      <div id="loadingMessage" class="loading" style="display:none">Carregando dados...</div>
-
-      <div class="table-container">
-        <div class="table-wrapper">
-          <table id="alvarasTable" style="display:none">
-            <thead>
-              <tr>
-                <th onclick="ordenarTabela('numero')" id="thNumero">Nº Alvará</th>
-                <th onclick="ordenarTabela('dtemite')" id="thEmissao">Dt. Emissão</th>
-                <th onclick="ordenarTabela('dtvalidade')" id="thValidade">Dt. Validade</th>
-                <th onclick="ordenarTabela('cancelado')" id="thStatus">Status</th>
-                <th onclick="ordenarTabela('cnpj')" id="thCnpj">CNPJ</th>
-                <th onclick="ordenarTabela('razao')" id="thRazao">Razão Social</th>
-              </tr>
-            </thead>
-            <tbody id="alvarasTableBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="noResults" class="no-results" style="display:none">Nenhum alvará encontrado.</div>
-    </div>
-  </div>
-
-  <div id="detalhesModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>📄 Detalhes do Alvará</h2>
-        <span class="close" onclick="fecharModal()">&times;</span>
-      </div>
-      <div class="modal-body" id="modalBody"></div>
-    </div>
-  </div>
-
-  <script>
-    "use strict";
-
-    let dadosAlvara = [];
-    let dadosAlvlib = [];
-    let dadosRegulados = [];
-    let dadosBairros = [];
-    let dadosCnae = [];
-
-    let alvarasFiltrados = [];
-    let paginaAtual = 1;
-    let tamanhoPagina = 50;
-
-    // ordem padrão: mais recente -> mais antigo pelo número
-    let ordenacao = { campo: "numero", direcao: "desc" };
-
-    // caches p/ acelerar find()
-    let cacheRegulados = new Map();
-    let cacheBairros = new Map();
-
-    function limparCodigo(codigo) {
-      if (!codigo) return "";
-      return codigo.toString().replace(/\u00A0/g, " ").replace(/"/g, "").trim();
-    }
-
-    function limparNumeroAlvara(numero) {
-      if (!numero) return "";
-      return numero.toString().replace(/\u00A0/g, " ").replace(/"/g, "").trim();
-    }
-
-    // Aceita 8 ou mais dígitos (se tiver máscara/espacos, a gente limpa antes)
-    function validarFormatoAlvara(numero) {
-      if (!numero) return false;
-      const numeroLimpo = limparNumeroAlvara(numero).replace(/\D/g, "");
-      return /^\d{8,}$/.test(numeroLimpo);
-    }
-
-    function alvaraEmitido(alvara) {
-      return alvara.dtemite && alvara.dtemite.trim() !== "" && alvara.dtvalidade && alvara.dtvalidade.trim() !== "";
-    }
-
-    function parseData(dataStr) {
-      if (!dataStr) return null;
-      const partes = dataStr.split(".");
-      if (partes.length !== 3) return null;
-      const d = new Date(partes[2], partes[1] - 1, partes[0]);
-      return isNaN(d.getTime()) ? null : d;
-    }
-
-    function formatarData(dataStr) {
-      if (!dataStr) return "-";
-      return dataStr;
-    }
-
-    function formatarCNPJ(cnpj) {
-      if (!cnpj) return "-";
-      const numeros = cnpj.toString().replace(/\D/g, "");
-      if (numeros.length !== 14) return cnpj;
-      return numeros.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5");
-    }
-
-    // NOVO: valida exercício (não vazio) e confere com 4 primeiros dígitos do número
-    function exercicioValido(alvara) {
-      const ex = (alvara.exercicio || "").toString().trim();
-      if (!ex) return false;
-
-      const num = limparNumeroAlvara(alvara.numero).replace(/\D/g, "");
-      if (num.length < 4) return false;
-
-      return ex === num.substring(0, 4);
-    }
-
-    function verificarStatus(alvara) {
-      const cancelaValue = (alvara.cancela ?? alvara.cancelado ?? "").toString().trim().toLowerCase();
-      const isCancelado = (cancelaValue === "true" || cancelaValue === "1" || cancelaValue === "s" || cancelaValue === "sim" || cancelaValue === "yes");
-
-      if (isCancelado) return { tipo: "cancelado", texto: "Cancelado", classe: "badge-danger" };
-
-      const dataValidade = parseData(alvara.dtvalidade);
-      const dataAtual = new Date();
-      dataAtual.setHours(0,0,0,0);
-
-      if (dataValidade) {
-        dataValidade.setHours(0,0,0,0);
-        if (dataValidade < dataAtual) return { tipo: "expirado", texto: "Expirado", classe: "badge-warning" };
-      }
-      return { tipo: "valido", texto: "Válido", classe: "badge-success" };
-    }
-
-    function buscarRegulado(codigoAlvara) {
-      if (!codigoAlvara) return null;
-      const codigoLimpo = limparCodigo(codigoAlvara);
-      if (cacheRegulados.has(codigoLimpo)) return cacheRegulados.get(codigoLimpo);
-
-      const regulado = dadosRegulados.find(r => limparCodigo(r.codigo) === codigoLimpo) || null;
-      cacheRegulados.set(codigoLimpo, regulado);
-      return regulado;
-    }
-
-    function buscarBairro(codigoBairro) {
-      if (!codigoBairro) return null;
-      const codigoLimpo = limparCodigo(codigoBairro);
-      if (cacheBairros.has(codigoLimpo)) return cacheBairros.get(codigoLimpo);
-
-      const bairro = dadosBairros.find(b => limparCodigo(b.codigo) === codigoLimpo) || null;
-      cacheBairros.set(codigoLimpo, bairro);
-      return bairro;
-    }
-
-    async function carregarCSV(arquivo) {
-      try {
-        const response = await fetch(arquivo);
-        const texto = await response.text();
-        const linhas = texto.split("\n");
-
-        const cabecalhoLower = linhas[0].split(",").map(c => c.replace(/"/g,"").trim().toLowerCase());
-        const dados = [];
-
-        for (let i = 1; i < linhas.length; i++) {
-          const linha = linhas[i];
-          if (!linha || !linha.trim()) continue;
-
-          // parser simples CSV com aspas
-          const valores = [];
-          let dentroAspas = false;
-          let valorAtual = "";
-
-          for (const ch of linha) {
-            if (ch === '"') {
-              dentroAspas = !dentroAspas;
-            } else if (ch === "," && !dentroAspas) {
-              valores.push(valorAtual.trim());
-              valorAtual = "";
-            } else {
-              valorAtual += ch;
+        /* Dark mode */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-primary: #000000;
+                --card-bg: #1c1c1e;
+                --card-border: #38383a;
+                --text-primary: #ffffff;
+                --surface-variant: #2c2c2e;
+                --brand1: #0a84ff;
+                --brand2: #64d2ff;
+                --primary: #0a84ff;
+                --warning-bg: #332800;
             }
-          }
-          valores.push(valorAtual.trim());
-
-          const obj = {};
-          cabecalhoLower.forEach((campo, idx) => {
-            let v = valores[idx] ? valores[idx].replace(/"/g, "").trim() : "";
-            if (campo === "codigo" || campo === "cdbai") v = limparCodigo(v);
-            obj[campo] = v;
-          });
-
-          dados.push(obj);
-        }
-        return dados;
-      } catch (erro) {
-        console.error("Erro ao carregar arquivo:", arquivo, erro);
-        return [];
-      }
-    }
-
-    async function inicializar() {
-      const loadingEl = document.getElementById("loadingMessage");
-      if (loadingEl) loadingEl.style.display = "block";
-
-      [dadosAlvara, dadosAlvlib, dadosRegulados, dadosBairros, dadosCnae] = await Promise.all([
-        carregarCSV("data/alvara.csv"),
-        carregarCSV("data/alvlib.csv"),
-        carregarCSV("data/regulados.csv"),
-        carregarCSV("data/bairros.csv"),
-        carregarCSV("data/cnae.csv")
-      ]);
-
-      // filtro base: formato ok + emitido + exercício válido
-      dadosAlvara = dadosAlvara
-        .filter(a => validarFormatoAlvara(a.numero))
-        .filter(a => alvaraEmitido(a))
-        .filter(a => exercicioValido(a));
-
-      const cacheEl = document.getElementById("cacheStatus");
-      if (cacheEl) cacheEl.textContent = `${dadosAlvara.length} alvarás carregados`;
-
-      if (loadingEl) loadingEl.style.display = "none";
-
-      limparFiltros();
-    }
-
-    function buscarAlvaras() {
-      const dataInicial = document.getElementById("dataInicial").value;
-      const dataFinal = document.getElementById("dataFinal").value;
-      const numeroAlvara = document.getElementById("numeroAlvara").value.trim().replace(/\D/g, "");
-      const razaoSocial = document.getElementById("razaoSocial").value.toLowerCase().trim();
-
-      alvarasFiltrados = dadosAlvara.filter(alvara => {
-        // filtros de consistência (garantia extra, caso dadosAlvara seja reusado)
-        if (!exercicioValido(alvara)) return false;
-
-        if (numeroAlvara) {
-          const numLimpo = limparNumeroAlvara(alvara.numero).replace(/\D/g, "");
-          if (!numLimpo.includes(numeroAlvara)) return false;
+            
+            .badge-success {
+                background: #1e3a1e !important;
+                color: #4cd964 !important;
+            }
+            
+            .badge-warning {
+                background: var(--warning-bg) !important;
+                color: #ff9f0a !important;
+                border-color: #ff9f0a !important;
+            }
+            
+            .badge-danger {
+                background: #3a1e1e !important;
+                color: #ff453a !important;
+            }
+            
+            input, select {
+                background: var(--surface-variant) !important;
+                color: var(--text-primary) !important;
+                border-color: var(--card-border) !important;
+            }
+            
+            .btn-secondary {
+                background: #48484a !important;
+            }
+            
+            .btn-secondary:hover {
+                background: #636366 !important;
+            }
         }
 
-        if (dataInicial || dataFinal) {
-          const dataEmissao = parseData(alvara.dtemite);
-          if (!dataEmissao) return false;
-          if (dataInicial && dataEmissao < new Date(dataInicial)) return false;
-          if (dataFinal && dataEmissao > new Date(dataFinal)) return false;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
         }
 
-        if (razaoSocial) {
-          const regulado = buscarRegulado(alvara.codigo);
-          if (!regulado) return false;
-          const rz = (regulado.razao || "").toLowerCase();
-          if (!rz.includes(razaoSocial)) return false;
+        header.app-header {
+            background: var(--brand1);
+            color: #fff;
+            padding: 28px 20px 26px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.12);
         }
 
-        return true;
-      });
-
-      atualizarEstatisticas();
-
-      paginaAtual = 1;
-
-      // ordem inicial: mais recente -> mais antigo pelo número
-      alvarasFiltrados.sort((a, b) => {
-        const na = parseInt(limparNumeroAlvara(a.numero).replace(/\D/g,""), 10) || 0;
-        const nb = parseInt(limparNumeroAlvara(b.numero).replace(/\D/g,""), 10) || 0;
-        return nb - na;
-      });
-      ordenacao = { campo: "numero", direcao: "desc" };
-      atualizarIndicadoresOrdenacao();
-
-      renderizarTabela();
-    }
-
-    function atualizarEstatisticas() {
-      const total = alvarasFiltrados.length;
-      let cancelados = 0, expirados = 0, validos = 0;
-
-      alvarasFiltrados.forEach(a => {
-        const st = verificarStatus(a);
-        if (st.tipo === "cancelado") cancelados++;
-        else if (st.tipo === "expirado") expirados++;
-        else validos++;
-      });
-
-      document.getElementById("totalAlvaras").textContent = total;
-      document.getElementById("alvarasValidos").textContent = validos;
-      document.getElementById("alvarasExpirados").textContent = expirados;
-      document.getElementById("alvarasCancelados").textContent = cancelados;
-    }
-
-    function atualizarIndicadoresOrdenacao() {
-      const map = {
-        numero: "thNumero",
-        dtemite: "thEmissao",
-        dtvalidade: "thValidade",
-        cancelado: "thStatus",
-        cnpj: "thCnpj",
-        razao: "thRazao"
-      };
-
-      Object.values(map).forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.textContent = el.textContent.replace(/\s*[▲▼]\s*$/,"");
-      });
-
-      const thId = map[ordenacao.campo];
-      const th = document.getElementById(thId);
-      if (th) th.textContent = th.textContent.replace(/\s*[▲▼]\s*$/,"") + (ordenacao.direcao === "asc" ? " ▲" : " ▼");
-    }
-
-    function ordenarTabela(campo) {
-      if (ordenacao.campo === campo) {
-        ordenacao.direcao = (ordenacao.direcao === "asc") ? "desc" : "asc";
-      } else {
-        ordenacao.campo = campo;
-        ordenacao.direcao = "asc";
-      }
-
-      alvarasFiltrados.sort((a, b) => {
-        let valorA, valorB;
-
-        if (campo === "numero") {
-          valorA = parseInt(limparNumeroAlvara(a.numero).replace(/\D/g,""), 10) || 0;
-          valorB = parseInt(limparNumeroAlvara(b.numero).replace(/\D/g,""), 10) || 0;
-        } else if (campo === "dtemite") {
-          valorA = parseData(a.dtemite) || new Date(0);
-          valorB = parseData(b.dtemite) || new Date(0);
-        } else if (campo === "dtvalidade") {
-          valorA = parseData(a.dtvalidade) || new Date(0);
-          valorB = parseData(b.dtvalidade) || new Date(0);
-        } else if (campo === "cancelado") {
-          const sa = verificarStatus(a);
-          const sb = verificarStatus(b);
-          // válido(0) < expirado(1) < cancelado(2)
-          valorA = sa.tipo === "cancelado" ? 2 : (sa.tipo === "expirado" ? 1 : 0);
-          valorB = sb.tipo === "cancelado" ? 2 : (sb.tipo === "expirado" ? 1 : 0);
-        } else {
-          const ra = buscarRegulado(a.codigo);
-          const rb = buscarRegulado(b.codigo);
-          if (campo === "cnpj") {
-            valorA = (ra && ra.cgc) ? ra.cgc : "";
-            valorB = (rb && rb.cgc) ? rb.cgc : "";
-          } else { // razao
-            valorA = (ra && ra.razao) ? ra.razao : "";
-            valorB = (rb && rb.razao) ? rb.razao : "";
-          }
-          valorA = valorA.toString().toLowerCase();
-          valorB = valorB.toString().toLowerCase();
+        header .btn-done-ios {
+            position: absolute;
+            top: 50%;
+            right: 16px;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: #34C759;
+            font-size: 17px;
+            font-weight: 600;
+            padding: 16px 12px;
+            cursor: pointer;
+            text-decoration: none;
         }
 
-        if (valorA > valorB) return (ordenacao.direcao === "asc") ? 1 : -1;
-        if (valorA < valorB) return (ordenacao.direcao === "asc") ? -1 : 1;
-        return 0;
-      });
+        header h1 {
+            font-size: 1.8em;
+            margin-bottom: 4px;
+        }
 
-      atualizarIndicadoresOrdenacao();
-      renderizarTabela();
-    }
+        header h2 {
+            font-size: 1.1em;
+            font-weight: 400;
+            opacity: 0.9;
+        }
 
-    function renderizarTabela() {
-      const tbody = document.getElementById("alvarasTableBody");
-      const table = document.getElementById("alvarasTable");
-      const noResults = document.getElementById("noResults");
-      const info = document.getElementById("paginationInfo");
+        .container {
+            max-width: 1400px;
+            margin: 22px auto 30px;
+            padding: 0 16px;
+        }
 
-      tbody.innerHTML = "";
+        .card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid var(--card-border);
+        }
 
-      if (alvarasFiltrados.length === 0) {
-        table.style.display = "none";
-        noResults.style.display = "block";
-        if (info) info.textContent = "";
-        atualizarBotoesPaginacao();
-        return;
-      }
+        .card h3 {
+            color: var(--brand1);
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
 
-      table.style.display = "table";
-      noResults.style.display = "none";
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
 
-      const inicio = (paginaAtual - 1) * tamanhoPagina;
-      const fim = Math.min(inicio + tamanhoPagina, alvarasFiltrados.length);
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
 
-      const fragment = document.createDocumentFragment();
+        .filter-group label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
 
-      alvarasFiltrados.slice(inicio, fim).forEach(alvara => {
-        const regulado = buscarRegulado(alvara.codigo);
-        const tr = document.createElement("tr");
-        tr.onclick = () => mostrarDetalhes(alvara);
+        .filter-group input,
+        .filter-group select {
+            padding: 10px 12px;
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            font-size: 0.95em;
+            transition: all 0.2s;
+            background: var(--card-bg);
+            color: var(--text-primary);
+        }
 
-        const st = verificarStatus(alvara);
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: var(--brand1);
+            box-shadow: 0 0 0 3px rgba(26, 58, 107, 0.1);
+        }
 
-        tr.innerHTML = `
-          <td><strong>${limparNumeroAlvara(alvara.numero)}</strong></td>
-          <td>${formatarData(alvara.dtemite)}</td>
-          <td>${formatarData(alvara.dtvalidade)}</td>
-          <td><span class="badge ${st.classe}">${st.texto}</span></td>
-          <td>${regulado ? formatarCNPJ(regulado.cgc) : "-"}</td>
-          <td>${regulado ? (regulado.razao || "-") : "-"}</td>
-        `;
-        fragment.appendChild(tr);
-      });
+        .btn-container {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
 
-      tbody.appendChild(fragment);
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
-      const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina) || 0;
-      if (info) info.textContent = `Pg. ${paginaAtual}/${totalPaginas} — Exibindo ${inicio + 1}-${fim} de ${alvarasFiltrados.length}`;
+        .btn-primary {
+            background: var(--brand1);
+            color: #fff;
+        }
 
-      atualizarBotoesPaginacao();
-    }
+        .btn-primary:hover {
+            background: var(--brand2);
+        }
 
-    function mostrarDetalhes(alvara) {
-      const regulado = buscarRegulado(alvara.codigo);
-      const bairro = regulado ? buscarBairro(regulado.cdbai) : null;
-      const liberacoes = dadosAlvlib.filter(lib =>
-        limparNumeroAlvara(lib.alvara).replace(/\D/g,"") === limparNumeroAlvara(alvara.numero).replace(/\D/g,"")
-      );
+        .btn-secondary {
+            background: #6c757d;
+            color: #fff;
+        }
 
-      const status = verificarStatus(alvara);
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
 
-      // observações (memo)
-      const obs = (alvara.obs || "").toString().trim();
-      const obsDuam = (alvara.obs_duam || "").toString().trim();
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
 
-      let html = `
-        <div class="info-section">
-          <h3>Dados do Alvará</h3>
-          <div class="info-grid">
-            <div class="info-item"><strong>Exercício</strong><span>${(alvara.exercicio || "-")}</span></div>
-            <div class="info-item"><strong>Número</strong><span>${limparNumeroAlvara(alvara.numero)}</span></div>
-            <div class="info-item"><strong>Emissão</strong><span>${formatarData(alvara.dtemite)}</span></div>
-            <div class="info-item"><strong>Validade</strong><span>${formatarData(alvara.dtvalidade)}</span></div>
-            <div class="info-item"><strong>Status</strong><span class="badge ${status.classe}">${status.texto}</span></div>
-            <div class="info-item"><strong>Autenticação</strong><span>${(alvara.autenticador || "-")}</span></div>
-          </div>
+        .stat-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .stat-card h3 {
+            font-size: 2.2em;
+            color: var(--brand1);
+            margin-bottom: 8px;
+        }
+
+        .stat-card p {
+            color: #666;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .cache-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(26, 58, 107, 0.05);
+            border-radius: 8px;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .cache-info span {
+            color: var(--brand1);
+            font-weight: 600;
+        }
+
+        .pagination-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .pagination-buttons {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-page {
+            padding: 8px 16px;
+            border: 1px solid var(--brand1);
+            background: var(--card-bg);
+            color: var(--brand1);
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-page:hover:not(:disabled) {
+            background: var(--brand1);
+            color: #fff;
+        }
+
+        .btn-page:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            border-color: #ccc;
+            color: #999;
+        }
+
+        .table-container {
+            position: relative;
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: visible;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: visible;
+            min-width: 950px;
+        }
+
+        thead {
+            background: var(--brand1);
+            color: #fff;
+        }
+
+        th {
+            padding: 14px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9em;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        th:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        td {
+            padding: 14px 12px;
+            border-bottom: 1px solid var(--card-border);
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        tbody tr:hover {
+            background: var(--surface-variant);
+        }
+
+        /* Sticky primeira coluna */
+        #alvarasTable th:first-child,
+        #alvarasTable td:first-child {
+            position: sticky;
+            position: -webkit-sticky;
+            left: 0;
+            z-index: 5;
+            background: var(--card-bg);
+            box-shadow: 3px 0 8px rgba(0,0,0,0.12);
+            border-right: 2px solid rgba(26, 58, 107, 0.2);
+            min-width: 130px;
+            max-width: 130px;
+            width: 130px;
+        }
+
+        #alvarasTable thead th:first-child {
+            background: var(--brand1);
+            color: #fff;
+            z-index: 6;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: var(--warning-bg);
+            color: #856404;
+            border: 1px solid #ffc107;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--brand1);
+            font-size: 1.1em;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1em;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            overflow-y: auto;
+            animation: fadeIn 0.2s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            margin: 50px auto;
+            padding: 0;
+            width: 90%;
+            max-width: 1000px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-height: 85vh;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--brand1), var(--brand2));
+            color: #fff;
+            padding: 25px;
+            position: relative;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.6em;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 14px;
+            color: #fff;
+            font-size: 2em;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 25px;
+            max-height: calc(85vh - 120px);
+            overflow-y: auto;
+        }
+
+        .info-section {
+            margin-bottom: 24px;
+        }
+
+        .info-section h3 {
+            color: var(--brand1);
+            font-size: 1.2em;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--brand1);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
+        }
+
+        .info-item {
+            padding: 12px;
+            background: var(--surface-variant);
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .info-item strong {
+            display: block;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            font-size: 0.85em;
+        }
+
+        .info-item span {
+            color: var(--text-primary);
+            font-size: 0.95em;
+        }
+
+        .activities-table {
+            margin-top: 16px;
+            overflow-x: auto;
+        }
+
+        .activities-table table {
+            font-size: 0.85em;
+            min-width: 900px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { padding: 0 12px; }
+            .card { padding: 16px; border-radius: 8px; }
+            .filter-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .btn-container { flex-direction: column; }
+            .btn { width: 100%; }
+            .pagination-controls { flex-direction: column; align-items: flex-start; }
+            .pagination-buttons { width: 100%; justify-content: center; }
+            .btn-page { flex: 1; min-width: 70px; }
+            #paginationInfo { width: 100%; text-align: center; order: -1; margin: 0 0 8px 0 !important; }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <a href="index.html" class="btn-done-ios">OK</a>
+        <h1>Vigilância Sanitária</h1>
+        <h2>Consulta Alvarás Sanitários</h2>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h3>🔍 Filtros de Busca</h3>
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label for="dataInicial">Data Inicial</label>
+                    <input type="date" id="dataInicial">
+                </div>
+                <div class="filter-group">
+                    <label for="dataFinal">Data Final</label>
+                    <input type="date" id="dataFinal">
+                </div>
+                <div class="filter-group">
+                    <label for="numeroAlvara">Número do Alvará</label>
+                    <input type="text" id="numeroAlvara" placeholder="Ex: 20260150">
+                </div>
+                <div class="filter-group">
+                    <label for="razaoSocial">Razão Social</label>
+                    <input type="text" id="razaoSocial" placeholder="Digite a razão social">
+                </div>
+            </div>
+            <div class="btn-container">
+                <button class="btn btn-primary" onclick="buscarAlvaras()">🔍 Buscar</button>
+                <button class="btn btn-secondary" onclick="limparFiltros()">🔄 Limpar</button>
+            </div>
         </div>
-      `;
 
-      if (regulado) {
-        html += `
-          <div class="info-section">
-            <h3>Estabelecimento</h3>
-            <div class="info-grid">
-              <div class="info-item"><strong>CNPJ</strong><span>${formatarCNPJ(regulado.cgc)}</span></div>
-              <div class="info-item"><strong>Razão Social</strong><span>${regulado.razao || "-"}</span></div>
-              <div class="info-item"><strong>Fantasia</strong><span>${regulado.fantasia || "-"}</span></div>
-              <div class="info-item"><strong>Logradouro</strong><span>${regulado.logradouro || "-"}</span></div>
-              <div class="info-item"><strong>Complemento</strong><span>${regulado.complement || "-"}</span></div>
-              <div class="info-item"><strong>Bairro</strong><span>${bairro ? (bairro.nome || "-") : "-"}</span></div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3 id="totalAlvaras">0</h3>
+                <p>Total de Alvarás</p>
             </div>
-          </div>
-        `;
-      }
-
-      if (obs || obsDuam) {
-        html += `
-          <div class="info-section">
-            <h3>Observações</h3>
-            <div class="info-grid">
-              <div class="info-item">
-                <strong>Obs</strong>
-                <span style="white-space: pre-wrap;">${obs || "-"}</span>
-              </div>
-              <div class="info-item">
-                <strong>Obs DUAM</strong>
-                <span style="white-space: pre-wrap;">${obsDuam || "-"}</span>
-              </div>
+            <div class="stat-card">
+                <h3 id="alvarasValidos">0</h3>
+                <p>Alvarás Válidos</p>
             </div>
-          </div>
-        `;
-      }
-
-      if (liberacoes.length > 0) {
-        html += `
-          <div class="info-section">
-            <h3>Atividades Liberadas (${liberacoes.length})</h3>
-            <div class="activities-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Data</th>
-                    <th>CNAE</th>
-                    <th>Autoridade</th>
-                    <th>Fiscal</th>
-                    <th>Documento</th>
-                    <th>Dt. Doc.</th>
-                  </tr>
-                </thead>
-                <tbody>
-        `;
-
-        liberacoes.forEach(lib => {
-          const cnae = dadosCnae.find(c => (c.subclasse || "") === (lib.atividade || ""));
-          html += `
-            <tr>
-              <td>${formatarData(lib.data)}</td>
-              <td>${cnae ? `${cnae.subclasse} - ${cnae.atividade}` : (lib.atividade || "-")}</td>
-              <td>${lib.autoridade || "-"}</td>
-              <td>${lib.liberante || "-"}</td>
-              <td>${lib.documento || "-"}</td>
-              <td>${formatarData(lib.dtdocumento)}</td>
-            </tr>
-          `;
-        });
-
-        html += `
-                </tbody>
-              </table>
+            <div class="stat-card">
+                <h3 id="alvarasExpirados">0</h3>
+                <p>Alvarás Expirados</p>
             </div>
-          </div>
-        `;
-      }
+            <div class="stat-card">
+                <h3 id="alvarasCancelados">0</h3>
+                <p>Alvarás Cancelados</p>
+            </div>
+        </div>
 
-      document.getElementById("modalBody").innerHTML = html;
-      document.getElementById("detalhesModal").style.display = "block";
-    }
+        <div class="cache-info">
+            <span><span id="cacheStatus">Carregando...</span></span>
+            <button onclick="forcarAtualizacao()" style="padding: 8px 16px; background: #34C759; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">🔄 Atualizar</button>
+        </div>
 
-    function fecharModal() {
-      document.getElementById("detalhesModal").style.display = "none";
-    }
+        <div class="card">
+            <div class="pagination-controls">
+                <div class="filter-group" style="max-width: 200px;">
+                    <label for="pageSize">Por página:</label>
+                    <select id="pageSize" onchange="alterarTamanhoPagina()">
+                        <option value="25">25</option>
+                        <option value="50" selected>50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+                <div class="pagination-buttons">
+                    <button class="btn-page" onclick="irParaPrimeiraPagina()" id="btnPrimeira">⏮ Primeira</button>
+                    <button class="btn-page" onclick="irParaPaginaAnterior()" id="btnAnterior">◀ Anterior</button>
+                    <span id="paginationInfo" style="margin: 0 12px; font-weight: 600;"></span>
+                    <button class="btn-page" onclick="irParaProximaPagina()" id="btnProxima">Próxima ▶</button>
+                    <button class="btn-page" onclick="irParaUltimaPagina()" id="btnUltima">Última ⏭</button>
+                </div>
+            </div>
 
-    window.onclick = function(event) {
-      const modal = document.getElementById("detalhesModal");
-      if (event.target === modal) fecharModal();
-    };
+            <div id="loadingMessage" class="loading" style="display: none;">Carregando dados...</div>
 
-    function limparFiltros() {
-      document.getElementById("dataInicial").value = "";
-      document.getElementById("dataFinal").value = "";
-      document.getElementById("numeroAlvara").value = "";
-      document.getElementById("razaoSocial").value = "";
-      buscarAlvaras();
-    }
+            <div class="table-container">
+                <div class="table-wrapper">
+                    <table id="alvarasTable" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th onclick="ordenarTabela('numero')" id="thNumero">Nº Alvará</th>
+                                <th onclick="ordenarTabela('dtemite')" id="thEmissao">Dt. Emissão</th>
+                                <th onclick="ordenarTabela('dtvalidade')" id="thValidade">Dt. Validade</th>
+                                <th onclick="ordenarTabela('cancelado')" id="thStatus">Status</th>
+                                <th onclick="ordenarTabela('cnpj')" id="thCnpj">CNPJ</th>
+                                <th onclick="ordenarTabela('razao')" id="thRazao">Razão Social</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alvarasTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
 
-    function alterarTamanhoPagina() {
-      tamanhoPagina = parseInt(document.getElementById("pageSize").value, 10) || 50;
-      paginaAtual = 1;
-      renderizarTabela();
-    }
+            <div id="noResults" class="no-results" style="display: none;">Nenhum alvará encontrado.</div>
+        </div>
+    </div>
 
-    function irParaPrimeiraPagina() {
-      paginaAtual = 1;
-      renderizarTabela();
-    }
-    function irParaPaginaAnterior() {
-      if (paginaAtual > 1) paginaAtual--;
-      renderizarTabela();
-    }
-    function irParaProximaPagina() {
-      const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina) || 0;
-      if (paginaAtual < totalPaginas) paginaAtual++;
-      renderizarTabela();
-    }
-    function irParaUltimaPagina() {
-      const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina) || 0;
-      paginaAtual = totalPaginas || 1;
-      renderizarTabela();
-    }
+    <div id="detalhesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📄 Detalhes do Alvará</h2>
+                <span class="close" onclick="fecharModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
 
-    function atualizarBotoesPaginacao() {
-      const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina) || 0;
-      const btnPrimeira = document.getElementById("btnPrimeira");
-      const btnAnterior = document.getElementById("btnAnterior");
-      const btnProxima = document.getElementById("btnProxima");
-      const btnUltima = document.getElementById("btnUltima");
+    <script>
+        "use strict";
 
-      const semPaginas = (totalPaginas === 0);
+        let dadosAlvara = [];
+        let dadosAlvlib = [];
+        let dadosRegulados = [];
+        let dadosBairros = [];
+        let dadosCnae = [];
+        let alvarasFiltrados = [];
+        let paginaAtual = 1;
+        let tamanhoPagina = 50;
+        let ordenacao = { campo: 'numero', direcao: 'desc' };
+        let cacheRegulados = new Map();
+        let cacheBairros = new Map();
 
-      if (btnPrimeira) btnPrimeira.disabled = semPaginas || paginaAtual <= 1;
-      if (btnAnterior) btnAnterior.disabled = semPaginas || paginaAtual <= 1;
-      if (btnProxima) btnProxima.disabled = semPaginas || paginaAtual >= totalPaginas;
-      if (btnUltima) btnUltima.disabled = semPaginas || paginaAtual >= totalPaginas;
-    }
+        function limparCodigo(codigo) {
+            if (!codigo) return "";
+            return codigo.toString().replace(/\u00A0/g, " ").replace(/\s/g, "").trim();
+        }
 
-    async function forcarAtualizacao() {
-      document.getElementById("cacheStatus").textContent = "Atualizando...";
-      cacheRegulados.clear();
-      cacheBairros.clear();
-      await inicializar();
-    }
+        function limparNumeroAlvara(numero) {
+            if (!numero) return "";
+            return numero.toString().replace(/\u00A0/g, " ").replace(/\s/g, "").trim();
+        }
 
-    window.onload = inicializar;
-  </script>
+        function validarFormatoAlvara(numero) {
+            if (!numero) return false;
+            const numeroLimpo = limparNumeroAlvara(numero).replace(/\D/g, "");
+            return /^\d{4,}$/.test(numeroLimpo);
+        }
+
+        function alvaraEmitido(alvara) {
+            return alvara.dtemite && alvara.dtemite.trim() !== "" &&
+                   alvara.dtvalidade && alvara.dtvalidade.trim() !== "";
+        }
+
+        function parseData(dataStr) {
+            if (!dataStr) return null;
+            const partes = dataStr.split(".");
+            if (partes.length !== 3) return null;
+            const d = new Date(partes[2], partes[1] - 1, partes[0]);
+            return isNaN(d.getTime()) ? null : d;
+        }
+
+        function formatarData(dataStr) {
+            if (!dataStr) return "-";
+            return dataStr;
+        }
+
+        function formatarCNPJ(cnpj) {
+            if (!cnpj) return "-";
+            const numeros = cnpj.toString().replace(/\D/g, "");
+            if (numeros.length !== 14) return cnpj;
+            return numeros.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+        }
+
+        function verificarStatus(alvara) {
+            const cancelaValue = (alvara.cancela ?? alvara.cancelado ?? "").toString().trim().toLowerCase();
+            const isCancelado = cancelaValue === "true" || cancelaValue === "1" || 
+                               cancelaValue === "s" || cancelaValue === "sim" || cancelaValue === "yes";
+            
+            if (isCancelado) {
+                return { tipo: "cancelado", texto: "Cancelado", classe: "badge-danger" };
+            }
+
+            const dataValidade = parseData(alvara.dtvalidade);
+            const dataAtual = new Date();
+            dataAtual.setHours(0, 0, 0, 0);
+
+            if (dataValidade) {
+                dataValidade.setHours(0, 0, 0, 0);
+                if (dataValidade < dataAtual) {
+                    return { tipo: "expirado", texto: "Expirado", classe: "badge-warning" };
+                }
+            }
+
+            return { tipo: "valido", texto: "Válido", classe: "badge-success" };
+        }
+
+        function buscarRegulado(codigoAlvara) {
+            if (!codigoAlvara) return null;
+            const codigoLimpo = limparCodigo(codigoAlvara);
+            if (cacheRegulados.has(codigoLimpo)) return cacheRegulados.get(codigoLimpo);
+            const regulado = dadosRegulados.find(r => limparCodigo(r.codigo) === codigoLimpo) || null;
+            cacheRegulados.set(codigoLimpo, regulado);
+            return regulado;
+        }
+
+        function buscarBairro(codigoBairro) {
+            if (!codigoBairro) return null;
+            const codigoLimpo = limparCodigo(codigoBairro);
+            if (cacheBairros.has(codigoLimpo)) return cacheBairros.get(codigoLimpo);
+            const bairro = dadosBairros.find(b => limparCodigo(b.codigo) === codigoLimpo) || null;
+            cacheBairros.set(codigoLimpo, bairro);
+            return bairro;
+        }
+
+        async function carregarCSV(arquivo) {
+            try {
+                const response = await fetch(arquivo);
+                const texto = await response.text();
+                const linhas = texto.split("\n");
+                const cabecalhoLower = linhas[0].split(",").map(c => c.replace(/"/g, "").trim().toLowerCase());
+                const dados = [];
+
+                for (let i = 1; i < linhas.length; i++) {
+                    const linha = linhas[i];
+                    if (!linha || !linha.trim()) continue;
+
+                    const valores = [];
+                    let dentroAspas = false;
+                    let valorAtual = "";
+
+                    for (const ch of linha) {
+                        if (ch === '"') {
+                            dentroAspas = !dentroAspas;
+                        } else if (ch === "," && !dentroAspas) {
+                            valores.push(valorAtual.trim());
+                            valorAtual = "";
+                        } else {
+                            valorAtual += ch;
+                        }
+                    }
+                    valores.push(valorAtual.trim());
+
+                    const obj = {};
+                    cabecalhoLower.forEach((campo, idx) => {
+                        let v = valores[idx] ? valores[idx].replace(/"/g, "").trim() : "";
+                        if (campo === "codigo" || campo === "cdbai") v = limparCodigo(v);
+                        obj[campo] = v;
+                    });
+                    dados.push(obj);
+                }
+                return dados;
+            } catch (erro) {
+                console.error("Erro ao carregar arquivo:", arquivo, erro);
+                return [];
+            }
+        }
+
+        async function inicializar() {
+            const loadingEl = document.getElementById("loadingMessage");
+            if (loadingEl) loadingEl.style.display = "block";
+
+            [dadosAlvara, dadosAlvlib, dadosRegulados, dadosBairros, dadosCnae] = await Promise.all([
+                carregarCSV("data/alvara.csv"),
+                carregarCSV("data/alvlib.csv"),
+                carregarCSV("data/regulados.csv"),
+                carregarCSV("data/bairros.csv"),
+                carregarCSV("data/cnae.csv")
+            ]);
+
+            // Filtro: apenas formato válido e alvará emitido
+            dadosAlvara = dadosAlvara
+                .filter(a => validarFormatoAlvara(a.numero))
+                .filter(a => alvaraEmitido(a));
+
+            const cacheEl = document.getElementById("cacheStatus");
+            if (cacheEl) cacheEl.textContent = `${dadosAlvara.length} alvarás carregados`;
+            if (loadingEl) loadingEl.style.display = "none";
+            
+            limparFiltros();
+        }
+
+        function buscarAlvaras() {
+            const dataInicial = document.getElementById("dataInicial").value;
+            const dataFinal = document.getElementById("dataFinal").value;
+            const numeroAlvara = document.getElementById("numeroAlvara").value.trim().replace(/\s/g, "");
+            const razaoSocial = document.getElementById("razaoSocial").value.toLowerCase().trim();
+
+            alvarasFiltrados = dadosAlvara.filter(alvara => {
+                if (numeroAlvara) {
+                    const numLimpo = limparNumeroAlvara(alvara.numero).replace(/\D/g, "");
+                    if (!numLimpo.includes(numeroAlvara)) return false;
+                }
+
+                if (dataInicial || dataFinal) {
+                    const dataEmissao = parseData(alvara.dtemite);
+                    if (!dataEmissao) return false;
+                    if (dataInicial && dataEmissao < new Date(dataInicial)) return false;
+                    if (dataFinal && dataEmissao > new Date(dataFinal)) return false;
+                }
+
+                if (razaoSocial) {
+                    const regulado = buscarRegulado(alvara.codigo);
+                    if (!regulado) return false;
+                    const rz = (regulado.razao || "").toLowerCase();
+                    if (!rz.includes(razaoSocial)) return false;
+                }
+
+                return true;
+            });
+
+            atualizarEstatisticas();
+            paginaAtual = 1;
+            
+            // Ordenação inicial: mais recente -> mais antigo
+            alvarasFiltrados.sort((a, b) => {
+                const na = parseInt(limparNumeroAlvara(a.numero).replace(/\D/g, ""), 10) || 0;
+                const nb = parseInt(limparNumeroAlvara(b.numero).replace(/\D/g, ""), 10) || 0;
+                return nb - na;
+            });
+            ordenacao = { campo: 'numero', direcao: 'desc' };
+            atualizarIndicadoresOrdenacao();
+            renderizarTabela();
+        }
+
+        function atualizarEstatisticas() {
+            const total = alvarasFiltrados.length;
+            let cancelados = 0, expirados = 0, validos = 0;
+
+            alvarasFiltrados.forEach(a => {
+                const st = verificarStatus(a);
+                if (st.tipo === "cancelado") cancelados++;
+                else if (st.tipo === "expirado") expirados++;
+                else validos++;
+            });
+
+            document.getElementById("totalAlvaras").textContent = total;
+            document.getElementById("alvarasValidos").textContent = validos;
+            document.getElementById("alvarasExpirados").textContent = expirados;
+            document.getElementById("alvarasCancelados").textContent = cancelados;
+        }
+
+        function atualizarIndicadoresOrdenacao() {
+            const map = {
+                'numero': 'thNumero',
+                'dtemite': 'thEmissao',
+                'dtvalidade': 'thValidade',
+                'cancelado': 'thStatus',
+                'cnpj': 'thCnpj',
+                'razao': 'thRazao'
+            };
+
+            Object.values(map).forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.textContent = el.textContent.replace(/ [▲▼]/g, "");
+            });
+
+            const thId = map[ordenacao.campo];
+            const th = document.getElementById(thId);
+            if (th) {
+                th.textContent = th.textContent.replace(/ [▲▼]/g, "") + (ordenacao.direcao === 'asc' ? ' ▲' : ' ▼');
+            }
+        }
+
+        function ordenarTabela(campo) {
+            if (ordenacao.campo === campo) {
+                ordenacao.direcao = ordenacao.direcao === 'asc' ? 'desc' : 'asc';
+            } else {
+                ordenacao.campo = campo;
+                ordenacao.direcao = 'asc';
+            }
+
+            alvarasFiltrados.sort((a, b) => {
+                let valorA, valorB;
+
+                if (campo === 'numero') {
+                    valorA = parseInt(limparNumeroAlvara(a.numero).replace(/\D/g, ""), 10) || 0;
+                    valorB = parseInt(limparNumeroAlvara(b.numero).replace(/\D/g, ""), 10) || 0;
+                } else if (campo === 'dtemite') {
+                    valorA = parseData(a.dtemite) || new Date(0);
+                    valorB = parseData(b.dtemite) || new Date(0);
+                } else if (campo === 'dtvalidade') {
+                    valorA = parseData(a.dtvalidade) || new Date(0);
+                    valorB = parseData(b.dtvalidade) || new Date(0);
+                } else if (campo === 'cancelado') {
+                    const sa = verificarStatus(a);
+                    const sb = verificarStatus(b);
+                    valorA = sa.tipo === "cancelado" ? 2 : (sa.tipo === "expirado" ? 1 : 0);
+                    valorB = sb.tipo === "cancelado" ? 2 : (sb.tipo === "expirado" ? 1 : 0);
+                } else {
+                    const ra = buscarRegulado(a.codigo);
+                    const rb = buscarRegulado(b.codigo);
+                    if (campo === 'cnpj') {
+                        valorA = ra ? (ra.cgc || "") : "";
+                        valorB = rb ? (rb.cgc || "") : "";
+                    } else { // razao
+                        valorA = ra ? (ra.razao || "") : "";
+                        valorB = rb ? (rb.razao || "") : "";
+                    }
+                    valorA = valorA.toString().toLowerCase();
+                    valorB = valorB.toString().toLowerCase();
+                }
+
+                if (valorA > valorB) return ordenacao.direcao === 'asc' ? 1 : -1;
+                if (valorA < valorB) return ordenacao.direcao === 'asc' ? -1 : 1;
+                return 0;
+            });
+
+            atualizarIndicadoresOrdenacao();
+            renderizarTabela();
+        }
+
+        function renderizarTabela() {
+            const tbody = document.getElementById("alvarasTableBody");
+            const table = document.getElementById("alvarasTable");
+            const noResults = document.getElementById("noResults");
+            const info = document.getElementById("paginationInfo");
+            tbody.innerHTML = "";
+
+            if (alvarasFiltrados.length === 0) {
+                table.style.display = "none";
+                noResults.style.display = "block";
+                if (info) info.textContent = "";
+                atualizarBotoesPaginacao();
+                return;
+            }
+
+            table.style.display = "table";
+            noResults.style.display = "none";
+
+            const inicio = (paginaAtual - 1) * tamanhoPagina;
+            const fim = Math.min(inicio + tamanhoPagina, alvarasFiltrados.length);
+            const fragment = document.createDocumentFragment();
+
+            alvarasFiltrados.slice(inicio, fim).forEach(alvara => {
+                const regulado = buscarRegulado(alvara.codigo);
+                const tr = document.createElement("tr");
+                tr.onclick = () => mostrarDetalhes(alvara);
+                const st = verificarStatus(alvara);
+
+                tr.innerHTML = `
+                    <td><strong>${limparNumeroAlvara(alvara.numero)}</strong></td>
+                    <td>${formatarData(alvara.dtemite)}</td>
+                    <td>${formatarData(alvara.dtvalidade)}</td>
+                    <td><span class="badge ${st.classe}">${st.texto}</span></td>
+                    <td>${regulado ? formatarCNPJ(regulado.cgc) : "-"}</td>
+                    <td>${regulado ? regulado.razao : "-"}</td>
+                `;
+                fragment.appendChild(tr);
+            });
+
+            tbody.appendChild(fragment);
+
+            const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina) || 0;
+            if (info) {
+                info.textContent = `Pág. ${paginaAtual}/${totalPaginas} • Exibindo ${inicio + 1}-${fim} de ${alvarasFiltrados.length}`;
+            }
+            atualizarBotoesPaginacao();
+        }
+
+        function mostrarDetalhes(alvara) {
+            const regulado = buscarRegulado(alvara.codigo);
+            const bairro = regulado ? buscarBairro(regulado.cdbai) : null;
+            const liberacoes = dadosAlvlib.filter(lib => 
+                limparNumeroAlvara(lib.alvara).replace(/\D/g, "") === limparNumeroAlvara(alvara.numero).replace(/\D/g, "")
+            );
+            const status = verificarStatus(alvara);
+
+            const obs = (alvara.obs || "").toString().trim();
+            const obsDuam = (alvara.obsduam || "").toString().trim();
+
+            let html = `
+                <div class="info-section">
+                    <h3>Dados do Alvará</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><strong>Exercício</strong><span>${alvara.exercicio || "-"}</span></div>
+                        <div class="info-item"><strong>Número</strong><span>${limparNumeroAlvara(alvara.numero)}</span></div>
+                        <div class="info-item"><strong>Emissão</strong><span>${formatarData(alvara.dtemite)}</span></div>
+                        <div class="info-item"><strong>Validade</strong><span>${formatarData(alvara.dtvalidade)}</span></div>
+                        <div class="info-item"><strong>Status</strong><span class="badge ${status.classe}">${status.texto}</span></div>
+                        <div class="info-item"><strong>Autenticação</strong><span>${alvara.autenticador || "-"}</span></div>
+                    </div>
+                </div>
+            `;
+
+            if (regulado) {
+                html += `
+                    <div class="info-section">
+                        <h3>Estabelecimento</h3>
+                        <div class="info-grid">
+                            <div class="info-item"><strong>CNPJ</strong><span>${formatarCNPJ(regulado.cgc)}</span></div>
+                            <div class="info-item"><strong>Razão Social</strong><span>${regulado.razao || "-"}</span></div>
+                            <div class="info-item"><strong>Fantasia</strong><span>${regulado.fantasia || "-"}</span></div>
+                            <div class="info-item"><strong>Logradouro</strong><span>${regulado.logradouro || "-"}</span></div>
+                            <div class="info-item"><strong>Complemento</strong><span>${regulado.complement || "-"}</span></div>
+                            <div class="info-item"><strong>Bairro</strong><span>${bairro ? bairro.nome : "-"}</span></div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (obs || obsDuam) {
+                html += `
+                    <div class="info-section">
+                        <h3>Observações</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <strong>Obs</strong>
+                                <span style="white-space: pre-wrap;">${obs || "-"}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Obs DUAM</strong>
+                                <span style="white-space: pre-wrap;">${obsDuam || "-"}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (liberacoes.length > 0) {
+                html += `
+                    <div class="info-section">
+                        <h3>Atividades Liberadas (${liberacoes.length})</h3>
+                        <div class="activities-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>CNAE</th>
+                                        <th>Autoridade</th>
+                                        <th>Fiscal</th>
+                                        <th>Documento</th>
+                                        <th>Dt. Doc.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
+
+                liberacoes.forEach(lib => {
+                    const cnae = dadosCnae.find(c => c.subclasse === lib.atividade);
+                    html += `
+                        <tr>
+                            <td>${formatarData(lib.data)}</td>
+                            <td>${cnae ? `${cnae.subclasse} - ${cnae.atividade}` : lib.atividade || "-"}</td>
+                            <td>${lib.autoridade || "-"}</td>
+                            <td>${lib.liberante || "-"}</td>
+                            <td>${lib.documento || "-"}</td>
+                            <td>${formatarData(lib.dtdocumento)}</td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById("modalBody").innerHTML = html;
+            document.getElementById("detalhesModal").style.display = "block";
+        }
+
+        function fecharModal() {
+            document.getElementById("detalhesModal").style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById("detalhesModal");
+            if (event.target === modal) fecharModal();
+        };
+
+        function limparFiltros() {
+            document.getElementById("dataInicial").value = "";
+            document.getElementById("dataFinal").value = "";
+            document.getElementById("numeroAlvara").value = "";
+            document.getElementById("razaoSocial").value = "";
+            buscarAlvaras();
+        }
+
+        function alterarTamanhoPagina() {
+            tamanhoPagina = parseInt(document.getElementById("pageSize").value, 10) || 50;
+            paginaAtual = 1;
+            renderizarTabela();
+        }
+
+        function irParaPrimeiraPagina() {
+            paginaAtual = 1;
+            renderizarTabela();
+        }
+
+        function irParaPaginaAnterior() {
+            if (paginaAtual > 1) {
+                paginaAtual--;
+                renderizarTabela();
+            }
+        }
+
+        function irParaProximaPagina() {
+            const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina) || 0;
+            if (paginaAtual < totalPaginas) {
+                paginaAtual++;
+                renderizarTabela();
+            }
+        }
+
+        function irParaUltimaPagina() {
+            const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina) || 0;
+            paginaAtual = totalPaginas || 1;
+            renderizarTabela();
+        }
+
+        function atualizarBotoesPaginacao() {
+            const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina) || 0;
+            const btnPrimeira = document.getElementById("btnPrimeira");
+            const btnAnterior = document.getElementById("btnAnterior");
+            const btnProxima = document.getElementById("btnProxima");
+            const btnUltima = document.getElementById("btnUltima");
+            const semPaginas = totalPaginas === 0;
+
+            if (btnPrimeira) btnPrimeira.disabled = semPaginas || paginaAtual === 1;
+            if (btnAnterior) btnAnterior.disabled = semPaginas || paginaAtual === 1;
+            if (btnProxima) btnProxima.disabled = semPaginas || paginaAtual === totalPaginas;
+            if (btnUltima) btnUltima.disabled = semPaginas || paginaAtual === totalPaginas;
+        }
+
+        async function forcarAtualizacao() {
+            document.getElementById("cacheStatus").textContent = "Atualizando...";
+            cacheRegulados.clear();
+            cacheBairros.clear();
+            await inicializar();
+        }
+
+        window.onload = inicializar;
+    </script>
 </body>
 </html>
