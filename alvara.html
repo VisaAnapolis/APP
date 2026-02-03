@@ -1072,6 +1072,9 @@
             const bairro = regulado ? buscarBairro(regulado.cdbai) : null;
             const liberacoes = dadosAlvlib.filter(lib => limparNumeroAlvara(lib.alvara) === limparNumeroAlvara(alvara.numero));
             const status = verificarStatus(alvara);
+
+const obs = (alvara.obs || '').trim();
+const obsDuam = (alvara.obs_duam || '').trim();
             
             let html = `
                 <div class="info-section">
@@ -1118,6 +1121,26 @@
             document.getElementById('detalhesModal').style.display = 'block';
         }
 
+if (obs || obsDuam) {
+    html += `
+        <div class="info-section">
+            <h3>📝 Observações</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Obs</strong>
+                    <span style="white-space: pre-wrap;">${obs || '-'}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Obs DUAM</strong>
+                    <span style="white-space: pre-wrap;">${obsDuam || '-'}</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+
+        
         function fecharModal() {
             document.getElementById('detalhesModal').style.display = 'none';
         }
