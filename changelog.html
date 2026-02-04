@@ -111,7 +111,93 @@ header.main-header.main-header.main-.container {
       <h2 class="ch-title">CHANGELOG — VISA Anápolis</h2>
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
+      
       <div class="section">
+        <h3>v2.2.0 — 03/02/2026 22:00 (Horário de Brasília – UTC−3)</h3>
+        <strong>Melhorias Significativas na Página de Alvarás</strong>
+        <ul>
+          <li><strong>Novo Campo Exercício:</strong>
+            <ul>
+              <li>Adicionada coluna "Exercício" como primeira coluna da tabela (ordenável)</li>
+              <li>Campo "Exercício" incluído no modal de detalhes (linha 2, primeira posição)</li>
+              <li>Ordenação numérica correta (2018 → 2019 → 2020...)</li>
+            </ul>
+          </li>
+
+          <li><strong>CNPJ/CPF Unificado:</strong>
+            <ul>
+              <li>Coluna "CNPJ" renomeada para "CNPJ/CPF"</li>
+              <li>Exibe CPF automaticamente quando CNPJ estiver vazio</li>
+              <li>Busca funciona para ambos (CNPJ ou CPF)</li>
+              <li>Ordenação considera ambos os campos</li>
+            </ul>
+          </li>
+
+          <li><strong>Filtros Automáticos Aprimorados:</strong>
+            <ul>
+              <li>Filtro de exercício: descarta registros com exercício < 2018</li>
+              <li>Filtro de razão social: descarta registros sem razão social preenchida</li>
+              <li>Melhoria na qualidade dos dados exibidos</li>
+            </ul>
+          </li>
+
+          <li><strong>Sistema de Observações:</strong>
+            <ul>
+              <li>Adicionada seção "Observações" no modal de detalhes</li>
+              <li>Exibe campo <code>obs</code> quando preenchido</li>
+              <li>Exibe campo <code>ob_duam</code> quando preenchido</li>
+              <li>Quebra de texto otimizada com <code>word-wrap</code>, <code>word-break</code> e <code>overflow-wrap</code></li>
+              <li>Textos longos não ultrapassam mais os limites da tela</li>
+              <li>Preservação de formatação com <code>white-space: pre-wrap</code></li>
+            </ul>
+          </li>
+
+          <li><strong>Layout do Modal Reorganizado:</strong>
+            <ul>
+              <li><strong>Linha 1:</strong> Número | Emissão | Validade</li>
+              <li><strong>Linha 2:</strong> <strong>Exercício</strong> | Status | Autenticação</li>
+              <li>Ordem das seções: Dados do Alvará → Estabelecimento → Atividades → Observações</li>
+              <li>Grid responsivo (3 colunas em desktop, 1 coluna em mobile)</li>
+            </ul>
+          </li>
+
+          <li><strong>Dark Mode Otimizado:</strong>
+            <ul>
+              <li>Variáveis CSS para cores consistentes (<code>--bg-primary</code>, <code>--card-bg</code>, <code>--text-primary</code>, etc.)</li>
+              <li>Contraste aprimorado para melhor legibilidade</li>
+              <li>Cores vibrantes nos badges (success: <code>#4cd964</code>, warning: <code>#ffb700</code>, danger: <code>#ff453a</code>)</li>
+              <li>Detecção automática via <code>@media (prefers-color-scheme: dark)</code></li>
+              <li>Suporte completo em todos os elementos (inputs, badges, tabelas)</li>
+            </ul>
+          </li>
+
+          <li><strong>Correções Técnicas:</strong>
+            <ul>
+              <li>Corrigido erro <code>ReferenceError: isCancelado is not defined</code></li>
+              <li>Corrigido erro <code>ReferenceError: calcularStatus is not defined</code> (usa <code>verificarStatus</code>)</li>
+              <li>Corrigido <code>SyntaxError</code> causado por aspas simples duplicadas</li>
+              <li>Todas as funções validadas e testadas</li>
+            </ul>
+          </li>
+
+          <li><strong>Estrutura de Dados:</strong>
+            <ul>
+              <li>Suporte para múltiplas variações de nomes de campos (<code>obs_duam</code>, <code>ob_duam</code>, <code>obsduam</code>)</li>
+              <li>Tratamento robusto de valores nulos e vazios</li>
+              <li>Validação aprimorada de dados antes da exibição</li>
+            </ul>
+          </li>
+        </ul>
+
+        <p><strong>Impacto:</strong> Melhorias significativas na usabilidade, organização visual e qualidade dos dados exibidos. A página de alvarás agora oferece uma experiência mais completa e profissional.</p>
+
+        <p><strong>Arquivos Modificados:</strong></p>
+        <ul>
+          <li><code>alvara.html</code> - Arquivo principal com todas as melhorias implementadas</li>
+        </ul>
+      </div>
+
+<div class="section">
         <h3>v2.1.0 — 02/02/2026 00:30 (Horário de Brasília – UTC−3)</h3>
         <strong>Reorganização Completa dos POPs e Melhorias de Navegação</strong>
         <ul>
