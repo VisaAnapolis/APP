@@ -66,6 +66,9 @@
       min-height: 100vh;
     }
 
+    /* Extra: evita “scroll do fundo” e bugs de toque no iOS quando modal abre */
+    body.modal-open { overflow: hidden; }
+
     .container { max-width: 1400px; margin: 22px auto 30px; padding: 0 16px; }
 
     .card {
@@ -197,7 +200,6 @@
       overflow: hidden;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 
-      /* FIX 3: evita header “andar” conforme ordenação */
       table-layout: fixed;
     }
 
@@ -251,6 +253,8 @@
       background: rgba(0,0,0,0.7);
       overflow-y: auto;
       animation: fadeIn 0.3s;
+      -webkit-overflow-scrolling: touch;
+      touch-action: manipulation;
     }
 
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -290,6 +294,7 @@
       font-weight: bold;
       cursor: pointer;
       transition: transform 0.2s;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .close:hover { transform: rotate(90deg) scale(1.2); }
@@ -298,6 +303,7 @@
       padding: 25px;
       max-height: calc(85vh - 180px);
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .info-section { margin-bottom: 24px; }
@@ -325,8 +331,24 @@
     .info-item strong { display: block; color: var(--text-primary); margin-bottom: 4px; font-size: 0.85em; }
     .info-item span { color: var(--text-secondary); font-size: 0.95em; }
 
-    .activities-table { margin-top: 16px; overflow-x: auto; }
+    .activities-table { margin-top: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .activities-table table { font-size: 0.85em; }
+
+    /* ===== FIX moderno: Atividades legível no mobile (wrap + scroll) ===== */
+    .activities-table table {
+      width: 100%;
+      min-width: 900px;     /* permite deslizar as colunas se necessário */
+      table-layout: auto;   /* evita colunas “espremidas” */
+    }
+    .activities-table th,
+    .activities-table td {
+      white-space: normal !important;   /* permite quebrar linha */
+      overflow: visible !important;
+      text-overflow: clip !important;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      line-height: 1.25;
+    }
 
     .loading { text-align: center; padding: 40px; color: var(--brand1); font-size: 1.1em; }
     .no-results { text-align: center; padding: 40px; color: var(--text-secondary); font-size: 1em; }
@@ -338,8 +360,7 @@
     #alvarasTable th:nth-child(4), #alvarasTable td:nth-child(4) { width: 130px; } /* Validade */
     #alvarasTable th:nth-child(5), #alvarasTable td:nth-child(5) { width: 120px; } /* Status */
     #alvarasTable th:nth-child(6), #alvarasTable td:nth-child(6) { width: 170px; } /* CNPJ/CPF FIXA */
-    /* Razão Social fica no restante, com ellipsis */
-    #alvarasTable th:nth-child(7), #alvarasTable td:nth-child(7) { width: auto; }
+    #alvarasTable th:nth-child(7), #alvarasTable td:nth-child(7) { width: auto; }  /* Razão */
 
     @media (max-width: 768px) {
       .container { padding: 0 12px; }
@@ -421,7 +442,8 @@
       </div>
       <div class="btn-container">
         <button class="btn btn-primary" onclick="buscarAlvaras()">🔍 Buscar</button>
-        <button class="btn btn-secondary" onclick="">🔄 Limpar</button>
+        <!-- FIX 1: botão limpar estava sem ação -->
+        <button class="btn btn-secondary" onclick="limparFiltros()">🔄 Limpar</button>
       </div>
     </div>
 
@@ -591,7 +613,7 @@
       return doc ? doc : '-';
     }
 
-    // (1) Regra correta: CNPJ do regulado; se vazio => CPF do regulado
+    // Regra: CNPJ do regulado; se vazio => CPF do regulado
     function obterDocumentoBruto(regulado) {
       if (!regulado) return '';
       const cnpj = regulado.cgc ? regulado.cgc : '';
@@ -717,7 +739,7 @@
         if (!indexReguladosPorCodigo.has(cod)) indexReguladosPorCodigo.set(cod, r);
       }
 
-      // Mantém o filtro extra: razão social vazia => descartar
+      // Filtro: descarta ruído e registros sem razão social
       dadosAlvara = dadosAlvara.filter(alvara => {
         if (!validarFormatoAlvara(alvara.numero)) return false;
         if (!alvaraEmitido(alvara)) return false;
@@ -736,22 +758,15 @@
       if (cacheEl) cacheEl.textContent = `${dadosAlvara.length} alvarás carregados`;
 
       if (loadingEl) loadingEl.style.display = 'none';
-     /* 
-  limparFiltros(); 
-  (desativado para permitir ordenação inicial decrescente dos alvarás)
-*/
-// ordenação inicial: número do alvará (decrescente)
-alvarasFiltrados = [...dadosAlvara];
-atualizarEstatisticas();
-paginaAtual = 1;
-ordenacao = { campo: 'numero', direcao: 'asc' }; 
-ordenarTabela('numero'); 
 
+      // Ordenação inicial igual ao clique (desc em número)
+      alvarasFiltrados = [...dadosAlvara];
+      atualizarEstatisticas();
+      paginaAtual = 1;
+      ordenacao = { campo: 'numero', direcao: 'asc' };
+      ordenarTabela('numero');
     }
 
-    // (2) Busca por parte do documento:
-    // - Se houver dígitos (>=2) no input, também filtra por CNPJ/CPF parcial.
-    // - Se houver letras, filtra por razão social.
     function buscarAlvaras() {
       const dataInicial = document.getElementById('dataInicial').value;
       const dataFinal = document.getElementById('dataFinal').value;
@@ -759,7 +774,7 @@ ordenarTabela('numero');
       const termoRaw = document.getElementById('razaoSocial').value.trim().toLowerCase();
 
       const termoDigitos = apenasDigitos(termoRaw);
-      const termoTemDigitos = termoDigitos.length >= 2; // <- agora aceita parcial (ex: "2373")
+      const termoTemDigitos = termoDigitos.length >= 2;
       const termoTemLetras = /[a-zà-ú]/i.test(termoRaw);
 
       alvarasFiltrados = dadosAlvara.filter(alvara => {
@@ -779,14 +794,12 @@ ordenarTabela('numero');
           const razao = (regulado.razao || '').toString().trim();
           if (!razao) return false;
 
-          // Se o usuário digitou letras, exige match em razão social
           if (termoTemLetras) {
             if (!razao.toLowerCase().includes(termoRaw)) return false;
           }
 
-          // Se o usuário digitou dígitos, exige match no documento (parcial)
           if (termoTemDigitos) {
-            const docNorm = obterDocumentoNormalizado(regulado);
+            const docNorm = obterDocumentoNormalizado(regulado) || '';
             if (!docNorm.includes(termoDigitos)) return false;
           }
         }
@@ -796,6 +809,8 @@ ordenarTabela('numero');
 
       atualizarEstatisticas();
       paginaAtual = 1;
+
+      // mantém consistência: ao buscar, respeita ordenação atual
       renderizarTabela();
     }
 
@@ -998,15 +1013,34 @@ ordenarTabela('numero');
 
       document.getElementById('modalBody').innerHTML = html;
       document.getElementById('detalhesModal').style.display = 'block';
+      document.body.classList.add('modal-open');
     }
 
     function fecharModal() {
       document.getElementById('detalhesModal').style.display = 'none';
+      document.body.classList.remove('modal-open');
     }
 
-    window.onclick = function(event) {
-      if (event.target === document.getElementById('detalhesModal')) fecharModal();
-    };
+    // FIX 3: fechamento robusto no iOS/PWA (clicar fora não trava)
+    (function setupModalClose() {
+      const modalEl = document.getElementById('detalhesModal');
+      const modalContentEl = modalEl.querySelector('.modal-content');
+
+      modalEl.addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) fecharModal();
+      }, { passive: true });
+
+      modalEl.addEventListener('touchstart', (e) => {
+        if (e.target === e.currentTarget) fecharModal();
+      }, { passive: true });
+
+      modalContentEl.addEventListener('click', (e) => e.stopPropagation());
+      modalContentEl.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: true });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') fecharModal();
+      });
+    })();
 
     function limparFiltros() {
       document.getElementById('dataInicial').value = '';
