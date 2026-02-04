@@ -1167,36 +1167,14 @@
             
             let html = `
                 <div class="info-section">
-                <h3>📋 Dados do Alvará</h3>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <strong>Número do Alvará:</strong>
-                        <span>${limparNumeroAlvara(alvara.numero)}</span>
+                    <h3>📋 Dados do Alvará</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><strong>Número:</strong> <span>${limparNumeroAlvara(alvara.numero)}</span></div>
+                        <div class="info-item"><strong>Emissão:</strong> <span>${formatarData(alvara.dt_emite)}</span></div>
+                        <div class="info-item"><strong>Validade:</strong> <span>${formatarData(alvara.dt_validade)}</span></div>
+                        <div class="info-item"><strong>Status:</strong> <span class="badge ${status.classe}">${status.texto}</span></div>
+                        <div class="info-item"><strong>Autenticação:</strong> <span>${alvara.autenticador || '-'}</span></div>
                     </div>
-                    <div class="info-item">
-                        <strong>Data de Emissão:</strong>
-                        <span>${formatarData(alvara.dt_emite)}</span>
-                    </div>
-                    <div class="info-item">
-                        <strong>Data de Validade:</strong>
-                        <span>${formatarData(alvara.dt_validade)}</span>
-                    </div>
-                    <div class="info-item">
-                        <strong>Exercício:</strong>
-                        <span>${alvara.exercicio || '-'}</span>
-                    </div>
-                    <div class="info-item">
-                        <strong>Status:</strong>
-                        <span class="badge ${isCancelado ? 'badge-danger' : 'badge-success'}">
-                            ${isCancelado ? 'Cancelado' : 'Válido'}
-                        </span>
-                    </div>
-                    <div class="info-item">
-                        <strong>Autenticação:</strong>
-                        <span>${alvara.autenticador || '-'}</span>
-                    </div>
-                </div>
-            </div>
                 </div>
             `;
             
