@@ -421,7 +421,7 @@
       </div>
       <div class="btn-container">
         <button class="btn btn-primary" onclick="buscarAlvaras()">🔍 Buscar</button>
-        <button class="btn btn-secondary" onclick="limparFiltros()">🔄 Limpar</button>
+        <button class="btn btn-secondary" onclick="">🔄 Limpar</button>
       </div>
     </div>
 
@@ -741,17 +741,11 @@
   (desativado para permitir ordenação inicial decrescente dos alvarás)
 */
 // ordenação inicial: número do alvará (decrescente)
-ordenacao = { campo: 'numero', direcao: 'desc' };
-
-alvarasFiltrados = [...dadosAlvara].sort((a, b) => {
-  const na = limparNumeroAlvara(a.numero);
-  const nb = limparNumeroAlvara(b.numero);
-  return nb.localeCompare(na, 'pt-BR', { numeric: true });
-});
-
+alvarasFiltrados = [...dadosAlvara];
 atualizarEstatisticas();
 paginaAtual = 1;
-renderizarTabela();
+ordenacao = { campo: 'numero', direcao: 'asc' }; 
+ordenarTabela('numero'); 
 
     }
 
