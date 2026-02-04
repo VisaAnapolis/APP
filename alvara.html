@@ -736,7 +736,23 @@
       if (cacheEl) cacheEl.textContent = `${dadosAlvara.length} alvarás carregados`;
 
       if (loadingEl) loadingEl.style.display = 'none';
-      limparFiltros();
+     /* 
+  limparFiltros(); 
+  (desativado para permitir ordenação inicial decrescente dos alvarás)
+*/
+// ordenação inicial: número do alvará (decrescente)
+ordenacao = { campo: 'numero', direcao: 'desc' };
+
+alvarasFiltrados = [...dadosAlvara].sort((a, b) => {
+  const na = limparNumeroAlvara(a.numero);
+  const nb = limparNumeroAlvara(b.numero);
+  return nb.localeCompare(na, 'pt-BR', { numeric: true });
+});
+
+atualizarEstatisticas();
+paginaAtual = 1;
+renderizarTabela();
+
     }
 
     // (2) Busca por parte do documento:
