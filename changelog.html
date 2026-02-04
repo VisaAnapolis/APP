@@ -16,14 +16,14 @@
   <style>
     /* Header agora usa header-component.css */
 
-header.main-header.main-header.main-.container {
+    header.main-header.main-header.main-.container {
       max-width: 900px;
       margin: 22px auto 30px;
       padding: 0 16px;
       padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
     }
 
-.card {
+    .card {
       background: var(--card, #ffffff);
       border-radius: 16px;
       padding: 20px 24px;
@@ -32,7 +32,7 @@ header.main-header.main-header.main-.container {
       box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     }
 
-.card__title {
+    .card__title {
       color: var(--brand1, #1a3a6b);
       font-size: 1.1em;
       font-weight: 700;
@@ -41,11 +41,7 @@ header.main-header.main-header.main-.container {
       border-bottom: 2px solid var(--brand1, #1a3a6b);
     }
 
-@media (max-width: 768px) {
-
-}
-
-
+    @media (max-width: 768px) { }
 
     /* Tipografia do Changelog */
     .meta {
@@ -92,7 +88,6 @@ header.main-header.main-header.main-.container {
       padding: 2px 6px;
       border-radius: 6px;
     }
-
   </style>
 </head>
 
@@ -111,93 +106,77 @@ header.main-header.main-header.main-.container {
       <h2 class="ch-title">CHANGELOG — VISA Anápolis</h2>
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
-      
       <div class="section">
-        <h3>v2.2.0 — 03/02/2026 22:00 (Horário de Brasília – UTC−3)</h3>
-        <strong>Melhorias Significativas na Página de Alvarás</strong>
+        <h3>v2.1.1 — 03/02/2026 23:04 (Horário de Brasília – UTC−3)</h3>
+        <strong>Melhorias e Correções na Página de Alvarás</strong>
+
         <ul>
-          <li><strong>Novo Campo Exercício:</strong>
+          <li><strong>Coluna "Exercício" (tabela + modal):</strong>
             <ul>
-              <li>Adicionada coluna "Exercício" como primeira coluna da tabela (ordenável)</li>
-              <li>Campo "Exercício" incluído no modal de detalhes (linha 2, primeira posição)</li>
-              <li>Ordenação numérica correta (2018 → 2019 → 2020...)</li>
+              <li>Adicionada a coluna <strong>Exercício</strong> como primeira coluna da tabela (ordenável).</li>
+              <li>Campo <strong>Exercício</strong> incluído no modal de detalhes do alvará.</li>
+              <li>Ordenação numérica correta do exercício (2018 → 2019 → 2020...).</li>
             </ul>
           </li>
 
-          <li><strong>CNPJ/CPF Unificado:</strong>
+          <li><strong>Documento "CNPJ/CPF" unificado (regra definitiva):</strong>
             <ul>
-              <li>Coluna "CNPJ" renomeada para "CNPJ/CPF"</li>
-              <li>Exibe CPF automaticamente quando CNPJ estiver vazio</li>
-              <li>Busca funciona para ambos (CNPJ ou CPF)</li>
-              <li>Ordenação considera ambos os campos</li>
+              <li>Coluna "CNPJ" renomeada para <strong>"CNPJ/CPF"</strong>.</li>
+              <li>Regra aplicada: se <code>regulado.cgc</code> estiver vazio/null → exibe <code>regulado.cpf</code>.</li>
+              <li>Ordenação da coluna considera o documento <em>normalizado</em> (somente dígitos), mantendo consistência.</li>
+              <li>Exibição com máscara automática (CPF/CNPJ) quando o tamanho é reconhecido.</li>
             </ul>
           </li>
 
-          <li><strong>Filtros Automáticos Aprimorados:</strong>
+          <li><strong>Busca aprimorada (Razão Social + CPF/CNPJ parcial no mesmo input):</strong>
             <ul>
-              <li>Filtro de exercício: descarta registros com exercício < 2018</li>
-              <li>Filtro de razão social: descarta registros sem razão social preenchida</li>
-              <li>Melhoria na qualidade dos dados exibidos</li>
+              <li>O campo de busca agora aceita <strong>parte do CPF/CNPJ</strong> (ex.: “2373” encontra “23.730.770/0001-83”).</li>
+              <li>Busca por documento utiliza comparação por dígitos (<code>includes()</code> em valor normalizado), aceitando entradas sem máscara.</li>
+              <li>Quando o texto contém letras, a busca continua funcionando por <strong>Razão Social</strong> (como antes).</li>
             </ul>
           </li>
 
-          <li><strong>Sistema de Observações:</strong>
+          <li><strong>Filtro de qualidade de dados (registros inconsistentes):</strong>
             <ul>
-              <li>Adicionada seção "Observações" no modal de detalhes</li>
-              <li>Exibe campo <code>obs</code> quando preenchido</li>
-              <li>Exibe campo <code>ob_duam</code> quando preenchido</li>
-              <li>Quebra de texto otimizada com <code>word-wrap</code>, <code>word-break</code> e <code>overflow-wrap</code></li>
-              <li>Textos longos não ultrapassam mais os limites da tela</li>
-              <li>Preservação de formatação com <code>white-space: pre-wrap</code></li>
+              <li>Descarta registros com exercício &lt; 2018.</li>
+              <li>Descarta registros sem <strong>Razão Social</strong> preenchida (evita linhas “vazias” e ruído na pesquisa).</li>
+              <li>Validações defensivas para valores nulos/vazios antes de renderizar.</li>
             </ul>
           </li>
 
-          <li><strong>Layout do Modal Reorganizado:</strong>
+          <li><strong>Estabilidade visual da tabela (colunas não “pulam”):</strong>
             <ul>
-              <li><strong>Linha 1:</strong> Número | Emissão | Validade</li>
-              <li><strong>Linha 2:</strong> <strong>Exercício</strong> | Status | Autenticação</li>
-              <li>Ordem das seções: Dados do Alvará → Estabelecimento → Atividades → Observações</li>
-              <li>Grid responsivo (3 colunas em desktop, 1 coluna em mobile)</li>
+              <li>Correção do efeito de largura variável por ordenação (título “CNPJ/CPF” mudando de posição).</li>
+              <li>Implementado layout estável: <code>table-layout: fixed</code> + larguras fixas para colunas principais.</li>
+              <li>Tratamento de overflow com <code>text-overflow: ellipsis</code> para manter alinhamento.</li>
             </ul>
           </li>
 
-          <li><strong>Dark Mode Otimizado:</strong>
+          <li><strong>Performance e robustez:</strong>
             <ul>
-              <li>Variáveis CSS para cores consistentes (<code>--bg-primary</code>, <code>--card-bg</code>, <code>--text-primary</code>, etc.)</li>
-              <li>Contraste aprimorado para melhor legibilidade</li>
-              <li>Cores vibrantes nos badges (success: <code>#4cd964</code>, warning: <code>#ffb700</code>, danger: <code>#ff453a</code>)</li>
-              <li>Detecção automática via <code>@media (prefers-color-scheme: dark)</code></li>
-              <li>Suporte completo em todos os elementos (inputs, badges, tabelas)</li>
+              <li>Criação de índice em memória para regulados (<code>codigo → regulado</code>) reduzindo buscas repetidas (<code>find</code>) em massa.</li>
+              <li>Cache de regulados/bairros para evitar recomputação e melhorar responsividade.</li>
+              <li>Normalização centralizada de códigos e documentos (remove máscara e espaços) para reduzir inconsistências.</li>
             </ul>
           </li>
 
-          <li><strong>Correções Técnicas:</strong>
+          <li><strong>Modal e observações:</strong>
             <ul>
-              <li>Corrigido erro <code>ReferenceError: isCancelado is not defined</code></li>
-              <li>Corrigido erro <code>ReferenceError: calcularStatus is not defined</code> (usa <code>verificarStatus</code>)</li>
-              <li>Corrigido <code>SyntaxError</code> causado por aspas simples duplicadas</li>
-              <li>Todas as funções validadas e testadas</li>
-            </ul>
-          </li>
-
-          <li><strong>Estrutura de Dados:</strong>
-            <ul>
-              <li>Suporte para múltiplas variações de nomes de campos (<code>obs_duam</code>, <code>ob_duam</code>, <code>obsduam</code>)</li>
-              <li>Tratamento robusto de valores nulos e vazios</li>
-              <li>Validação aprimorada de dados antes da exibição</li>
+              <li>Seção <strong>Observações</strong> no modal: exibe <code>obs</code> e <code>ob_duam</code> quando preenchidos.</li>
+              <li>Quebra de texto ajustada para evitar estouro de layout em textos longos (<code>white-space: pre-wrap</code>, <code>overflow-wrap</code>).</li>
             </ul>
           </li>
         </ul>
 
-        <p><strong>Impacto:</strong> Melhorias significativas na usabilidade, organização visual e qualidade dos dados exibidos. A página de alvarás agora oferece uma experiência mais completa e profissional.</p>
+        <p><strong>Impacto:</strong> melhora significativa de usabilidade (busca por CPF/CNPJ parcial), consistência visual (colunas estáveis) e qualidade dos registros exibidos (razão social obrigatória), mantendo ordenação e desempenho.</p>
 
         <p><strong>Arquivos Modificados:</strong></p>
         <ul>
-          <li><code>alvara.html</code> - Arquivo principal com todas as melhorias implementadas</li>
+          <li><code>alvara.html</code> - Página de alvarás (tabela, busca, ordenação, filtros e layout fixo).</li>
         </ul>
       </div>
 
-<div class="section">
+      <div class="section">
         <h3>v2.1.0 — 02/02/2026 00:30 (Horário de Brasília – UTC−3)</h3>
         <strong>Reorganização Completa dos POPs e Melhorias de Navegação</strong>
         <ul>
@@ -376,47 +355,48 @@ header.main-header.main-header.main-.container {
           <li>Correção de escopo/ordem de execução ao aplicar estilos condicionais (evita <code>ReferenceError</code>).</li>
         </ul>
 
-      <div class="section">
-        <h3>v2.0.8 — 28/01/2026 20:26 (Horário de Brasília – UTC−3)</h3>
-        <strong>Correções críticas (tela inicial / index.html)</strong>
-        <ul>
-          <li>Correção do atraso/intermitência no reconhecimento de perfil ao entrar (desktop e mobile).</li>
-          <li>Unificação do fluxo de autenticação/perfil para evitar disputa de ordem (race condition).</li>
-          <li>Central de Trabalho aparece rapidamente, mantendo links sensíveis bloqueados até o perfil carregar.</li>
-        </ul>
-      </div>
+        <div class="section">
+          <h3>v2.0.8 — 28/01/2026 20:26 (Horário de Brasília – UTC−3)</h3>
+          <strong>Correções críticas (tela inicial / index.html)</strong>
+          <ul>
+            <li>Correção do atraso/intermitência no reconhecimento de perfil ao entrar (desktop e mobile).</li>
+            <li>Unificação do fluxo de autenticação/perfil para evitar disputa de ordem (race condition).</li>
+            <li>Central de Trabalho aparece rapidamente, mantendo links sensíveis bloqueados até o perfil carregar.</li>
+          </ul>
+        </div>
 
-      <div class="section">
-        <h3>Controle de permissões por perfil (Firestore)</h3>
-        <ul>
-          <li>Fiscal: exibe resumo de OS pendentes e oculta indicadores.</li>
-          <li>Administrador: exibe indicadores e oculta resumo de OS.</li>
-          <li>Administrativo: oculta indicadores e resumo de OS (conteúdo institucional).</li>
-          <li>Links sensíveis: rmpf.html, inspecoes.html e admin.html protegidos por perfil.</li>
-        </ul>
-      </div>
+        <div class="section">
+          <h3>Controle de permissões por perfil (Firestore)</h3>
+          <ul>
+            <li>Fiscal: exibe resumo de OS pendentes e oculta indicadores.</li>
+            <li>Administrador: exibe indicadores e oculta resumo de OS.</li>
+            <li>Administrativo: oculta indicadores e resumo de OS (conteúdo institucional).</li>
+            <li>Links sensíveis: rmpf.html, inspecoes.html e admin.html protegidos por perfil.</li>
+          </ul>
+        </div>
 
-      <div class="section">
-        <h3>Resiliência em rede instável</h3>
-        <ul>
-          <li>Timeout + retry na busca de perfil no Firestore, com mensagem ao usuário.</li>
-        </ul>
-      </div>
+        <div class="section">
+          <h3>Resiliência em rede instável</h3>
+          <ul>
+            <li>Timeout + retry na busca de perfil no Firestore, com mensagem ao usuário.</li>
+          </ul>
+        </div>
 
-      <div class="section">
-        <h3>Estabilidade</h3>
-        <ul>
-          <li>Removida duplicidade do PapaParse.</li>
-          <li>Correções de HTML/CSS inconsistentes (tags/chaves sobressalentes).</li>
-          <li>Correção do erro <code>setUserInfoLoadingText is not defined</code>.</li>
-        </ul>
-      </div>
+        <div class="section">
+          <h3>Estabilidade</h3>
+          <ul>
+            <li>Removida duplicidade do PapaParse.</li>
+            <li>Correções de HTML/CSS inconsistentes (tags/chaves sobressalentes).</li>
+            <li>Correção do erro <code>setUserInfoLoadingText is not defined</code>.</li>
+          </ul>
+        </div>
 
-      <div class="section">
-        <h3>v2.0.7 — baseline anterior</h3>
-        <ul>
-          <li>Versão anterior de referência, antes das correções de carregamento do perfil.</li>
-        </ul>
+        <div class="section">
+          <h3>v2.0.7 — baseline anterior</h3>
+          <ul>
+            <li>Versão anterior de referência, antes das correções de carregamento do perfil.</li>
+          </ul>
+        </div>
       </div>
 
     </section>
