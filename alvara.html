@@ -1203,48 +1203,10 @@
                         <td>${lib.autoridade || '-'}</td><td>${lib.liberante || '-'}</td><td>${lib.documento || '-'}</td>
                         <td>${formatarData(lib.dtdocumento)}</td></tr>`;
                 });
-                html += `</tbody></table>
-                </div>
-            </div>
-        `;
-        }
-
-        // Adicionar observações se existirem
-        const obs = (alvara.obs || '').trim();
-        const obsduam = (alvara.obsduam || '').trim();
-
-        if (obs || obsduam) {
-            html += `
-                <div class="info-section">
-                    <h3>📝 Observações</h3>
-                    <div class="info-grid">
-            `;
-
-            if (obs) {
-                html += `
-                        <div class="info-item" style="grid-column: 1 / -1;">
-                            <strong>Observações:</strong>
-                            <span style="white-space: pre-wrap;">${obs}</span>
-                        </div>
-                `;
+                html += `</tbody></table></div></div>`;
             }
-
-            if (obsduam) {
-                html += `
-                        <div class="info-item" style="grid-column: 1 / -1;">
-                            <strong>Observações DUAM:</strong>
-                            <span style="white-space: pre-wrap;">${obsduam}</span>
-                        </div>
-                `;
-            }
-
-            html += `
-                    </div>
-                </div>
-            `;
-        }
-
-        document.getElementById('modalBody').innerHTML = html;
+            
+            document.getElementById('modalBody').innerHTML = html;
             document.getElementById('detalhesModal').style.display = 'block';
         }
 
