@@ -1173,6 +1173,7 @@
                         <div class="info-item"><strong>Emissão:</strong> <span>${formatarData(alvara.dt_emite)}</span></div>
                         <div class="info-item"><strong>Validade:</strong> <span>${formatarData(alvara.dt_validade)}</span></div>
                         <div class="info-item"><strong>Status:</strong> <span class="badge ${status.classe}">${status.texto}</span></div>
+                        <div class="info-item"><strong>Exercício:</strong> <span>${alvara.exercicio || '-'}</span></div>
                         <div class="info-item"><strong>Autenticação:</strong> <span>${alvara.autenticador || '-'}</span></div>
                     </div>
                 </div>
@@ -1203,10 +1204,46 @@
                         <td>${lib.autoridade || '-'}</td><td>${lib.liberante || '-'}</td><td>${lib.documento || '-'}</td>
                         <td>${formatarData(lib.dtdocumento)}</td></tr>`;
                 });
-                html += `</tbody></table></div></div>`;
+                html += `</tbody>                </div>
+            `;
+        }
+
+        // Observações
+        const obs = (alvara.obs || '').trim();
+        const obsduam = (alvara.obsduam || '').trim();
+
+        if (obs || obsduam) {
+            html += `
+                <div class="info-section">
+                    <h3>📝 Observações</h3>
+                    <div class="info-grid">
+            `;
+
+            if (obs) {
+                html += `
+                        <div class="info-item" style="grid-column: 1 / -1;">
+                            <strong>Observações:</strong>
+                            <span style="white-space: pre-wrap;">${obs}</span>
+                        </div>
+                `;
             }
-            
-            document.getElementById('modalBody').innerHTML = html;
+
+            if (obsduam) {
+                html += `
+                        <div class="info-item" style="grid-column: 1 / -1;">
+                            <strong>Observações DUAM:</strong>
+                            <span style="white-space: pre-wrap;">${obsduam}</span>
+                        </div>
+                `;
+            }
+
+            html += `
+                    </div>
+                </div>
+            `;
+        }
+
+        document.getElementById('modalBody').innerHTML = html;
             document.getElementById('detalhesModal').style.display = 'block';
         }
 
