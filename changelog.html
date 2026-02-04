@@ -107,10 +107,35 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
       <div class="section">
-        <h3>v2.1.1 — 03/02/2026 23:30 (Horário de Brasília – UTC−3)</h3>
+        <h3>v2.1.1 — 03/02/2026 23:59 (Horário de Brasília – UTC−3)</h3>
         <strong>Melhorias e Correções na Página de Alvarás</strong>
 
         <ul>
+          
+    <li><strong>Correção do botão “Limpar”:</strong>
+    <ul>
+      <li>Botão “Limpar” voltou a executar a rotina correta (<code>limparFiltros()</code>), resetando campos e recarregando a listagem.</li>
+      <li>Tratamento defensivo adicional em filtros para evitar falhas quando algum campo vier vazio.</li>
+    </ul>
+   </li>
+
+  <li><strong>Modal (responsivo) — estabilidade e usabilidade no iOS/PWA:</strong>
+    <ul>
+      <li>Correção do travamento ao tocar fora do modal: fechamento agora é feito por listener no overlay (robusto para touch).</li>
+      <li>Prevenção de propagação de clique/toque no conteúdo do modal para evitar comportamento inconsistente.</li>
+      <li>Melhoria de UX: bloqueio do scroll do fundo enquanto o modal está aberto (<code>body.modal-open</code>).</li>
+      <li>Atalho adicional: tecla <code>ESC</code> fecha o modal no desktop.</li>
+    </ul>
+  </li>
+
+  <li><strong>Atividades (modal) — leitura perfeita no mobile:</strong>
+    <ul>
+      <li>Correção de colunas “espremidas” (exibiam apenas 1–2 caracteres).</li>
+      <li>Aplicado padrão moderno: quebra de linha + word-wrap, mantendo também scroll horizontal quando necessário.</li>
+      <li>Tabela de atividades passa a usar <code>table-layout: auto</code> e largura mínima para permitir deslize sem perder legibilidade.</li>
+    </ul>
+  </li>
+          
           <li><strong>Coluna "Exercício" (tabela + modal):</strong>
             <ul>
               <li>Adicionada a coluna <strong>Exercício</strong> como primeira coluna da tabela (ordenável).</li>
