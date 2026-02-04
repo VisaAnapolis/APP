@@ -81,6 +81,10 @@
         .no-results {
             color: var(--text-secondary) !important;
         }
+
+        thead {
+            background: var(--brand1) !important;
+        }
     }
 
     
@@ -793,7 +797,7 @@
                                 <th onclick="ordenarTabela('dt_emite')">Dt. Emissão ▼</th>
                                 <th onclick="ordenarTabela('dt_validade')">Dt. Validade ▼</th>
                                 <th onclick="ordenarTabela('cancelado')">Status ▼</th>
-                                <th onclick="ordenarTabela('cnpj')">CNPJ ▼</th>
+                                <th onclick="ordenarTabela('cnpj')">CNPJ/CPF ▼</th>
                                 <th onclick="ordenarTabela('razao')">Razão Social ▼</th>
                             </tr>
                         </thead>
@@ -990,11 +994,24 @@
                 carregarCSV('data/cnae.csv')
             ]);
             
-            dadosAlvara = dadosAlvara.filter(alvara => 
-            validarFormatoAlvara(alvara.numero) && 
-            alvaraEmitido(alvara) &&
-            parseInt(alvara.exercicio || '0') >= 2018
-        );
+            dadosAlvara = dadosAlvara.filter(alvara => {
+            if (!validarFormatoAlvara(alvara.numero) || !alvaraEmitido(alvara)) {
+                return false;
+            }
+
+            // Filtrar exercício >= 2018
+            if (parseInt(alvara.exercicio || '0') < 2018) {
+                return false;
+            }
+
+            // Filtrar apenas com razão social preenchida
+            const regulado = dadosRegulados.find(r => r.controle === alvara.codigo);
+            if (!regulado || !regulado.razao || regulado.razao.trim() === '') {
+                return false;
+            }
+
+            return true;
+        });
             
             const cacheEl = document.getElementById('cacheStatus');
             if (cacheEl) cacheEl.textContent = `${dadosAlvara.length} alvarás carregados`;
@@ -1143,7 +1160,7 @@
                     <td>${formatarData(alvara.dt_emite)}</td>
                     <td>${formatarData(alvara.dt_validade)}</td>
                     <td><span class="badge ${status.classe}">${status.texto}</span></td>
-                    <td>${regulado ? formatarCNPJ(regulado.cgc) : '-'}</td>
+                    <td>${regulado ? (regulado.cgc ? formatarCNPJ(regulado.cgc) : (regulado.cpf || \'-\')) : \'-\'}</td>
                     <td>${regulado ? regulado.razao : '-'}</td>
                 `;
                 
@@ -1184,7 +1201,7 @@
                     <div class="info-section">
                         <h3>🏢 Estabelecimento</h3>
                         <div class="info-grid">
-                            <div class="info-item"><strong>CNPJ:</strong> <span>${formatarCNPJ(regulado.cgc)}</span></div>
+                            <div class="info-item"><strong>CNPJ/CPF:</strong> <span>${regulado.cgc ? formatarCNPJ(regulado.cgc) : (regulado.cpf || '-')}</span></div>
                             <div class="info-item"><strong>Razão Social:</strong> <span>${regulado.razao || '-'}</span></div>
                             <div class="info-item"><strong>Fantasia:</strong> <span>${regulado.fantasia || '-'}</span></div>
                             <div class="info-item"><strong>Logradouro:</strong> <span>${regulado.logradouro || '-'}</span></div>
@@ -1209,9 +1226,9 @@
             
             // Adicionar observações se existirem
             const obs = (alvara.obs || '').trim();
-            const obsduam = (alvara.ob_duam || '').trim();
+            const obs_duam = (alvara.obs_duam || alvara.ob_duam || alvara.obsduam || '').trim();
 
-            if (obs || obsduam) {
+            if (obs || obs_duam) {
                 html += `
                     <div class="info-section">
                         <h3>📝 Observações</h3>
@@ -1222,16 +1239,16 @@
                     html += `
                             <div class="info-item" style="grid-column: 1 / -1;">
                                 <strong>Observações:</strong>
-                                <span style="white-space: pre-wrap;">${obs}</span>
+                                <span style="white-space: pre-wrap; word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; max-width: 100%;">${obs}</span>
                             </div>
                     `;
                 }
 
-                if (obsduam) {
+                if (obs_duam) {
                     html += `
                             <div class="info-item" style="grid-column: 1 / -1;">
                                 <strong>Observações DUAM:</strong>
-                                <span style="white-space: pre-wrap; word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; max-width: 100%;">${obsduam}</span>
+                                <span style="white-space: pre-wrap; word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; max-width: 100%;">${obs_duam}</span>
                             </div>
                     `;
                 }
