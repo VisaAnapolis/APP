@@ -1159,12 +1159,13 @@
             atualizarBotoesPaginacao();
         }
 
-        function mostrarDetalhes(alvara) {
+                function mostrarDetalhes(alvara) {
             const regulado = buscarRegulado(alvara.codigo);
             const bairro = regulado ? buscarBairro(regulado.cdbai) : null;
             const liberacoes = dadosAlvlib.filter(lib => limparNumeroAlvara(lib.alvara) === limparNumeroAlvara(alvara.numero));
-            const status = verificarStatus(alvara);
-            
+
+            const status = calcularStatus(alvara);
+
             let html = `
                 <div class="info-section">
                     <h3>📋 Dados do Alvará</h3>
@@ -1172,13 +1173,13 @@
                         <div class="info-item"><strong>Número:</strong> <span>${limparNumeroAlvara(alvara.numero)}</span></div>
                         <div class="info-item"><strong>Emissão:</strong> <span>${formatarData(alvara.dt_emite)}</span></div>
                         <div class="info-item"><strong>Validade:</strong> <span>${formatarData(alvara.dt_validade)}</span></div>
-                        <div class="info-item"><strong>Status:</strong> <span class="badge ${status.classe}">${status.texto}</span></div>
                         <div class="info-item"><strong>Exercício:</strong> <span>${alvara.exercicio || '-'}</span></div>
+                        <div class="info-item"><strong>Status:</strong> <span class="badge ${status.classe}">${status.texto}</span></div>
                         <div class="info-item"><strong>Autenticação:</strong> <span>${alvara.autenticador || '-'}</span></div>
                     </div>
                 </div>
             `;
-            
+
             if (regulado) {
                 html += `
                     <div class="info-section">
@@ -1194,56 +1195,84 @@
                     </div>
                 `;
             }
-            
+
             if (liberacoes.length > 0) {
-                html += `<div class="info-section"><h3>✅ Atividades (${liberacoes.length})</h3><div class="activities-table"><table>
-                    <thead><tr><th>Data</th><th>CNAE</th><th>Autoridade</th><th>Fiscal</th><th>Documento</th><th>Dt. Doc.</th></tr></thead><tbody>`;
+                html += `
+                    <div class="info-section">
+                        <h3>✅ Atividades (${liberacoes.length})</h3>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; font-size: 0.9em; border-collapse: collapse;">
+                                <thead style="background: var(--brand1); color: white;">
+                                    <tr>
+                                        <th style="padding: 10px; text-align: left;">Data</th>
+                                        <th style="padding: 10px; text-align: left;">CNAE</th>
+                                        <th style="padding: 10px; text-align: left;">Autoridade</th>
+                                        <th style="padding: 10px; text-align: left;">Fiscal</th>
+                                        <th style="padding: 10px; text-align: left;">Documento</th>
+                                        <th style="padding: 10px; text-align: left;">Dt. Doc.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
+
                 liberacoes.forEach(lib => {
                     const cnae = dadosCnae.find(c => c.subclasse === lib.atividade);
-                    html += `<tr><td>${formatarData(lib.data)}</td><td>${cnae ? `${cnae.subclasse} - ${cnae.atividade}` : lib.atividade}</td>
-                        <td>${lib.autoridade || '-'}</td><td>${lib.liberante || '-'}</td><td>${lib.documento || '-'}</td>
-                        <td>${formatarData(lib.dtdocumento)}</td></tr>`;
+                    html += `
+                        <tr style="border-bottom: 1px solid #ddd;">
+                            <td style="padding: 8px;">${formatarData(lib.data)}</td>
+                            <td style="padding: 8px;">${cnae ? cnae.subclasse + ' - ' + cnae.atividade : (lib.atividade || '-')}</td>
+                            <td style="padding: 8px;">${lib.autoridade || '-'}</td>
+                            <td style="padding: 8px;">${lib.liberante || '-'}</td>
+                            <td style="padding: 8px;">${lib.documento || '-'}</td>
+                            <td style="padding: 8px;">${formatarData(lib.dtdocumento)}</td>
+                        </tr>
+                    `;
                 });
-                html += `</tbody>                </div>
-            `;
-        }
 
-        // Observações
-        const obs = (alvara.obs || '').trim();
-        const obsduam = (alvara.obsduam || '').trim();
-
-        if (obs || obsduam) {
-            html += `
-                <div class="info-section">
-                    <h3>📝 Observações</h3>
-                    <div class="info-grid">
-            `;
-
-            if (obs) {
                 html += `
-                        <div class="info-item" style="grid-column: 1 / -1;">
-                            <strong>Observações:</strong>
-                            <span style="white-space: pre-wrap;">${obs}</span>
+                                </tbody>
+                            </table>
                         </div>
-                `;
-            }
-
-            if (obsduam) {
-                html += `
-                        <div class="info-item" style="grid-column: 1 / -1;">
-                            <strong>Observações DUAM:</strong>
-                            <span style="white-space: pre-wrap;">${obsduam}</span>
-                        </div>
-                `;
-            }
-
-            html += `
                     </div>
-                </div>
-            `;
-        }
+                `;
+            }
 
-        document.getElementById('modalBody').innerHTML = html;
+            // OBSERVAÇÕES VÊM DEPOIS DAS ATIVIDADES
+            const obs = (alvara.obs || '').trim();
+            const obsduam = (alvara.obsduam || '').trim();
+
+            if (obs || obsduam) {
+                html += `
+                    <div class="info-section">
+                        <h3>📝 Observações</h3>
+                        <div class="info-grid">
+                `;
+
+                if (obs) {
+                    html += `
+                            <div class="info-item" style="grid-column: 1 / -1;">
+                                <strong>Observações:</strong>
+                                <span style="white-space: pre-wrap;">${obs}</span>
+                            </div>
+                    `;
+                }
+
+                if (obsduam) {
+                    html += `
+                            <div class="info-item" style="grid-column: 1 / -1;">
+                                <strong>Observações DUAM:</strong>
+                                <span style="white-space: pre-wrap;">${obsduam}</span>
+                            </div>
+                    `;
+                }
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('modalBody').innerHTML = html;
             document.getElementById('detalhesModal').style.display = 'block';
         }
 
