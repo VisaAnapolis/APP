@@ -83,7 +83,6 @@
         }
     }
 
-    
     /* Header agora usa header-component.css */
 
         * {
@@ -394,11 +393,11 @@
         }
 
         @keyframes slideIn {
-            from { 
+            from {
                 transform: translateY(-50px);
                 opacity: 0;
             }
-            to { 
+            to {
                 transform: translateY(0);
                 opacity: 1;
             }
@@ -654,7 +653,6 @@
                 padding: 4px 8px;
                 white-space: nowrap;
             }
-    
 
   /* 1) Um único lugar para scroll horizontal */
   .table-container{
@@ -664,7 +662,7 @@
   }
 
   .table-wrapper{
-    overflow-x: auto !important;   /* <- tira o visible */
+    overflow-x: auto !important;
     overflow-y: visible !important;
   }
 
@@ -673,7 +671,7 @@
     min-width: 950px !important;
     border-collapse: separate;
     border-spacing: 0;
-    overflow: visible !important;  /* <- antes ela herdava overflow hidden do "table" geral */
+    overflow: visible !important;
   }
 
   /* 3) Sticky na primeira coluna (com reforços p/ iOS) */
@@ -683,8 +681,8 @@
     position: sticky;
     left: 0;
     z-index: 5;
-    background: var(--bg-primary);              /* essencial p/ não "vazar" conteúdo por trás */
-    -webkit-transform: translateZ(0); /* reforço p/ Safari */
+    background: var(--bg-primary);
+    -webkit-transform: translateZ(0);
     transform: translateZ(0);
   }
 
@@ -694,7 +692,7 @@
     background: var(--brand1);
     color: #fff;
   }
-      
+        }
     </style>
   <link rel="stylesheet" href="./css/design-tokens.css">
   <link rel="stylesheet" href="./css/header-component.css">
@@ -724,7 +722,7 @@
                 </div>
                 <div class="filter-group">
                     <label for="razaoSocial">Razão Social:</label>
-                    <input type="text" id="razaoSocial" placeholder="Digite a razão social">
+                    <input type="text" id="razaoSocial" placeholder="Digite a razão social (ou CPF/CNPJ)">
                 </div>
             </div>
             <div class="btn-container">
@@ -769,7 +767,7 @@
                         <option value="100">100</option>
                     </select>
                 </div>
-                
+
                 <div class="pagination-buttons">
                     <button class="btn-page" onclick="irParaPrimeiraPagina()" id="btnPrimeira">⏮ Primeira</button>
                     <button class="btn-page" onclick="irParaPaginaAnterior()" id="btnAnterior">◀ Anterior</button>
@@ -793,7 +791,7 @@
                                 <th onclick="ordenarTabela('dt_emite')">Dt. Emissão ▼</th>
                                 <th onclick="ordenarTabela('dt_validade')">Dt. Validade ▼</th>
                                 <th onclick="ordenarTabela('cancelado')">Status ▼</th>
-                                <th onclick="ordenarTabela('cnpj')">CNPJ ▼</th>
+                                <th onclick="ordenarTabela('cnpj')">CNPJ/CPF ▼</th>
                                 <th onclick="ordenarTabela('razao')">Razão Social ▼</th>
                             </tr>
                         </thead>
@@ -820,7 +818,7 @@
 
     <script>
         'use strict';
-        
+
         let dadosAlvara = [];
         let dadosAlvlib = [];
         let dadosRegulados = [];
@@ -830,9 +828,12 @@
         let paginaAtual = 1;
         let tamanhoPagina = 50;
         let ordenacao = { campo: 'numero', direcao: 'desc' };
-        
+
         let cacheRegulados = new Map();
         let cacheBairros = new Map();
+
+        // Índice para acelerar busca por código (evita find repetido em filtros e na carga)
+        let indexReguladosPorCodigo = new Map();
 
         function limparCodigo(codigo) {
             if (!codigo) return '';
@@ -867,52 +868,88 @@
             return dataStr;
         }
 
+        function apenasDigitos(s) {
+            if (!s) return '';
+            return s.toString().replace(/\D/g, '');
+        }
+
         function formatarCNPJ(cnpj) {
             if (!cnpj) return '-';
-            const numeros = cnpj.replace(/\D/g, '');
+            const numeros = apenasDigitos(cnpj);
             if (numeros.length === 14) {
                 return numeros.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
             }
             return cnpj;
         }
 
+        function formatarCPF(cpf) {
+            if (!cpf) return '-';
+            const numeros = apenasDigitos(cpf);
+            if (numeros.length === 11) {
+                return numeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+            }
+            return cpf;
+        }
+
+        function formatarDocumento(doc) {
+            const dig = apenasDigitos(doc);
+            if (dig.length === 14) return formatarCNPJ(dig);
+            if (dig.length === 11) return formatarCPF(dig);
+            return doc ? doc : '-';
+        }
+
+        // Retorna o documento preferencial (CNPJ se houver; senão CPF do alvará)
+        function obterDocumentoBruto(regulado, alvara) {
+            const cnpj = regulado && regulado.cgc ? regulado.cgc : '';
+            if (cnpj && apenasDigitos(cnpj).length > 0) return cnpj;
+
+            const cpf = alvara && alvara.cpf ? alvara.cpf : '';
+            return cpf || '';
+        }
+
+        // Para ordenar/pesquisar com consistência (sem máscara)
+        function obterDocumentoNormalizado(regulado, alvara) {
+            return apenasDigitos(obterDocumentoBruto(regulado, alvara));
+        }
+
         function verificarStatus(alvara) {
             const cancelaValue = (alvara.cancela || '').toString().trim().toLowerCase();
-            
-            const isCancelado = cancelaValue === 'true' || 
-                                cancelaValue === '1' || 
-                                cancelaValue === 's' || 
+
+            const isCancelado = cancelaValue === 'true' ||
+                                cancelaValue === '1' ||
+                                cancelaValue === 's' ||
                                 cancelaValue === 'sim' ||
                                 cancelaValue === 'yes';
-            
+
             if (isCancelado) {
                 return { tipo: 'cancelado', texto: 'Cancelado', classe: 'badge-danger' };
             }
-            
+
             const dataValidade = parseData(alvara.dt_validade);
             const dataAtual = new Date();
-            
+
             dataAtual.setHours(0, 0, 0, 0);
             if (dataValidade) {
                 dataValidade.setHours(0, 0, 0, 0);
             }
-            
+
             if (dataValidade && dataValidade < dataAtual) {
                 return { tipo: 'expirado', texto: 'Expirado', classe: 'badge-warning' };
             }
-            
+
             return { tipo: 'valido', texto: 'Válido', classe: 'badge-success' };
         }
 
         function buscarRegulado(codigoAlvara) {
             if (!codigoAlvara) return null;
             const codigoLimpo = limparCodigo(codigoAlvara);
-            
+
             if (cacheRegulados.has(codigoLimpo)) {
                 return cacheRegulados.get(codigoLimpo);
             }
-            
-            const regulado = dadosRegulados.find(r => limparCodigo(r.codigo) === codigoLimpo);
+
+            // usa índice (bem mais leve que find em array)
+            const regulado = indexReguladosPorCodigo.get(codigoLimpo) || null;
             cacheRegulados.set(codigoLimpo, regulado);
             return regulado;
         }
@@ -920,11 +957,11 @@
         function buscarBairro(codigoBairro) {
             if (!codigoBairro) return null;
             const codigoLimpo = limparCodigo(codigoBairro);
-            
+
             if (cacheBairros.has(codigoLimpo)) {
                 return cacheBairros.get(codigoLimpo);
             }
-            
+
             const bairro = dadosBairros.find(b => limparCodigo(b.codigo) === codigoLimpo);
             cacheBairros.set(codigoLimpo, bairro);
             return bairro;
@@ -935,19 +972,19 @@
                 const response = await fetch(arquivo);
                 const texto = await response.text();
                 const linhas = texto.split('\n');
-                
-                const cabecalhoLower = linhas[0].split(';').map(campo => 
+
+                const cabecalhoLower = linhas[0].split(';').map(campo =>
                     campo.replace(/"/g, '').replace(/\uFEFF/g, '').trim().toLowerCase()
                 );
-                
+
                 const dados = [];
                 for (let i = 1; i < linhas.length; i++) {
                     if (linhas[i].trim() === '') continue;
-                    
+
                     const valores = [];
                     let dentroAspas = false;
                     let valorAtual = '';
-                    
+
                     for (let char of linhas[i]) {
                         if (char === '"') {
                             dentroAspas = !dentroAspas;
@@ -959,7 +996,7 @@
                         }
                     }
                     valores.push(valorAtual.trim());
-                    
+
                     const obj = {};
                     cabecalhoLower.forEach((campo, index) => {
                         let valor = valores[index] ? valores[index].replace(/"/g, '').trim() : '';
@@ -970,7 +1007,7 @@
                     });
                     dados.push(obj);
                 }
-                
+
                 return dados;
             } catch (erro) {
                 console.error(`Erro ao carregar ${arquivo}:`, erro);
@@ -981,7 +1018,7 @@
         async function inicializar() {
             const loadingEl = document.getElementById('loadingMessage');
             if (loadingEl) loadingEl.style.display = 'block';
-            
+
             [dadosAlvara, dadosAlvlib, dadosRegulados, dadosBairros, dadosCnae] = await Promise.all([
                 carregarCSV('data/alvara.csv'),
                 carregarCSV('data/alvlib.csv'),
@@ -989,16 +1026,34 @@
                 carregarCSV('data/bairros.csv'),
                 carregarCSV('data/cnae.csv')
             ]);
-            
-            dadosAlvara = dadosAlvara.filter(alvara => 
-            validarFormatoAlvara(alvara.numero) && 
-            alvaraEmitido(alvara) &&
-            parseInt(alvara.exercicio || '0') >= 2018
-        );
-            
+
+            // monta índice de regulados (codigo -> regulado)
+            indexReguladosPorCodigo = new Map();
+            for (const r of dadosRegulados) {
+                const cod = limparCodigo(r.codigo);
+                if (!cod) continue;
+                // mantém o primeiro (se houver duplicidade, o comportamento fica determinístico)
+                if (!indexReguladosPorCodigo.has(cod)) indexReguladosPorCodigo.set(cod, r);
+            }
+
+            // filtros base + NOVO filtro: razão social vazia => descartar registro
+            dadosAlvara = dadosAlvara.filter(alvara => {
+                if (!validarFormatoAlvara(alvara.numero)) return false;
+                if (!alvaraEmitido(alvara)) return false;
+                if (parseInt(alvara.exercicio || '0', 10) < 2018) return false;
+
+                const regulado = indexReguladosPorCodigo.get(limparCodigo(alvara.codigo));
+                if (!regulado) return false;
+
+                const razao = (regulado.razao || '').toString().trim();
+                if (!razao) return false; // <- regra solicitada
+
+                return true;
+            });
+
             const cacheEl = document.getElementById('cacheStatus');
             if (cacheEl) cacheEl.textContent = `${dadosAlvara.length} alvarás carregados`;
-            
+
             if (loadingEl) loadingEl.style.display = 'none';
             limparFiltros();
         }
@@ -1007,29 +1062,43 @@
             const dataInicial = document.getElementById('dataInicial').value;
             const dataFinal = document.getElementById('dataFinal').value;
             const numeroAlvara = document.getElementById('numeroAlvara').value.trim().replace(/\s/g, '');
-            const razaoSocial = document.getElementById('razaoSocial').value.toLowerCase().trim();
-            
+            const termo = document.getElementById('razaoSocial').value.toLowerCase().trim();
+
+            // se o usuário digitou muitos dígitos, trata como documento (CPF/CNPJ)
+            const termoDigitos = apenasDigitos(termo);
+            const pareceDocumento = termoDigitos.length >= 11; // cobre CPF (11) e CNPJ (14)
+
             alvarasFiltrados = dadosAlvara.filter(alvara => {
                 if (numeroAlvara && !limparNumeroAlvara(alvara.numero).includes(numeroAlvara)) {
                     return false;
                 }
-                
+
                 if (dataInicial || dataFinal) {
                     const dataEmissao = parseData(alvara.dt_emite);
                     if (!dataEmissao) return false;
                     if (dataInicial && dataEmissao < new Date(dataInicial)) return false;
                     if (dataFinal && dataEmissao > new Date(dataFinal)) return false;
                 }
-                
-                if (razaoSocial) {
+
+                if (termo) {
                     const regulado = buscarRegulado(alvara.codigo);
                     if (!regulado) return false;
-                    if (!regulado.razao.toLowerCase().includes(razaoSocial)) return false;
+
+                    // razão já é garantida na carga, mas mantém defensivo
+                    const razao = (regulado.razao || '').toString().trim();
+                    if (!razao) return false;
+
+                    if (pareceDocumento) {
+                        const docNorm = obterDocumentoNormalizado(regulado, alvara);
+                        if (!docNorm.includes(termoDigitos)) return false;
+                    } else {
+                        if (!razao.toLowerCase().includes(termo)) return false;
+                    }
                 }
-                
+
                 return true;
             });
-            
+
             atualizarEstatisticas();
             paginaAtual = 1;
             renderizarTabela();
@@ -1040,7 +1109,7 @@
             let cancelados = 0;
             let expirados = 0;
             let validos = 0;
-            
+
             alvarasFiltrados.forEach(alvara => {
                 const status = verificarStatus(alvara);
                 if (status.tipo === 'cancelado') {
@@ -1051,7 +1120,7 @@
                     validos++;
                 }
             });
-            
+
             document.getElementById('totalAlvaras').textContent = total;
             document.getElementById('alvarasValidos').textContent = validos;
             document.getElementById('alvarasExpirados').textContent = expirados;
@@ -1065,19 +1134,13 @@
                 ordenacao.campo = campo;
                 ordenacao.direcao = 'asc';
             }
-            
+
             alvarasFiltrados.sort((a, b) => {
                 let valorA, valorB;
-                
+
                 if (campo === 'exercicio') {
-
-                
                     valorA = parseInt(a.exercicio || '0', 10);
-
-                
                     valorB = parseInt(b.exercicio || '0', 10);
-
-                
                 } else if (campo === 'numero') {
                     valorA = limparNumeroAlvara(a.numero);
                     valorB = limparNumeroAlvara(b.numero);
@@ -1092,18 +1155,28 @@
                     const statusB = verificarStatus(b);
                     valorA = statusA.tipo === 'cancelado' ? 2 : (statusA.tipo === 'expirado' ? 1 : 0);
                     valorB = statusB.tipo === 'cancelado' ? 2 : (statusB.tipo === 'expirado' ? 1 : 0);
+                } else if (campo === 'cnpj') {
+                    // Agora ordena pelo documento normalizado (CNPJ ou CPF)
+                    const reguladoA = buscarRegulado(a.codigo);
+                    const reguladoB = buscarRegulado(b.codigo);
+                    valorA = obterDocumentoNormalizado(reguladoA, a);
+                    valorB = obterDocumentoNormalizado(reguladoB, b);
                 } else {
                     const reguladoA = buscarRegulado(a.codigo);
                     const reguladoB = buscarRegulado(b.codigo);
-                    valorA = reguladoA ? (campo === 'cnpj' ? reguladoA.cgc : reguladoA.razao) : '';
-                    valorB = reguladoB ? (campo === 'cnpj' ? reguladoB.cgc : reguladoB.razao) : '';
+                    valorA = reguladoA ? (reguladoA.razao || '') : '';
+                    valorB = reguladoB ? (reguladoB.razao || '') : '';
                 }
-                
+
+                // trata nulls de data
+                if (valorA === null && valorB !== null) return ordenacao.direcao === 'asc' ? -1 : 1;
+                if (valorA !== null && valorB === null) return ordenacao.direcao === 'asc' ? 1 : -1;
+
                 if (valorA < valorB) return ordenacao.direcao === 'asc' ? -1 : 1;
                 if (valorA > valorB) return ordenacao.direcao === 'asc' ? 1 : -1;
                 return 0;
             });
-            
+
             renderizarTabela();
         }
 
@@ -1111,9 +1184,9 @@
             const tbody = document.getElementById('alvarasTableBody');
             const table = document.getElementById('alvarasTable');
             const noResults = document.getElementById('noResults');
-            
+
             tbody.innerHTML = '';
-            
+
             if (alvarasFiltrados.length === 0) {
                 table.style.display = 'none';
                 noResults.style.display = 'block';
@@ -1121,41 +1194,42 @@
                 atualizarBotoesPaginacao();
                 return;
             }
-            
+
             table.style.display = 'table';
             noResults.style.display = 'none';
-            
+
             const inicio = (paginaAtual - 1) * tamanhoPagina;
             const fim = Math.min(inicio + tamanhoPagina, alvarasFiltrados.length);
-            
+
             const fragment = document.createDocumentFragment();
-            
+
             alvarasFiltrados.slice(inicio, fim).forEach(alvara => {
                 const regulado = buscarRegulado(alvara.codigo);
                 const tr = document.createElement('tr');
                 tr.onclick = () => mostrarDetalhes(alvara);
-                
+
                 const status = verificarStatus(alvara);
-                
+                const doc = formatarDocumento(obterDocumentoBruto(regulado, alvara));
+
                 tr.innerHTML = `
                 <td>${alvara.exercicio || '-'}</td>
                 <td><strong>${limparNumeroAlvara(alvara.numero)}</strong></td>
                     <td>${formatarData(alvara.dt_emite)}</td>
                     <td>${formatarData(alvara.dt_validade)}</td>
                     <td><span class="badge ${status.classe}">${status.texto}</span></td>
-                    <td>${regulado ? formatarCNPJ(regulado.cgc) : '-'}</td>
-                    <td>${regulado ? regulado.razao : '-'}</td>
+                    <td>${doc}</td>
+                    <td>${regulado ? (regulado.razao || '-') : '-'}</td>
                 `;
-                
+
                 fragment.appendChild(tr);
             });
-            
+
             tbody.appendChild(fragment);
-            
+
             const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina);
-            document.getElementById('paginationInfo').textContent = 
+            document.getElementById('paginationInfo').textContent =
                 `Pág. ${paginaAtual}/${totalPaginas} | ${inicio + 1}-${fim} de ${alvarasFiltrados.length}`;
-            
+
             atualizarBotoesPaginacao();
         }
 
@@ -1164,7 +1238,9 @@
             const bairro = regulado ? buscarBairro(regulado.cdbai) : null;
             const liberacoes = dadosAlvlib.filter(lib => limparNumeroAlvara(lib.alvara) === limparNumeroAlvara(alvara.numero));
             const status = verificarStatus(alvara);
-            
+
+            const doc = formatarDocumento(obterDocumentoBruto(regulado, alvara));
+
             let html = `
                 <div class="info-section">
                     <h3>📋 Dados do Alvará</h3>
@@ -1178,13 +1254,13 @@
                     </div>
                 </div>
             `;
-            
+
             if (regulado) {
                 html += `
                     <div class="info-section">
                         <h3>🏢 Estabelecimento</h3>
                         <div class="info-grid">
-                            <div class="info-item"><strong>CNPJ:</strong> <span>${formatarCNPJ(regulado.cgc)}</span></div>
+                            <div class="info-item"><strong>CNPJ/CPF:</strong> <span>${doc}</span></div>
                             <div class="info-item"><strong>Razão Social:</strong> <span>${regulado.razao || '-'}</span></div>
                             <div class="info-item"><strong>Fantasia:</strong> <span>${regulado.fantasia || '-'}</span></div>
                             <div class="info-item"><strong>Logradouro:</strong> <span>${regulado.logradouro || '-'}</span></div>
@@ -1194,7 +1270,7 @@
                     </div>
                 `;
             }
-            
+
             if (liberacoes.length > 0) {
                 html += `<div class="info-section"><h3>✅ Atividades (${liberacoes.length})</h3><div class="activities-table"><table>
                     <thead><tr><th>Data</th><th>CNAE</th><th>Autoridade</th><th>Fiscal</th><th>Documento</th><th>Dt. Doc.</th></tr></thead><tbody>`;
@@ -1206,8 +1282,8 @@
                 });
                 html += `</tbody></table></div></div>`;
             }
-            
-            // Adicionar observações se existirem
+
+            // Observações
             const obs = (alvara.obs || '').trim();
             const obsduam = (alvara.ob_duam || '').trim();
 
@@ -1263,7 +1339,7 @@
         }
 
         function alterarTamanhoPagina() {
-            tamanhoPagina = parseInt(document.getElementById('pageSize').value);
+            tamanhoPagina = parseInt(document.getElementById('pageSize').value, 10);
             paginaAtual = 1;
             renderizarTabela();
         }
@@ -1289,14 +1365,14 @@
         }
 
         function irParaUltimaPagina() {
-            const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina);
+            const totalPaginas = Math.ceil(alvarasFiltrtrados.length / tamanhoPagina);
             paginaAtual = totalPaginas;
             renderizarTabela();
         }
 
         function atualizarBotoesPaginacao() {
             const totalPaginas = Math.ceil(alvarasFiltrados.length / tamanhoPagina);
-            
+
             document.getElementById('btnPrimeira').disabled = paginaAtual === 1;
             document.getElementById('btnAnterior').disabled = paginaAtual === 1;
             document.getElementById('btnProxima').disabled = paginaAtual >= totalPaginas || totalPaginas === 0;
