@@ -46,7 +46,8 @@
   
   background: transparent;
   border: none;
-  color: #34C759;  /* Verde iOS */
+ /* color: #34C759;  /* Verde iOS */
+  color: #ffffff;  /* Branco */ 
   
   font-size: 17px;
   font-weight: 600;
