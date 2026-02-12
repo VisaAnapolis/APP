@@ -106,6 +106,63 @@
       <h2 class="ch-title">CHANGELOG — VISA Anápolis</h2>
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
+<div class="section">
+  <h3>v2.1.2 — 12/02/2026 15:00 (Horário de Brasília – UTC−3)</h3>
+  <strong>Sincronização Automática com o CVS a cada 1 hora</strong>
+
+  <ul>
+    <li><strong>Integração contínua com o sistema legado (CVS – Delphi/Paradox):</strong>
+      <ul>
+        <li>Implementado processo automatizado de exportação e sincronização de dados a cada 60 minutos.</li>
+        <li>Atualização incremental de arquivos <code>.CSV</code> e <code>.JSON</code> diretamente do servidor interno.</li>
+        <li>Publicação automática no repositório GitHub (branch <code>main</code>).</li>
+      </ul>
+    </li>
+
+    <li><strong>Pipeline técnico consolidado:</strong>
+      <ul>
+        <li>Execução automática via script (<code>.bat</code>) com controle de log.</li>
+        <li><code>git pull</code> → cópia de arquivos atualizados → <code>commit</code> automático → <code>push</code> seguro.</li>
+        <li>Registro detalhado em log para auditoria e rastreabilidade.</li>
+      </ul>
+    </li>
+
+    <li><strong>Atualização quase em tempo real para os fiscais:</strong>
+      <ul>
+        <li>Novos alvarás, alterações cadastrais e movimentações passam a refletir no VISA App em até 1 hora.</li>
+        <li>Redução drástica da defasagem entre o banco local do CVS e o ambiente web/PWA.</li>
+        <li>Maior confiabilidade para consultas externas e tomadas de decisão.</li>
+      </ul>
+    </li>
+
+    <li><strong>Estabilidade e segurança:</strong>
+      <ul>
+        <li>Execução sem interface gráfica (background), evitando dependência de login manual no servidor.</li>
+        <li>Controle de erros com verificação de retorno (<code>errorlevel</code>).</li>
+        <li>Evita sobrescrita indevida da branch principal.</li>
+      </ul>
+    </li>
+
+    <li><strong>Marco arquitetural:</strong>
+      <ul>
+        <li>Consolida o CVS como fonte oficial de dados.</li>
+        <li>Transforma o VISA App em camada de visualização sempre sincronizada.</li>
+        <li>Estabelece base para futuras evoluções (sincronização incremental por checksum, webhooks ou migração futura para banco em nuvem).</li>
+      </ul>
+    </li>
+  </ul>
+
+  <p><strong>Impacto:</strong> o VISA App deixa de ser apenas um espelho eventual e passa a operar como painel institucional sincronizado automaticamente com o sistema oficial, elevando o nível de confiabilidade operacional e maturidade tecnológica da Vigilância Sanitária.</p>
+
+  <p><strong>Arquivos e Componentes Envolvidos:</strong></p>
+  <ul>
+    <li><code>SyncOnly.bat</code> — rotina automatizada de sincronização.</li>
+    <li>Exportadores CSV/JSON do CVS (Delphi 6).</li>
+    <li>Repositório GitHub (<code>/data</code>).</li>
+  </ul>
+</div>
+
+      
       <div class="section">
         <h3>v2.1.1 — 03/02/2026 23:59 (Horário de Brasília – UTC−3)</h3>
         <strong>Melhorias e Correções na Página de Alvarás</strong>
