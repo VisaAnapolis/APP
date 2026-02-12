@@ -671,17 +671,6 @@ Supervisão de Vigilância Sanitária</p>
       setTimeout(() => { toast.remove(); location.reload(); }, 2500);
     }
 
-    // ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
-    const APP_VERSION = '2.1.2';
-    const VERSION_KEY = 'visa_app_version';
-    const savedVersion = localStorage.getItem(VERSION_KEY);
-    
-    // ... [código existente de verificação na carga] ...
-    
-    if (savedVersion !== APP_VERSION) {
-      // ... [toast e reload] ...
-    }
-
     // ===== VERIFICAÇÃO PERIÓDICA DE ATUALIZAÇÃO (A CADA HORA) =====
     function checkVersionUpdate() {
       // ... [código da verificação periódica] ...
