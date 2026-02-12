@@ -671,6 +671,40 @@ Supervisão de Vigilância Sanitária</p>
       setTimeout(() => { toast.remove(); location.reload(); }, 2500);
     }
 
+    // ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
+    const APP_VERSION = '2.1.2';
+    const VERSION_KEY = 'visa_app_version';
+    const savedVersion = localStorage.getItem(VERSION_KEY);
+    
+    // ... [código existente de verificação na carga] ...
+    
+    if (savedVersion !== APP_VERSION) {
+      // ... [toast e reload] ...
+    }
+
+    // ===== VERIFICAÇÃO PERIÓDICA DE ATUALIZAÇÃO (A CADA HORA) =====
+    function checkVersionUpdate() {
+      // ... [código da verificação periódica] ...
+    }
+    setInterval(checkVersionUpdate, 3600000);
+    setTimeout(checkVersionUpdate, 300000);
+
+    // ===== ESCUTAR MENSAGENS DO SERVICE WORKER =====
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data.type === 'SW_UPDATED') {
+          console.log('Service Worker atualizado, recarregando...');
+          location.reload();
+        }
+      });
+    }
+
+    // ===== Cache leve (apenas para UX) =====  ← AQUI COMEÇA O BLOCO EXISTENTE
+    const AUTH_CACHE_KEY = 'visa_auth_cache';
+    // ...
+
+
+    
     // ===== Cache leve (apenas para UX) =====
     const AUTH_CACHE_KEY = 'visa_auth_cache';
     const AUTH_CACHE_DURATION = 60 * 60 * 1000; // 1h
