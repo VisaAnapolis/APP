@@ -107,6 +107,42 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.1.3 — 15/02/2026 09:10 (Horário de Brasília – UTC−3)</h3>
+  <strong>Correção estrutural na renderização das inspeções</strong>
+
+  <ul>
+    <li><strong>Inclusão dos fiscais nas inspeções:</strong>
+      <ul>
+        <li>Implementada exibição dos campos <code>Fiscal1</code>, <code>Fiscal2</code> e <code>Fiscal3</code> diretamente no card de inspeção.</li>
+        <li>Exibição condicional: campos nulos ou vazios não são renderizados.</li>
+      </ul>
+    </li>
+
+    <li><strong>Correção definitiva da ordem de renderização:</strong>
+      <ul>
+        <li>Ajuste no DOM para garantir a sequência correta: <em>Título → Fiscais → Histórico</em>.</li>
+        <li>Eliminação do erro de escopo <code>fiscaisBox is not defined</code>.</li>
+      </ul>
+    </li>
+
+    <li><strong>Estabilidade de cache / versionamento:</strong>
+      <ul>
+        <li>Ajuste de versionamento do arquivo <code>regulados.js</code> para evitar conflito com Service Worker/PWA.</li>
+        <li>Correção de carregamento após limpeza de cache.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <p><strong>Impacto:</strong> inspeções passam a exibir corretamente os fiscais responsáveis, com renderização estável, sem erros de JavaScript e mantendo compatibilidade com o modo responsivo.</p>
+
+  <p><strong>Arquivo Modificado:</strong></p>
+  <ul>
+    <li><code>regulados.js</code> — ajuste estrutural no loop de inspeções.</li>
+  </ul>
+</div>
+
+      
+<div class="section">
   <h3>v2.1.2 — 12/02/2026 15:00 (Horário de Brasília – UTC−3)</h3>
   <strong>Sincronização Automática com o CVS a cada 1 hora</strong>
 
