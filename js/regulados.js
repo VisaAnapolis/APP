@@ -9,7 +9,7 @@
 
   /**
    * Formata  data para dd/mm/aaaa
-   * Aceita formatos: "aaaa-mm-dd"   , "dd/mm/aaaa", "aaaa/mm/dd", etc.
+   * Aceita formatos: "aaaa-mm-dd", "dd/mm/aaaa", "aaaa/mm/dd", etc.
    */
   function formatDateBR(dateStr) {
     if (!dateStr || dateStr === "—" || dateStr === "-") return "—";
@@ -265,7 +265,6 @@ function normTxt(v) {
           sub.textContent = linha || "—";
 
           item.appendChild(top);
-          if (fiscaisBox) item.appendChild(fiscaisBox);
           item.appendChild(sub);
           els.atividadesList.appendChild(item);
         }
@@ -308,7 +307,6 @@ function normTxt(v) {
 
           const sub = document.createElement("div");
           sub.className = "item__sub";
-
 
           // =============================
           // FISCAIS (Fiscal1, Fiscal2, Fiscal3)
@@ -374,6 +372,7 @@ const ndoc = Number(v.ndoc || 0);
           }
 
           item.appendChild(top);
+          if (fiscaisBox) item.appendChild(fiscaisBox);
           item.appendChild(sub);
           els.inspecoesList.appendChild(item);
         }
