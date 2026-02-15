@@ -425,3 +425,22 @@
 [hidden] {
   display: none !important;
 }
+
+/* Ajuste para a tag de código discreta nos cards */
+.result-item__tag-simple {
+  font-size: 0.8em;
+  color: var(--text-tertiary, #94a3b8);
+  font-weight: 600;
+  background: var(--surface-variant, #f1f5f9);
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-primary, #e2e8f0);
+}
+
+.result-item__sub {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 4px;
+}
