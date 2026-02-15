@@ -316,6 +316,9 @@ const f1 = normTxt(v.Fiscal1);
 const f2 = normTxt(v.Fiscal2);
 const f3 = normTxt(v.Fiscal3);
 
+let fiscaisBox = null;
+
+          
 const fiscaisValidos = [f1, f2, f3].filter(Boolean);
 
 if (fiscaisValidos.length > 0) {
@@ -340,9 +343,7 @@ if (fiscaisValidos.length > 0) {
   fiscaisBox.appendChild(vals);
 
   // IMPORTANTÍSSIMO: entra antes do "Histórico", portanto antes de append do sub
-  item.appendChild(fiscaisBox);
-}
-
+  
           
           const ndoc = Number(v.ndoc || 0);
           if (ndoc > 0) {
@@ -374,6 +375,7 @@ if (fiscaisValidos.length > 0) {
           }
 
           item.appendChild(top);
+  if (fiscaisBox) item.appendChild(fiscaisBox);  // <-- AQUI
           item.appendChild(sub);
           els.inspecoesList.appendChild(item);
         }
