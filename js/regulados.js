@@ -265,6 +265,7 @@ function normTxt(v) {
           sub.textContent = linha || "—";
 
           item.appendChild(top);
+          if (fiscaisBox) item.appendChild(fiscaisBox);
           item.appendChild(sub);
           els.atividadesList.appendChild(item);
         }
@@ -308,42 +309,42 @@ function normTxt(v) {
           const sub = document.createElement("div");
           sub.className = "item__sub";
 
-// =============================
-// FISCAIS (Fiscal1, Fiscal2, Fiscal3)
-// Deve ficar DEPOIS do título (top) e ANTES do Histórico (sub)
-// =============================
-let fiscaisBox = null;
 
-const f1 = normTxt(v.Fiscal1);
-const f2 = normTxt(v.Fiscal2);
-const f3 = normTxt(v.Fiscal3);
+          // =============================
+          // FISCAIS (Fiscal1, Fiscal2, Fiscal3)
+          // Deve ficar DEPOIS do título (top) e ANTES do Histórico (sub)
+          // =============================
+          let fiscaisBox = null;
 
-const fiscaisValidos = [f1, f2, f3].filter(Boolean);
+          const f1 = normTxt(v.Fiscal1);
+          const f2 = normTxt(v.Fiscal2);
+          const f3 = normTxt(v.Fiscal3);
 
-if (fiscaisValidos.length > 0) {
-  fiscaisBox = document.createElement("div");
-  fiscaisBox.className = "insp-fiscais";
+          const fiscaisValidos = [f1, f2, f3].filter(Boolean);
 
-  const label = document.createElement("div");
-  label.className = "insp-fiscais__label";
-  label.textContent = "👮 Fiscais";
-  fiscaisBox.appendChild(label);
+          if (fiscaisValidos.length > 0) {
+            fiscaisBox = document.createElement("div");
+            fiscaisBox.className = "insp-fiscais";
 
-  const vals = document.createElement("div");
-  vals.className = "insp-fiscais__vals";
+            const label = document.createElement("div");
+            label.className = "insp-fiscais__label";
+            label.textContent = "👮 Fiscais";
+            fiscaisBox.appendChild(label);
 
-  for (const nome of fiscaisValidos) {
-    const linha = document.createElement("div");
-    linha.className = "insp-fiscal";
-    linha.textContent = "• " + nome;
-    vals.appendChild(linha);
-  }
+            const vals = document.createElement("div");
+            vals.className = "insp-fiscais__vals";
 
-  fiscaisBox.appendChild(vals);
-}
+            for (const nome of fiscaisValidos) {
+              const linha = document.createElement("div");
+              linha.className = "insp-fiscal";
+              linha.textContent = "• " + nome;
+              vals.appendChild(linha);
+            }
 
-          
-          const ndoc = Number(v.ndoc || 0);
+            fiscaisBox.appendChild(vals);
+          }
+
+const ndoc = Number(v.ndoc || 0);
           if (ndoc > 0) {
             const btn = document.createElement("button");
             btn.type = "button";
