@@ -94,14 +94,14 @@
   function openModal(title, content) {
     if (els.modalTitle) els.modalTitle.textContent = title;
     if (els.modalMemo) els.modalMemo.textContent = content;
-    if (els.modalBackdrop) els.modalBackdrop.hidden = false;
-    if (els.modal) els.modal.hidden = false;
+    if (els.modalBackdrop) els.modalBackdrop.style.display = "block";
+    if (els.modal) els.modal.style.display = "flex";
     document.body.style.overflow = "hidden";
   }
 
   function closeModal() {
-    if (els.modalBackdrop) els.modalBackdrop.hidden = true;
-    if (els.modal) els.modal.hidden = true;
+    if (els.modalBackdrop) els.modalBackdrop.style.display = "none";
+    if (els.modal) els.modal.style.display = "none";
     document.body.style.overflow = "";
   }
 
@@ -267,7 +267,7 @@
       els.q?.focus();
     });
     els.btnCloseDetail?.addEventListener("click", hideDetail);
-    els.btnCloseModal?.addEventListener("click", closeModal);
+    byId("btnCloseModal")?.addEventListener("click", closeModal);
     els.modalBackdrop?.addEventListener("click", closeModal);
     
     els.btnAtividades?.addEventListener("click", () => {
