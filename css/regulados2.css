@@ -1,6 +1,7 @@
 /**
  * REGULADOS V2 - VISA ANÁPOLIS
- * Layout modernizado baseado em Design Tokens
+ * Design inspirado no APP OS SIM
+ * Estilo moderno, limpo e profissional
  */
 
 /* ========================================
@@ -8,7 +9,7 @@
    ======================================== */
 .container {
   max-width: 900px;
-  margin: 22px auto 30px;
+  margin: 16px auto 30px;
   padding: 0 16px;
   padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
 }
@@ -18,30 +19,32 @@
    ======================================== */
 .card {
   background: var(--card-bg, #ffffff);
-  border-radius: 16px;
-  padding: 20px 24px;
+  border-radius: 12px;
+  padding: 0;
   margin-bottom: 16px;
   border: 1px solid var(--border-primary, #e2e8f0);
-  box-shadow: var(--shadow-sm, 0 4px 6px -1px rgba(0,0,0,0.1));
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  overflow: hidden;
 }
 
 .card__title {
-  color: var(--primary, #2c5aa0);
-  font-size: 1.15em;
+  background: linear-gradient(135deg, #3b5998, #4a6fa5);
+  color: #ffffff;
+  font-size: 1.1em;
   font-weight: 700;
-  margin-bottom: 16px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--border-primary, #e2e8f0);
+  padding: 16px 20px;
   display: flex;
   align-items: center;
   gap: 8px;
+  margin: 0;
+  border: none;
 }
 
 /* ========================================
    BUSCA E FILTROS
    ======================================== */
 .search-section {
+  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -63,7 +66,7 @@
   flex: 1;
   padding: 14px 16px;
   border: 1px solid var(--border-primary, #cbd5e1);
-  border-radius: 12px;
+  border-radius: 8px;
   font-size: 16px;
   background: var(--surface, #ffffff);
   color: var(--text-primary, #1a202c);
@@ -72,12 +75,12 @@
 
 .search-input:focus {
   outline: none;
-  border-color: var(--primary, #2c5aa0);
-  box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.15);
+  border-color: #3b5998;
+  box-shadow: 0 0 0 3px rgba(59, 89, 152, 0.1);
 }
 
 .search-meta {
-  margin-top: 12px;
+  padding: 0 20px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -88,7 +91,7 @@
 .status-text {
   font-size: 0.9em;
   font-weight: 600;
-  color: var(--primary, #2c5aa0);
+  color: #3b5998;
 }
 
 .hint-text {
@@ -100,29 +103,29 @@
    RESULTADOS DA BUSCA
    ======================================== */
 .results-container {
-  margin-top: 20px;
+  padding: 0 20px 20px;
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .result-item {
   width: 100%;
   text-align: left;
-  background: var(--surface-variant, #f8fafc);
+  background: var(--surface, #ffffff);
   border: 1px solid var(--border-primary, #e2e8f0);
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 14px 16px;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .result-item:hover {
-  background: var(--surface, #ffffff);
-  border-color: var(--primary, #2c5aa0);
-  box-shadow: var(--shadow-md);
+  background: #f8fafc;
+  border-color: #3b5998;
+  box-shadow: 0 4px 12px rgba(59, 89, 152, 0.15);
   transform: translateY(-2px);
 }
 
@@ -130,6 +133,7 @@
   font-weight: 700;
   font-size: 1.05em;
   color: var(--text-primary, #1a202c);
+  margin-bottom: 2px;
 }
 
 .result-item__sub {
@@ -138,27 +142,29 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
 }
 
-.result-item__tag {
+.result-item__tag-simple {
   font-size: 0.75em;
-  background: var(--primary-light, #e0e7ff);
-  color: var(--primary, #2c5aa0);
-  padding: 2px 8px;
-  border-radius: 99px;
+  color: #3b5998;
   font-weight: 600;
+  background: #e8eef7;
+  padding: 3px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
 }
 
 /* ========================================
-   PAINEL DE DETALHES (MODERNO)
+   PAINEL DE DETALHES (ESTILO APP OS SIM)
    ======================================== */
 .detail-panel {
   overflow: hidden;
-  padding: 0 !important; /* Reset padding do card */
+  padding: 0 !important;
 }
 
 .detail-header {
-  background: linear-gradient(135deg, var(--primary, #1a3a6b), var(--primary-dark, #2c5aa0));
+  background: linear-gradient(135deg, #3b5998, #4a6fa5);
   color: #ffffff;
   padding: 24px;
   display: flex;
@@ -180,23 +186,32 @@
 
 .detail-header__sub {
   font-size: 0.95em;
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 .detail-body {
-  padding: 24px;
+  padding: 0;
+  background: #f8fafc;
 }
 
+/* Grid de Informações */
 .detail-grid {
+  padding: 20px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  gap: 16px;
+  background: #ffffff;
 }
 
 .info-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  padding: 12px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.info-group:last-child {
+  border-bottom: none;
 }
 
 .info-label {
@@ -204,33 +219,35 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: var(--text-tertiary, #94a3b8);
+  color: #3b5998;
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
 .info-value {
-  font-size: 1.05em;
+  font-size: 1em;
   color: var(--text-primary, #1a202c);
-  font-weight: 500;
+  font-weight: 400;
   word-break: break-word;
+  line-height: 1.5;
 }
 
 /* ========================================
-   BOTÕES DE AÇÃO
+   BOTÕES DE AÇÃO (ESTILO APP OS SIM)
    ======================================== */
 .detail-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  padding: 16px 24px;
-  background: var(--surface-variant, #f1f5f9);
-  border-top: 1px solid var(--border-primary, #e2e8f0);
+  padding: 16px 20px;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  margin: 0 !important;
 }
 
 .btn-action {
-  padding: 12px;
+  padding: 14px;
   border-radius: 10px;
   font-weight: 700;
   font-size: 0.95em;
@@ -240,25 +257,32 @@
   gap: 8px;
   cursor: pointer;
   transition: all 0.2s;
-  border: 1px solid var(--border-primary, #cbd5e1);
-  background: var(--surface, #ffffff);
-  color: var(--text-primary, #1a202c);
+  border: none;
+  background: linear-gradient(135deg, #3b5998, #4a6fa5);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(59, 89, 152, 0.3);
 }
 
 .btn-action:hover {
-  background: var(--primary, #2c5aa0);
-  color: #ffffff;
-  border-color: var(--primary, #2c5aa0);
+  background: linear-gradient(135deg, #2d4373, #3b5998);
+  box-shadow: 0 4px 12px rgba(59, 89, 152, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-action:active {
+  transform: translateY(0);
 }
 
 .btn-close-panel {
   background: rgba(255,255,255,0.2);
   border: 1px solid rgba(255,255,255,0.3);
   color: #ffffff;
-  padding: 8px 16px;
+  padding: 10px 18px;
   border-radius: 8px;
   font-weight: 600;
   font-size: 0.9em;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
 .btn-close-panel:hover {
@@ -266,95 +290,98 @@
 }
 
 /* ========================================
-   LISTAS (ATIVIDADES / INSPEÇÕES)
+   SEÇÕES (ATIVIDADES / INSPEÇÕES)
    ======================================== */
 .sub-section {
-  margin-top: 24px;
+  margin: 0;
+  background: #ffffff;
+  border-top: 8px solid #f8fafc;
 }
 
 .sub-section__title {
-  font-size: 1.1em;
+  font-size: 1.05em;
   font-weight: 700;
-  margin-bottom: 12px;
-  color: var(--primary, #2c5aa0);
+  padding: 16px 20px;
+  color: #3b5998;
   display: flex;
   align-items: center;
   gap: 8px;
+  background: #f8fafc;
+  border-left: 4px solid #3b5998;
+  margin: 0;
 }
 
 .list-container {
+  padding: 16px 20px;
   display: grid;
-  gap: 10px;
-  max-height: 400px;
-  overflow-y: auto;
-  padding-right: 4px;
+  gap: 12px;
+  max-height: none;
+  overflow: visible;
 }
 
 .list-item {
-  background: var(--surface, #ffffff);
-  border: 1px solid var(--border-primary, #e2e8f0);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
-  padding: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .list-item__header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
+  gap: 12px;
 }
 
 .list-item__title {
   font-weight: 700;
   font-size: 0.95em;
+  color: #1a202c;
+  flex: 1;
+  line-height: 1.4;
 }
 
 .list-item__badge {
   font-size: 0.75em;
-  padding: 2px 8px;
-  border-radius: 4px;
-  background: var(--surface-variant, #f1f5f9);
-  color: var(--text-secondary, #64748b);
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: #e8eef7;
+  color: #3b5998;
   font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .list-item__desc {
-  font-size: 0.85em;
+  font-size: 0.9em;
   color: var(--text-secondary, #64748b);
+  line-height: 1.5;
 }
 
-/* ========================================
-   RESPONSIVIDADE
-   ======================================== */
-@media (max-width: 600px) {
-  .detail-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .detail-actions {
-    grid-template-columns: 1fr;
-  }
-  
-  .search-input-wrapper {
-    flex-direction: column;
-  }
-  
-  .btn-clear {
-    width: 100%;
-  }
+/* Fiscais nas inspeções */
+.list-item__fiscais {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border-radius: 6px;
+  border-left: 3px solid #3b5998;
 }
 
-/* ========================================
-   DARK MODE OVERRIDES (Se necessário além dos tokens)
-   ======================================== */
-@media (prefers-color-scheme: dark) {
-  .result-item:hover {
-    background: var(--surface-variant);
-  }
-  
-  .btn-action {
-    background: var(--surface-variant);
-  }
+.list-item__fiscais strong {
+  display: block;
+  font-size: 0.85em;
+  color: #3b5998;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.list-item__fiscais div {
+  font-size: 0.9em;
+  color: #475569;
+  line-height: 1.6;
 }
 
 /* ========================================
@@ -376,71 +403,109 @@
   justify-content: center;
   padding: 20px;
   z-index: 1001;
-  pointer-events: none; /* Permite clicar através do container do modal */
+  pointer-events: none;
 }
 
 .modalBox {
   width: min(800px, 100%);
   max-height: 90vh;
   background: var(--surface, #ffffff);
-  border-radius: 20px;
-  box-shadow: var(--shadow-lg);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  pointer-events: auto; /* Reabilita cliques dentro da caixa do modal */
+  pointer-events: auto;
 }
 
 .modalTop {
-  padding: 16px 24px;
-  background: var(--surface-variant, #f8fafc);
-  border-bottom: 1px solid var(--border-primary, #e2e8f0);
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #3b5998, #4a6fa5);
+  color: #ffffff;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
 }
 
 .mTitle {
   font-weight: 800;
-  font-size: 1.1em;
-  color: var(--primary, #2c5aa0);
+  font-size: 1.15em;
+  color: #ffffff;
 }
 
 .mBody {
   padding: 24px;
   overflow-y: auto;
   flex: 1;
+  background: #f8fafc;
 }
 
 #modalMemo {
   white-space: pre-wrap;
   word-break: break-word;
-  font-family: inherit;
-  font-size: 1em;
-  line-height: 1.6;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 0.95em;
+  line-height: 1.7;
   color: var(--text-primary, #1a202c);
   margin: 0;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
 }
 
 [hidden] {
   display: none !important;
 }
 
-/* Ajuste para a tag de código discreta nos cards */
-.result-item__tag-simple {
-  font-size: 0.8em;
-  color: var(--text-tertiary, #94a3b8);
-  font-weight: 600;
-  background: var(--surface-variant, #f1f5f9);
-  padding: 2px 8px;
-  border-radius: 6px;
-  border: 1px solid var(--border-primary, #e2e8f0);
+/* ========================================
+   RESPONSIVIDADE
+   ======================================== */
+@media (max-width: 600px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .detail-actions {
+    grid-template-columns: 1fr;
+  }
+  
+  .search-input-wrapper {
+    flex-direction: column;
+  }
+  
+  .list-item__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .list-item__badge {
+    align-self: flex-start;
+  }
 }
 
-.result-item__sub {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-top: 4px;
+/* ========================================
+   DARK MODE
+   ======================================== */
+@media (prefers-color-scheme: dark) {
+  .result-item:hover {
+    background: var(--surface-variant);
+  }
+  
+  .btn-action {
+    background: linear-gradient(135deg, #3b5998, #4a6fa5);
+  }
+  
+  .detail-body {
+    background: var(--surface);
+  }
+  
+  .sub-section {
+    background: var(--surface);
+  }
+  
+  .sub-section__title {
+    background: var(--surface-variant);
+  }
 }
