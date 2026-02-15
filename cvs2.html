@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Regulados V2 - VISA Anápolis</title>
-  <meta name="theme-color" content="#1a3a6b" />
+  <meta name="theme-color" content="#3b5998" />
   
   <!-- Sistema de Design - VISA Anápolis -->
   <link rel="stylesheet" href="./css/design-tokens.css">
@@ -26,7 +26,7 @@
     <!-- Card de Busca -->
     <section class="card">
       <div class="card__title">
-        <span>🔍</span> Pesquisa de Regulados
+        🔍 Pesquisa de Regulados
       </div>
       
       <div class="search-section">
@@ -76,7 +76,7 @@
             <span id="dDoc" class="info-value">—</span>
           </div>
           <div class="info-group">
-            <span class="info-label">📍 Endereço</span>
+            <span class="info-label">📍 Endereço / Contato</span>
             <span id="dEnd" class="info-value">—</span>
           </div>
           <div class="info-group">
@@ -84,7 +84,7 @@
             <span id="dBairro" class="info-value">—</span>
           </div>
           <div class="info-group">
-            <span class="info-label">📄 Alvará Atual</span>
+            <span class="info-label">📄 Alvará (exercício)</span>
             <span id="dAlvEx" class="info-value">—</span>
           </div>
           <div class="info-group">
@@ -94,14 +94,14 @@
         </div>
 
         <!-- Atalhos -->
-        <div class="detail-actions" style="margin-top: 24px; padding: 0; background: none; border: none;">
-          <button id="btnAtividades" class="btn-action">📂 Ver Atividades</button>
-          <button id="btnInspecoes" class="btn-action">🔍 Ver Inspeções</button>
+        <div class="detail-actions">
+          <button id="btnAtividades" class="btn-action">📂 Atividades</button>
+          <button id="btnInspecoes" class="btn-action">🔍 Inspeções</button>
         </div>
 
         <!-- Atividades -->
         <section class="sub-section">
-          <div class="sub-section__title">📂 Atividades Econômicas (CNAE)</div>
+          <div class="sub-section__title">📂 Atividades (CNAE)</div>
           <div id="atividadesList" class="list-container"></div>
         </section>
 
@@ -119,10 +119,8 @@
   <div id="modal" class="modal" style="display: none;">
     <div class="modalBox">
       <div class="modalTop">
-        <div>
-          <div id="modalTitle" class="mTitle">Documento</div>
-        </div>
-        <button id="btnCloseModal" class="btn-action" type="button">Fechar</button>
+        <div id="modalTitle" class="mTitle">Documento</div>
+        <button id="btnCloseModal" class="btn-close-panel" type="button">Fechar</button>
       </div>
       <div class="mBody">
         <pre id="modalMemo"></pre>
