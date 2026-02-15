@@ -310,19 +310,18 @@ function normTxt(v) {
 
 // =============================
 // FISCAIS (Fiscal1, Fiscal2, Fiscal3)
-// ENTRE o título (Termo...) e o Histórico
+// Deve ficar DEPOIS do título (top) e ANTES do Histórico (sub)
 // =============================
+let fiscaisBox = null;
+
 const f1 = normTxt(v.Fiscal1);
 const f2 = normTxt(v.Fiscal2);
 const f3 = normTxt(v.Fiscal3);
 
-let fiscaisBox = null;
-
-          
 const fiscaisValidos = [f1, f2, f3].filter(Boolean);
 
 if (fiscaisValidos.length > 0) {
-  const fiscaisBox = document.createElement("div");
+  fiscaisBox = document.createElement("div");
   fiscaisBox.className = "insp-fiscais";
 
   const label = document.createElement("div");
@@ -341,9 +340,8 @@ if (fiscaisValidos.length > 0) {
   }
 
   fiscaisBox.appendChild(vals);
+}
 
-  // IMPORTANTÍSSIMO: entra antes do "Histórico", portanto antes de append do sub
-  
           
           const ndoc = Number(v.ndoc || 0);
           if (ndoc > 0) {
@@ -375,7 +373,6 @@ if (fiscaisValidos.length > 0) {
           }
 
           item.appendChild(top);
-  if (fiscaisBox) item.appendChild(fiscaisBox);  // <-- AQUI
           item.appendChild(sub);
           els.inspecoesList.appendChild(item);
         }
