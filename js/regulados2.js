@@ -47,6 +47,10 @@
     return String(s || "").toLowerCase().trim();
   }
 
+  function normTxt(v) {
+    return (v == null ? "" : String(v)).trim();
+  }
+
   async function fetchJson(url) {
     const r = await fetch(url, { cache: "no-store" });
     if (!r.ok) {
@@ -123,7 +127,7 @@
     for (const it of list.slice(0, 80)) {
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "result-item"; // Usando a classe da V2
+      btn.className = "result-item";
 
       const title = document.createElement("div");
       title.className = "result-item__title";
@@ -136,7 +140,7 @@
       docSpan.textContent = it.documento || "—";
       
       const tagSpan = document.createElement("span");
-      tagSpan.className = "result-item__tag-simple"; // Nova classe discreta
+      tagSpan.className = "result-item__tag-simple";
       tagSpan.textContent = `#${it.codigo}`;
 
       sub.appendChild(docSpan);
@@ -205,21 +209,33 @@
         for (const a of atvs) {
           const item = document.createElement("div");
           item.className = "list-item";
-          item.innerHTML = `
-            <div class="list-item__header">
-              <span class="list-item__title">${a.subclasse || "—"}</span>
-              <span class="list-item__badge">${a.tipo || "—"}</span>
-            </div>
-            <div class="list-item__desc">
-              ${[a.atividade, a.equipe ? `Equipe: ${a.equipe}` : null, a.complexidade ? `Complexidade: ${a.complexidade}` : null].filter(Boolean).join(" · ")}
-            </div>
-          `;
+          
+          const header = document.createElement("div");
+          header.className = "list-item__header";
+          
+          const itemTitle = document.createElement("span");
+          itemTitle.className = "list-item__title";
+          itemTitle.textContent = a.subclasse || "—";
+          
+          const badge = document.createElement("span");
+          badge.className = "list-item__badge";
+          badge.textContent = a.tipo || "—";
+          
+          header.appendChild(itemTitle);
+          header.appendChild(badge);
+          
+          const desc = document.createElement("div");
+          desc.className = "list-item__desc";
+          desc.textContent = [a.atividade, a.equipe ? `Equipe: ${a.equipe}` : null, a.complexidade ? `Complexidade: ${a.complexidade}` : null].filter(Boolean).join(" · ");
+          
+          item.appendChild(header);
+          item.appendChild(desc);
           els.atividadesList.appendChild(item);
         }
       }
     }
 
-    // Inspeções
+    // Inspeções (LÓGICA COMPLETA DO REGULADOS1.JS)
     const insps = Array.isArray(reg.inspecoes) ? reg.inspecoes : [];
     if (els.inspecoesList) {
       els.inspecoesList.innerHTML = "";
@@ -236,29 +252,43 @@
 
           const top = document.createElement("div");
           top.className = "list-item__header";
-          top.innerHTML = `
-            <span class="list-item__title">${tipo} ${num} · ${dt}</span>
-            <span class="list-item__badge">${(v.pz_retorno !== undefined && v.pz_retorno !== null) ? `Prazo: ${v.pz_retorno} d` : "Prazo: —"}</span>
-          `;
+          
+          const itemTitle = document.createElement("span");
+          itemTitle.className = "list-item__title";
+          itemTitle.textContent = `${tipo} ${num} · ${dt}`;
+          
+          const badge = document.createElement("span");
+          badge.className = "list-item__badge";
+          badge.textContent = (v.pz_retorno !== undefined && v.pz_retorno !== null) ? `Prazo: ${v.pz_retorno} d` : "Prazo: —";
+          
+          top.appendChild(itemTitle);
+          top.appendChild(badge);
           item.appendChild(top);
 
-          // Fiscais (Lógica do regulados1.js)
-          if (Array.isArray(v.fiscais) && v.fiscais.length > 0) {
+          // FISCAIS (Lógica exata do regulados1.js)
+          const f1 = normTxt(v.Fiscal1);
+          const f2 = normTxt(v.Fiscal2);
+          const f3 = normTxt(v.Fiscal3);
+          const fiscaisValidos = [f1, f2, f3].filter(Boolean);
+
+          if (fiscaisValidos.length > 0) {
             const fiscaisBox = document.createElement("div");
-            fiscaisBox.className = "list-item__desc";
-            fiscaisBox.style.marginTop = "4px";
-            fiscaisBox.style.padding = "6px 8px";
-            fiscaisBox.style.background = "var(--surface-variant)";
-            fiscaisBox.style.borderRadius = "6px";
-            fiscaisBox.innerHTML = "<strong>Fiscais:</strong>";
-            v.fiscais.forEach(f => {
+            fiscaisBox.className = "list-item__fiscais";
+            
+            const strong = document.createElement("strong");
+            strong.textContent = "👮 Fiscais";
+            fiscaisBox.appendChild(strong);
+            
+            fiscaisValidos.forEach(nome => {
               const fDiv = document.createElement("div");
-              fDiv.textContent = "• " + (f.nome || "—");
+              fDiv.textContent = "• " + nome;
               fiscaisBox.appendChild(fDiv);
             });
+            
             item.appendChild(fiscaisBox);
           }
 
+          // Botão de abrir documento
           const ndoc = Number(v.ndoc || 0);
           if (ndoc > 0) {
             const btn = document.createElement("button");
@@ -268,7 +298,14 @@
             btn.innerHTML = "📄 Abrir documento";
             btn.onclick = () => openHistorico(ndoc, tipo, num);
             item.appendChild(btn);
+          } else {
+            const noDoc = document.createElement("div");
+            noDoc.className = "hint-text";
+            noDoc.style.marginTop = "8px";
+            noDoc.textContent = "Histórico: —";
+            item.appendChild(noDoc);
           }
+          
           els.inspecoesList.appendChild(item);
         }
       }
