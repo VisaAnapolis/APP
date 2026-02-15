@@ -252,44 +252,6 @@
 
           const sub = document.createElement("div");
           sub.className = "item__sub";
-
-// =============================
-// FISCAIS (Fiscal1, Fiscal2, Fiscal3)
-// =============================
-function normTxt(v) {
-  return (v == null ? "" : String(v)).trim();
-}
-
-const f1 = normTxt(v.Fiscal1);
-const f2 = normTxt(v.Fiscal2);
-const f3 = normTxt(v.Fiscal3);
-
-const fiscaisValidos = [f1, f2, f3].filter(Boolean);
-
-if (fiscaisValidos.length > 0) {
-  const fiscaisBox = document.createElement("div");
-  fiscaisBox.className = "insp-fiscais";
-
-  const label = document.createElement("div");
-  label.className = "insp-fiscais__label";
-  label.textContent = "👮 Fiscais";
-  fiscaisBox.appendChild(label);
-
-  const vals = document.createElement("div");
-  vals.className = "insp-fiscais__vals";
-
-  for (const nome of fiscaisValidos) {
-    const linha = document.createElement("div");
-    linha.className = "insp-fiscal";
-    linha.textContent = "• " + nome;
-    vals.appendChild(linha);
-  }
-
-  fiscaisBox.appendChild(vals);
-  item.appendChild(fiscaisBox); // INSERE ENTRE título e histórico
-}
-
-          
           const linha = [
             a.atividade ? a.atividade : null,
             a.equipe ? `Equipe: ${a.equipe}` : null,
