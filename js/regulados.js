@@ -8,7 +8,7 @@
   const hisBucket = (ndoc) => String((Number(ndoc) || 0) % 100).padStart(2, "0");
 
   /**
-   * Formata data para dd/mm/aaaa
+   * Formata  data para dd/mm/aaaa
    * Aceita formatos: "aaaa-mm-dd", "dd/mm/aaaa", "aaaa/mm/dd", etc.
    */
   function formatDateBR(dateStr) {
