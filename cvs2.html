@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Regulados V2 - VISA Anápolis</title>
+  <meta name="theme-color" content="#1a3a6b" />
+  
+  <!-- Sistema de Design - VISA Anápolis -->
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/header-component.css">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/layouts.css">
+  
+  <!-- Estilos específicos da V2 -->
+  <link rel="stylesheet" href="./css/regulados2.css">
+</head>
+
+<body>
+  <!-- Header Automático via header-loader.js -->
+  <div id="app-header" data-back-url="index.html" data-page-title="Histórico dos Regulados"></div>
+
+  <main class="container">
+    
+    <!-- Card de Busca -->
+    <section class="card">
+      <div class="card__title">
+        <span>🔍</span> Pesquisa de Regulados
+      </div>
+      
+      <div class="search-section">
+        <label class="search-label" for="q">Razão Social, Fantasia, CPF/CNPJ ou Código:</label>
+        <div class="search-input-wrapper">
+          <input
+            id="q"
+            class="search-input"
+            type="search"
+            placeholder="Digite para buscar..."
+            autocomplete="off"
+            inputmode="search"
+          />
+          <button id="btnClear" class="btn-action" type="button">
+            Limpar Busca
+          </button>
+        </div>
+      </div>
+
+      <div class="search-meta">
+        <div id="status" class="status-text">Iniciando...</div>
+        <div class="hint-text">Exibindo os primeiros 50 resultados</div>
+      </div>
+
+      <!-- Resultados -->
+      <div id="results" class="results-container" aria-live="polite"></div>
+    </section>
+
+    <!-- Painel de Detalhes -->
+    <aside id="detailPanel" class="card detail-panel" hidden>
+      <div class="detail-header">
+        <div class="detail-header__info">
+          <div id="dTitle" class="detail-header__title">—</div>
+          <div id="dSub" class="detail-header__sub">—</div>
+        </div>
+        <button id="btnCloseDetail" class="btn-close-panel" type="button">Fechar</button>
+      </div>
+
+      <div class="detail-body">
+        <div class="detail-grid">
+          <div class="info-group">
+            <span class="info-label">📋 Código</span>
+            <span id="dCodigo" class="info-value">—</span>
+          </div>
+          <div class="info-group">
+            <span class="info-label">🆔 Documento</span>
+            <span id="dDoc" class="info-value">—</span>
+          </div>
+          <div class="info-group">
+            <span class="info-label">📍 Endereço</span>
+            <span id="dEnd" class="info-value">—</span>
+          </div>
+          <div class="info-group">
+            <span class="info-label">🏘️ Bairro</span>
+            <span id="dBairro" class="info-value">—</span>
+          </div>
+          <div class="info-group">
+            <span class="info-label">📄 Alvará Atual</span>
+            <span id="dAlvEx" class="info-value">—</span>
+          </div>
+          <div class="info-group">
+            <span class="info-label">📅 Validade</span>
+            <span id="dAlvVal" class="info-value">—</span>
+          </div>
+        </div>
+
+        <!-- Atalhos -->
+        <div class="detail-actions" style="margin-top: 24px; padding: 0; background: none; border: none;">
+          <button id="btnAtividades" class="btn-action">📂 Ver Atividades</button>
+          <button id="btnInspecoes" class="btn-action">🔍 Ver Inspeções</button>
+        </div>
+
+        <!-- Atividades -->
+        <section class="sub-section">
+          <div class="sub-section__title">📂 Atividades Econômicas (CNAE)</div>
+          <div id="atividadesList" class="list-container"></div>
+        </section>
+
+        <!-- Inspeções -->
+        <section class="sub-section">
+          <div class="sub-section__title">🔍 Histórico de Inspeções</div>
+          <div id="inspecoesList" class="list-container"></div>
+        </section>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Modal de Documentos -->
+  <div id="modalBackdrop" class="modalBackdrop" hidden></div>
+  <div id="modal" class="modal" hidden>
+    <div class="modalBox">
+      <div class="modalTop">
+        <div>
+          <div id="modalTitle" class="mTitle">Documento</div>
+        </div>
+        <button id="btnCloseModal" class="btn-action" type="button">Fechar</button>
+      </div>
+      <div class="mBody">
+        <pre id="modalMemo"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="./js/header-loader.js" defer></script>
+  <script src="./js/regulados2.js" defer></script>
+
+  <!-- Firebase Auth -->
+  <script type="module">
+    import { protectPage } from "./guard.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
+      authDomain: "visam-3a30b.firebaseapp.com",
+      projectId: "visam-3a30b",
+      messagingSenderId: "308899251430",
+      appId: "1:308899251430:web:0053cdbd0bed7f0de76727"
+    };
+
+    protectPage({
+      firebaseConfig,
+      onAuthorized: () => {
+        console.log("Usuário autorizado na V2");
+      }
+    });
+  </script>
+</body>
+</html>
