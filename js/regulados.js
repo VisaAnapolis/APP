@@ -62,6 +62,11 @@
     return String(s || "").toLowerCase().trim();
   }
 
+function normTxt(v) {
+  return (v == null ? "" : String(v)).trim();
+}
+
+  
   async function fetchJson(url) {
     const r = await fetch(url, { cache: "no-store" });
     if (!r.ok) {
@@ -303,6 +308,42 @@
           const sub = document.createElement("div");
           sub.className = "item__sub";
 
+// =============================
+// FISCAIS (Fiscal1, Fiscal2, Fiscal3)
+// ENTRE o título (Termo...) e o Histórico
+// =============================
+const f1 = normTxt(v.Fiscal1);
+const f2 = normTxt(v.Fiscal2);
+const f3 = normTxt(v.Fiscal3);
+
+const fiscaisValidos = [f1, f2, f3].filter(Boolean);
+
+if (fiscaisValidos.length > 0) {
+  const fiscaisBox = document.createElement("div");
+  fiscaisBox.className = "insp-fiscais";
+
+  const label = document.createElement("div");
+  label.className = "insp-fiscais__label";
+  label.textContent = "👮 Fiscais";
+  fiscaisBox.appendChild(label);
+
+  const vals = document.createElement("div");
+  vals.className = "insp-fiscais__vals";
+
+  for (const nome of fiscaisValidos) {
+    const linha = document.createElement("div");
+    linha.className = "insp-fiscal";
+    linha.textContent = "• " + nome;
+    vals.appendChild(linha);
+  }
+
+  fiscaisBox.appendChild(vals);
+
+  // IMPORTANTÍSSIMO: entra antes do "Histórico", portanto antes de append do sub
+  item.appendChild(fiscaisBox);
+}
+
+          
           const ndoc = Number(v.ndoc || 0);
           if (ndoc > 0) {
             const btn = document.createElement("button");
