@@ -9,7 +9,7 @@
 
   /**
    * Formata  data para dd/mm/aaaa
-   * Aceita formatos: "aaaa-mm-dd", "dd/mm/aaaa", "aaaa/mm/dd", etc.
+   * Aceita formatos: "aaaa-mm-dd"   , "dd/mm/aaaa", "aaaa/mm/dd", etc.
    */
   function formatDateBR(dateStr) {
     if (!dateStr || dateStr === "—" || dateStr === "-") return "—";
