@@ -1,511 +1,375 @@
-/**
- * REGULADOS V2 - VISA ANÁPOLIS
- * Design inspirado no APP OS SIM
- * Estilo moderno, limpo e profissional
- */
+/* 
+   REGULADOS V2 - DESIGN INSPIRADO NO VISA.MANUS.SPACE
+   Focado em legibilidade, espaçamento e responsividade (Mobile-First)
+*/
 
-/* ========================================
-   CONTAINER E ESTRUTURA
-   ======================================== */
-.container {
-  max-width: 900px;
-  margin: 16px auto 30px;
-  padding: 0 16px;
-  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+:root {
+    --primary-color: #3b5998;
+    --primary-light: #f0f4f8;
+    --text-main: #2d3748;
+    --text-muted: #718096;
+    --bg-card: #ffffff;
+    --bg-page: #f7fafc;
+    --border-color: #e2e8f0;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --radius: 12px;
 }
 
-/* ========================================
-   CARDS (PADRÃO)
-   ======================================== */
+/* Dark Mode via Design Tokens ou Preferência do Sistema */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-page: #1a202c;
+        --bg-card: #2d3748;
+        --text-main: #f7fafc;
+        --text-muted: #a0aec0;
+        --border-color: #4a5568;
+    }
+}
+
+body {
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+/* Cards */
 .card {
-  background: var(--card-bg, #ffffff);
-  border-radius: 12px;
-  padding: 0;
-  margin-bottom: 16px;
-  border: 1px solid var(--border-primary, #e2e8f0);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  overflow: hidden;
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
 }
 
 .card__title {
-  background: linear-gradient(135deg, #3b5998, #4a6fa5);
-  color: #ffffff;
-  font-size: 1.1em;
-  font-weight: 700;
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  border: none;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-/* ========================================
-   BUSCA E FILTROS
-   ======================================== */
+/* Busca */
 .search-section {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .search-label {
-  font-weight: 600;
-  font-size: 0.95em;
-  color: var(--text-secondary, #64748b);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
 }
 
 .search-input-wrapper {
-  display: flex;
-  gap: 10px;
-  flex-direction: column;
+    display: flex;
+    gap: 8px;
 }
 
 .search-input {
-  flex: 1;
-  padding: 14px 16px;
-  border: 1px solid var(--border-primary, #cbd5e1);
-  border-radius: 8px;
-  font-size: 16px;
-  background: var(--surface, #ffffff);
-  color: var(--text-primary, #1a202c);
-  transition: border-color 0.2s, box-shadow 0.2s;
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    background: var(--bg-page);
+    color: var(--text-main);
+    transition: border-color 0.2s;
 }
 
 .search-input:focus {
-  outline: none;
-  border-color: #3b5998;
-  box-shadow: 0 0 0 3px rgba(59, 89, 152, 0.1);
+    outline: none;
+    border-color: var(--primary-color);
 }
 
-.search-meta {
-  padding: 0 20px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
+.btn-action {
+    background: linear-gradient(135deg, var(--primary-color), #4a69ad);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
-.status-text {
-  font-size: 0.9em;
-  font-weight: 600;
-  color: #3b5998;
+.btn-action:active {
+    transform: scale(0.98);
 }
 
-.hint-text {
-  font-size: 0.85em;
-  color: var(--text-tertiary, #94a3b8);
-}
-
-/* ========================================
-   RESULTADOS DA BUSCA
-   ======================================== */
+/* Resultados da Busca */
 .results-container {
-  padding: 0 20px 20px;
-  display: grid;
-  gap: 10px;
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .result-item {
-  width: 100%;
-  text-align: left;
-  background: var(--surface, #ffffff);
-  border: 1px solid var(--border-primary, #e2e8f0);
-  border-radius: 10px;
-  padding: 14px 16px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
 }
 
 .result-item:hover {
-  background: #f8fafc;
-  border-color: #3b5998;
-  box-shadow: 0 4px 12px rgba(59, 89, 152, 0.15);
-  transform: translateY(-2px);
+    background: var(--primary-light);
 }
 
 .result-item__title {
-  font-weight: 700;
-  font-size: 1.05em;
-  color: var(--text-primary, #1a202c);
-  margin-bottom: 2px;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 4px;
 }
 
 .result-item__sub {
-  font-size: 0.9em;
-  color: var(--text-secondary, #64748b);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
 }
 
 .result-item__tag-simple {
-  font-size: 0.75em;
-  color: #3b5998;
-  font-weight: 600;
-  background: #e8eef7;
-  padding: 3px 8px;
-  border-radius: 6px;
-  flex-shrink: 0;
+    background: #edf2f7;
+    color: #4a5568;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.75rem;
 }
 
-/* ========================================
-   PAINEL DE DETALHES (ESTILO APP OS SIM)
-   ======================================== */
+/* Painel de Detalhes */
 .detail-panel {
-  overflow: hidden;
-  padding: 0 !important;
+    border-top: 4px solid var(--primary-color);
 }
 
 .detail-header {
-  background: linear-gradient(135deg, #3b5998, #4a6fa5);
-  color: #ffffff;
-  padding: 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-}
-
-.detail-header__info {
-  flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    gap: 12px;
 }
 
 .detail-header__title {
-  font-size: 1.3em;
-  font-weight: 800;
-  margin-bottom: 4px;
-  line-height: 1.2;
+    font-size: 1.3rem;
+    font-weight: 800;
+    line-height: 1.2;
 }
 
 .detail-header__sub {
-  font-size: 0.95em;
-  opacity: 0.95;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-top: 4px;
 }
 
-.detail-body {
-  padding: 0;
-  background: #f8fafc;
+.btn-close-panel {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fee2e2;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
 }
 
 /* Grid de Informações */
 .detail-grid {
-  padding: 20px;
-  display: grid;
-  gap: 16px;
-  background: #ffffff;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+@media (min-width: 600px) {
+    .detail-grid {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
 .info-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 12px 0;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.info-group:last-child {
-  border-bottom: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .info-label {
-  font-size: 0.8em;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #3b5998;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
 }
 
 .info-value {
-  font-size: 1em;
-  color: var(--text-primary, #1a202c);
-  font-weight: 400;
-  word-break: break-word;
-  line-height: 1.5;
+    font-size: 1rem;
+    font-weight: 500;
 }
 
-/* ========================================
-   BOTÕES DE AÇÃO (ESTILO APP OS SIM)
-   ======================================== */
-.detail-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  padding: 16px 20px;
-  background: #ffffff;
-  border-top: 1px solid #e2e8f0;
-  margin: 0 !important;
-}
-
-.btn-action {
-  padding: 14px;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 0.95em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: none;
-  background: linear-gradient(135deg, #3b5998, #4a6fa5);
-  color: #ffffff;
-  box-shadow: 0 2px 6px rgba(59, 89, 152, 0.3);
-}
-
-.btn-action:hover {
-  background: linear-gradient(135deg, #2d4373, #3b5998);
-  box-shadow: 0 4px 12px rgba(59, 89, 152, 0.4);
-  transform: translateY(-2px);
-}
-
-.btn-action:active {
-  transform: translateY(0);
-}
-
-.btn-close-panel {
-  background: rgba(255,255,255,0.2);
-  border: 1px solid rgba(255,255,255,0.3);
-  color: #ffffff;
-  padding: 10px 18px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.9em;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-close-panel:hover {
-  background: rgba(255,255,255,0.3);
-}
-
-/* ========================================
-   SEÇÕES (ATIVIDADES / INSPEÇÕES)
-   ======================================== */
+/* Sub-seções (Atividades e Inspeções) */
 .sub-section {
-  margin: 0;
-  background: #ffffff;
-  border-top: 8px solid #f8fafc;
+    margin-top: 32px;
 }
 
 .sub-section__title {
-  font-size: 1.05em;
-  font-weight: 700;
-  padding: 16px 20px;
-  color: #3b5998;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #f8fafc;
-  border-left: 4px solid #3b5998;
-  margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--primary-light);
+    color: var(--primary-color);
 }
 
 .list-container {
-  padding: 16px 20px;
-  display: grid;
-  gap: 12px;
-  max-height: none;
-  overflow: visible;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
+/* Itens de Lista (CNAE e Inspeções) */
 .list-item {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    background: var(--bg-page);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 16px;
 }
 
 .list-item__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 8px;
-  gap: 12px;
+    display: flex;
+    flex-direction: column; /* Mobile-First: Empilha */
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+@media (min-width: 480px) {
+    .list-item__header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
 }
 
 .list-item__title {
-  font-weight: 700;
-  font-size: 0.95em;
-  color: #1a202c;
-  flex: 1;
-  line-height: 1.4;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-main);
 }
 
 .list-item__badge {
-  font-size: 0.75em;
-  padding: 4px 10px;
-  border-radius: 6px;
-  background: #e8eef7;
-  color: #3b5998;
-  font-weight: 600;
-  white-space: nowrap;
-  flex-shrink: 0;
+    background: var(--primary-light);
+    color: var(--primary-color);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    align-self: flex-start;
 }
 
 .list-item__desc {
-  font-size: 0.9em;
-  color: var(--text-secondary, #64748b);
-  line-height: 1.5;
+    font-size: 0.9rem;
+    color: var(--text-muted);
 }
 
-/* Fiscais nas inspeções */
 .list-item__fiscais {
-  margin-top: 8px;
-  padding: 10px 12px;
-  background: #f8fafc;
-  border-radius: 6px;
-  border-left: 3px solid #3b5998;
+    margin-top: 12px;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+    font-size: 0.85rem;
 }
 
 .list-item__fiscais strong {
-  display: block;
-  font-size: 0.85em;
-  color: #3b5998;
-  margin-bottom: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
+    display: block;
+    margin-bottom: 4px;
+    color: var(--primary-color);
 }
 
-.list-item__fiscais div {
-  font-size: 0.9em;
-  color: #475569;
-  line-height: 1.6;
-}
-
-/* ========================================
-   MODAIS E BACKDROP
-   ======================================== */
+/* Modal */
 .modalBackdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
 }
 
 .modal {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  z-index: 1001;
-  pointer-events: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+    padding: 16px;
 }
 
 .modalBox {
-  width: min(800px, 100%);
-  max-height: 90vh;
-  background: var(--surface, #ffffff);
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  pointer-events: auto;
+    background: var(--bg-card);
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
 .modalTop {
-  padding: 20px 24px;
-  background: linear-gradient(135deg, #3b5998, #4a6fa5);
-  color: #ffffff;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 12px 12px 0 0;
 }
 
 .mTitle {
-  font-weight: 800;
-  font-size: 1.15em;
-  color: #ffffff;
+    font-weight: 700;
+    font-size: 1.1rem;
 }
 
 .mBody {
-  padding: 24px;
-  overflow-y: auto;
-  flex: 1;
-  background: #f8fafc;
+    padding: 20px;
+    overflow-y: auto;
+    font-size: 0.95rem;
 }
 
 #modalMemo {
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  font-size: 0.95em;
-  line-height: 1.7;
-  color: var(--text-primary, #1a202c);
-  margin: 0;
-  padding: 16px;
-  background: #ffffff;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
-
-[hidden] {
-  display: none !important;
-}
-
-/* ========================================
-   RESPONSIVIDADE
-   ======================================== */
-@media (max-width: 600px) {
-  .detail-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .detail-actions {
-    grid-template-columns: 1fr;
-  }
-  
-  .search-input-wrapper {
-    flex-direction: column;
-  }
-  
-  .list-item__header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .list-item__badge {
-    align-self: flex-start;
-  }
-}
-
-/* ========================================
-   DARK MODE
-   ======================================== */
-@media (prefers-color-scheme: dark) {
-  .result-item:hover {
-    background: var(--surface-variant);
-  }
-  
-  .btn-action {
-    background: linear-gradient(135deg, #3b5998, #4a6fa5);
-  }
-  
-  .detail-body {
-    background: var(--surface);
-  }
-  
-  .sub-section {
-    background: var(--surface);
-  }
-  
-  .sub-section__title {
-    background: var(--surface-variant);
-  }
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: inherit;
 }
