@@ -952,8 +952,8 @@
     /* detailGrid - Grid de dados */
     .detailGrid {
       padding: 20px 24px;
-      display: flex;
-      justify-content: flex-start;
+      display: flex !important;
+      justify-content: flex-start !important;
     }
     
     /* detailBtns - Botões de ação */
@@ -983,19 +983,23 @@
     
     /* Key-Value pairs */
     .kv {
-      display: grid;
-      grid-template-columns: 170px 1fr;
-      gap: 10px 12px;
-      text-align: left;
-      max-width: 700px;
-      width: 100%;
+      display: grid !important;
+      grid-template-columns: 170px 1fr !important;
+      gap: 10px 12px !important;
+      text-align: left !important;
+      max-width: 700px !important;
+      width: 100% !important;
+      flex-direction: initial !important;
     }
     
     .kv__k {
-      color: var(--muted, #64748b);
-      font-size: 0.92rem;
-      font-weight: 800;
-      text-align: left;
+      color: var(--muted, #64748b) !important;
+      font-size: 0.92rem !important;
+      font-weight: 800 !important;
+      text-align: left !important;
+      padding: 0 !important;
+      border: none !important;
+      display: initial !important;
     }
     
     .kv__k:first-child {
@@ -1004,9 +1008,10 @@
     }
     
     .kv__v {
-      font-size: 1rem;
-      word-break: break-word;
-      text-align: left;
+      font-size: 1rem !important;
+      word-break: break-word !important;
+      text-align: left !important;
+      padding: 0 !important;
     }
     
     .grid { 
@@ -1130,7 +1135,17 @@
       font-size: 0.95em;
       display: block;
     }
-  </style>
+  
+
+    @media (max-width: 820px) {
+      .kv {
+        grid-template-columns: 1fr !important;
+        max-width: 100% !important;
+      }
+      .kv__k {
+        margin-top: 6px !important;
+      }
+    }</style>
 </head>
 
 <body>
