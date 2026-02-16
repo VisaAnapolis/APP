@@ -1,6 +1,6 @@
 /**
- * REGULADOS V2 - Baseado em regulados1.js
- * Mantém 100% da lógica original com melhorias visuais nos cards
+ * REGULADOS V2 - DESIGN INSPIRADO NO VISA.MANUS.SPACE
+ * Focado em legibilidade, espaçamento e responsividade (Mobile-First)
  */
 (() => {
   "use strict";
@@ -19,10 +19,6 @@
         const [ano, mes, dia] = parts;
         return `${dia.padStart(2, '0')}/${mes.padStart(2, '0')}/${ano}`;
       }
-    }
-    if (/^\d{2}[-]\d{2}[-]\d{4}$/.test(str)) {
-      const [dia, mes, ano] = str.split('-');
-      return `${dia}/${mes}/${ano}`;
     }
     const d = new Date(str);
     if (!isNaN(d.getTime())) {
@@ -53,10 +49,7 @@
 
   async function fetchJson(url) {
     const r = await fetch(url, { cache: "no-store" });
-    if (!r.ok) {
-      const txt = await r.text().catch(() => "");
-      throw new Error(`HTTP ${r.status} em ${url}${txt ? `\n${txt.slice(0, 200)}` : ""}`);
-    }
+    if (!r.ok) return null;
     return r.json();
   }
 
@@ -75,8 +68,6 @@
     dBairro: byId("dBairro"),
     dAlvEx: byId("dAlvEx"),
     dAlvVal: byId("dAlvVal"),
-    btnAtividades: byId("btnAtividades"),
-    btnInspecoes: byId("btnInspecoes"),
     atividadesList: byId("atividadesList"),
     inspecoesList: byId("inspecoesList"),
     modalBackdrop: byId("modalBackdrop"),
@@ -117,46 +108,23 @@
   function renderResults(list) {
     if (!els.results) return;
     els.results.innerHTML = "";
-
     if (!list || list.length === 0) {
       els.results.innerHTML = '<div class="hint-text">Nenhum regulado encontrado.</div>';
       return;
     }
-
     const frag = document.createDocumentFragment();
-    for (const it of list.slice(0, 80)) {
+    for (const it of list.slice(0, 50)) {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "result-item";
-
-      const title = document.createElement("div");
-      title.className = "result-item__title";
-      title.textContent = it.razao || "—";
-
-      const sub = document.createElement("div");
-      sub.className = "result-item__sub";
-      
-      const docSpan = document.createElement("span");
-      docSpan.textContent = it.documento || "—";
-      
-      const tagSpan = document.createElement("span");
-      tagSpan.className = "result-item__tag-simple";
-      tagSpan.textContent = `#${it.codigo}`;
-
-      sub.appendChild(docSpan);
-      sub.appendChild(tagSpan);
-
-      btn.appendChild(title);
-      btn.appendChild(sub);
-      
-      if (it.fantasia) {
-        const fant = document.createElement("div");
-        fant.className = "hint-text";
-        fant.style.marginTop = "2px";
-        fant.textContent = it.fantasia;
-        btn.appendChild(fant);
-      }
-
+      btn.innerHTML = `
+        <div class="result-item__title">${it.razao || "—"}</div>
+        <div class="result-item__sub">
+          <span>${it.documento || "—"}</span>
+          <span class="result-item__tag-simple">#${it.codigo}</span>
+        </div>
+        ${it.fantasia ? `<div class="hint-text" style="margin-top:4px">${it.fantasia}</div>` : ""}
+      `;
       btn.addEventListener("click", () => loadRegulado(it.codigo));
       frag.appendChild(btn);
     }
@@ -167,225 +135,144 @@
     safeText(els.dTitle, reg.razao || "—");
     safeText(els.dSub, reg.fantasia || "—");
     safeText(els.dCodigo, reg.codigo);
-
-    const doc = reg.cnpj || reg.cpf || "—";
-    safeText(els.dDoc, doc);
+    safeText(els.dDoc, reg.cnpj || reg.cpf || "—");
 
     const e = reg.endereco || {};
-    const endParts = [];
-    if (e.logradouro) endParts.push(e.logradouro);
-    if (e.complemento) endParts.push(e.complemento);
-
-    const fones = [];
-    if (e.fone) fones.push(`Fone: ${e.fone}`);
-    if (e.celular) fones.push(`Celular: ${e.celular}`);
-
     const endTxt = [
-      endParts.length ? endParts.join(" · ") : "—",
-      fones.length ? fones.join(" · ") : ""
+      [e.logradouro, e.complemento].filter(Boolean).join(" · "),
+      [e.fone ? `Fone: ${e.fone}` : null, e.celular ? `Celular: ${e.celular}` : null].filter(Boolean).join(" · ")
     ].filter(Boolean).join(" · ");
-
     safeText(els.dEnd, endTxt || "—");
+    safeText(els.dBairro, (reg.bairro || {}).nome || "—");
 
-    const b = reg.bairro || {};
-    safeText(els.dBairro, b.nome || "—");
-
-    const alv = reg.alvara_ultimo;
-    if (alv && typeof alv === "object") {
-      safeText(els.dAlvEx, alv.exercicio ?? "—");
-      safeText(els.dAlvVal, formatDateBR(alv.dt_validade) ?? "—");
-    } else {
-      safeText(els.dAlvEx, "—");
-      safeText(els.dAlvVal, "—");
-    }
+    const alv = reg.alvara_ultimo || {};
+    safeText(els.dAlvEx, alv.exercicio || "—");
+    safeText(els.dAlvVal, formatDateBR(alv.dt_validade));
 
     // Atividades
-    const atvs = Array.isArray(reg.atividades) ? reg.atividades : [];
     if (els.atividadesList) {
       els.atividadesList.innerHTML = "";
+      const atvs = Array.isArray(reg.atividades) ? reg.atividades : [];
       if (atvs.length === 0) {
         els.atividadesList.innerHTML = '<div class="hint-text">Nenhuma atividade encontrada.</div>';
       } else {
-        for (const a of atvs) {
-          const item = document.createElement("div");
-          item.className = "list-item";
-          
-          const header = document.createElement("div");
-          header.className = "list-item__header";
-          
-          const itemTitle = document.createElement("span");
-          itemTitle.className = "list-item__title";
-          itemTitle.textContent = a.subclasse || "—";
-          
-          const badge = document.createElement("span");
-          badge.className = "list-item__badge";
-          badge.textContent = a.tipo || "—";
-          
-          header.appendChild(itemTitle);
-          header.appendChild(badge);
-          
-          const desc = document.createElement("div");
-          desc.className = "list-item__desc";
-          desc.textContent = [a.atividade, a.equipe ? `Equipe: ${a.equipe}` : null, a.complexidade ? `Complexidade: ${a.complexidade}` : null].filter(Boolean).join(" · ");
-          
-          item.appendChild(header);
-          item.appendChild(desc);
-          els.atividadesList.appendChild(item);
-        }
+        atvs.forEach(a => {
+          const div = document.createElement("div");
+          div.className = "list-item";
+          div.innerHTML = `
+            <div class="list-item__header">
+              <span class="list-item__title">${a.subclasse || "—"}</span>
+              <span class="list-item__badge">${a.tipo || "—"}</span>
+            </div>
+            <div class="list-item__desc">
+              ${[a.atividade, a.equipe ? `Equipe: ${a.equipe}` : null, a.complexidade ? `Complexidade: ${a.complexidade}` : null].filter(Boolean).join(" · ")}
+            </div>
+          `;
+          els.atividadesList.appendChild(div);
+        });
       }
     }
 
-    // Inspeções (LÓGICA COMPLETA DO REGULADOS1.JS)
-    const insps = Array.isArray(reg.inspecoes) ? reg.inspecoes : [];
+    // Inspeções
     if (els.inspecoesList) {
       els.inspecoesList.innerHTML = "";
+      const insps = Array.isArray(reg.inspecoes) ? reg.inspecoes : [];
       if (insps.length === 0) {
         els.inspecoesList.innerHTML = '<div class="hint-text">Nenhuma inspeção encontrada.</div>';
       } else {
-        for (const v of insps) {
-          const item = document.createElement("div");
-          item.className = "list-item";
+        insps.forEach(v => {
+          const div = document.createElement("div");
+          div.className = "list-item";
           
-          const dt = formatDateBR(v.dt_visita) || "—";
-          const tipo = v.tipo || "—";
-          const num = v.numer || "—";
-
-          const top = document.createElement("div");
-          top.className = "list-item__header";
-          
-          const itemTitle = document.createElement("span");
-          itemTitle.className = "list-item__title";
-          itemTitle.textContent = `${tipo} ${num} · ${dt}`;
-          
-          const badge = document.createElement("span");
-          badge.className = "list-item__badge";
-          badge.textContent = (v.pz_retorno !== undefined && v.pz_retorno !== null) ? `Prazo: ${v.pz_retorno} d` : "Prazo: —";
-          
-          top.appendChild(itemTitle);
-          top.appendChild(badge);
-          item.appendChild(top);
-
-          // FISCAIS (Lógica exata do regulados1.js)
           const f1 = normTxt(v.Fiscal1);
           const f2 = normTxt(v.Fiscal2);
           const f3 = normTxt(v.Fiscal3);
-          const fiscaisValidos = [f1, f2, f3].filter(Boolean);
-
-          if (fiscaisValidos.length > 0) {
-            const fiscaisBox = document.createElement("div");
-            fiscaisBox.className = "list-item__fiscais";
-            
-            const strong = document.createElement("strong");
-            strong.textContent = "👮 Fiscais";
-            fiscaisBox.appendChild(strong);
-            
-            fiscaisValidos.forEach(nome => {
-              const fDiv = document.createElement("div");
-              fDiv.textContent = "• " + nome;
-              fiscaisBox.appendChild(fDiv);
-            });
-            
-            item.appendChild(fiscaisBox);
-          }
-
-          // Botão de abrir documento
-          const ndoc = Number(v.ndoc || 0);
-          if (ndoc > 0) {
-            const btn = document.createElement("button");
-            btn.className = "btn-action";
-            btn.style.marginTop = "8px";
-            btn.style.width = "100%";
-            btn.innerHTML = "📄 Abrir documento";
-            btn.onclick = () => openHistorico(ndoc, tipo, num);
-            item.appendChild(btn);
-          } else {
-            const noDoc = document.createElement("div");
-            noDoc.className = "hint-text";
-            noDoc.style.marginTop = "8px";
-            noDoc.textContent = "Histórico: —";
-            item.appendChild(noDoc);
-          }
+          const fiscais = [f1, f2, f3].filter(Boolean);
           
-          els.inspecoesList.appendChild(item);
-        }
+          let fiscaisHtml = "";
+          if (fiscais.length > 0) {
+            fiscaisHtml = `
+              <div class="list-item__fiscais">
+                <strong>👮 Fiscais</strong>
+                ${fiscais.map(f => `<div>• ${f}</div>`).join("")}
+              </div>
+            `;
+          }
+
+          const ndoc = Number(v.ndoc || 0);
+          const btnHtml = ndoc > 0 
+            ? `<button class="btn-action" style="width:100%; margin-top:12px" onclick="window.openDoc(${ndoc}, '${v.tipo}', '${v.numer}')">📄 Abrir documento</button>`
+            : `<div class="hint-text" style="margin-top:8px">Histórico: —</div>`;
+
+          div.innerHTML = `
+            <div class="list-item__header">
+              <span class="list-item__title">${v.tipo || "—"} ${v.numer || "—"} · ${formatDateBR(v.dt_visita)}</span>
+              <span class="list-item__badge">${v.pz_retorno != null ? `Prazo: ${v.pz_retorno} d` : "Prazo: —"}</span>
+            </div>
+            ${fiscaisHtml}
+            ${btnHtml}
+          `;
+          els.inspecoesList.appendChild(div);
+        });
       }
     }
   }
 
+  window.openDoc = async (ndoc, tipo, numer) => {
+    const b = hisBucket(ndoc);
+    const h = await fetchJson(`./data/his/${b}/${ndoc}.json`);
+    const titulo = (tipo && numer) ? `${tipo} ${numer}` : `Documento ${ndoc}`;
+    openModal(titulo, h ? (h.decr || h.descr || "Sem conteúdo.") : "Sem conteúdo.");
+  };
+
   async function loadRegulado(codigo) {
     const c = Number(codigo);
-    const file = pad5(c);
-    const path = `./data/reg/${regPrefix(c)}/${file}.json`;
+    const path = `./data/reg/${regPrefix(c)}/${pad5(c)}.json`;
     showStatus(`Carregando #${c}...`);
-    hideDetail();
-    try {
-      const reg = await fetchJson(path);
+    const reg = await fetchJson(path);
+    if (reg) {
       renderDetail(reg);
       showDetail();
       showStatus(`Regulado ${c} carregado.`);
-      els.detailPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
-    } catch (e) {
+      els.detailPanel?.scrollIntoView({ behavior: "smooth" });
+    } else {
       showStatus("Erro ao carregar dados.");
-    }
-  }
-
-  async function openHistorico(ndoc, tipo, numer) {
-    const b = hisBucket(ndoc);
-    const path = `./data/his/${b}/${ndoc}.json`;
-    let titulo = (tipo && numer) ? `${tipo} ${numer}` : `Documento ${ndoc}`;
-    try {
-      const h = await fetchJson(path);
-      const conteudo = (h.decr || h.descr) || "Documento sem conteúdo digitado.";
-      openModal(titulo, conteudo);
-    } catch (e) {
-      openModal(titulo, "Documento sem conteúdo digitado.");
     }
   }
 
   function applyFilter() {
     const q = normalize(els.q?.value || "");
     if (!q) {
-      renderResults(indexItems.slice(0, 80));
+      renderResults(indexItems.slice(0, 50));
       showStatus(`Pronto (${indexItems.length} registros)`);
       return;
     }
     const qDigits = onlyDigits(q);
-    const out = [];
-    for (const it of indexItems) {
-      const hay = `${it.razao || ""} ${it.fantasia || ""} ${it.documento || ""} ${it.codigo || ""}`.toLowerCase();
-      if (hay.includes(q)) out.push(it);
-      else if (qDigits && onlyDigits(it.documento || "").includes(qDigits)) out.push(it);
-      else if (qDigits && String(it.codigo || "").includes(qDigits)) out.push(it);
-      if (out.length >= 80) break;
-    }
+    const out = indexItems.filter(it => {
+      const hay = `${it.razao} ${it.fantasia} ${it.documento} ${it.codigo}`.toLowerCase();
+      return hay.includes(q) || (qDigits && (onlyDigits(it.documento).includes(qDigits) || String(it.codigo).includes(qDigits)));
+    }).slice(0, 50);
     renderResults(out);
     showStatus(`${out.length} encontrado(s).`);
   }
 
   async function init() {
     showStatus("Carregando índice...");
-    try {
-      const root = await fetchJson(`./data/index_regulados.json?v=${Date.now()}`);
+    const root = await fetchJson(`./data/index_regulados.json?v=${Date.now()}`);
+    if (root) {
       indexItems = Array.isArray(root.dados) ? root.dados : (Array.isArray(root) ? root : []);
       showStatus(`Índice carregado.`);
-      renderResults(indexItems.slice(0, 80));
-    } catch (e) {
-      showStatus("Erro ao carregar índice.");
+      renderResults(indexItems.slice(0, 50));
     }
-
     els.q?.addEventListener("input", applyFilter);
     els.btnClear?.addEventListener("click", () => {
       if (els.q) els.q.value = "";
-      closeModal();
       hideDetail();
       applyFilter();
-      els.q?.focus();
     });
     els.btnCloseDetail?.addEventListener("click", hideDetail);
     byId("btnCloseModal")?.addEventListener("click", closeModal);
     els.modalBackdrop?.addEventListener("click", closeModal);
-    els.btnAtividades?.addEventListener("click", () => els.atividadesList?.scrollIntoView({ behavior: "smooth" }));
-    els.btnInspecoes?.addEventListener("click", () => els.inspecoesList?.scrollIntoView({ behavior: "smooth" }));
   }
 
   window.addEventListener("DOMContentLoaded", init);
