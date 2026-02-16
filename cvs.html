@@ -176,7 +176,7 @@
     .dTitle{font-weight:900;font-size:1.15rem}
     .dSub{color:var(--muted);font-weight:700;margin-top:2px}
 
-    .detailGrid{margin-top:12px;display:flex;justify-content:flex-start}
+    .detailGrid{margin-top:12px}
 
     .kv{
       display:grid;
@@ -184,8 +184,6 @@
       gap:10px 12px;
       text-align: left;
       justify-items: start;
-      max-width: 700px;
-      width: 100%;
     }
     .kv__k{
       color:var(--muted);
@@ -954,6 +952,8 @@
     /* detailGrid - Grid de dados */
     .detailGrid {
       padding: 20px 24px;
+      display: flex;
+      justify-content: flex-start;
     }
     
     /* detailBtns - Botões de ação */
@@ -983,20 +983,19 @@
     
     /* Key-Value pairs */
     .kv {
-      display: flex;
-      flex-direction: column;
-      text-align: left; 
+      display: grid;
+      grid-template-columns: 170px 1fr;
+      gap: 10px 12px;
+      text-align: left;
+      max-width: 700px;
+      width: 100%;
     }
     
     .kv__k {
-      font-weight: 600;
-      color: #64748b;
-      font-size: 0.9em;
-      padding: 12px 0 4px 0;
-      border-top: 1px solid var(--line, #e2e8f0);
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      color: var(--muted, #64748b);
+      font-size: 0.92rem;
+      font-weight: 800;
+      text-align: left;
     }
     
     .kv__k:first-child {
@@ -1005,10 +1004,9 @@
     }
     
     .kv__v {
-      color: var(--text, #1a202c);
-      font-size: 0.95em;
+      font-size: 1rem;
       word-break: break-word;
-      padding-bottom: 8px;
+      text-align: left;
     }
     
     .grid { 
