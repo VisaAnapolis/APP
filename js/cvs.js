@@ -3,14 +3,17 @@
 
   const byId = (id) => document.getElementById(id);
 
+  // Base URL robusta (funciona mesmo se cvs.html estiver em subpasta)
+  const u = (rel) => new URL(rel, document.baseURI).toString();
+
   const pad5 = (n) => String(n ?? "").padStart(5, "0");
   const regPrefix = (codigo) => pad5(codigo).slice(0, 2);
 
-  const safeJson = async (url) => {
+  async function safeJson(url) {
     const r = await fetch(url, { cache: "no-store" });
     if (!r.ok) throw new Error(`Falha ao carregar ${url} (${r.status})`);
     return r.json();
-  };
+  }
 
   function formatDateBR(str) {
     if (!str) return null;
@@ -23,13 +26,13 @@
         const ano = d.getFullYear();
         return `${dia}/${mes}/${ano}`;
       }
-    } catch (e) {}
+    } catch (_) {}
 
     if (typeof str === "string" && str.includes("-")) {
       const p = str.split("T")[0].split("-");
       if (p.length === 3) return `${p[2]}/${p[1]}/${p[0]}`;
     }
-    return str;
+    return String(str);
   }
 
   function safeText(el, v) {
@@ -45,12 +48,17 @@
     return (v == null ? "" : String(v)).trim();
   }
 
+  // ============================
   // Google Maps (sem API / sem chave)
+  // ============================
   function montarLinkGoogleMapsRegulado({ endereco, bairro, razaoSocial }) {
     try {
       const partes = [];
+
       if (endereco) partes.push(String(endereco).trim());
       if (bairro) partes.push(String(bairro).trim());
+
+      // Contexto do app
       partes.push("Anápolis - GO");
 
       let destino = partes
@@ -59,7 +67,7 @@
         .replace(/\s+/g, " ")
         .trim();
 
-      // Fallback se endereço estiver fraco
+      // Fallback: se endereço estiver fraco, usa Razão Social
       if ((!endereco || String(endereco).trim().length < 6) && razaoSocial) {
         destino = `${String(razaoSocial).trim()}, Anápolis - GO`;
       }
@@ -68,11 +76,14 @@
 
       const destEnc = encodeURIComponent(destino);
       return `https://www.google.com/maps/dir/?api=1&destination=${destEnc}&travelmode=driving`;
-    } catch (e) {
+    } catch (_) {
       return null;
     }
   }
 
+  // ============================
+  // Elementos
+  // ============================
   const els = {
     q: byId("q"),
     btnClear: byId("btnClear"),
@@ -106,10 +117,11 @@
 
   let indexItems = [];
 
-  // ===== Modal helpers =====
+  // ============================
+  // Modal
+  // ============================
   function openModal(title, html) {
     if (els.modalTitle) els.modalTitle.textContent = title || "Detalhes";
-    // modalMemo no seu HTML é <pre>, mas pode receber HTML (line breaks) via innerHTML
     if (els.modalMemo) els.modalMemo.innerHTML = html || "";
     if (els.modalBackdrop) els.modalBackdrop.hidden = false;
     if (els.modal) els.modal.hidden = false;
@@ -120,11 +132,10 @@
     if (els.modal) els.modal.hidden = true;
   }
 
-  // ✅ CORREÇÃO: remover/aplicar atributo hidden corretamente
+  // ✅ IMPORTANTÍSSIMO: controlar hidden do detalhe
   function openDetail() {
     if (!els.detailPanel) return;
     els.detailPanel.hidden = false;
-    // (classe open é opcional; mantida por compatibilidade)
     els.detailPanel.classList.add("open");
   }
 
@@ -137,7 +148,6 @@
   function setStatus(msg, cls) {
     if (!els.status) return;
     els.status.textContent = msg || "";
-    // opcional: classes loading/ready/error, se existirem no CSS
     els.status.classList.remove("loading", "ready", "error");
     if (cls) els.status.classList.add(cls);
   }
@@ -146,7 +156,9 @@
     if (els.results) els.results.innerHTML = "";
   }
 
-  // ===== Render list =====
+  // ============================
+  // Render lista
+  // ============================
   function renderList(items) {
     clearResults();
     if (!els.results) return;
@@ -158,7 +170,7 @@
 
     const frag = document.createDocumentFragment();
 
-    items.forEach((it) => {
+    for (const it of items) {
       const card = document.createElement("button");
       card.type = "button";
       card.className = "result-item";
@@ -170,36 +182,38 @@
           <span class="result-item__badge">${it.doc || "—"}</span>
         </div>
       `;
-
       card.addEventListener("click", () => loadDetail(it.codigo));
       frag.appendChild(card);
-    });
+    }
 
     els.results.appendChild(frag);
   }
 
-  // ===== Data loading (index + detail) =====
+  // ============================
+  // Carregamento de dados
+  // ============================
   async function loadIndex() {
     setStatus("Carregando índice...", "loading");
     try {
-      const idx = await safeJson("data/index_regulados.json");
+      const idx = await safeJson(u("./data/index_regulados.json"));
 
-      if (Array.isArray(idx)) {
-        indexItems = idx.map((r) => ({
-          codigo: pad5(r.codigo ?? r.Codigo ?? r.CODIGO),
-          razao: normTxt(r.razao ?? r.Razao ?? r.RAZAO ?? r.razao_social ?? r.RAZAO_SOCIAL),
-          fantasia: normTxt(r.fantasia ?? r.Fantasia ?? r.FANTASIA),
-          doc: normTxt(r.doc ?? r.Doc ?? r.DOC ?? r.cnpj ?? r.CNPJ ?? r.cpf ?? r.CPF),
-        }));
-      } else {
-        indexItems = [];
-      }
+      // Aceita array OU objeto com items/regulados
+      const arr = Array.isArray(idx)
+        ? idx
+        : (Array.isArray(idx?.items) ? idx.items : (Array.isArray(idx?.regulados) ? idx.regulados : []));
+
+      indexItems = arr.map((r) => ({
+        codigo: pad5(r.codigo ?? r.Codigo ?? r.CODIGO),
+        razao: normTxt(r.razao ?? r.Razao ?? r.RAZAO ?? r.razao_social ?? r.RAZAO_SOCIAL),
+        fantasia: normTxt(r.fantasia ?? r.Fantasia ?? r.FANTASIA),
+        doc: normTxt(r.doc ?? r.Doc ?? r.DOC ?? r.cnpj ?? r.CNPJ ?? r.cpf ?? r.CPF),
+      }));
 
       setStatus(`Índice carregado: ${indexItems.length} regulados.`, "ready");
     } catch (err) {
       console.error(err);
-      setStatus("Erro ao carregar índice.", "error");
       indexItems = [];
+      setStatus("Erro ao carregar índice.", "error");
     }
   }
 
@@ -213,7 +227,7 @@
     openDetail();
 
     try {
-      const reg = await safeJson(`data/reg/${pre}/${c}.json`);
+      const reg = await safeJson(u(`./data/reg/${pre}/${c}.json`));
       renderDetail(normalizeReg(reg));
       setStatus(`Regulado ${c} carregado.`, "ready");
     } catch (err) {
@@ -222,12 +236,12 @@
     }
   }
 
-  // Normaliza possíveis variações do JSON do regulado
   function normalizeReg(raw) {
     const r = raw || {};
     const codigo = pad5(r.codigo ?? r.Codigo ?? r.CODIGO);
     const razao = normTxt(r.razao ?? r.Razao ?? r.RAZAO ?? r.razao_social ?? r.RAZAO_SOCIAL);
     const fantasia = normTxt(r.fantasia ?? r.Fantasia ?? r.FANTASIA);
+
     const cnpj = normTxt(r.cnpj ?? r.CNPJ);
     const cpf = normTxt(r.cpf ?? r.CPF);
 
@@ -237,8 +251,6 @@
       r.alvara_ultimo || r.Alvara_ultimo || r.ALVARA_ULTIMO || r.alvara || r.Alvara || null;
 
     const atividades = r.atividades || r.Atividades || r.ATIVIDADES || [];
-
-    // Evita identificador com acento
     const inspecoesArr = r.inspecoes || r.Inspecoes || r.INSPECOES || [];
 
     return {
@@ -256,7 +268,9 @@
     };
   }
 
-  // ===== Detail render =====
+  // ============================
+  // Render detalhe
+  // ============================
   function renderDetail(reg) {
     safeText(els.dTitle, reg.razao || "—");
     safeText(els.dSub, reg.fantasia || "—");
@@ -267,7 +281,7 @@
 
     const e = reg.endereco || {};
 
-    // Texto do endereço / contato (para tela)
+    // Endereço/Contato para tela (mantém seu padrão)
     const endParts = [];
     if (e.logradouro) endParts.push(e.logradouro);
     if (e.complemento) endParts.push(e.complemento);
@@ -286,27 +300,32 @@
     safeText(els.dEnd, endTxt || "—");
 
     const b = reg.bairro || {};
-    safeText(els.dBairro, b.nome || "—");
+    const bairroNome = b.nome ?? b.Nome ?? b.NOME ?? "";
+    safeText(els.dBairro, bairroNome || "—");
 
-    // Google Maps (rota) — logo após o bairro
+    // ✅ Google Maps: sempre tenta gerar (endereço -> fallback razão social)
     if (els.dMaps) {
-      // Endereço “limpo” (sem telefones)
       const endParts2 = [];
-      if (e.logradouro) endParts2.push(e.logradouro);
-      if (e.complemento) endParts2.push(e.complemento);
 
-      const enderecoMaps = endParts2.join(", ").trim();
-      const bairroMaps = b && b.nome ? String(b.nome).trim() : "";
-      const razaoMaps = reg.razao ? String(reg.razao).trim() : "";
+      // tenta várias chaves comuns sem “inventar”
+      const log =
+        e.logradouro ?? e.Logradouro ?? e.LOGRADOURO ??
+        e.endereco ?? e.Endereco ?? e.ENDERECO ?? "";
+
+      const comp = e.complemento ?? e.Complemento ?? e.COMPLEMENTO ?? "";
+
+      if (log) endParts2.push(String(log).trim());
+      if (comp) endParts2.push(String(comp).trim());
+
+      const enderecoMaps = endParts2.join(", ").replace(/\s+/g, " ").trim();
 
       const linkMaps = montarLinkGoogleMapsRegulado({
         endereco: enderecoMaps,
-        bairro: bairroMaps,
-        razaoSocial: razaoMaps,
+        bairro: bairroNome ? String(bairroNome).trim() : "",
+        razaoSocial: reg.razao ? String(reg.razao).trim() : "",
       });
 
       if (linkMaps) {
-        // Usa a classe .btn do seu CSS (mantém o padrão visual)
         els.dMaps.innerHTML = `
           <a href="${linkMaps}" target="_blank" rel="noopener"
              class="btn btnPrimary"
@@ -335,15 +354,18 @@
     renderInspecoes(insps);
   }
 
-  // ===== Atividades / Inspeções =====
+  // ============================
+  // Atividades / Inspeções
+  // ============================
   function renderAtividades(atvs) {
     if (!els.atividadesList) return;
+
     if (!atvs.length) {
       els.atividadesList.innerHTML = `<div class="empty">Sem atividades.</div>`;
       return;
     }
 
-    const rows = atvs
+    els.atividadesList.innerHTML = atvs
       .map((a) => {
         const cnae = normTxt(a.cnae ?? a.CNAE);
         const desc = normTxt(a.descricao ?? a.DESCRICAO ?? a.desc);
@@ -359,18 +381,17 @@
         `;
       })
       .join("");
-
-    els.atividadesList.innerHTML = rows;
   }
 
   function renderInspecoes(insps) {
     if (!els.inspecoesList) return;
+
     if (!insps.length) {
       els.inspecoesList.innerHTML = `<div class="empty">Sem inspeções.</div>`;
       return;
     }
 
-    const rows = insps
+    els.inspecoesList.innerHTML = insps
       .map((i) => {
         const dt = formatDateBR(i.data ?? i.dt ?? i.DT);
         const tipo = normTxt(i.tipo ?? i.TIPO);
@@ -390,9 +411,7 @@
       })
       .join("");
 
-    els.inspecoesList.innerHTML = rows;
-
-    // Clique abre modal com memo completo
+    // abre modal
     els.inspecoesList.querySelectorAll("[data-inspecao]").forEach((el) => {
       const open = () => {
         const id = el.getAttribute("data-inspecao") || "";
@@ -419,7 +438,9 @@
     });
   }
 
-  // ===== Search =====
+  // ============================
+  // Busca
+  // ============================
   function filterIndex(q) {
     const t = normTxt(q).toUpperCase();
     if (!t) return [];
@@ -449,7 +470,7 @@
       return;
     }
 
-    // dica do seu UI: "3+ letras para refinar"
+    // seu texto da UI sugere 3+; mantém
     const digits = onlyDigits(q);
     if (q.length < 3 && digits.length < 3) {
       clearResults();
@@ -480,11 +501,11 @@
     }
 
     if (els.btnCloseDetail) {
-      els.btnCloseDetail.addEventListener("click", () => closeDetail());
+      els.btnCloseDetail.addEventListener("click", closeDetail);
     }
 
     if (els.btnCloseModal) {
-      els.btnCloseModal.addEventListener("click", () => closeModal());
+      els.btnCloseModal.addEventListener("click", closeModal);
     }
 
     if (els.modalBackdrop) {
@@ -492,6 +513,11 @@
         if (e.target === els.modalBackdrop) closeModal();
       });
     }
+
+    // ESC fecha modal
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeModal();
+    });
   }
 
   async function init() {
@@ -500,5 +526,9 @@
     setStatus(`Índice: ${indexItems.length}. Digite para pesquisar.`, "ready");
   }
 
-  document.addEventListener("DOMContentLoaded", init);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
 })();
