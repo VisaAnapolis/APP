@@ -1374,33 +1374,33 @@ function converterData(dataStr) {
         }
 
         // Montar link do Google Maps (sem API / sem chave)
-+        function montarLinkGoogleMaps(os) {
-+            try {
-+                const partes = [];
-+
-+                if (os && os.logradouro) partes.push(String(os.logradouro).trim());
-+                if (os && os.complemento) partes.push(String(os.complemento).trim());
-+                if (os && os.bairro) partes.push(String(os.bairro).trim());
-+
-+                // Contexto do app (ajuste se um dia houver outras cidades)
-+                partes.push('Anápolis - GO');
-+
-+                let destino = partes.filter(Boolean).join(', ').replace(/\s+/g, ' ').trim();
-+
-+                // Fallback: se não tiver logradouro, tenta pelo menos pela razão social
-+                if ((!os || !os.logradouro) && os && os.razao_social) {
-+                    destino = `${String(os.razao_social).trim()}, Anápolis - GO`;
-+                }
-+
-+                // Se ficou vazio (ou só cidade), não cria link
-+                if (!destino || destino === 'Anápolis - GO') return null;
-+
-+                const destEnc = encodeURIComponent(destino);
-+                return `https://www.google.com/maps/dir/?api=1&destination=${destEnc}&travelmode=driving`;
-+            } catch (e) {
-+                return null;
-+            }
-+        }
+        function montarLinkGoogleMaps(os) {
+            try {
+                const partes = [];
+
+                if (os && os.logradouro) partes.push(String(os.logradouro).trim());
+                if (os && os.complemento) partes.push(String(os.complemento).trim());
+                if (os && os.bairro) partes.push(String(os.bairro).trim());
+
+                // Contexto do app (ajuste se um dia houver outras cidades)
+                partes.push('Anápolis - GO');
+
+                let destino = partes.filter(Boolean).join(', ').replace(/\s+/g, ' ').trim();
+
+                // Fallback: se não tiver logradouro, tenta pelo menos pela razão social
+                if ((!os || !os.logradouro) && os && os.razao_social) {
+                    destino = `${String(os.razao_social).trim()}, Anápolis - GO`;
+                }
+
+                // Se ficou vazio (ou só cidade), não cria link
+                if (!destino || destino === 'Anápolis - GO') return null;
+
+               const destEnc = encodeURIComponent(destino);
+                return `https://www.google.com/maps/dir/?api=1&destination=${destEnc}&travelmode=driving`;
+            } catch (e) {
+                return null;
+            }
+        }
         
         // Processar booleano
         function processarBool(valor) {
@@ -2212,19 +2212,19 @@ function obterDataPrazo(os) {
             }
 
  // Link do Google Maps (rota) — sem API / sem chave
-+            const linkMaps = montarLinkGoogleMaps(os);
-+            if (linkMaps) {
-+                html += `
-+                    <div class="detail-row">
-+                        <div class="detail-label">Google Maps:</div>
-+                        <div class="detail-value">
-+                            <a href="${linkMaps}" target="_blank" rel="noopener"
-+                               style="display:inline-block;padding:10px 14px;border-radius:10px;background:#34C759;color:#fff;font-weight:700;text-decoration:none;">
-+                               🧭 Traçar rota
-+                            </a>
-+                        </div>
-+                    </div>`;
-+            }
+            const linkMaps = montarLinkGoogleMaps(os);
+            if (linkMaps) {
+                html += `
+                    <div class="detail-row">
+                        <div class="detail-label">Google Maps:</div>
+                        <div class="detail-value">
+                            <a href="${linkMaps}" target="_blank" rel="noopener"
+                               style="display:inline-block;padding:10px 14px;border-radius:10px;background:#34C759;color:#fff;font-weight:700;text-decoration:none;">
+                               🧭 Traçar rota
+                            </a>
+                        </div>
+                    </div>`;
+            }
             
             html += `
                 </div>
