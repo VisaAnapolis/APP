@@ -66,7 +66,29 @@ function normTxt(v) {
   return (v == null ? "" : String(v)).trim();
 }
 
-  
+function montarLinkGoogleMapsRegulado({ endereco, bairro, razaoSocial }) {
+  try {
+    const partes = [];
+
+    if (endereco) partes.push(String(endereco).trim());
+    if (bairro) partes.push(String(bairro).trim());
+    partes.push("Anápolis - GO");
+
+    let destino = partes.filter(Boolean).join(", ").replace(/\s+/g, " ").trim();
+
+    // Fallback se endereço estiver fraco
+    if ((!endereco || String(endereco).trim().length < 6) && razaoSocial) {
+      destino = `${String(razaoSocial).trim()}, Anápolis - GO`;
+    }
+
+    if (!destino || destino === "Anápolis - GO") return null;
+
+    const destEnc = encodeURIComponent(destino);
+    return `https://www.google.com/maps/dir/?api=1&destination=${destEnc}&travelmode=driving`;
+  } catch (e) {
+    return null;
+  }
+}  
   async function fetchJson(url) {
     const r = await fetch(url, { cache: "no-store" });
     if (!r.ok) {
@@ -107,6 +129,32 @@ function normTxt(v) {
   };
 
   let indexItems = [];
+
+const elMaps = document.getElementById('dMaps');
+if (elMaps) {
+  const enderecoTxt = (document.getElementById('dEnd')?.textContent || '').trim();
+  const bairroTxt   = (document.getElementById('dBairro')?.textContent || '').trim();
+
+  // Ajuste o nome do campo da razão social conforme o seu JSON (ex.: det.RAZAO, det.RazaoSocial, det.RAZAO_SOCIAL)
+  const razao = (det?.RAZAO_SOCIAL || det?.RAZAO || det?.RAZAO_SOC || det?.RazaoSocial || det?.razao_social || '').toString().trim();
+
+  const link = montarLinkGoogleMapsRegulado({
+    endereco: enderecoTxt,
+    bairro: (bairroTxt && bairroTxt !== '—') ? bairroTxt : '',
+    razaoSocial: razao
+  });
+
+  if (link) {
+    elMaps.innerHTML = `
+      <a href="${link}" target="_blank" rel="noopener"
+         style="display:inline-block;padding:10px 14px;border-radius:10px;background:#34C759;color:#fff;font-weight:800;text-decoration:none;">
+        🧭 Traçar rota
+      </a>`;
+  } else {
+    elMaps.textContent = '—';
+  }
+}
+
   
   // Armazena info da inspeção atual para usar no título do modal
   let currentInspecaoInfo = null;
