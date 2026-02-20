@@ -192,51 +192,55 @@ dMaps: byId("dMaps"),
     els.results.appendChild(frag);
   }
 
-  function renderDetail(reg) {
-    safeText(els.dTitle, reg.razao || "—");
-    safeText(els.dSub, reg.fantasia || "—");
-    safeText(els.dCodigo, reg.codigo);
+function renderDetail(reg) {
+  safeText(els.dTitle, reg.razao);
+  safeText(els.dSub, reg.fantasia);
+  const doc = reg.cnpj || reg.cpf || "";
+  safeText(els.dDoc, doc);
 
-    const doc = reg.cnpj || reg.cpf || "—";
-    safeText(els.dDoc, doc);
+  // ENDEREÇO
+  const e = reg.endereco || {};
+  const endParts = [];
+  if (e.logradouro) endParts.push(e.logradouro);
+  if (e.complemento) endParts.push(e.complemento);
 
-    const e = reg.endereco || {};
-    const endParts = [];
-    if (e.logradouro) endParts.push(e.logradouro);
-    if (e.complemento) endParts.push(e.complemento);
+  const fones = [];
+  if (e.fone) fones.push(`Fone ${e.fone}`);
+  if (e.celular) fones.push(`Celular ${e.celular}`);
 
-    const fones = [];
-    if (e.fone) fones.push(`Fone: ${e.fone}`);
-    if (e.celular) fones.push(`Celular: ${e.celular}`);
+  const endTxt = [
+    endParts.length ? endParts.join(", ") : "",
+    fones.join(" · ")
+  ].filter(Boolean).join(" — ");
 
-    const endTxt = [
-      endParts.length ? endParts.join(" · ") : "—",
-      fones.length ? fones.join(" · ") : ""
-    ].filter(Boolean).join(" · ");
+  safeText(els.dEnd, endTxt);
 
-    safeText(els.dEnd, endTxt || "—");
+  // BAIRRO
+  const b = reg.bairro || {};
+  const bairroNome = b.nome || "";
+  safeText(els.dBairro, bairroNome);
 
-    const b = reg.bairro || {};
-    safeText(els.dBairro, b.nome || "—");
-
- // monta link Google Maps usando endereço + bairro
-  const enderecoBusca = encodeURIComponent(
-    [endTxt, b && b.nome].filter(Boolean).join(' - ')
-  );
-
+  // GOOGLE MAPS
   if (els.dMaps) {
-    els.dMaps.innerHTML = '';
-    if (enderecoBusca) {
-      const a = document.createElement('a');
-      a.href = `https://www.google.com/maps/search/?api=1&query=${enderecoBusca}`;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.textContent = 'Abrir no Google Maps';
+    const query = encodeURIComponent(
+      [endParts.join(", "), bairroNome, "Anápolis - GO"].filter(Boolean).join(" - ")
+    );
+    els.dMaps.innerHTML = "";
+    if (query) {
+      const a = document.createElement("a");
+      a.href = `https://www.google.com/maps/search/?api=1&query=${query}`;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = "Abrir no Google Maps";
       els.dMaps.appendChild(a);
     } else {
-      els.dMaps.textContent = '';
+      els.dMaps.textContent = "";
     }
   }
+
+  // ... resto do que você já tinha (código, alvará, atividades, inspeções etc.) ...
+}
+
     
     const alv = reg.alvara_ultimo;
     if (alv && typeof alv === "object") {
