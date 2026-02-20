@@ -5,97 +5,73 @@
 
   const pad5 = (n) => String(n ?? "").padStart(5, "0");
   const regPrefix = (codigo) => pad5(codigo).slice(0, 2);
-  const hisBucket = (ndoc) => String((Number(ndoc) || 0) % 100).padStart(2, "0");
+  const safeJson = async (url) => {
+    const r = await fetch(url, { cache: "no-store" });
+    if (!r.ok) throw new Error(`Falha ao carregar ${url} (${r.status})`);
+    return r.json();
+  };
 
-  /**
-   * Formata  data para dd/mm/aaaa
-   * Aceita formatos: "aaaa-mm-dd", "dd/mm/aaaa", "aaaa/mm/dd", etc.
-   */
-  function formatDateBR(dateStr) {
-    if (!dateStr || dateStr === "—" || dateStr === "-") return "—";
-    
-    const str = String(dateStr).trim();
-    
-    // Já está no formato dd/mm/aaaa?
-    if (/^\d{2}\/\d{2}\/\d{4}$/.test(str)) {
-      return str;
-    }
-    
-    // Formato aaaa-mm-dd ou aaaa/mm/dd
-    if (/^\d{4}[-\/]\d{2}[-\/]\d{2}/.test(str)) {
-      const parts = str.split(/[-\/T ]/);
-      if (parts.length >= 3) {
-        const [ano, mes, dia] = parts;
-        return `${dia.padStart(2, '0')}/${mes.padStart(2, '0')}/${ano}`;
+  function formatDateBR(str) {
+    if (!str) return null;
+    // Aceita YYYY-MM-DD ou ISO
+    try {
+      const d = new Date(str);
+      if (!isNaN(d.getTime())) {
+        const dia = String(d.getDate()).padStart(2, "0");
+        const mes = String(d.getMonth() + 1).padStart(2, "0");
+        const ano = d.getFullYear();
+        return `${dia}/${mes}/${ano}`;
       }
+    } catch (e) {}
+
+    // Tenta YYYY-MM-DD manual
+    if (typeof str === "string" && str.includes("-")) {
+      const p = str.split("T")[0].split("-");
+      if (p.length === 3) return `${p[2]}/${p[1]}/${p[0]}`;
     }
-    
-    // Formato dd-mm-aaaa
-    if (/^\d{2}[-]\d{2}[-]\d{4}$/.test(str)) {
-      const [dia, mes, ano] = str.split('-');
-      return `${dia}/${mes}/${ano}`;
-    }
-    
-    // Tenta parse como Date
-    const d = new Date(str);
-    if (!isNaN(d.getTime())) {
-      const dia = String(d.getDate()).padStart(2, '0');
-      const mes = String(d.getMonth() + 1).padStart(2, '0');
-      const ano = d.getFullYear();
-      return `${dia}/${mes}/${ano}`;
-    }
-    
-    // Retorna original se não conseguir converter
     return str;
   }
 
   function safeText(el, v) {
     if (!el) return;
-    el.textContent = (v === null || v === undefined || v === "") ? "—" : String(v);
+    el.textContent = v === null || v === undefined || v === "" ? "—" : String(v);
   }
 
   function onlyDigits(s) {
     return String(s || "").replace(/\D+/g, "");
   }
 
-  function normalize(s) {
-    return String(s || "").toLowerCase().trim();
+  function normTxt(v) {
+    return (v == null ? "" : String(v)).trim();
   }
 
-function normTxt(v) {
-  return (v == null ? "" : String(v)).trim();
-}
+  // Montar link do Google Maps (sem API / sem chave)
+  function montarLinkGoogleMapsRegulado({ endereco, bairro, razaoSocial }) {
+    try {
+      const partes = [];
 
-function montarLinkGoogleMapsRegulado({ endereco, bairro, razaoSocial }) {
-  try {
-    const partes = [];
+      if (endereco) partes.push(String(endereco).trim());
+      if (bairro) partes.push(String(bairro).trim());
+      partes.push("Anápolis - GO");
 
-    if (endereco) partes.push(String(endereco).trim());
-    if (bairro) partes.push(String(bairro).trim());
-    partes.push("Anápolis - GO");
+      let destino = partes
+        .filter(Boolean)
+        .join(", ")
+        .replace(/\s+/g, " ")
+        .trim();
 
-    let destino = partes.filter(Boolean).join(", ").replace(/\s+/g, " ").trim();
+      // Fallback se endereço estiver fraco
+      if ((!endereco || String(endereco).trim().length < 6) && razaoSocial) {
+        destino = `${String(razaoSocial).trim()}, Anápolis - GO`;
+      }
 
-    // Fallback se endereço estiver fraco
-    if ((!endereco || String(endereco).trim().length < 6) && razaoSocial) {
-      destino = `${String(razaoSocial).trim()}, Anápolis - GO`;
+      if (!destino || destino === "Anápolis - GO") return null;
+
+      const destEnc = encodeURIComponent(destino);
+      return `https://www.google.com/maps/dir/?api=1&destination=${destEnc}&travelmode=driving`;
+    } catch (e) {
+      return null;
     }
-
-    if (!destino || destino === "Anápolis - GO") return null;
-
-    const destEnc = encodeURIComponent(destino);
-    return `https://www.google.com/maps/dir/?api=1&destination=${destEnc}&travelmode=driving`;
-  } catch (e) {
-    return null;
-  }
-}  
-  async function fetchJson(url) {
-    const r = await fetch(url, { cache: "no-store" });
-    if (!r.ok) {
-      const txt = await r.text().catch(() => "");
-      throw new Error(`HTTP ${r.status} em ${url}${txt ? `\n${txt.slice(0, 200)}` : ""}`);
-    }
-    return r.json();
   }
 
   const els = {
@@ -113,6 +89,7 @@ function montarLinkGoogleMapsRegulado({ endereco, bairro, razaoSocial }) {
     dDoc: byId("dDoc"),
     dEnd: byId("dEnd"),
     dBairro: byId("dBairro"),
+    dMaps: byId("dMaps"),
     dAlvEx: byId("dAlvEx"),
     dAlvVal: byId("dAlvVal"),
 
@@ -130,114 +107,160 @@ function montarLinkGoogleMapsRegulado({ endereco, bairro, razaoSocial }) {
 
   let indexItems = [];
 
-const elMaps = document.getElementById('dMaps');
-if (elMaps) {
-  const enderecoTxt = (document.getElementById('dEnd')?.textContent || '').trim();
-  const bairroTxt   = (document.getElementById('dBairro')?.textContent || '').trim();
-
-  // Ajuste o nome do campo da razão social conforme o seu JSON (ex.: det.RAZAO, det.RazaoSocial, det.RAZAO_SOCIAL)
-  const razao = (det?.RAZAO_SOCIAL || det?.RAZAO || det?.RAZAO_SOC || det?.RazaoSocial || det?.razao_social || '').toString().trim();
-
-  const link = montarLinkGoogleMapsRegulado({
-    endereco: enderecoTxt,
-    bairro: (bairroTxt && bairroTxt !== '—') ? bairroTxt : '',
-    razaoSocial: razao
-  });
-
-  if (link) {
-    elMaps.innerHTML = `
-      <a href="${link}" target="_blank" rel="noopener"
-         style="display:inline-block;padding:10px 14px;border-radius:10px;background:#34C759;color:#fff;font-weight:800;text-decoration:none;">
-        🧭 Traçar rota
-      </a>`;
-  } else {
-    elMaps.textContent = '—';
-  }
-}
-
-  
   // Armazena info da inspeção atual para usar no título do modal
   let currentInspecaoInfo = null;
 
-  function showStatus(msg) {
-    safeText(els.status, msg || "");
-  }
-
-  function hideDetail() {
-    if (els.detailPanel) els.detailPanel.hidden = true;
-  }
-
-  function showDetail() {
-    if (els.detailPanel) els.detailPanel.hidden = false;
+  // ====== Modal helpers ======
+  function openModal(title, html) {
+    if (els.modalTitle) els.modalTitle.textContent = title || "Detalhes";
+    if (els.modalMemo) els.modalMemo.innerHTML = html || "";
+    if (els.modalBackdrop) els.modalBackdrop.classList.add("open");
+    if (els.modal) els.modal.classList.add("open");
   }
 
   function closeModal() {
-    if (els.modalBackdrop) els.modalBackdrop.hidden = true;
-    if (els.modal) els.modal.hidden = true;
-    safeText(els.modalTitle, "");
-    safeText(els.modalMemo, "");
-    currentInspecaoInfo = null;
+    if (els.modalBackdrop) els.modalBackdrop.classList.remove("open");
+    if (els.modal) els.modal.classList.remove("open");
   }
 
-  function openModal(title, memo) {
-    safeText(els.modalTitle, title || "Histórico");
-    safeText(els.modalMemo, memo || "");
-    if (els.modalBackdrop) els.modalBackdrop.hidden = false;
-    if (els.modal) els.modal.hidden = false;
+  function openDetail() {
+    if (els.detailPanel) els.detailPanel.classList.add("open");
   }
 
-  function renderResults(list) {
+  function closeDetail() {
+    if (els.detailPanel) els.detailPanel.classList.remove("open");
+  }
+
+  function setStatus(msg) {
+    safeText(els.status, msg || "");
+  }
+
+  function clearResults() {
+    if (els.results) els.results.innerHTML = "";
+  }
+
+  // ====== Render list ======
+  function renderList(items) {
+    clearResults();
     if (!els.results) return;
-    els.results.innerHTML = "";
 
-    if (!list || list.length === 0) {
-      const div = document.createElement("div");
-      div.className = "small";
-      div.textContent = "Nenhum regulado encontrado.";
-      els.results.appendChild(div);
+    if (!items || !items.length) {
+      els.results.innerHTML = `<div class="empty">Nenhum resultado.</div>`;
       return;
     }
 
     const frag = document.createDocumentFragment();
-    for (const it of list.slice(0, 80)) {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "result";
-      btn.dataset.codigo = String(it.codigo);
+
+    items.forEach((it) => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.tabIndex = 0;
 
       const top = document.createElement("div");
-      top.className = "result__top";
+      top.className = "card__top";
+      top.innerHTML = `
+        <div class="card__title">${it.razao || "—"}</div>
+        <div class="card__sub">${it.fantasia || ""}</div>
+      `;
 
-      const left = document.createElement("div");
+      const meta = document.createElement("div");
+      meta.className = "card__meta";
+      meta.innerHTML = `
+        <span class="pill">Código: ${it.codigo || "—"}</span>
+        <span class="pill">${it.doc || "—"}</span>
+      `;
 
-      const title = document.createElement("div");
-      title.className = "result__title";
-      title.textContent = it.razao || "—";
+      card.appendChild(top);
+      card.appendChild(meta);
 
-      const sub = document.createElement("div");
-      sub.className = "result__sub";
-      const fant = it.fantasia ? `Fantasia: ${it.fantasia}` : "Fantasia: —";
-      const doc = it.documento ? `Documento: ${it.documento}` : "Documento: —";
-      sub.textContent = `${fant} · ${doc}`;
+      card.addEventListener("click", () => loadDetail(it.codigo));
+      card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          loadDetail(it.codigo);
+        }
+      });
 
-      left.appendChild(title);
-      left.appendChild(sub);
-
-      const tag = document.createElement("div");
-      tag.className = "tag";
-      tag.textContent = `#${it.codigo}`;
-
-      top.appendChild(left);
-      top.appendChild(tag);
-      btn.appendChild(top);
-
-      btn.addEventListener("click", () => loadRegulado(it.codigo));
-      frag.appendChild(btn);
-    }
+      frag.appendChild(card);
+    });
 
     els.results.appendChild(frag);
   }
 
+  // ====== Data loading (index + detail) ======
+  async function loadIndex() {
+    setStatus("Carregando índice...");
+    try {
+      const idx = await safeJson("data/index_regulados.json");
+      // idx deve ser array [{codigo, razao, fantasia, doc, ...}] ou similar
+      if (Array.isArray(idx)) {
+        indexItems = idx.map((r) => ({
+          codigo: pad5(r.codigo ?? r.Codigo ?? r.CODIGO),
+          razao: normTxt(r.razao ?? r.Razao ?? r.RAZAO ?? r.razao_social ?? r.RAZAO_SOCIAL),
+          fantasia: normTxt(r.fantasia ?? r.Fantasia ?? r.FANTASIA),
+          doc: normTxt(r.doc ?? r.Doc ?? r.DOC ?? r.cnpj ?? r.CNPJ ?? r.cpf ?? r.CPF),
+        }));
+      } else {
+        indexItems = [];
+      }
+      setStatus(`Índice carregado: ${indexItems.length} regulados.`);
+    } catch (err) {
+      console.error(err);
+      setStatus("Erro ao carregar índice.");
+      indexItems = [];
+    }
+  }
+
+  async function loadDetail(codigo) {
+    if (!codigo) return;
+    const c = pad5(codigo);
+    const pre = regPrefix(c);
+
+    setStatus(`Carregando regulado ${c}...`);
+    openDetail();
+
+    try {
+      const reg = await safeJson(`data/reg/${pre}/${c}.json`);
+      renderDetail(normalizeReg(reg));
+      setStatus(`Regulado ${c} carregado.`);
+    } catch (err) {
+      console.error(err);
+      setStatus(`Erro ao carregar regulado ${c}.`);
+    }
+  }
+
+  // Normaliza possíveis variações do JSON do regulado
+  function normalizeReg(raw) {
+    const r = raw || {};
+    const codigo = pad5(r.codigo ?? r.Codigo ?? r.CODIGO);
+    const razao = normTxt(r.razao ?? r.Razao ?? r.RAZAO ?? r.razao_social ?? r.RAZAO_SOCIAL);
+    const fantasia = normTxt(r.fantasia ?? r.Fantasia ?? r.FANTASIA);
+    const cnpj = normTxt(r.cnpj ?? r.CNPJ);
+    const cpf = normTxt(r.cpf ?? r.CPF);
+
+    const endereco = r.endereco || r.Endereco || r.ENDERECO || {};
+    const bairro = r.bairro || r.Bairro || r.BAIRRO || {};
+    const alvara_ultimo = r.alvara_ultimo || r.Alvara_ultimo || r.ALVARA_ULTIMO || r.alvara || r.Alvara || null;
+
+    const atividades = r.atividades || r.Atividades || r.ATIVIDADES || [];
+    const inspeções = r.inspecoes || r.Inspecoes || r.INSPECOES || [];
+
+    return {
+      ...r,
+      codigo,
+      razao,
+      fantasia,
+      cnpj,
+      cpf,
+      endereco,
+      bairro,
+      alvara_ultimo,
+      atividades,
+      inspecoes: inspeções,
+    };
+  }
+
+  // ====== Detail render ======
   function renderDetail(reg) {
     safeText(els.dTitle, reg.razao || "—");
     safeText(els.dSub, reg.fantasia || "—");
@@ -255,15 +278,43 @@ if (elMaps) {
     if (e.fone) fones.push(`Fone: ${e.fone}`);
     if (e.celular) fones.push(`Celular: ${e.celular}`);
 
-    const endTxt = [
-      endParts.length ? endParts.join(" · ") : "—",
-      fones.length ? fones.join(" · ") : ""
-    ].filter(Boolean).join(" · ");
+    const endTxt = [endParts.length ? endParts.join(" · ") : "—", fones.length ? fones.join(" · ") : ""]
+      .filter(Boolean)
+      .join(" · ");
 
     safeText(els.dEnd, endTxt || "—");
 
     const b = reg.bairro || {};
     safeText(els.dBairro, b.nome || "—");
+
+    // Google Maps (rota) — sem API / sem chave — logo após o bairro
+    if (els.dMaps) {
+      const e2 = reg.endereco || {};
+      const endParts2 = [];
+      if (e2.logradouro) endParts2.push(e2.logradouro);
+      if (e2.complemento) endParts2.push(e2.complemento);
+
+      // Endereço “limpo” (sem telefones)
+      const enderecoMaps = endParts2.join(", ").trim();
+      const bairroMaps = b && b.nome ? String(b.nome).trim() : "";
+      const razaoMaps = reg.razao ? String(reg.razao).trim() : "";
+
+      const linkMaps = montarLinkGoogleMapsRegulado({
+        endereco: enderecoMaps,
+        bairro: bairroMaps,
+        razaoSocial: razaoMaps,
+      });
+
+      if (linkMaps) {
+        els.dMaps.innerHTML = `
+          <a href="${linkMaps}" target="_blank" rel="noopener"
+             style="display:inline-block;padding:10px 14px;border-radius:10px;background:#34C759;color:#fff;font-weight:800;text-decoration:none;">
+            🧭 Traçar rota
+          </a>`;
+      } else {
+        els.dMaps.textContent = "—";
+      }
+    }
 
     const alv = reg.alvara_ultimo;
     if (alv && typeof alv === "object") {
@@ -277,264 +328,166 @@ if (elMaps) {
 
     // Atividades
     const atvs = Array.isArray(reg.atividades) ? reg.atividades : [];
-    if (els.atividadesList) {
-      els.atividadesList.innerHTML = "";
-      if (atvs.length === 0) {
-        const div = document.createElement("div");
-        div.className = "small";
-        div.textContent = "Nenhuma atividade encontrada.";
-        els.atividadesList.appendChild(div);
-      } else {
-        for (const a of atvs) {
-          const item = document.createElement("div");
-          item.className = "item";
-
-          const top = document.createElement("div");
-          top.className = "item__top";
-
-          const t = document.createElement("div");
-          t.className = "item__title";
-          t.textContent = a.subclasse ? `${a.subclasse}` : "—";
-
-          const badge = document.createElement("div");
-          badge.className = "tag";
-          badge.textContent = a.tipo || "—";
-
-          top.appendChild(t);
-          top.appendChild(badge);
-
-          const sub = document.createElement("div");
-          sub.className = "item__sub";
-          const linha = [
-            a.atividade ? a.atividade : null,
-            a.equipe ? `Equipe: ${a.equipe}` : null,
-            a.complexidade ? `Complexidade: ${a.complexidade}` : null
-          ].filter(Boolean).join(" · ");
-          sub.textContent = linha || "—";
-
-          item.appendChild(top);
-          item.appendChild(sub);
-          els.atividadesList.appendChild(item);
-        }
-      }
-    }
+    renderAtividades(atvs);
 
     // Inspeções
     const insps = Array.isArray(reg.inspecoes) ? reg.inspecoes : [];
-    if (els.inspecoesList) {
-      els.inspecoesList.innerHTML = "";
-      if (insps.length === 0) {
-        const div = document.createElement("div");
-        div.className = "small";
-        div.textContent = "Nenhuma inspeção encontrada.";
-        els.inspecoesList.appendChild(div);
-      } else {
-        for (const v of insps) {
-          const item = document.createElement("div");
-          item.className = "item";
-
-          const top = document.createElement("div");
-          top.className = "item__top";
-
-          const title = document.createElement("div");
-          title.className = "item__title";
-          // Formata data da visita para dd/mm/aaaa
-          const dt = formatDateBR(v.dt_visita) || "—";
-          const tipo = v.tipo || "—";
-          const num = v.numer || "—";
-          title.textContent = `${tipo} ${num} · ${dt}`;
-
-          const badge = document.createElement("div");
-          badge.className = "tag";
-          badge.textContent = (v.pz_retorno !== undefined && v.pz_retorno !== null)
-            ? `Prazo: ${v.pz_retorno} dia(s)`
-            : "Prazo: —";
-
-          top.appendChild(title);
-          top.appendChild(badge);
-
-          const sub = document.createElement("div");
-          sub.className = "item__sub";
-
-          // =============================
-          // FISCAIS (Fiscal1, Fiscal2, Fiscal3)
-          // Deve ficar DEPOIS do título (top) e ANTES do Histórico (sub)
-          // =============================
-          let fiscaisBox = null;
-
-          const f1 = normTxt(v.Fiscal1);
-          const f2 = normTxt(v.Fiscal2);
-          const f3 = normTxt(v.Fiscal3);
-
-          const fiscaisValidos = [f1, f2, f3].filter(Boolean);
-
-          if (fiscaisValidos.length > 0) {
-            fiscaisBox = document.createElement("div");
-            fiscaisBox.className = "insp-fiscais";
-
-            const label = document.createElement("div");
-            label.className = "insp-fiscais__label";
-            label.textContent = "👮 Fiscais";
-            fiscaisBox.appendChild(label);
-
-            const vals = document.createElement("div");
-            vals.className = "insp-fiscais__vals";
-
-            for (const nome of fiscaisValidos) {
-              const linha = document.createElement("div");
-              linha.className = "insp-fiscal";
-              linha.textContent = "• " + nome;
-              vals.appendChild(linha);
-            }
-
-            fiscaisBox.appendChild(vals);
-          }
-
-const ndoc = Number(v.ndoc || 0);
-          if (ndoc > 0) {
-            const btn = document.createElement("button");
-            btn.type = "button";
-            btn.className = "btn";
-            btn.style.padding = "8px 10px";
-            btn.textContent = "📄 Abrir documento";
-
-            // Armazena tipo e número para usar no título do modal
-            const inspecaoTipo = tipo;
-            const inspecaoNum = num;
-
-            btn.addEventListener("click", async (ev) => {
-              ev.preventDefault();
-              ev.stopPropagation();
-              try {
-                // Passa tipo e número para o openHistorico
-                await openHistorico(ndoc, inspecaoTipo, inspecaoNum);
-              } catch (e) {
-                openModal("Erro ao abrir histórico", String(e.message || e));
-              }
-            });
-
-            sub.textContent = "Histórico: ";
-            sub.appendChild(btn);
-          } else {
-            sub.textContent = "Histórico: —";
-          }
-
-          item.appendChild(top);
-          if (fiscaisBox) item.appendChild(fiscaisBox);
-          item.appendChild(sub);
-          els.inspecoesList.appendChild(item);
-        }
-      }
-    }
+    renderInspecoes(insps);
   }
 
-  async function loadRegulado(codigo) {
-    const c = Number(codigo);
-    const file = pad5(c);
-    const path = `./data/reg/${regPrefix(c)}/${file}.json`;
-
-    showStatus(`Carregando regulado #${c}...`);
-    hideDetail();
-
-    const reg = await fetchJson(path);
-    renderDetail(reg);
-    showDetail();
-    showStatus(`Regulado ${c} carregado.`);
-
-    els.detailPanel?.scrollIntoView?.({ behavior: "smooth", block: "start" });
-  }
-
-  /**
-   * Abre modal de histórico com título formatado
-   * @param {number} ndoc - Número do documento
-   * @param {string} tipo - Tipo da inspeção (ex: "Termo de Intimação")
-   * @param {string} numer - Número da inspeção
-   */
-  async function openHistorico(ndoc, tipo, numer) {
-    const b = hisBucket(ndoc);
-    const path = `./data/his/${b}/${ndoc}.json`;
-    
-    // Título: "Tipo Número" (ex: "Termo de Intimação 119483")
-    let titulo;
-    if (tipo && tipo !== "—" && numer && numer !== "—") {
-      titulo = `${tipo} ${numer}`;
-    } else if (tipo && tipo !== "—") {
-      titulo = `${tipo} (Doc. ${ndoc})`;
-    } else {
-      titulo = `Documento ${ndoc}`;
-    }
-    
-    try {
-      const h = await fetchJson(path);
-      const conteudo = (h && (h.decr || h.descr)) ? (h.decr || h.descr) : "Documento sem conteúdo digitado.";
-      openModal(titulo, conteudo);
-    } catch (e) {
-      // Se erro 404 ou qualquer outro erro, exibe mensagem amigável
-      if (e.message && e.message.includes("404")) {
-        openModal(titulo, "Documento sem conteúdo digitado.");
-      } else {
-        openModal(titulo, "Documento sem conteúdo digitado.");
-      }
-    }
-  }
-
-  function applyFilter() {
-    const q = normalize(els.q?.value || "");
-    if (!q) {
-      renderResults(indexItems.slice(0, 80));
-      showStatus(`Pronto. (${indexItems.length} no índice)`);
+  // ====== Atividades / Inspeções ======
+  function renderAtividades(atvs) {
+    if (!els.atividadesList) return;
+    if (!atvs.length) {
+      els.atividadesList.innerHTML = `<div class="empty">Sem atividades.</div>`;
       return;
     }
 
-    const qDigits = onlyDigits(q);
-    const out = [];
-    for (const it of indexItems) {
-      const hay = `${it.razao || ""} ${it.fantasia || ""} ${it.documento || ""} ${it.codigo || ""}`.toLowerCase();
-      if (hay.includes(q)) out.push(it);
-      else if (qDigits && onlyDigits(it.documento || "").includes(qDigits)) out.push(it);
-      else if (qDigits && String(it.codigo || "").includes(qDigits)) out.push(it);
-      if (out.length >= 80) break;
+    const rows = atvs
+      .map((a) => {
+        const cnae = normTxt(a.cnae ?? a.CNAE);
+        const desc = normTxt(a.descricao ?? a.DESCRICAO ?? a.desc);
+        const tipo = normTxt(a.tipo ?? a.TIPO);
+        return `
+          <div class="row">
+            <div class="row__main">
+              <div class="row__title">${cnae || "—"}</div>
+              <div class="row__sub">${desc || ""}</div>
+            </div>
+            <div class="row__meta">${tipo || ""}</div>
+          </div>
+        `;
+      })
+      .join("");
+
+    els.atividadesList.innerHTML = rows;
+  }
+
+  function renderInspecoes(insps) {
+    if (!els.inspecoesList) return;
+    if (!insps.length) {
+      els.inspecoesList.innerHTML = `<div class="empty">Sem inspeções.</div>`;
+      return;
     }
 
-    renderResults(out);
-    showStatus(`${out.length} encontrado(s).`);
+    const rows = insps
+      .map((i) => {
+        const dt = formatDateBR(i.data ?? i.dt ?? i.DT);
+        const tipo = normTxt(i.tipo ?? i.TIPO);
+        const memo = normTxt(i.memo ?? i.MEMO ?? i.obs ?? i.OBS);
+        const fiscal = normTxt(i.fiscal ?? i.FISCAL ?? i.fiscal1 ?? i.FISCAL1);
+        const id = normTxt(i.id ?? i.ID ?? "");
+
+        return `
+          <div class="row clickable" data-inspecao="${id}">
+            <div class="row__main">
+              <div class="row__title">${dt || "—"} ${tipo ? `· ${tipo}` : ""}</div>
+              <div class="row__sub">${memo || ""}</div>
+            </div>
+            <div class="row__meta">${fiscal || ""}</div>
+          </div>
+        `;
+      })
+      .join("");
+
+    els.inspecoesList.innerHTML = rows;
+
+    // Clique abre modal com memo completo
+    els.inspecoesList.querySelectorAll(".row.clickable").forEach((el) => {
+      el.addEventListener("click", () => {
+        const id = el.getAttribute("data-inspecao") || "";
+        const i = insps.find((x) => String(x.id ?? x.ID ?? "") === id) || null;
+        if (!i) return;
+
+        currentInspecaoInfo = {
+          data: formatDateBR(i.data ?? i.dt ?? i.DT) || "—",
+          tipo: normTxt(i.tipo ?? i.TIPO) || "",
+          fiscal: normTxt(i.fiscal ?? i.FISCAL ?? i.fiscal1 ?? i.FISCAL1) || "",
+        };
+
+        const memo = normTxt(i.memo ?? i.MEMO ?? i.obs ?? i.OBS) || "—";
+        openModal(
+          `Inspeção — ${currentInspecaoInfo.data}${currentInspecaoInfo.tipo ? " · " + currentInspecaoInfo.tipo : ""}`,
+          `<div class="memo">${memo.replace(/\n/g, "<br>")}</div>`
+        );
+      });
+    });
+  }
+
+  // ====== Search ======
+  function filterIndex(q) {
+    const t = normTxt(q).toUpperCase();
+    if (!t) return [];
+    const digits = onlyDigits(t);
+
+    const out = [];
+    for (const it of indexItems) {
+      const r = (it.razao || "").toUpperCase();
+      const f = (it.fantasia || "").toUpperCase();
+      const d = onlyDigits(it.doc || "");
+      const c = (it.codigo || "").toUpperCase();
+
+      if (
+        r.includes(t) ||
+        f.includes(t) ||
+        c.includes(t) ||
+        (digits && d.includes(digits))
+      ) {
+        out.push(it);
+        if (out.length >= 200) break; // limite de resultados
+      }
+    }
+    return out;
+  }
+
+  function onSearch() {
+    const q = normTxt(els.q?.value);
+    if (!q) {
+      clearResults();
+      setStatus(`Digite para pesquisar. Índice: ${indexItems.length}.`);
+      return;
+    }
+    const items = filterIndex(q);
+    setStatus(`Resultados: ${items.length}`);
+    renderList(items);
+  }
+
+  function bindEvents() {
+    if (els.q) {
+      els.q.addEventListener("input", () => onSearch());
+      els.q.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") onSearch();
+      });
+    }
+
+    if (els.btnClear) {
+      els.btnClear.addEventListener("click", () => {
+        if (els.q) els.q.value = "";
+        clearResults();
+        setStatus(`Índice: ${indexItems.length}.`);
+      });
+    }
+
+    if (els.btnCloseDetail) {
+      els.btnCloseDetail.addEventListener("click", () => closeDetail());
+    }
+
+    if (els.btnCloseModal) {
+      els.btnCloseModal.addEventListener("click", () => closeModal());
+    }
+
+    if (els.modalBackdrop) {
+      els.modalBackdrop.addEventListener("click", (e) => {
+        if (e.target === els.modalBackdrop) closeModal();
+      });
+    }
   }
 
   async function init() {
-    closeModal();
-    hideDetail();
-    showStatus("Carregando índice...");
-
-    const url = `./data/index_regulados.json?v=${Date.now()}`;
-    const root = await fetchJson(url);
-
-    indexItems = Array.isArray(root?.dados) ? root.dados : (Array.isArray(root) ? root : []);
-    showStatus(`Índice carregado (${indexItems.length}).`);
-
-    renderResults(indexItems.slice(0, 80));
-
-    els.q?.addEventListener("input", applyFilter);
-
-    els.btnClear?.addEventListener("click", () => {
-      if (els.q) els.q.value = "";
-      closeModal();
-      hideDetail();
-      applyFilter();
-      els.q?.focus?.();
-    });
-
-    els.btnCloseDetail?.addEventListener("click", hideDetail);
-
-    els.btnCloseModal?.addEventListener("click", closeModal);
-    els.modalBackdrop?.addEventListener("click", closeModal);
-
-    els.btnAtividades?.addEventListener("click", () => {
-      els.atividadesList?.scrollIntoView?.({ behavior: "smooth", block: "start" });
-    });
-    els.btnInspecoes?.addEventListener("click", () => {
-      els.inspecoesList?.scrollIntoView?.({ behavior: "smooth", block: "start" });
-    });
+    bindEvents();
+    await loadIndex();
+    setStatus(`Índice: ${indexItems.length}. Digite para pesquisar.`);
   }
 
-  window.addEventListener("DOMContentLoaded", init);
+  document.addEventListener("DOMContentLoaded", init);
 })();
