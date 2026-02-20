@@ -94,8 +94,6 @@ function normTxt(v) {
     dAlvEx: byId("dAlvEx"),
     dAlvVal: byId("dAlvVal"),
 
-dMaps: byId("dMaps"),
-    
     btnAtividades: byId("btnAtividades"),
     btnInspecoes: byId("btnInspecoes"),
     atividadesList: byId("atividadesList"),
@@ -192,54 +190,33 @@ dMaps: byId("dMaps"),
     els.results.appendChild(frag);
   }
 
-function renderDetail(reg) {
-  safeText(els.dTitle, reg.razao);
-  safeText(els.dSub, reg.fantasia);
-  const doc = reg.cnpj || reg.cpf || "";
-  safeText(els.dDoc, doc);
+  function renderDetail(reg) {
+    safeText(els.dTitle, reg.razao || "—");
+    safeText(els.dSub, reg.fantasia || "—");
+    safeText(els.dCodigo, reg.codigo);
 
-  // ENDEREÇO
-  const e = reg.endereco || {};
-  const endParts = [];
-  if (e.logradouro) endParts.push(e.logradouro);
-  if (e.complemento) endParts.push(e.complemento);
+    const doc = reg.cnpj || reg.cpf || "—";
+    safeText(els.dDoc, doc);
 
-  const fones = [];
-  if (e.fone) fones.push(`Fone ${e.fone}`);
-  if (e.celular) fones.push(`Celular ${e.celular}`);
+    const e = reg.endereco || {};
+    const endParts = [];
+    if (e.logradouro) endParts.push(e.logradouro);
+    if (e.complemento) endParts.push(e.complemento);
 
-  const endTxt = [
-    endParts.length ? endParts.join(", ") : "",
-    fones.join(" · ")
-  ].filter(Boolean).join(" — ");
+    const fones = [];
+    if (e.fone) fones.push(`Fone: ${e.fone}`);
+    if (e.celular) fones.push(`Celular: ${e.celular}`);
 
-  safeText(els.dEnd, endTxt);
+    const endTxt = [
+      endParts.length ? endParts.join(" · ") : "—",
+      fones.length ? fones.join(" · ") : ""
+    ].filter(Boolean).join(" · ");
 
-  // BAIRRO
-  const b = reg.bairro || {};
-  const bairroNome = b.nome || "";
-  safeText(els.dBairro, bairroNome);
+    safeText(els.dEnd, endTxt || "—");
 
-  // GOOGLE MAPS
-  if (els.dMaps) {
-    const query = encodeURIComponent(
-      [endParts.join(", "), bairroNome, "Anápolis - GO"].filter(Boolean).join(" - ")
-    );
-    els.dMaps.innerHTML = "";
-    if (query) {
-      const a = document.createElement("a");
-      a.href = `https://www.google.com/maps/search/?api=1&query=${query}`;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      a.textContent = "Abrir no Google Maps";
-      els.dMaps.appendChild(a);
-    } else {
-      els.dMaps.textContent = "";
-    }
-  }
+    const b = reg.bairro || {};
+    safeText(els.dBairro, b.nome || "—");
 
-  // ... resto do que você já tinha (código, alvará, atividades, inspeções etc.) ...
-    
     const alv = reg.alvara_ultimo;
     if (alv && typeof alv === "object") {
       safeText(els.dAlvEx, alv.exercicio ?? "—");
