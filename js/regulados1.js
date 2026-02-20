@@ -217,6 +217,25 @@ function normTxt(v) {
     const b = reg.bairro || {};
     safeText(els.dBairro, b.nome || "—");
 
+ // monta link Google Maps usando endereço + bairro
+  const enderecoBusca = encodeURIComponent(
+    [endTxt, b && b.nome].filter(Boolean).join(' - ')
+  );
+
+  if (els.dMaps) {
+    els.dMaps.innerHTML = '';
+    if (enderecoBusca) {
+      const a = document.createElement('a');
+      a.href = `https://www.google.com/maps/search/?api=1&query=${enderecoBusca}`;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.textContent = 'Abrir no Google Maps';
+      els.dMaps.appendChild(a);
+    } else {
+      els.dMaps.textContent = '';
+    }
+  }
+    
     const alv = reg.alvara_ultimo;
     if (alv && typeof alv === "object") {
       safeText(els.dAlvEx, alv.exercicio ?? "—");
