@@ -94,6 +94,8 @@ function normTxt(v) {
     dAlvEx: byId("dAlvEx"),
     dAlvVal: byId("dAlvVal"),
 
+dMaps: byId("dMaps"),
+    
     btnAtividades: byId("btnAtividades"),
     btnInspecoes: byId("btnInspecoes"),
     atividadesList: byId("atividadesList"),
