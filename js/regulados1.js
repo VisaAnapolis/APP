@@ -239,8 +239,6 @@ function renderDetail(reg) {
   }
 
   // ... resto do que você já tinha (código, alvará, atividades, inspeções etc.) ...
-}
-
     
     const alv = reg.alvara_ultimo;
     if (alv && typeof alv === "object") {
