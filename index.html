@@ -1672,6 +1672,16 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
       setUserInfoPerfil(perfil, user);
       applyLinkPermissions(perfil.grupo);
 
+      // ── Notificações Push FCM ──────────────────────────────
+      // Registra/atualiza o token FCM do dispositivo no Firestore
+      try {
+        const { initPushNotifications } = await import('./js/push-notifications.js');
+        await initPushNotifications(app, user.email);
+      } catch (pushErr) {
+        console.warn('[Push] Não foi possível inicializar notificações:', pushErr.message);
+      }
+      // ──────────────────────────────────────────────────────
+
       // Conteúdo por perfil
       if (perfil.grupo === 'Fiscal') {
         if (fiscalStats) fiscalStats.style.display = 'block';

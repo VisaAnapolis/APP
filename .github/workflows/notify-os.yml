@@ -1,0 +1,76 @@
+# ============================================================
+# notify-os.yml  —  GitHub Actions Workflow
+# Detecta novas Ordens de Serviço nos CSVs e envia
+# notificações push via Firebase Cloud Messaging.
+#
+# Dispara: a cada push que altere arquivos CSV de OS ou
+#          o arquivo de sincronização cvs_sync.txt
+# ============================================================
+
+name: Notificar Novas OSs
+
+on:
+  push:
+    paths:
+      - 'data/requerimento.csv'
+      - 'data/oficio.csv'
+      - 'data/denuncia.csv'
+      - 'data/protocolo.csv'
+      - 'data/cvs_sync.txt'
+
+  # Permite execução manual pelo painel do GitHub Actions
+  workflow_dispatch:
+
+jobs:
+  notify:
+    name: Detectar e Notificar Novas OSs
+    runs-on: ubuntu-latest
+    # Permissões necessárias para fazer commit do snapshot atualizado
+    permissions:
+      contents: write
+
+    steps:
+      # 1. Checkout do repositório (com histórico completo)
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 2. Configura Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: '.github/scripts/package.json'
+
+      # 3. Instala dependências (firebase-admin)
+      - name: Instalar dependências
+        working-directory: .github/scripts
+        run: npm ci
+
+      # 4. Cria o arquivo de Service Account a partir do secret
+      - name: Criar Service Account
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > .github/scripts/service-account.json
+
+      # 5. Executa o script de detecção e notificação
+      - name: Executar notificador de OSs
+        working-directory: .github/scripts
+        env:
+          FIREBASE_SERVICE_ACCOUNT_PATH: service-account.json
+        run: node notify-os.js
+
+      # 6. Remove o arquivo de Service Account (segurança)
+      - name: Remover Service Account
+        if: always()
+        run: rm -f .github/scripts/service-account.json
+
+      # 7. Commita o snapshot atualizado de volta ao repositório
+      - name: Salvar snapshot atualizado
+        run: |
+          git config user.name  "VISA Bot"
+          git config user.email "visa-bot@anapolis.go.gov.br"
+          git add data/os_snapshot.json || true
+          git diff --staged --quiet || git commit -m "Auto-update OS snapshot [skip ci]"
+          git push || true

@@ -137,6 +137,6 @@ export async function protectPage({ firebaseConfig, onAuthorized }){
     // autorizado
     setSessionMarks();
     startExpiryTimer(() => signOut(auth));
-    if (typeof onAuthorized === "function") onAuthorized({ user, auth });
+    if (typeof onAuthorized === "function") onAuthorized({ user, auth, app });
   });
 }
