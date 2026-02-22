@@ -202,41 +202,24 @@ async function enviarNotificacaoFiscal(tokens, numero, tipo, motivo, diasParaPra
   const titulo = `🔔 Alerta de Prazo — VISA Anápolis`;
   const corpo = mensagem_texto;
 
+  // Enviamos APENAS o campo "data" (sem "notification").
+  // Isso força o Service Worker (firebase-messaging-sw.js) a ser o
+  // responsável exclusivo por exibir a notificação, evitando que o
+  // Android exiba a mensagem padrão "Toque para copiar o URL desse app".
   const mensagem = {
-    notification: {
-      title: titulo,
-      body:  corpo
-    },
     data: {
       title: titulo,
       body:  corpo,
-      url:    'https://garrado.github.io/VISA/os.html',
-      tipo:   'prazo-alerta',
-      osNum:  numero
+      url:   'https://garrado.github.io/VISA/os.html',
+      tipo:  'prazo-alerta',
+      osNum: numero
     },
     webpush: {
-      notification: {
-        title: titulo,
-        body:  corpo,
-        icon:  'https://garrado.github.io/VISA/icons/visa-192.png',
-        badge: 'https://garrado.github.io/VISA/icons/visa-192.png',
-        tag:   `visa-prazo-${numero}`,
-        renotify: true,
-        requireInteraction: false
+      headers: {
+        Urgency: 'high'
       },
       fcmOptions: {
         link: 'https://garrado.github.io/VISA/os.html'
-      }
-    },
-    android: {
-      notification: {
-        title: titulo,
-        body:  corpo,
-        icon: 'visa-192',
-        color: '#1e88e5',
-        clickAction: 'FLUTTER_NOTIFICATION_CLICK',
-        sound: 'default',
-        priority: 'high'
       }
     }
   };
