@@ -38,7 +38,7 @@ messaging.onBackgroundMessage((payload) => {
   const d = payload.data || {};
   const notifTitle = d.title || 'VISA Anápolis';
   const notifBody  = d.body  || 'Novas Ordens de Serviço disponíveis.';
-  const notifUrl   = d.url   || 'https://garrado.github.io/VISA/os.html';
+  const notifUrl   = d.url   || 'https://garrado.github.io/VISA/index.html';
   const osNum      = d.osNum || 'update';
 
   const notifOptions = {
@@ -61,7 +61,7 @@ self.addEventListener('notificationclick', (event) => {
 
   const targetUrl = (event.notification.data && event.notification.data.url)
     ? event.notification.data.url
-    : 'https://garrado.github.io/VISA/os.html';
+    : 'https://garrado.github.io/VISA/index.html';
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {

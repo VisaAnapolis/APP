@@ -216,7 +216,7 @@ async function enviarNotificacaoFiscal(tokens, numero, tipo, motivo, diasParaPra
     data: {
       title: titulo,
       body:  corpo,
-      url:   'https://garrado.github.io/VISA/os.html',
+      url:   'https://garrado.github.io/VISA/index.html',
       tipo:  'prazo-alerta',
       osNum: numero
     },
@@ -225,7 +225,7 @@ async function enviarNotificacaoFiscal(tokens, numero, tipo, motivo, diasParaPra
         Urgency: 'high'
       },
       fcmOptions: {
-        link: 'https://garrado.github.io/VISA/os.html'
+        link: 'https://garrado.github.io/VISA/index.html'
       }
     }
   };

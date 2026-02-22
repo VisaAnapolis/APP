@@ -153,7 +153,7 @@ function _mostrarToast(titulo, mensagem, url) {
     toast.remove();
     if (url) window.location.href = url;
     else if (!window.location.pathname.endsWith('os.html')) {
-      window.location.href = '/VISA/os.html';
+      window.location.href = '/VISA/index.html';
     }
   });
 
