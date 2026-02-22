@@ -107,56 +107,59 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
-  <h3>v2.1.5 — 22/02/2026 13:20 (Horário de Brasília – UTC−3)</h3>
-  <strong>Correção crítica: atualização forçada do Service Worker de notificações push</strong>
+  <h3>v2.1.5 — 22/02/2026 16:45 (Horário de Brasília – UTC−3)</h3>
+  <strong>Consolidação do Sistema de Notificações Push (Engloba v2.1.4)</strong>
 
   <ul>
-    <li><strong>Problema corrigido — SW Firebase em estado "waiting":</strong>
+    <li><strong>Gatilho "VENCE HOJE" e Automação (Cron):</strong>
       <ul>
-        <li>O <code>firebase-messaging-sw.js</code> não possuía <code>skipWaiting()</code>, fazendo com que versões novas ficassem em espera indefinida até o fiscal fechar completamente o app.</li>
-        <li>Isso causava a exibição da mensagem genérica <em>"Toque para copiar o URL"</em> nas notificações push, pois o SW antigo (sem o handler correto) permanecia ativo.</li>
+        <li>Implementado novo gatilho de prazo: <code>VENCE HOJE</code> (prazo = 0 dias).</li>
+        <li>Configurado agendamento automático (Cron) no GitHub Actions para disparar 3x ao dia nos dias úteis: <strong>08:30, 12:30 e 16:30</strong> (Brasília).</li>
+        <li>Garante que fiscais recebam alertas matinais mesmo quando não há novas sincronizações do Delphi no final de semana.</li>
       </ul>
     </li>
 
-    <li><strong><code>firebase-messaging-sw.js</code> — atualização imediata do SW:</strong>
+    <li><strong>Correção de Texto no Foreground (App Aberto):</strong>
       <ul>
-        <li>Adicionados <code>self.addEventListener('install', () =&gt; self.skipWaiting())</code> e <code>self.addEventListener('activate', e =&gt; e.waitUntil(self.clients.claim()))</code>.</li>
-        <li>A partir desta versão, qualquer novo deploy do SW assume o controle <strong>imediatamente</strong>, sem aguardar fechamento de abas.</li>
+        <li>Ajustado <code>js/push-notifications.js</code> para priorizar o campo <code>data</code> da mensagem.</li>
+        <li>Resolve o problema do "texto genérico" quando o fiscal recebia a notificação com o app aberto na tela.</li>
       </ul>
     </li>
 
-    <li><strong><code>index.html</code> — desregistro forçado de SWs antigos na detecção de nova versão:</strong>
+    <li><strong>Correção Crítica de Atualização (v2.1.4 → v2.1.5):</strong>
       <ul>
-        <li>Ao detectar mudança de versão (2.1.4 → 2.1.5), o app agora executa, em sequência:</li>
-        <li>1. Limpa o <code>localStorage</code> (exceto chaves do Firebase).</li>
-        <li>2. Desregistra <strong>todos</strong> os Service Workers via <code>navigator.serviceWorker.getRegistrations()</code>.</li>
-        <li>3. Limpa todos os caches do navegador via <code>caches.keys()</code> + <code>caches.delete()</code>.</li>
-        <li>4. Recarrega a página com <code>location.reload(true)</code> (ignora cache HTTP).</li>
-        <li>Garante que o novo <code>firebase-messaging-sw.js</code> seja instalado do zero na próxima abertura.</li>
+        <li><strong>Problema:</strong> O Service Worker antigo ficava "preso" em espera, causando notificações com mensagens genéricas do sistema.</li>
+        <li><strong>Solução:</strong> Adicionado <code>skipWaiting()</code> e <code>clients.claim()</code> no <code>firebase-messaging-sw.js</code> para atualização imediata.</li>
+        <li><strong>Reset Forçado:</strong> O <code>index.html</code> agora desregistra todos os Service Workers e limpa todos os caches do navegador ao detectar nova versão, garantindo que todos os fiscais recebam o código corrigido.</li>
       </ul>
     </li>
 
     <li><strong>Efeito prático para os fiscais:</strong>
       <ul>
-        <li>Na primeira abertura do app após este deploy, todos os SWs antigos são removidos automaticamente.</li>
-        <li>O novo SW é registrado e passa a exibir notificações com o conteúdo correto: <em>"OS XXXXXXXX — motivo, prazo X dias"</em>.</li>
-        <li>Tokens FCM passam a ser registrados corretamente no Firestore para fiscais que ainda não tinham token salvo.</li>
+        <li>Notificações agora exibem o conteúdo real: <em>"OS XXXXXXXX — motivo, VENCE HOJE"</em> ou <em>"prazo X dias"</em>.</li>
+        <li>O sistema limpa estados antigos automaticamente na primeira abertura da v2.1.5.</li>
+        <li>Tokens FCM são registrados/atualizados corretamente no Firestore para garantir a entrega.</li>
       </ul>
     </li>
   </ul>
 
-  <p><strong>Impacto:</strong> correção definitiva do ciclo de atualização do Service Worker de notificações push. Fiscais passam a receber alertas de prazo com conteúdo personalizado (número da OS, motivo e dias restantes) em vez da mensagem genérica do sistema.</p>
+  <p><strong>Impacto:</strong> Finalização da infraestrutura de notificações push. O sistema agora é autônomo, resiliente a falhas de cache e cobre todos os cenários de prazo (5 dias, 2-4 dias, amanhã e hoje), com entrega garantida tanto em background quanto com o app aberto.</p>
 
   <p><strong>Arquivos Modificados:</strong></p>
   <ul>
-    <li><code>firebase-messaging-sw.js</code> — adição de <code>skipWaiting</code> e <code>clients.claim</code>.</li>
-    <li><code>index.html</code> — bump de versão 2.1.4 → 2.1.5 e desregistro forçado de SWs antigos.</li>
+    <li><code>.github/scripts/notify-os.js</code> — novo gatilho VENCE_HOJE e lógica de flags.</li>
+    <li><code>.github/workflows/notify-os.yml</code> — adição de agendamento Cron (3x ao dia).</li>
+    <li><code>js/push-notifications.js</code> — correção de leitura de dados no foreground.</li>
+    <li><code>firebase-messaging-sw.js</code> — skipWaiting e clients.claim para atualização imediata.</li>
+    <li><code>index.html</code> — bump v2.1.5 e lógica de desregistro forçado de SWs.</li>
   </ul>
 
-  <p><strong>Backups Criados:</strong></p>
+  <p><strong>Backups Criados em <code>_backup/</code>:</strong></p>
   <ul>
-    <li><code>_backup/firebase-messaging-sw.js.bak_20260222_131621</code></li>
-    <li><code>_backup/index.html.bak_20260222_131621</code></li>
+    <li><code>notify-os.js.bak_20260222_163022</code></li>
+    <li><code>push-notifications.js.bak_20260222_155159</code></li>
+    <li><code>firebase-messaging-sw.js.bak_20260222_131621</code></li>
+    <li><code>index.html.bak_20260222_131621</code></li>
   </ul>
 </div>
 
