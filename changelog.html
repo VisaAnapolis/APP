@@ -107,6 +107,38 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.1.6 — 22/02/2026 17:15 (Horário de Brasília – UTC−3)</h3>
+  <strong>Otimização de Navegação: Notificações Direcionam para o Dashboard</strong>
+
+  <ul>
+    <li><strong>Destino das Notificações Alterado:</strong>
+      <ul>
+        <li>Ao clicar em uma notificação push, o fiscal é direcionado para o <code>index.html</code> (tela inicial com dashboard pessoal) em vez de <code>os.html</code> (lista geral de todas as OSs).</li>
+        <li>Motivo: O dashboard do <code>index.html</code> exibe o resumo das OSs direcionadas ao fiscal com os vencimentos em destaque, oferecendo uma visão imediata do que é urgente.</li>
+        <li>O <code>os.html</code> é uma ferramenta de busca geral, inadequada como destino de um alerta de prazo.</li>
+      </ul>
+    </li>
+
+    <li><strong>Consistência de Experiência:</strong>
+      <ul>
+        <li>O app sempre "nasce" na tela inicial (<code>index.html</code>). Agora as notificações também levam para lá, criando uma experiência uniforme.</li>
+        <li>Tanto no background (app fechado) quanto no foreground (app aberto), o clique na notificação leva para o dashboard.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <p><strong>Impacto:</strong> Melhoria na usabilidade. Fiscais recebem alertas urgentes e são imediatamente direcionados para a tela que mostra o resumo das suas OSs, reduzindo o tempo de resposta e aumentando a eficácia do sistema.</p>
+
+  <p><strong>Arquivos Modificados:</strong></p>
+  <ul>
+    <li><code>firebase-messaging-sw.js</code> — URL de destino ao clicar na notificação.</li>
+    <li><code>js/push-notifications.js</code> — URL do toast de foreground.</li>
+    <li><code>.github/scripts/notify-os.js</code> — URL no payload FCM.</li>
+    <li><code>index.html</code> — bump v2.1.5 → v2.1.6.</li>
+  </ul>
+</div>
+
+<div class="section">
   <h3>v2.1.5 — 22/02/2026 16:45 (Horário de Brasília – UTC−3)</h3>
   <strong>Consolidação do Sistema de Notificações Push (Engloba v2.1.4)</strong>
 
