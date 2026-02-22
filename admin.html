@@ -397,6 +397,26 @@
       .card-dispositivo{ border-color: rgba(255,255,255,.12); }
       .card-nome{ color:#eaf2ff; }
     }
+
+/* ── FCM Tokens ─────────────────────────────────── */
+.fcm-info {
+  margin-top: 6px;
+  padding-top: 5px;
+  border-top: 1px dashed var(--line);
+}
+.fcm-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border-radius: 10px;
+  font-size: .76rem;
+  font-weight: 700;
+}
+.fcm-tag.ativo   { background: rgba(52,199,89,.13); color: #34C759; }
+.fcm-tag.inativo { background: rgba(220,53,69,.11); color: #dc3545; }
+
+    
   </style>
   <link rel="stylesheet" href="./css/design-tokens.css">
   <link rel="stylesheet" href="./css/header-component.css">
@@ -430,6 +450,8 @@
           <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-info"><div class="stat-number" id="administrativoUsers">0</div><div class="stat-label">Administrativos</div></div></div>
           <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-info"><div class="stat-number" id="activeUsers">0</div><div class="stat-label">Usuários Ativos</div></div></div>
           <div class="stat-card"><div class="stat-icon">⏱️</div><div class="stat-info"><div class="stat-number" id="last24hUsers">0</div><div class="stat-label">Acessos (últimas 24h)</div></div></div>
+          <div class="stat-card"><div class="stat-icon">🔔</div><div class="stat-info"><div class="stat-number" id="fcmDispositivos">0</div><div class="stat-label">Disp. Push</div></div></div>
+
         </div>
       </div>
 
@@ -591,7 +613,7 @@
       return String(v);
     }
 
-    function formatarDispositivo(d){
+    function formatarDispositivo(d, fcmTokens){
       if(!d) return '<span style="color:#999">-</span>';
 
       const fabricante = safeVal(d.fabricante);
@@ -627,6 +649,15 @@
         rows.push(`<div class="row"><span class="k">🕒</span><span>${coletadoEm}</span></div>`);
       }
 
+      // ── FCM Tokens ──────────────────────────────────────────────────────
+      const _qtdFcm = Array.isArray(fcmTokens) ? fcmTokens.length : 0;
+      const _fcmClass = _qtdFcm > 0 ? 'ativo' : 'inativo';
+      const _fcmLabel = _qtdFcm > 0
+        ? `📲 ${_qtdFcm} dispositivo${_qtdFcm !== 1 ? 's' : ''} autorizado${_qtdFcm !== 1 ? 's' : ''}`
+        : `🔕 Sem notificações push`;
+      rows.push(`<div class="fcm-info"><span class="fcm-tag ${_fcmClass}">${_fcmLabel}</span></div>`);
+
+      
       return `<div class="device-box">${rows.join("")}</div>`;
     }
 
@@ -753,7 +784,7 @@
           photoHTML = `<div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:1.45rem;">${emoji}</div>`;
         }
 
-        const dispositivoHTML = formatarDispositivo(u.dispositivo);
+        const dispositivoHTML = formatarDispositivo(u.dispositivo, u.fcmTokens);
 
         tr.innerHTML = `
           <td>${photoHTML}</td>
@@ -795,6 +826,13 @@
 
       const el24 = document.getElementById("last24hUsers");
       if(el24) el24.textContent = total24h;
+
+      // FCM — total de dispositivos autorizados
+      const totalFcm = usuarios.reduce((acc, u) =>
+        acc + (Array.isArray(u.fcmTokens) ? u.fcmTokens.length : 0), 0);
+      const elFcm = document.getElementById('fcmDispositivos');
+      if(elFcm) elFcm.textContent = totalFcm;
+      
     }
 
     // ===== AUDITORIA =====
@@ -1048,6 +1086,11 @@
         const ativo = (u.ativo === true);
         const statusClass = ativo ? "" : "inativo";
         const disp = formatarDispositivoTexto(u.dispositivo);
+        const _qtdFcmM = Array.isArray(u.fcmTokens) ? u.fcmTokens.length : 0;
+        const fcmMobile = _qtdFcmM > 0
+        ? `<span style="color:#34C759;font-weight:700">📲 ${_qtdFcmM} disp. autorizado${_qtdFcmM!==1?'s':''}</span>`
+        : `<span style="color:#dc3545;font-weight:700">🔕 Sem notificações push</span>`;
+
         const grupoLower = (u.grupo || '').toLowerCase();
         const emojiMap = { fiscal:'👮', administrador:'👨‍💼', administrativo:'👤' };
         const emoji = emojiMap[grupoLower] || '👤';
@@ -1082,7 +1125,7 @@
           </div>
 
 
-          <div class="card-dispositivo">${disp || "—"}</div>
+           <div class="card-dispositivo">${disp || ""}${disp ? '<br>' : ''}${fcmMobile}</div>
 
           <div class="card-actions">
             <button class="btn-card btn-card-edit" onclick="editarUsuario('${u.id}', '${(u.email || "").replace(/'/g, "\\'")}')">✏️ Editar</button>
