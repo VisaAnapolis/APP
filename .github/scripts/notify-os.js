@@ -199,18 +199,25 @@ async function enviarNotificacaoFiscal(tokens, numero, tipo, motivo, diasParaPra
     return;  // Não envia se não estiver na "janela"
   }
 
+  const titulo = `🔔 Alerta de Prazo — VISA Anápolis`;
+  const corpo = mensagem_texto;
+
   const mensagem = {
     notification: {
-      title: `🔔 Alerta de Prazo — VISA Anápolis`,
-      body:  mensagem_texto
+      title: titulo,
+      body:  corpo
     },
     data: {
+      title: titulo,
+      body:  corpo,
       url:    'https://garrado.github.io/VISA/os.html',
       tipo:   'prazo-alerta',
       osNum:  numero
     },
     webpush: {
       notification: {
+        title: titulo,
+        body:  corpo,
         icon:  'https://garrado.github.io/VISA/icons/visa-192.png',
         badge: 'https://garrado.github.io/VISA/icons/visa-192.png',
         tag:   `visa-prazo-${numero}`,
@@ -219,6 +226,17 @@ async function enviarNotificacaoFiscal(tokens, numero, tipo, motivo, diasParaPra
       },
       fcmOptions: {
         link: 'https://garrado.github.io/VISA/os.html'
+      }
+    },
+    android: {
+      notification: {
+        title: titulo,
+        body:  corpo,
+        icon: 'visa-192',
+        color: '#1e88e5',
+        clickAction: 'FLUTTER_NOTIFICATION_CLICK',
+        sound: 'default',
+        priority: 'high'
       }
     }
   };

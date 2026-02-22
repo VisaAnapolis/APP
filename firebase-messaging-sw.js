@@ -21,17 +21,42 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
   console.log('[SW] Mensagem em background recebida:', payload);
 
-  const { title, body, icon, data } = payload.notification ?? {};
-  const notifTitle = title || 'VISA Anápolis';
+  // Tenta extrair título e corpo de múltiplas fontes
+  let notifTitle = 'VISA Anápolis';
+  let notifBody = 'Novas Ordens de Serviço disponíveis.';
+
+  // Prioridade 1: notification (campo padrão do FCM)
+  if (payload.notification) {
+    notifTitle = payload.notification.title || notifTitle;
+    notifBody = payload.notification.body || notifBody;
+  }
+
+  // Prioridade 2: data (campos redundantes para Android)
+  if (payload.data) {
+    if (payload.data.title) notifTitle = payload.data.title;
+    if (payload.data.body) notifBody = payload.data.body;
+  }
+
+  // Prioridade 3: android (campos específicos para Android)
+  if (payload.android && payload.android.notification) {
+    if (payload.android.notification.title) notifTitle = payload.android.notification.title;
+    if (payload.android.notification.body) notifBody = payload.android.notification.body;
+  }
+
+  const icon = (payload.notification && payload.notification.icon) || '/VISA/icons/visa-192.png';
+  const data = payload.data || { url: '/VISA/os.html' };
+
   const notifOptions = {
-    body:  body  || 'Novas Ordens de Serviço disponíveis.',
-    icon:  icon  || '/VISA/icons/visa-192.png',
+    body:  notifBody,
+    icon:  icon,
     badge: '/VISA/icons/visa-192.png',
-    tag:   'visa-os-update',          // agrupa notificações do mesmo tipo
+    tag:   `visa-prazo-${data.osNum || 'update'}`,  // tag única por OS
     renotify: true,
-    data:  data  || { url: '/VISA/os.html' }
+    requireInteraction: false,
+    data:  data
   };
 
+  console.log('[SW] Exibindo notificação:', { title: notifTitle, options: notifOptions });
   self.registration.showNotification(notifTitle, notifOptions);
 });
 
