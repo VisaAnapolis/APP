@@ -1,14 +1,16 @@
 // ============================================================
 // notify-os.js  —  GitHub Actions Script
-// Detecta novas OSs nos CSVs e envia notificações push via FCM
+// Detecta OSs com prazo vencendo e envia notificações push via FCM
 //
 // Lógica:
 //   1. Lê os 4 CSVs de OS (requerimento, oficio, denuncia, protocolo)
 //   2. Compara com o snapshot anterior (data/os_snapshot.json)
-//   3. Identifica OSs novas (número não existia no snapshot anterior)
-//   4. Busca todos os tokens FCM dos usuários ativos no Firestore
-//   5. Envia notificação multicast para todos os tokens
-//   6. Salva novo snapshot para a próxima comparação
+//   3. Calcula dias para o prazo de cada OS
+//   4. Identifica OSs em "Janela de Recuperação" (2-5 dias) ou "Amanhã" (1 dia)
+//   5. Busca todos os tokens FCM dos usuários ativos no Firestore
+//   6. Envia notificação multicast para cada fiscal
+//   7. Atualiza flags no snapshot para evitar duplicidade
+//   8. Salva novo snapshot para a próxima comparação
 // ============================================================
 
 const fs   = require('fs');
@@ -36,10 +38,10 @@ const SNAPSHOT_FILE = path.join(ROOT, 'data', 'os_snapshot.json');
 
 // Mapeamento: tipo → arquivo CSV → campo número
 const CSV_CONFIGS = [
-  { tipo: 'Requerimento', arquivo: 'data/requerimento.csv', campoNumero: 'OS',       campoFiscal: 'Fiscal_Sugere', campoMotivo: 'Motivo' },
-  { tipo: 'Ofício',       arquivo: 'data/oficio.csv',       campoNumero: 'Oficio',   campoFiscal: 'Fiscalencaminha', campoMotivo: 'Motivo' },
-  { tipo: 'Denúncia',     arquivo: 'data/denuncia.csv',     campoNumero: 'Denuncia', campoFiscal: 'FiscalEncaminha', campoMotivo: 'Objeto1' },
-  { tipo: 'Protocolo',    arquivo: 'data/protocolo.csv',    campoNumero: 'Protocolo', campoFiscal: 'Usuario',        campoMotivo: 'Assunto' }
+  { tipo: 'Requerimento', arquivo: 'data/requerimento.csv', campoNumero: 'OS',       campoFiscal: 'Fiscal_Sugere', campoMotivo: 'Motivo', campoPrazo: 'Prazo', campoAtendida: 'Atendimento', campoCancelada: 'Cancelado' },
+  { tipo: 'Ofício',       arquivo: 'data/oficio.csv',       campoNumero: 'Oficio',   campoFiscal: 'Fiscalencaminha', campoMotivo: 'Motivo', campoPrazo: 'Prazo', campoAtendida: 'Archive', campoCancelada: 'Cancela' },
+  { tipo: 'Denúncia',     arquivo: 'data/denuncia.csv',     campoNumero: 'Denuncia', campoFiscal: 'FiscalEncaminha', campoMotivo: 'Objeto1', campoPrazo: 'Prazo', campoAtendida: 'Archive', campoCancelada: null },
+  { tipo: 'Protocolo',    arquivo: 'data/protocolo.csv',    campoNumero: 'Protocolo', campoFiscal: 'Usuario',        campoMotivo: 'Assunto', campoPrazo: null, campoAtendida: null, campoCancelada: null }
 ];
 
 // ── Parser CSV simples (sem dependências externas) ───────────
@@ -82,9 +84,29 @@ function parseCSV(conteudo) {
   return registros;
 }
 
-// ── Lê todos os números de OS dos CSVs ──────────────────────
+// ── Converte data DD/MM/YYYY ou DD.MM.YYYY para objeto Date ──
+function converterData(dataStr) {
+  if (!dataStr) return null;
+  const match = dataStr.match(/(\d{1,2})[./](\d{1,2})[./](\d{4})/);
+  if (!match) return null;
+  const [, dia, mes, ano] = match;
+  return new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
+}
+
+// ── Calcula dias até a data (negativo = vencido) ──────────────
+function calcularDiasAte(dataStr) {
+  const data = converterData(dataStr);
+  if (!data) return null;
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  data.setHours(0, 0, 0, 0);
+  const diff = data - hoje;
+  return Math.floor(diff / (1000 * 60 * 60 * 24));
+}
+
+// ── Lê todos os números de OS dos CSVs com prazo ──────────────
 function lerTodasOSs() {
-  const todas = {};   // { "20260589": { tipo, fiscal, motivo } }
+  const todas = {};   // { "20260589": { tipo, fiscal, motivo, prazo, atendida, cancelada } }
 
   for (const cfg of CSV_CONFIGS) {
     const caminhoArquivo = path.join(ROOT, cfg.arquivo);
@@ -100,10 +122,19 @@ function lerTodasOSs() {
       const numero = (r[cfg.campoNumero] || '').trim();
       if (!numero) continue;
 
+      const atendida = cfg.campoAtendida ? (r[cfg.campoAtendida] || '').toLowerCase() === 'sim' : false;
+      const cancelada = cfg.campoCancelada ? (r[cfg.campoCancelada] || '').toLowerCase() === 'sim' : false;
+
+      // Só registra OSs pendentes (não atendidas e não canceladas)
+      if (atendida || cancelada) continue;
+
       todas[numero] = {
         tipo:   cfg.tipo,
         fiscal: (r[cfg.campoFiscal] || '').trim(),
-        motivo: (r[cfg.campoMotivo] || '').trim()
+        motivo: (r[cfg.campoMotivo] || '').trim(),
+        prazo:  cfg.campoPrazo ? (r[cfg.campoPrazo] || '').trim() : null,
+        atendida,
+        cancelada
       };
     }
   }
@@ -132,66 +163,57 @@ function salvarSnapshot(dados) {
 }
 
 // ── Busca tokens FCM de usuários ativos no Firestore ─────────
-async function buscarTokensFCM() {
-  const tokens = [];
+async function buscarTokensFCMPorFiscal() {
+  const tokensPorFiscal = {};  // { "NOME FISCAL": [token1, token2, ...] }
   try {
     const snap = await db.collection('usuarios').get();
     snap.forEach(docSnap => {
       const data = docSnap.data();
       // Só envia para usuários ativos (ou sem campo ativo — compatibilidade)
       if (data.ativo === false) return;
+      const nome = (data.nome || '').toUpperCase().trim();
       const fcmTokens = data.fcmTokens || [];
-      fcmTokens.forEach(t => {
-        if (t && typeof t === 'string' && t.length > 20) {
-          tokens.push(t);
-        }
-      });
+      const tokensValidos = fcmTokens.filter(t => t && typeof t === 'string' && t.length > 20);
+      if (tokensValidos.length > 0 && nome) {
+        tokensPorFiscal[nome] = tokensValidos;
+      }
     });
   } catch (err) {
     console.error('❌ Erro ao buscar tokens FCM:', err.message);
   }
-  console.log(`📱 ${tokens.length} token(s) FCM encontrado(s).`);
-  return tokens;
+  const totalTokens = Object.values(tokensPorFiscal).reduce((sum, arr) => sum + arr.length, 0);
+  console.log(`📱 ${totalTokens} token(s) FCM encontrado(s) para ${Object.keys(tokensPorFiscal).length} fiscal(is).`);
+  return tokensPorFiscal;
 }
 
-// ── Envia notificação multicast ──────────────────────────────
-async function enviarNotificacoes(tokens, novasOSs) {
-  if (tokens.length === 0) {
-    console.warn('⚠️  Nenhum token FCM disponível. Notificações não enviadas.');
-    return;
-  }
+// ── Envia notificação para um fiscal específico ───────────────
+async function enviarNotificacaoFiscal(tokens, numero, tipo, motivo, diasParaPrazo) {
+  if (!tokens || tokens.length === 0) return;
 
-  const qtd = novasOSs.length;
-  const primeiras = novasOSs.slice(0, 3);
-
-  // Monta corpo da notificação
-  let corpo = '';
-  if (qtd === 1) {
-    const os = primeiras[0];
-    corpo = `OS ${os.numero} (${os.tipo})`;
-    if (os.fiscal) corpo += ` — Fiscal: ${os.fiscal}`;
-  } else if (qtd <= 3) {
-    corpo = primeiras.map(o => `${o.tipo} ${o.numero}`).join(', ');
+  let mensagem_texto = '';
+  if (diasParaPrazo === 1) {
+    mensagem_texto = `OS ${numero} — ${motivo}, prazo amanhã`;
+  } else if (diasParaPrazo >= 2 && diasParaPrazo <= 5) {
+    mensagem_texto = `OS ${numero} — ${motivo}, prazo ${diasParaPrazo} dias`;
   } else {
-    corpo = `${primeiras.map(o => `${o.tipo} ${o.numero}`).join(', ')} e mais ${qtd - 3}`;
+    return;  // Não envia se não estiver na "janela"
   }
 
-  const titulo  = `🔔 ${qtd} nova${qtd > 1 ? 's' : ''} OS${qtd > 1 ? 's' : ''} — VISA Anápolis`;
   const mensagem = {
     notification: {
-      title: titulo,
-      body:  corpo
+      title: `🔔 Alerta de Prazo — VISA Anápolis`,
+      body:  mensagem_texto
     },
     data: {
       url:    'https://garrado.github.io/VISA/os.html',
-      qtdOSs: String(qtd),
-      tipo:   'os-update'
+      tipo:   'prazo-alerta',
+      osNum:  numero
     },
     webpush: {
       notification: {
         icon:  'https://garrado.github.io/VISA/icons/visa-192.png',
         badge: 'https://garrado.github.io/VISA/icons/visa-192.png',
-        tag:   'visa-os-update',
+        tag:   `visa-prazo-${numero}`,
         renotify: true,
         requireInteraction: false
       },
@@ -201,7 +223,6 @@ async function enviarNotificacoes(tokens, novasOSs) {
     }
   };
 
-  // FCM aceita no máximo 500 tokens por chamada multicast
   const LOTE = 500;
   let enviados = 0, erros = 0;
 
@@ -236,7 +257,7 @@ async function enviarNotificacoes(tokens, novasOSs) {
     }
   }
 
-  console.log(`📤 Notificações: ${enviados} enviadas, ${erros} erros.`);
+  return { enviados, erros };
 }
 
 // ── Remove tokens inválidos do Firestore ─────────────────────
@@ -268,8 +289,9 @@ async function removerTokensInvalidos(tokensInvalidos) {
 
 // ── Função principal ─────────────────────────────────────────
 async function main() {
-  console.log('🚀 VISA Notifier — iniciando verificação de novas OSs...');
-  console.log(`📅 ${new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}`);
+  console.log('🚀 VISA Notifier — verificando prazos...');
+  const agora = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+  console.log(`📅 ${agora}`);
 
   // 1. Lê estado atual dos CSVs
   const osAtuais = lerTodasOSs();
@@ -285,39 +307,87 @@ async function main() {
     process.exit(0);
   }
 
-  // 4. Detecta OSs novas (presentes agora mas não no snapshot)
-  const novasOSs = [];
-  for (const [numero, info] of Object.entries(osAtuais)) {
-    if (!snapshot[numero]) {
-      novasOSs.push({ numero, ...info });
+  // 4. Busca tokens FCM por fiscal
+  const tokensPorFiscal = await buscarTokensFCMPorFiscal();
+
+  // 5. Detecta OSs em "Janela de Recuperação" (2-5 dias) ou "Amanhã" (1 dia)
+  const alertas = { PRAZO_5D: 0, RECUPERACAO: 0, AMANHA: 0 };
+  const novoSnapshot = {};
+  let totalEnviados = 0, totalErros = 0;
+
+  for (const [numero, osAtual] of Object.entries(osAtuais)) {
+    const osAnterior = snapshot[numero] || {};
+    const diasParaPrazo = osAtual.prazo ? calcularDiasAte(osAtual.prazo) : null;
+
+    // Copia dados atuais para o novo snapshot
+    novoSnapshot[numero] = {
+      ...osAtual,
+      notif_5d: osAnterior.notif_5d || false,
+      notif_recuperacao: osAnterior.notif_recuperacao || false,
+      notif_amanha: osAnterior.notif_amanha || false
+    };
+
+    // Ignora OSs sem prazo ou sem fiscal
+    if (diasParaPrazo === null || !osAtual.fiscal) continue;
+
+    const fiscalUpper = osAtual.fiscal.toUpperCase().trim();
+    const tokens = tokensPorFiscal[fiscalUpper] || [];
+
+    // ── GATILHO 1: Prazo exatamente em 5 dias ────────────────
+    if (diasParaPrazo === 5 && !osAnterior.notif_5d) {
+      console.log(`⚠️  PRAZO_5D ${numero}: sem token FCM para "${osAtual.fiscal}"`);
+      alertas.PRAZO_5D++;
+      if (tokens.length > 0) {
+        const { enviados, erros } = await enviarNotificacaoFiscal(tokens, numero, osAtual.tipo, osAtual.motivo, diasParaPrazo);
+        totalEnviados += enviados;
+        totalErros += erros;
+        if (enviados > 0) {
+          novoSnapshot[numero].notif_5d = true;
+          console.log(`✅ PRAZO_5D ${numero}: ${enviados} notificação(ões) enviada(s)`);
+        }
+      }
+    }
+
+    // ── GATILHO 2: "Janela de Recuperação" (2-4 dias) ────────
+    if (diasParaPrazo >= 2 && diasParaPrazo <= 4 && !osAnterior.notif_5d && !osAnterior.notif_recuperacao) {
+      console.log(`⚠️  RECUPERACAO ${numero}: sem token FCM para "${osAtual.fiscal}"`);
+      alertas.RECUPERACAO++;
+      if (tokens.length > 0) {
+        const { enviados, erros } = await enviarNotificacaoFiscal(tokens, numero, osAtual.tipo, osAtual.motivo, diasParaPrazo);
+        totalEnviados += enviados;
+        totalErros += erros;
+        if (enviados > 0) {
+          novoSnapshot[numero].notif_recuperacao = true;
+          console.log(`✅ RECUPERACAO ${numero}: ${enviados} notificação(ões) enviada(s)`);
+        }
+      }
+    }
+
+    // ── GATILHO 3: Prazo exatamente amanhã (1 dia) ───────────
+    if (diasParaPrazo === 1 && !osAnterior.notif_amanha) {
+      console.log(`⚠️  AMANHA ${numero}: sem token FCM para "${osAtual.fiscal}"`);
+      alertas.AMANHA++;
+      if (tokens.length > 0) {
+        const { enviados, erros } = await enviarNotificacaoFiscal(tokens, numero, osAtual.tipo, osAtual.motivo, diasParaPrazo);
+        totalEnviados += enviados;
+        totalErros += erros;
+        if (enviados > 0) {
+          novoSnapshot[numero].notif_amanha = true;
+          console.log(`✅ AMANHA ${numero}: ${enviados} notificação(ões) enviada(s)`);
+        }
+      }
     }
   }
 
-  console.log(`🆕 Novas OSs detectadas: ${novasOSs.length}`);
-
-  if (novasOSs.length === 0) {
-    console.log('✅ Nenhuma OS nova. Nenhuma notificação enviada.');
-    // Atualiza snapshot mesmo assim (pode ter mudanças em outros campos)
-    salvarSnapshot(osAtuais);
-    process.exit(0);
-  }
-
-  // Log das novas OSs
-  novasOSs.slice(0, 10).forEach(os => {
-    console.log(`  → ${os.tipo} ${os.numero} | Fiscal: ${os.fiscal || 'N/A'} | ${os.motivo || ''}`);
-  });
-  if (novasOSs.length > 10) {
-    console.log(`  ... e mais ${novasOSs.length - 10} OS(s).`);
-  }
-
-  // 5. Busca tokens FCM
-  const tokens = await buscarTokensFCM();
-
-  // 6. Envia notificações
-  await enviarNotificacoes(tokens, novasOSs);
+  // 6. Log dos resultados
+  console.log(`\n🔔 Alertas de prazo detectados: ${alertas.PRAZO_5D + alertas.RECUPERACAO + alertas.AMANHA}`);
+  console.log(`   PRAZO_5D: ${alertas.PRAZO_5D}`);
+  console.log(`   RECUPERACAO: ${alertas.RECUPERACAO}`);
+  console.log(`   AMANHA: ${alertas.AMANHA}`);
+  console.log(`📤 Total: ${totalEnviados} notificação(ões) enviada(s), ${totalErros} erro(s).`);
 
   // 7. Salva novo snapshot
-  salvarSnapshot(osAtuais);
+  salvarSnapshot(novoSnapshot);
 
   console.log('✅ Processo concluído.');
   process.exit(0);
