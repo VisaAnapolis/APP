@@ -107,6 +107,48 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.1.7 — 22/02/2026 18:30 (Horário de Brasília – UTC−3)</h3>
+  <strong>Verificador Periódico de Versão (App Aberto)</strong>
+
+  <ul>
+    <li><strong>Problema Resolvido:</strong>
+      <ul>
+        <li>Fiscais que deixavam o app aberto o dia inteiro não recebiam o aviso de atualização, pois o script de versão só rodava ao carregar a página.</li>
+        <li>A função <code>checkVersionUpdate</code> já existia no código como placeholder vazio — agora foi implementada com a lógica real.</li>
+      </ul>
+    </li>
+
+    <li><strong>Como Funciona:</strong>
+      <ul>
+        <li>A cada <strong>1 hora</strong>, o app busca silenciosamente o <code>index.html</code> do servidor e extrai o número de versão.</li>
+        <li>Também roda <strong>5 minutos após abrir</strong> o app, como verificação inicial.</li>
+        <li>Se detectar uma versão diferente da local, força o ciclo completo de atualização (limpeza de cache + recarga).</li>
+        <li><strong>Único ponto de verdade:</strong> apenas o <code>APP_VERSION</code> no <code>index.html</code> precisa ser alterado — nenhum arquivo extra.</li>
+      </ul>
+    </li>
+
+    <li><strong>Efeito Prático:</strong>
+      <ul>
+        <li>Fiscal com app aberto há horas recebe a atualização automaticamente, sem precisar fechar e reabrir.</li>
+        <li>Garante que todos os dispositivos estejam sempre na versão mais recente durante o expediente.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <p><strong>Impacto:</strong> Fecha o último "furo" do sistema de atualizações. O app agora se mantém atualizado em todos os cenários: ao abrir, ao retornar do background e enquanto está em uso.</p>
+
+  <p><strong>Arquivos Modificados:</strong></p>
+  <ul>
+    <li><code>index.html</code> — implementação da função <code>checkVersionUpdate</code> e bump v2.1.6 → v2.1.7.</li>
+  </ul>
+
+  <p><strong>Backup em <code>_backup/cron_version_chq/</code>:</strong></p>
+  <ul>
+    <li><code>index.html.bak</code> — cópia do index.html antes da alteração (22/02/2026 18:21).</li>
+  </ul>
+</div>
+
+<div class="section">
   <h3>v2.1.6 — 22/02/2026 17:15 (Horário de Brasília – UTC−3)</h3>
   <strong>Otimização de Navegação: Notificações Direcionam para o Dashboard</strong>
 

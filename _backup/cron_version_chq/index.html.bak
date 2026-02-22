@@ -645,7 +645,7 @@ Supervisão de Vigilância Sanitária</p>
     const provider = new GoogleAuthProvider();
 
     // ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
-    const APP_VERSION = '2.1.7';
+    const APP_VERSION = '2.1.6';
     const VERSION_KEY = 'visa_app_version';
     const savedVersion = localStorage.getItem(VERSION_KEY);
 
@@ -702,26 +702,11 @@ Supervisão de Vigilância Sanitária</p>
     }
 
     // ===== VERIFICAÇÃO PERIÓDICA DE ATUALIZAÇÃO (A CADA HORA) =====
-    // Busca o index.html do servidor e extrai a versão atual.
-    // Se for diferente da versão local, força o ciclo de atualização.
-    // Único ponto de verdade: apenas o APP_VERSION no index.html precisa ser alterado.
-    async function checkVersionUpdate() {
-      try {
-        const resp = await fetch('/VISA/index.html?t=' + Date.now());
-        if (!resp.ok) return;
-        const html = await resp.text();
-        const match = html.match(/APP_VERSION\s*=\s*'([\d.]+)'/);
-        if (match && match[1] !== APP_VERSION) {
-          console.log(`🔄 [VersionCheck] Nova versão detectada: ${match[1]}. Forçando atualização...`);
-          localStorage.setItem(VERSION_KEY, match[1]); // força o ciclo de limpeza
-          location.reload(true);
-        }
-      } catch (e) {
-        console.warn('[VersionCheck] Falha ao verificar versão:', e);
-      }
+    function checkVersionUpdate() {
+      // ... [código da verificação periódica] ...
     }
-    setInterval(checkVersionUpdate, 3600000); // verifica a cada 1 hora
-    setTimeout(checkVersionUpdate, 300000);   // verifica 5 min após abrir
+    setInterval(checkVersionUpdate, 3600000);
+    setTimeout(checkVersionUpdate, 300000);
 
     // ===== ESCUTAR MENSAGENS DO SERVICE WORKER =====
     if ('serviceWorker' in navigator) {
