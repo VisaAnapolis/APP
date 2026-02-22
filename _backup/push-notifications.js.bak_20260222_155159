@@ -90,24 +90,15 @@ export async function initPushNotifications(firebaseApp, userEmail) {
 
 /**
  * Exibe uma notificação visual discreta quando o app está em foreground.
- *
- * IMPORTANTE: O servidor envia apenas o campo "data" (sem "notification").
- * Por isso, priorizamos payload.data para garantir o texto personalizado
- * (número da OS, motivo, prazo). payload.notification é usado apenas como
- * fallback de segurança, alinhando o comportamento com o firebase-messaging-sw.js.
+ * Usa a Notification API nativa (não precisa do SW neste caso).
  */
 function _exibirNotificacaoForeground(payload) {
-  // Prioriza payload.data (enviado pelo notify-os.js)
-  const d = payload.data ?? {};
-  // Fallback para payload.notification (caso o servidor mude a estratégia)
-  const n = payload.notification ?? {};
-
-  const notifTitle = d.title || n.title || 'VISA Anápolis';
-  const notifBody  = d.body  || n.body  || 'Novas Ordens de Serviço disponíveis.';
-  const notifUrl   = d.url   || n.url   || null;
+  const { title, body } = payload.notification ?? {};
+  const notifTitle = title || 'VISA Anápolis';
+  const notifBody  = body  || 'Novas Ordens de Serviço disponíveis.';
 
   // Toast visual na própria página (não intrusivo)
-  _mostrarToast(notifTitle, notifBody, notifUrl);
+  _mostrarToast(notifTitle, notifBody, payload.data?.url);
 }
 
 /**
