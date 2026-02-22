@@ -8,14 +8,6 @@
 // Este Service Worker é o ÚNICO responsável por exibir a notificação.
 // ============================================================
 
-// ── Atualização imediata: não aguarda abas serem fechadas ──
-// skipWaiting() faz o novo SW assumir assim que instalado,
-// sem esperar que todas as abas do app sejam fechadas.
-// clients.claim() garante que o SW controla imediatamente
-// todas as abas já abertas.
-self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
-
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 

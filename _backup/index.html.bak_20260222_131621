@@ -645,7 +645,7 @@ Supervisão de Vigilância Sanitária</p>
     const provider = new GoogleAuthProvider();
 
     // ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
-    const APP_VERSION = '2.1.5';
+    const APP_VERSION = '2.1.4';
     const VERSION_KEY = 'visa_app_version';
     const savedVersion = localStorage.getItem(VERSION_KEY);
 
@@ -655,7 +655,6 @@ Supervisão de Vigilância Sanitária</p>
     if (savedVersion !== APP_VERSION) {
       console.log(`🔄 Atualizando de ${savedVersion || 'antiga'} para ${APP_VERSION}`);
 
-      // Limpa localStorage (exceto chaves do Firebase e a própria chave de versão)
       const keysToRemove = [];
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -664,41 +663,18 @@ Supervisão de Vigilância Sanitária</p>
       keysToRemove.forEach(key => localStorage.removeItem(key));
       localStorage.setItem(VERSION_KEY, APP_VERSION);
 
-      // ── Desregistra todos os Service Workers antigos ──
-      // Garante que o firebase-messaging-sw.js e o service-worker.js
-      // sejam reinstalados na versão mais recente, sem cache antigo.
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then((registrations) => {
-          const unregisterAll = registrations.map(reg => {
-            console.log(`[SW] Desregistrando: ${reg.scope}`);
-            return reg.unregister();
-          });
-          Promise.all(unregisterAll).then(() => {
-            console.log('[SW] Todos os Service Workers desregistrados. Recarregando...');
-            // Limpa todos os caches do navegador para este site
-            if ('caches' in window) {
-              caches.keys().then(cacheNames => {
-                return Promise.all(cacheNames.map(name => caches.delete(name)));
-              }).then(() => location.reload(true));
-            } else {
-              location.reload(true);
-            }
-          });
-        });
-      } else {
-        // Fallback: exibe toast e recarrega normalmente
-        const toast = document.createElement('div');
-        toast.style.cssText = `
-          position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
-          background: linear-gradient(135deg, #2c5aa0, #3d6bb3);
-          color: white; padding: 14px 24px; border-radius: 12px;
-          box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-          z-index: 10000; font-weight: 600; font-size: 0.95rem;
-        `;
-        toast.innerHTML = `🚀 Atualizado para v${APP_VERSION}`;
-        document.body.appendChild(toast);
-        setTimeout(() => { toast.remove(); location.reload(); }, 2500);
-      }
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+        background: linear-gradient(135deg, #2c5aa0, #3d6bb3);
+        color: white; padding: 14px 24px; border-radius: 12px;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        z-index: 10000; font-weight: 600; font-size: 0.95rem;
+      `;
+      toast.innerHTML = `🚀 Atualizado para v${APP_VERSION}`;
+      document.body.appendChild(toast);
+
+      setTimeout(() => { toast.remove(); location.reload(); }, 2500);
     }
 
     // ===== VERIFICAÇÃO PERIÓDICA DE ATUALIZAÇÃO (A CADA HORA) =====
