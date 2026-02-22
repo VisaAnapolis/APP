@@ -3,8 +3,11 @@
 # Detecta novas Ordens de Serviço nos CSVs e envia
 # notificações push via Firebase Cloud Messaging.
 #
-# Dispara: a cada push que altere arquivos CSV de OS ou
-#          o arquivo de sincronização cvs_sync.txt
+# Dispara:
+#   - A cada push que altere arquivos CSV de OS ou cvs_sync.txt
+#   - Automaticamente 3x ao dia nos dias úteis (cron):
+#       8:30, 12:30 e 16:30 (Horário de Brasília, UTC-3)
+#   - Manualmente pelo painel do GitHub Actions
 # ============================================================
 
 name: Notificar Novas OSs
@@ -17,6 +20,14 @@ on:
       - 'data/denuncia.csv'
       - 'data/protocolo.csv'
       - 'data/cvs_sync.txt'
+
+  # Disparo agendado 3x ao dia nos dias úteis (seg-sex)
+  # GitHub Actions usa UTC; Brasília é UTC-3
+  # 08:30 BRT = 11:30 UTC | 12:30 BRT = 15:30 UTC | 16:30 BRT = 19:30 UTC
+  schedule:
+    - cron: '30 11 * * 1-5'   # 08:30 Brasília (dias úteis)
+    - cron: '30 15 * * 1-5'   # 12:30 Brasília (dias úteis)
+    - cron: '30 19 * * 1-5'   # 16:30 Brasília (dias úteis)
 
   # Permite execução manual pelo painel do GitHub Actions
   workflow_dispatch:
