@@ -107,6 +107,60 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.1.5 — 22/02/2026 13:20 (Horário de Brasília – UTC−3)</h3>
+  <strong>Correção crítica: atualização forçada do Service Worker de notificações push</strong>
+
+  <ul>
+    <li><strong>Problema corrigido — SW Firebase em estado "waiting":</strong>
+      <ul>
+        <li>O <code>firebase-messaging-sw.js</code> não possuía <code>skipWaiting()</code>, fazendo com que versões novas ficassem em espera indefinida até o fiscal fechar completamente o app.</li>
+        <li>Isso causava a exibição da mensagem genérica <em>"Toque para copiar o URL"</em> nas notificações push, pois o SW antigo (sem o handler correto) permanecia ativo.</li>
+      </ul>
+    </li>
+
+    <li><strong><code>firebase-messaging-sw.js</code> — atualização imediata do SW:</strong>
+      <ul>
+        <li>Adicionados <code>self.addEventListener('install', () =&gt; self.skipWaiting())</code> e <code>self.addEventListener('activate', e =&gt; e.waitUntil(self.clients.claim()))</code>.</li>
+        <li>A partir desta versão, qualquer novo deploy do SW assume o controle <strong>imediatamente</strong>, sem aguardar fechamento de abas.</li>
+      </ul>
+    </li>
+
+    <li><strong><code>index.html</code> — desregistro forçado de SWs antigos na detecção de nova versão:</strong>
+      <ul>
+        <li>Ao detectar mudança de versão (2.1.4 → 2.1.5), o app agora executa, em sequência:</li>
+        <li>1. Limpa o <code>localStorage</code> (exceto chaves do Firebase).</li>
+        <li>2. Desregistra <strong>todos</strong> os Service Workers via <code>navigator.serviceWorker.getRegistrations()</code>.</li>
+        <li>3. Limpa todos os caches do navegador via <code>caches.keys()</code> + <code>caches.delete()</code>.</li>
+        <li>4. Recarrega a página com <code>location.reload(true)</code> (ignora cache HTTP).</li>
+        <li>Garante que o novo <code>firebase-messaging-sw.js</code> seja instalado do zero na próxima abertura.</li>
+      </ul>
+    </li>
+
+    <li><strong>Efeito prático para os fiscais:</strong>
+      <ul>
+        <li>Na primeira abertura do app após este deploy, todos os SWs antigos são removidos automaticamente.</li>
+        <li>O novo SW é registrado e passa a exibir notificações com o conteúdo correto: <em>"OS XXXXXXXX — motivo, prazo X dias"</em>.</li>
+        <li>Tokens FCM passam a ser registrados corretamente no Firestore para fiscais que ainda não tinham token salvo.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <p><strong>Impacto:</strong> correção definitiva do ciclo de atualização do Service Worker de notificações push. Fiscais passam a receber alertas de prazo com conteúdo personalizado (número da OS, motivo e dias restantes) em vez da mensagem genérica do sistema.</p>
+
+  <p><strong>Arquivos Modificados:</strong></p>
+  <ul>
+    <li><code>firebase-messaging-sw.js</code> — adição de <code>skipWaiting</code> e <code>clients.claim</code>.</li>
+    <li><code>index.html</code> — bump de versão 2.1.4 → 2.1.5 e desregistro forçado de SWs antigos.</li>
+  </ul>
+
+  <p><strong>Backups Criados:</strong></p>
+  <ul>
+    <li><code>_backup/firebase-messaging-sw.js.bak_20260222_131621</code></li>
+    <li><code>_backup/index.html.bak_20260222_131621</code></li>
+  </ul>
+</div>
+
+<div class="section">
   <h3>v2.1.3 — 15/02/2026 09:10 (Horário de Brasília – UTC−3)</h3>
   <strong>Correção estrutural na renderização das inspeções</strong>
 
