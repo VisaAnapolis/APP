@@ -451,7 +451,6 @@
           <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-info"><div class="stat-number" id="activeUsers">0</div><div class="stat-label">Usuários Ativos</div></div></div>
           <div class="stat-card"><div class="stat-icon">⏱️</div><div class="stat-info"><div class="stat-number" id="last24hUsers">0</div><div class="stat-label">Acessos (últimas 24h)</div></div></div>
           <div class="stat-card"><div class="stat-icon">🔔</div><div class="stat-info"><div class="stat-number" id="fcmDispositivos">0</div><div class="stat-label">Disp. Push</div></div></div>
-          <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-info"><div class="stat-number" id="fiscaisComToken">0</div><div class="stat-label">Fiscais c/ Alertas</div></div></div>
 
         </div>
       </div>
@@ -833,15 +832,6 @@
         acc + (Array.isArray(u.fcmTokens) ? u.fcmTokens.length : 0), 0);
       const elFcm = document.getElementById('fcmDispositivos');
       if(elFcm) elFcm.textContent = totalFcm;
-
-      // FCM — fiscais com pelo menos um dispositivo autorizado
-      const fiscaisComToken = usuarios.filter(u =>
-        u.grupo === 'Fiscal' &&
-        Array.isArray(u.fcmTokens) &&
-        u.fcmTokens.length > 0
-      ).length;
-      const elFiscaisToken = document.getElementById('fiscaisComToken');
-      if(elFiscaisToken) elFiscaisToken.textContent = fiscaisComToken;
       
     }
 

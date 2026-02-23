@@ -107,6 +107,34 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.2.0 — 23/02/2026 16:29 (Horário de Brasília – UTC−3)</h3>
+  <strong>Nova Estatística no Painel Admin: Fiscais com Alertas Ativos</strong>
+
+  <ul>
+    <li><strong>Nova Totalização:</strong>
+      <ul>
+        <li>Adicionado novo card de estatística no painel <code>admin.html</code>: <strong>✅ Fiscais c/ Alertas</strong>.</li>
+        <li>Exibe o número de fiscais únicos que possuem pelo menos um dispositivo com token FCM registrado no Firestore.</li>
+        <li>Difere do card <em>Disp. Push</em> (que conta o total de tokens): este card conta <strong>pessoas</strong>, não dispositivos.</li>
+        <li>Permite ao administrador monitorar a taxa de adesão ao sistema de alertas de prazo em tempo real.</li>
+      </ul>
+    </li>
+    <li><strong>Lógica de Cálculo:</strong>
+      <ul>
+        <li>Filtra usuários com <code>grupo === 'Fiscal'</code> que possuam o array <code>fcmTokens</code> com pelo menos 1 entrada válida.</li>
+        <li>Atualizado automaticamente junto com todas as demais estatísticas ao carregar a página.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <p><strong>Arquivos Modificados:</strong></p>
+  <ul>
+    <li><code>admin.html</code> — Novo card HTML <code>#fiscaisComToken</code> e lógica JS na função <code>atualizarEstatisticas()</code>.</li>
+  </ul>
+  <p><strong>Backup:</strong> <code>_backup/estatistica_notif_admin/admin.html.bak</code></p>
+</div>
+
+<div class="section">
   <h3>v2.1.9 — 23/02/2026 14:24 (Horário de Brasília – UTC−3)</h3>
   <strong>Barra Verde de Confirmação de Notificações Ativas</strong>
 
