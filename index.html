@@ -1835,9 +1835,8 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
         setTimeout(() => { okBanner.style.display = 'none'; }, 5200);
       }
 
-      // Mostra o banner âmbar apenas para Fiscais sem token e que não dispensaram permanentemente
+      // Mostra o banner âmbar para qualquer usuário sem token e que não dispensou permanentemente
       if (!pushAtivado
-          && perfil.grupo === 'Fiscal'
           && localStorage.getItem(BANNER_KEY) !== 'true'
           && banner) {
         banner.style.display = 'flex';
@@ -1862,7 +1861,12 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
             } else {
               bannerBtn.textContent = 'ATIVAR AGORA';
               bannerBtn.disabled = false;
-              alert('Não foi possível ativar. Verifique se as notificações estão permitidas nas configurações do seu celular.');
+              const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+              let errorMessage = 'Não foi possível ativar. Verifique se as notificações estão permitidas nas configurações do seu dispositivo.';
+              if (isIOS) {
+                errorMessage += '\n\nNo iPhone/iPad, certifique-se de ter adicionado o app à Tela de Início e que as notificações estão ativadas nos Ajustes do sistema.';
+              }
+              alert(errorMessage);
             }
           } catch (e) {
             bannerBtn.textContent = 'ATIVAR AGORA';

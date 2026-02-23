@@ -107,6 +107,31 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.2.1 — 23/02/2026 20:50 (Horário de Brasília – UTC−3)</h3>
+  <strong>Banner de Notificações para Todos e Mensagem de Erro para iOS</strong>
+
+  <ul>
+    <li><strong>Banner de Ativação para Todos:</strong>
+      <ul>
+        <li>Removida a restrição que exibia o banner de ativação de notificações apenas para o perfil 'Fiscal'.</li>
+        <li>Agora, qualquer usuário logado (incluindo Administrador e Administrativo) que não possua um token de notificação ativo verá o banner para poder ativar os alertas em seu dispositivo.</li>
+      </ul>
+    </li>
+    <li><strong>Melhoria na Mensagem de Erro para iOS:</strong>
+      <ul>
+        <li>A mensagem de erro ao falhar a ativação de notificações agora detecta se o dispositivo é um iPhone/iPad.</li>
+        <li>Se for iOS, a mensagem incluirá a instrução: <em>"No iPhone/iPad, certifique-se de ter adicionado o app à Tela de Início e que as notificações estão ativadas nos Ajustes do sistema."</em></li>
+      </ul>
+    </li>
+  </ul>
+
+  <p><strong>Arquivos Modificados:</strong></p>
+  <ul>
+    <li><code>index.html</code> — Lógica JavaScript de exibição do banner e da mensagem de erro.</li>
+  </ul>
+</div>
+
+<div class="section">
   <h3>v2.2.0 — 23/02/2026 16:29 (Horário de Brasília – UTC−3)</h3>
   <strong>Nova Estatística no Painel Admin: Fiscais com Alertas Ativos</strong>
 
