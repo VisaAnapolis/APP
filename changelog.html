@@ -107,6 +107,33 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.1.9 — 23/02/2026 14:24 (Horário de Brasília – UTC−3)</h3>
+  <strong>Barra Verde de Confirmação de Notificações Ativas</strong>
+
+  <ul>
+    <li><strong>Melhoria de UX:</strong>
+      <ul>
+        <li>Fiscais que já têm token FCM registrado agora vêem uma <strong>barra verde discreta</strong> logo abaixo do header ao abrir o app, confirmando que os alertas de prazo estão ativos.</li>
+        <li>Mensagem exibida: <em>"✅ Alertas de prazo ativados neste dispositivo."</em></li>
+        <li>A barra some automaticamente após <strong>5 segundos</strong> com animação suave de fade-out.</li>
+        <li>Suporte a <strong>Dark Mode</strong>: fundo verde escuro com texto verde claro.</li>
+      </ul>
+    </li>
+    <li><strong>Comportamento:</strong>
+      <ul>
+        <li>Aparece apenas para o perfil <strong>Fiscal</strong> com token ativo.</li>
+        <li>Não aparece para Administrador, Administrativo ou quem ainda não autorizou (para esses, continua o banner âmbar de ativação).</li>
+      </ul>
+    </li>
+  </ul>
+
+  <p><strong>Arquivos Modificados:</strong></p>
+  <ul>
+    <li><code>index.html</code> — CSS da animação <code>fadeOutBanner</code>, HTML do <code>#notif-ok-banner</code> e lógica JS de exibição condicional.</li>
+  </ul>
+</div>
+
+<div class="section">
   <h3>v2.1.8 — 23/02/2026 13:55 (Horário de Brasília – UTC−3)</h3>
   <strong>Banner de Ativação de Notificações Push</strong>
 

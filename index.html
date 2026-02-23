@@ -158,6 +158,32 @@
     body.dark-mode #notif-banner .notif-banner__dismiss { color: #fbbf24; }
     /* ─────────────────────────────────────────────────────────── */
 
+    /* Barra verde de confirmação (token já ativo) */
+    @keyframes fadeOutBanner {
+      0%   { opacity: 1; max-height: 60px; padding: 10px 16px; }
+      80%  { opacity: 1; max-height: 60px; padding: 10px 16px; }
+      100% { opacity: 0; max-height: 0;   padding: 0 16px; }
+    }
+    #notif-ok-banner {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: #f0fdf4;
+      border-left: 4px solid #16a34a;
+      color: #14532d;
+      padding: 10px 16px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      overflow: hidden;
+      animation: fadeOutBanner 5s ease forwards;
+    }
+    body.dark-mode #notif-ok-banner {
+      background: #052e16;
+      border-left-color: #22c55e;
+      color: #bbf7d0;
+    }
+    /* ─────────────────────────────────────────────────────────── */
+
     .container{
       max-width: 1100px;
       margin: 22px auto 30px;
@@ -512,6 +538,11 @@
     <!-- User info -->
     <div id="userInfo" class="user-info-bar"></div>
 
+    <!-- Banner verde de confirmação (token já ativo) -->
+    <div id="notif-ok-banner">
+      ✅ Alertas de prazo ativados neste dispositivo.
+    </div>
+
     <!-- Banner de ativação de notificações push -->
     <div id="notif-banner">
       <span class="notif-banner__text">
@@ -710,7 +741,7 @@ Supervisão de Vigilância Sanitária</p>
     const provider = new GoogleAuthProvider();
 
     // ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
-    const APP_VERSION = '2.1.8';
+    const APP_VERSION = '2.1.9';
     const VERSION_KEY = 'visa_app_version';
     const savedVersion = localStorage.getItem(VERSION_KEY);
 
@@ -1796,7 +1827,15 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
       const bannerDismiss = document.getElementById('notif-banner-dismiss');
       const BANNER_KEY    = 'notif_banner_dismissed';
 
-      // Mostra o banner apenas para Fiscais sem token e que não dispensaram permanentemente
+      // Barra verde de confirmação (token já ativo)
+      const okBanner = document.getElementById('notif-ok-banner');
+      if (pushAtivado && perfil.grupo === 'Fiscal' && okBanner) {
+        okBanner.style.display = 'flex';
+        // Some após a animação de 5s
+        setTimeout(() => { okBanner.style.display = 'none'; }, 5200);
+      }
+
+      // Mostra o banner âmbar apenas para Fiscais sem token e que não dispensaram permanentemente
       if (!pushAtivado
           && perfil.grupo === 'Fiscal'
           && localStorage.getItem(BANNER_KEY) !== 'true'
