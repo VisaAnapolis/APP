@@ -107,6 +107,48 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.1.8 — 23/02/2026 13:55 (Horário de Brasília – UTC−3)</h3>
+  <strong>Banner de Ativação de Notificações Push</strong>
+
+  <ul>
+    <li><strong>Problema Resolvido:</strong>
+      <ul>
+        <li>Fiscais que não autorizavam as notificações no primeiro acesso (especialmente usuários de iPhone/iOS) ficavam sem receber alertas de prazo, sem saber como reativar.</li>
+        <li>Dos 38 usuários cadastrados, apenas 7 tinham token FCM registrado após o primeiro dia de uso — 31 ficaram sem cobertura.</li>
+      </ul>
+    </li>
+
+    <li><strong>Solução Implementada — Banner de Ativação:</strong>
+      <ul>
+        <li>Adicionado banner âmbar discreto logo abaixo do header, visível apenas para fiscais sem token FCM.</li>
+        <li>O banner exibe a mensagem: <em>"🔔 Ative os alertas de prazo para receber avisos de OS no seu celular."</em></li>
+        <li>Botão <strong>"ATIVAR AGORA"</strong> dispara o <code>initPushNotifications()</code> com gesto explícito do usuário — obrigatório para iOS/Safari.</li>
+        <li>Ao ativar com sucesso: banner some e aparece toast verde <em>"✅ Alertas de prazo ativados com sucesso!"</em>.</li>
+        <li>Botão <strong>×</strong> permite dispensar o banner por aquela sessão (reaparece na próxima abertura até o token ser registrado).</li>
+      </ul>
+    </li>
+
+    <li><strong>Design Responsivo:</strong>
+      <ul>
+        <li><strong>Desktop:</strong> barra horizontal com texto à esquerda e botão à direita.</li>
+        <li><strong>Mobile (≤ 600px):</strong> empilha verticalmente com botão em largura total.</li>
+        <li><strong>Dark Mode:</strong> fundo escuro âmbar com texto dourado claro.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <p><strong>Arquivos Modificados:</strong></p>
+  <ul>
+    <li><code>index.html</code> — HTML do banner, CSS responsivo e lógica JS de ativação.</li>
+  </ul>
+
+  <p><strong>Backup em <code>_backup/banner_notif_ativacao/</code>:</strong></p>
+  <ul>
+    <li><code>index.html.bak</code> — cópia do arquivo antes da alteração (23/02/2026 13:55).</li>
+  </ul>
+</div>
+
+<div class="section">
   <h3>v2.1.7 — 23/02/2026 13:35 (Horário de Brasília – UTC−3)</h3>
   <strong>Filtro por Nº do Documento em Inspecões</strong>
 
