@@ -146,7 +146,7 @@
 
         .filter-row {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr 150px;
+            grid-template-columns: 2fr 1fr 1fr 150px;
             gap: 16px;
             align-items: end;
         }
@@ -582,10 +582,6 @@ window.addEventListener('scroll', () => {
                         <input type="date" id="dataFinal" min="2018-01-01" max="2026-12-31">
                     </div>
                     <div class="filter-group">
-                        <label for="filtroNumDoc">Nº do Documento:</label>
-                        <input type="text" id="filtroNumDoc" placeholder="Ex: 1234/2026" autocomplete="off">
-                    </div>
-                    <div class="filter-group">
                         <button class="btn-search" onclick="buscarInspecoes()">
                             🔍 Buscar
                         </button>
@@ -921,7 +917,6 @@ window.addEventListener('scroll', () => {
 
             const dataInicial = $('#dataInicial').val();
             const dataFinal = $('#dataFinal').val();
-            const filtroNumDoc = trimSafe($('#filtroNumDoc').val()).toUpperCase();
 
             if (!fiscalSelecionado) {
                 if (!isAdmin()) {
@@ -932,9 +927,8 @@ window.addEventListener('scroll', () => {
                 return;
             }
 
-            // Se filtro por Nº do Documento preenchido, data não é obrigatória
-            if (!filtroNumDoc && (!dataInicial || !dataFinal)) {
-                mostrarInfo('⚠️ Por favor, selecione o período (data inicial e final) ou informe o Nº do Documento.', 'warning');
+            if (!dataInicial || !dataFinal) {
+                mostrarInfo('⚠️ Por favor, selecione o período (data inicial e final).', 'warning');
                 return;
             }
 
@@ -944,13 +938,12 @@ window.addEventListener('scroll', () => {
 
             // Processar em segundo plano
             setTimeout(() => {
-                const resultados = processarInspecoes(fiscalSelecionado, dataInicial, dataFinal, filtroNumDoc);
+                const resultados = processarInspecoes(fiscalSelecionado, dataInicial, dataFinal);
                 exibirResultados(resultados, fiscalSelecionado, dataInicial, dataFinal);
             }, 100);
         }
 
-        function processarInspecoes(fiscal, dataIni, dataFim, filtroNumDoc) {
-            filtroNumDoc = trimSafe(filtroNumDoc).toUpperCase();
+        function processarInspecoes(fiscal, dataIni, dataFim) {
             const resultados = [];
 
             // Admin + "TODOS" (ou vazio) => não filtra por fiscal
@@ -968,16 +961,9 @@ window.addEventListener('scroll', () => {
                     if (!participou) return;
                 }
 
-                // 2) Filtro por período (ignorado se filtroNumDoc preenchido e datas vazias)
+                // 2) Filtro por período
                 const dataInspecao = converterData(trimSafe(insp.DT_VISITA));
-                if (!filtroNumDoc && (!dataInspecao || dataInspecao < dataIni || dataInspecao > dataFim)) return;
-                if (filtroNumDoc && dataIni && dataFim && (!dataInspecao || dataInspecao < dataIni || dataInspecao > dataFim)) return;
-
-                // 2b) Filtro por Nº do Documento
-                if (filtroNumDoc) {
-                    const numDoc = trimSafe(insp.NUMERO).toUpperCase();
-                    if (!numDoc.includes(filtroNumDoc)) return;
-                }
+                if (!dataInspecao || dataInspecao < dataIni || dataInspecao > dataFim) return;
 
                 // 3) Dados do regulado (por CODIGO)
                 const cod = trimSafe(insp.CODIGO);

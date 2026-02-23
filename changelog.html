@@ -107,7 +107,47 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
-  <h3>v2.1.7 — 22/02/2026 18:30 (Horário de Brasília – UTC−3)</h3>
+  <h3>v2.1.7 — 23/02/2026 13:35 (Horário de Brasília – UTC−3)</h3>
+  <strong>Filtro por Nº do Documento em Inspecões</strong>
+
+  <ul>
+    <li><strong>Novo Campo de Pesquisa:</strong>
+      <ul>
+        <li>Adicionado campo <strong>"Nº do Documento"</strong> na barra de filtros da página <code>inspecoes.html</code>.</li>
+        <li>Permite localizar rapidamente uma inspeção pelo número do documento emitido (Auto de Infração, Termo de Intimacão, Certidão, etc.).</li>
+        <li>Busca <strong>parcial e insensível a maiúsculas</strong>: digitar "123" encontra "1234/2026".</li>
+      </ul>
+    </li>
+
+    <li><strong>Comportamento Inteligente:</strong>
+      <ul>
+        <li>Se o campo Nº do Documento estiver preenchido, as <strong>datas passam a ser opcionais</strong> — o sistema busca em todo o histórico.</li>
+        <li>Se as datas também estiverem preenchidas, o filtro aplica <strong>ambas as condições simultaneamente</strong> (documento + período).</li>
+        <li>Se apenas as datas estiverem preenchidas (comportamento original), o campo de documento é ignorado.</li>
+      </ul>
+    </li>
+
+    <li><strong>Layout:</strong>
+      <ul>
+        <li>Grade de filtros atualizada de 4 para 5 colunas: <code>Fiscal | Data Inicial | Data Final | Nº Doc | Buscar</code>.</li>
+        <li>No mobile (≤ 1024px), os campos empilham verticalmente como os demais.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <p><strong>Arquivos Modificados:</strong></p>
+  <ul>
+    <li><code>inspecoes.html</code> — HTML do novo campo, CSS do filter-row e lógica JS de filtragem.</li>
+  </ul>
+
+  <p><strong>Backup em <code>_backup/filtro_doc_inspecoes/</code>:</strong></p>
+  <ul>
+    <li><code>inspecoes.html.bak</code> — cópia do arquivo antes da alteração (23/02/2026 11:34).</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>v2.1.7 — 22/02/2026 20:35 (Horário de Brasília – UTC−3)</h3>
   <strong>Verificador Periódico de Versão (App Aberto)</strong>
 
   <ul>
