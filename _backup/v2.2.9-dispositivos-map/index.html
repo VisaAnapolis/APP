@@ -678,7 +678,7 @@ Supervisão de Vigilância Sanitária</p>
     const provider = new GoogleAuthProvider();
 
     // ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
-    const APP_VERSION = '2.2.9';
+    const APP_VERSION = '2.2.8';
     const VERSION_KEY = 'visa_app_version';
     const savedVersion = localStorage.getItem(VERSION_KEY);
 
@@ -1723,46 +1723,22 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
 
         if (perfil && userDocId) {
 
-          // Gera chave única para este dispositivo (SO + navegador + resolução)
+          // Atualiza foto/ultimo acesso/dispositivo (mantém)
           try {
             const dadosDispositivo = coletarDadosDispositivo();
-            const chaveDispositivo = [
-              (dadosDispositivo.sistemaOperacional || 'desconhecido').toLowerCase().replace(/[^a-z0-9]/g, ''),
-              (dadosDispositivo.navegador || 'desconhecido').toLowerCase().replace(/[^a-z0-9]/g, ''),
-              (dadosDispositivo.resolucao || '0x0').replace('x', '_')
-            ].join('_');
-
-            const registroDispositivo = {
-              appVersionLast: (typeof APP_VERSION !== 'undefined' ? APP_VERSION : ''),
-              pageLast: getCurrentPageName(),
-              ultimoAcesso: new Date().toISOString(),
-              sistemaOperacional: dadosDispositivo.sistemaOperacional || '',
-              versaoSO: dadosDispositivo.versaoSO || '',
-              navegador: dadosDispositivo.navegador || '',
-              versaoNavegador: dadosDispositivo.versaoNavegador || '',
-              fabricante: dadosDispositivo.fabricante || '',
-              modelo: dadosDispositivo.modelo || '',
-              modoAcesso: dadosDispositivo.modoAcesso || '',
-              resolucao: dadosDispositivo.resolucao || '',
-              tipoConexao: dadosDispositivo.tipoConexao || ''
-            };
-
-            // Salva: campos raiz + mapa de dispositivos indexado por chave
-            await updateDoc(doc(db, 'usuarios', userDocId), {
+            await updateDoc(doc(db, "usuarios", userDocId), {
               photoURL: user.photoURL || '',
               ultimoAcesso: serverTimestamp(),
-              appVersionLast: registroDispositivo.appVersionLast,
-              pageLast: registroDispositivo.pageLast,
-              [`dispositivos.${chaveDispositivo}`]: registroDispositivo
+              dispositivo: dadosDispositivo,
+              appVersionLast: (typeof APP_VERSION !== "undefined" ? APP_VERSION : ""),
+              pageLast: getCurrentPageName()
             });
-            console.log('[Perfil] Dispositivo registrado:', chaveDispositivo);
           } catch (dispErr) {
-            console.warn('[Perfil] Falha ao gravar dispositivo:', dispErr);
             try {
-              await updateDoc(doc(db, 'usuarios', userDocId), {
+              await updateDoc(doc(db, "usuarios", userDocId), {
                 photoURL: user.photoURL || '',
                 ultimoAcesso: serverTimestamp(),
-                appVersionLast: (typeof APP_VERSION !== 'undefined' ? APP_VERSION : ''),
+                appVersionLast: (typeof APP_VERSION !== "undefined" ? APP_VERSION : ""),
                 pageLast: getCurrentPageName()
               });
             } catch(_) {}
