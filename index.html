@@ -662,7 +662,7 @@ Supervisão de Vigilância Sanitária</p>
       setPersistence,
       browserLocalPersistence
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, getDoc, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
@@ -818,18 +818,23 @@ Supervisão de Vigilância Sanitária</p>
       let lastErr = null;
       for (let attempt = 1; attempt <= 2; attempt++) {
         try {
-          // Atualiza mensagem no userInfo (opcional)
           setUserInfoLoadingText(attempt === 1 ? 'Carregando perfil...' : 'Conexão lenta — tentando novamente...', emailNorm);
 
-          const q = query(collection(db, "usuarios"), where("email", "==", emailNorm));
-          const qs = await withTimeout(getDocs(q), PROFILE_TIMEOUT_MS, 'perfil');
-
-          if (qs.empty) {
-            return { perfil: null, userDocId: null, notFound: true };
+          // Estratégia 1: busca pelo Document ID = email (mais rápido e confiável)
+          const snap1 = await withTimeout(getDoc(doc(db, 'usuarios', emailNorm)), PROFILE_TIMEOUT_MS, 'perfil-id');
+          if (snap1.exists()) {
+            return { perfil: snap1.data(), userDocId: snap1.id, notFound: false };
           }
 
-          const userDoc = qs.docs[0];
-          return { perfil: userDoc.data(), userDocId: userDoc.id, notFound: false };
+          // Estratégia 2: fallback por campo email (documentos legados)
+          const q = query(collection(db, 'usuarios'), where('email', '==', emailNorm));
+          const qs = await withTimeout(getDocs(q), PROFILE_TIMEOUT_MS, 'perfil-campo');
+          if (!qs.empty) {
+            const userDoc = qs.docs[0];
+            return { perfil: userDoc.data(), userDocId: userDoc.id, notFound: false };
+          }
+
+          return { perfil: null, userDocId: null, notFound: true };
         } catch (err) {
           lastErr = err;
           console.warn('⚠️ Falha ao buscar perfil (tentativa ' + attempt + '):', err);
