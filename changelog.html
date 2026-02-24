@@ -111,6 +111,47 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.3.0 — 24/02/2026 21:00 (Horário de Brasília – UTC−3)</h3>
+  <strong>Modal de Dispositivos, isIOS e Correções de Opt-in</strong>
+
+  <ul>
+    <li><strong>Painel Admin — Modal de Dispositivos:</strong>
+      <ul>
+        <li>Novo botão <code>📱 N</code> na coluna <em>Versão</em> (desktop) e no card (mobile) abre um modal detalhado com um card por dispositivo registrado.</li>
+        <li>Cada card exibe: SO, navegador, resolução, modo de acesso (PWA/Navegador), versão do app, página e data do último acesso.</li>
+        <li>Usuários sem token FCM exibem <code>🔕 Sem push</code> em vermelho no lugar do botão, em ambos os modos.</li>
+        <li>Coluna <em>Dispositivo</em> renomeada para <strong>Último Acesso</strong> e removida a informação redundante de FCM do box.</li>
+        <li>Legenda de opt-in no rodapé do modal: ✅ Aceitou / ❌ Recusou / ❓ Pendente.</li>
+      </ul>
+    </li>
+    <li><strong>Correção de Falso Positivo de Opt-in:</strong>
+      <ul>
+        <li>O campo <code>notificationOptIn</code> agora só é gravado no Firestore quando o usuário responde explicitamente ao modal Android (<code>true</code> ou <code>false</code>).</li>
+        <li>Acessos via desktop ou iOS passam <code>null</code> e não sobrescrevem a preferência já registrada.</li>
+      </ul>
+    </li>
+    <li><strong>Suporte a iOS (isIOS):</strong>
+      <ul>
+        <li>Bloco dedicado para iOS no fluxo de notificações: só solicita token FCM se o app estiver instalado como PWA (<code>window.navigator.standalone === true</code>).</li>
+        <li>iOS via Safari normal não solicita token, evitando erros de permissão.</li>
+        <li>Bloco isolado e comentável sem impacto no Android ou desktop.</li>
+      </ul>
+    </li>
+    <li><strong>Mapa de Dispositivos por Usuário (Firestore):</strong>
+      <ul>
+        <li>Cada acesso agora grava um registro individual no campo <code>dispositivos</code> do documento do usuário, indexado por chave única (SO + navegador + resolução).</li>
+        <li>Permite rastrear versão, página e data de acesso por aparelho separadamente.</li>
+      </ul>
+    </li>
+    <li><strong>Correção de Bug Crítico (Temporal Dead Zone):</strong>
+      <ul>
+        <li>Corrigida redeclaração de <code>const db</code> que impedia o <code>updateDoc</code> de executar em todos os dispositivos desde a v2.2.7.</li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div class="section">
   <h3>v2.2.8 — 24/02/2026 17:30 (Horário de Brasília – UTC−3)</h3>
   <strong>Solução Definitiva de Cache e Opt-in de Notificações</strong>
 

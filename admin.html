@@ -584,7 +584,7 @@
                   <th>Perfil/Grupo</th>
                   <th>Status</th>
                   <th>Versão</th>
-                  <th>Dispositivo</th>
+                  <th>Último Acesso</th>
                   <th>Ações</th>
                 </tr>
               </thead>
@@ -727,7 +727,7 @@
       return String(v);
     }
 
-    function formatarDispositivo(d, fcmTokens){
+    function formatarDispositivo(d){
       if(!d) return '<span style="color:#999">-</span>';
 
       const fabricante = safeVal(d.fabricante);
@@ -763,15 +763,6 @@
         rows.push(`<div class="row"><span class="k">🕒</span><span>${coletadoEm}</span></div>`);
       }
 
-      // ── FCM Tokens ──────────────────────────────────────────────────────
-      const _qtdFcm = Array.isArray(fcmTokens) ? fcmTokens.length : 0;
-      const _fcmClass = _qtdFcm > 0 ? 'ativo' : 'inativo';
-      const _fcmLabel = _qtdFcm > 0
-        ? `📲 ${_qtdFcm} dispositivo${_qtdFcm !== 1 ? 's' : ''} autorizado${_qtdFcm !== 1 ? 's' : ''}`
-        : `🔕 Sem notificações push`;
-      rows.push(`<div class="fcm-info"><span class="fcm-tag ${_fcmClass}">${_fcmLabel}</span></div>`);
-
-      
       return `<div class="device-box">${rows.join("")}</div>`;
     }
 
@@ -934,7 +925,7 @@ function renderizarUsuarios(usuarios){
           photoHTML = `<div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:1.45rem;">${emoji}</div>`;
         }
 
-        const dispositivoHTML = formatarDispositivo(u.dispositivo, u.fcmTokens);
+        const dispositivoHTML = formatarDispositivo(u.dispositivo);
 
         tr.innerHTML = `
           <td>${photoHTML}</td>
