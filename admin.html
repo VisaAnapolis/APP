@@ -420,43 +420,6 @@
 .fcm-tag.ativo   { background: rgba(52,199,89,.13); color: #34C759; }
 .fcm-tag.inativo { background: rgba(220,53,69,.11); color: #dc3545; }
 
-/* ── Mapa de Dispositivos ─────────────────────────── */
-.disp-map { display: flex; flex-direction: column; gap: 6px; min-width: 200px; }
-.disp-card {
-  background: linear-gradient(135deg, rgba(44,90,160,.07), rgba(52,199,89,.05));
-  border: 1px dashed rgba(0,0,0,.10);
-  border-radius: 8px;
-  padding: 7px 10px;
-  font-size: .80rem;
-  line-height: 1.55;
-}
-.disp-card .disp-header {
-  font-weight: 700;
-  font-size: .82rem;
-  color: var(--brand1);
-  margin-bottom: 3px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.disp-card .disp-ver {
-  display: inline-block;
-  background: rgba(44,90,160,.13);
-  color: var(--brand1);
-  border-radius: 5px;
-  padding: 1px 6px;
-  font-size: .76rem;
-  font-weight: 700;
-  margin-right: 4px;
-}
-.disp-card .disp-row { color: var(--muted); font-size: .78rem; }
-.disp-card .disp-optin { font-size: .9rem; margin-left: 4px; }
-@media (prefers-color-scheme: dark) {
-  .disp-card { border-color: rgba(255,255,255,.12); background: linear-gradient(135deg, rgba(44,90,160,.14), rgba(52,199,89,.08)); }
-  .disp-card .disp-header { color: #9ec5ff; }
-  .disp-card .disp-ver { background: rgba(158,197,255,.15); color: #9ec5ff; }
-}
-
     
   </style>
   <link rel="stylesheet" href="./css/design-tokens.css">
@@ -530,7 +493,8 @@
                   <th>E-mail</th>
                   <th>Perfil/Grupo</th>
                   <th>Status</th>
-                  <th>Dispositivos</th>
+                  <th>Versão</th>
+                  <th>Dispositivo</th>
                   <th>Ações</th>
                 </tr>
               </thead>
@@ -804,67 +768,25 @@
     }
 
     
-    function _optInIcon(optIn) {
-      if (optIn === true)  return '<span class="disp-optin" title="Notificações: Sim">✅</span>';
-      if (optIn === false) return '<span class="disp-optin" title="Notificações: Não">❌</span>';
-      return '<span class="disp-optin" title="Notificações: Pendente">❓</span>';
-    }
-
-    function _soIcon(so) {
-      if (!so) return '💻';
-      const s = so.toLowerCase();
-      if (s.includes('android')) return '📱';
-      if (s.includes('ios'))     return '📱';
-      if (s.includes('windows')) return '💻';
-      if (s.includes('mac'))     return '💻';
-      return '💻';
-    }
-
-    function formatarMapaDispositivos(u) {
+    function formatarVersao(u){
+      // Preferência: campo de topo appVersionLast (mais fácil de filtrar/ordenar).
+      // Fallbacks: alguns cadastros antigos podem ter versão dentro de dispositivo.
+      const v = (u && (u.appVersionLast || (u.dispositivo && (u.dispositivo.appVersion || u.dispositivo.versaoApp)))) || "";
+      const pagina = (u && (u.pageLast || (u.dispositivo && (u.dispositivo.page || u.dispositivo.pagina)))) || "";
+      if(!v && !pagina) return '-';
       const optIn = u.notificationOptIn;
-      const optIcon = _optInIcon(optIn);
-
-      // Novo formato: mapa dispositivos
-      const mapa = u.dispositivos;
-      if (mapa && typeof mapa === 'object' && Object.keys(mapa).length > 0) {
-        const cards = Object.entries(mapa).map(([chave, d]) => {
-          const so   = d.sistemaOperacional || '';
-          const vso  = d.versaoSO ? ` ${d.versaoSO}` : '';
-          const nav  = d.navegador || '';
-          const vnav = d.versaoNavegador ? ` ${d.versaoNavegador}` : '';
-          const modo = d.modoAcesso || 'Navegador';
-          const ver  = d.appVersionLast || '-';
-          const pag  = d.pageLast || '';
-          const res  = d.resolucao || '';
-          const ico  = _soIcon(so);
-          let acesso = '';
-          if (d.ultimoAcesso) {
-            try {
-              const dt = new Date(d.ultimoAcesso);
-              acesso = dt.toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
-            } catch(e){}
-          }
-          return `<div class="disp-card">
-            <div class="disp-header">${ico} ${so}${vso} · ${nav}${vnav} · ${modo}${optIcon}</div>
-            <div class="disp-row"><span class="disp-ver">${ver}</span>${pag ? pag : ''}${res ? ' · ' + res : ''}${acesso ? ' · ' + acesso : ''}</div>
-          </div>`;
-        }).join('');
-        return `<div class="disp-map">${cards}</div>`;
+      let optInIcon = '';
+      if (optIn === true) {
+        optInIcon = '<div title="Notificações: Sim" style="font-size:1.1rem; margin-top:4px;">✅</div>';
+      } else if (optIn === false) {
+        optInIcon = '<div title="Notificações: Não" style="font-size:1.1rem; margin-top:4px;">❌</div>';
+      } else {
+        optInIcon = '<div title="Notificações: Pendente" style="font-size:1.1rem; margin-top:4px;">❓</div>';
       }
 
-      // Fallback: campo dispositivo antigo (legado)
-      const v = (u.appVersionLast || (u.dispositivo && (u.dispositivo.appVersion || u.dispositivo.versaoApp))) || '';
-      const pagina = (u.pageLast || (u.dispositivo && (u.dispositivo.page || u.dispositivo.pagina))) || '';
-      if (!v && !pagina) return `<span style="color:#999">-</span>${optIcon}`;
-      const d = u.dispositivo || {};
-      const so = d.sistemaOperacional || '';
-      const nav = d.navegador || '';
-      const modo = d.modoAcesso || 'Navegador';
-      const ico = _soIcon(so);
-      return `<div class="disp-map"><div class="disp-card">
-        <div class="disp-header">${ico} ${so} · ${nav} · ${modo}${optIcon}</div>
-        <div class="disp-row"><span class="disp-ver">${v}</span>${pagina ? ' · ' + pagina : ''}</div>
-      </div></div>`;
+      if(v && pagina) return `${v}<div style="font-size:.78rem; color: var(--muted); margin-top:2px;">${pagina}</div>${optInIcon}`;
+      return (v || pagina) + optInIcon;
+      return v || pagina;
     }
 
 function renderizarUsuarios(usuarios){
@@ -890,7 +812,7 @@ function renderizarUsuarios(usuarios){
           photoHTML = `<div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:1.45rem;">${emoji}</div>`;
         }
 
-        const dispositivoHTML = formatarMapaDispositivos(u);
+        const dispositivoHTML = formatarDispositivo(u.dispositivo, u.fcmTokens);
 
         tr.innerHTML = `
           <td>${photoHTML}</td>
@@ -898,6 +820,7 @@ function renderizarUsuarios(usuarios){
           <td>${u.email || ""}</td>
           <td>${grupoBadge}</td>
           <td>${statusBadge}</td>
+          <td>${formatarVersao(u)}</td>
           <td>${dispositivoHTML}</td>
           <td>
             <button class="btn btn-primary" onclick="editarUsuario('${u.id}', '${(u.email || "").replace(/'/g, "\\'")}')">Editar</button>
@@ -1200,6 +1123,7 @@ function renderizarUsuarios(usuarios){
       usuarios.forEach(u => {
         const ativo = (u.ativo === true);
         const statusClass = ativo ? "" : "inativo";
+        const disp = formatarDispositivoTexto(u.dispositivo);
         const _qtdFcmM = Array.isArray(u.fcmTokens) ? u.fcmTokens.length : 0;
         const fcmMobile = _qtdFcmM > 0
         ? `<span style="color:#34C759;font-weight:700">📲 ${_qtdFcmM} disp. autorizado${_qtdFcmM!==1?'s':''}</span>`
@@ -1239,11 +1163,11 @@ function renderizarUsuarios(usuarios){
           </div>
 
           <div class="card-info-row">
-            <span class="card-info-icon">📱</span>
-            <span class="card-info-text"><strong>Dispositivos:</strong></span>
+            <span class="card-info-icon">🧩</span>
+            <span class="card-info-text"><strong>Versão:</strong> ${u.appVersionLast || (u.dispositivo && (u.dispositivo.appVersion || u.dispositivo.versaoApp)) || "-"}</span>
           </div>
-          <div style="margin: 4px 0 8px 0;">${formatarMapaDispositivos(u)}</div>
-          <div style="margin-bottom:6px;">${fcmMobile}</div>
+
+           <div class="card-dispositivo">${disp || ""}${disp ? '<br>' : ''}${fcmMobile}</div>
 
           <div class="card-actions">
             <button class="btn-card btn-card-edit" onclick="editarUsuario('${u.id}', '${(u.email || "").replace(/'/g, "\\'")}')">✏️ Editar</button>

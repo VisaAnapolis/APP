@@ -1721,6 +1721,8 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
         perfil = r.perfil;
         userDocId = r.userDocId;
 
+        console.log('[Diag] perfil encontrado:', !!perfil, '| userDocId:', userDocId, '| grupo:', perfil?.grupo);
+
         if (perfil && userDocId) {
 
           // Gera chave única para este dispositivo (SO + navegador + resolução)
@@ -1748,6 +1750,7 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
             };
 
             // Salva: campos raiz + mapa de dispositivos indexado por chave
+            console.log('[Diag] Chamando updateDoc para:', userDocId, '| chave:', chaveDispositivo);
             await updateDoc(doc(db, 'usuarios', userDocId), {
               photoURL: user.photoURL || '',
               ultimoAcesso: serverTimestamp(),
