@@ -107,6 +107,32 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.2.2 — 23/02/2026 22:30 (Horário de Brasília – UTC−3)</h3>
+  <strong>Correção Crítica: Desabilitar Banners de Notificação no iOS</strong>
+
+  <ul>
+    <li><strong>Problema Resolvido:</strong>
+      <ul>
+        <li>Bug crítico no iOS onde o banner amarelo de ativação reaparecia a cada abertura do app, mesmo com o token já salvo no Firestore. O Safari/PWA no iOS não consegue recuperar o token do Firebase no carregamento da página, causando um loop infinito de solicitação.</li>
+      </ul>
+    </li>
+    <li><strong>Solução de Emergência:</strong>
+      <ul>
+        <li>Adicionada detecção de plataforma iOS (<code>iPad|iPhone|iPod</code>).</li>
+        <li>No iOS, os banners de notificação (amarelo e verde) são completamente desabilitados.</li>
+        <li>Usuários de iOS que já ativaram as notificações <strong>continuam recebendo-as normalmente</strong>; apenas a interface dos banners foi ocultada.</li>
+        <li>Android e Desktop não são afetados.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <p><strong>Arquivos Modificados:</strong></p>
+  <ul>
+    <li><code>index.html</code> — Lógica de detecção iOS e bloqueio dos banners; <code>APP_VERSION</code> atualizado para <code>2.2.2</code>.</li>
+  </ul>
+</div>
+
+<div class="section">
   <h3>v2.2.1 — 23/02/2026 20:50 (Horário de Brasília – UTC−3)</h3>
   <strong>Banner de Notificações para Todos e Mensagem de Erro para iOS</strong>
 

@@ -741,7 +741,7 @@ Supervisão de Vigilância Sanitária</p>
     const provider = new GoogleAuthProvider();
 
     // ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
-    const APP_VERSION = '2.2.1';
+    const APP_VERSION = '2.2.2';
     const VERSION_KEY = 'visa_app_version';
     const savedVersion = localStorage.getItem(VERSION_KEY);
 
@@ -1827,19 +1827,23 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
       const bannerDismiss = document.getElementById('notif-banner-dismiss');
       const BANNER_KEY    = 'notif_banner_dismissed';
 
-      // Barra verde de confirmação (token já ativo)
-      const okBanner = document.getElementById('notif-ok-banner');
-      if (pushAtivado && perfil.grupo === 'Fiscal' && okBanner) {
-        okBanner.style.display = 'flex';
-        // Some após a animação de 5s
-        setTimeout(() => { okBanner.style.display = 'none'; }, 5200);
-      }
+      // Só mostra banners de notificação se NÃO for iOS (evita bug de loop no Safari/PWA)
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      if (!isIOS) {
+        // Barra verde de confirmação (token já ativo)
+        const okBanner = document.getElementById('notif-ok-banner');
+        if (pushAtivado && okBanner) {
+          okBanner.style.display = 'flex';
+          // Some após a animação de 5s
+          setTimeout(() => { okBanner.style.display = 'none'; }, 5200);
+        }
 
-      // Mostra o banner âmbar para qualquer usuário sem token e que não dispensou permanentemente
-      if (!pushAtivado
-          && localStorage.getItem(BANNER_KEY) !== 'true'
-          && banner) {
-        banner.style.display = 'flex';
+        // Mostra o banner âmbar para qualquer usuário sem token e que não dispensou permanentemente
+        if (!pushAtivado
+            && localStorage.getItem(BANNER_KEY) !== 'true'
+            && banner) {
+          banner.style.display = 'flex';
+        }
       }
 
       // Botão ATIVAR AGORA
