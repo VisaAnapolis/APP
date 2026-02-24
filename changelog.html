@@ -107,6 +107,31 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.2.4 — 23/02/2026 23:15 (Horário de Brasília – UTC−3)</h3>
+  <strong>Restauração de Emergência: Revert para v2.1.7 (pré-banners)</strong>
+
+  <ul>
+    <li><strong>Motivo:</strong>
+      <ul>
+        <li>As alterações das versões v2.1.8 a v2.2.3 (banners de notificação) causaram problemas de acesso ao sistema. O <code>index.html</code> foi restaurado para o backup estável do meio da tarde (v2.1.7).</li>
+      </ul>
+    </li>
+    <li><strong>Ação Tomada:</strong>
+      <ul>
+        <li>Restaurado o <code>index.html</code> a partir do backup <code>_backup/banner_notif_ativacao/index.html.bak</code> (estado pré-v2.1.8).</li>
+        <li>Versão atualizada para <code>2.2.4</code> para forçar a atualização em todos os dispositivos.</li>
+        <li>O sistema de notificações push continua ativo em segundo plano (via GitHub Actions e FCM).</li>
+      </ul>
+    </li>
+  </ul>
+
+  <p><strong>Arquivos Modificados:</strong></p>
+  <ul>
+    <li><code>index.html</code> — Restaurado do backup; versão atualizada para <code>2.2.4</code>.</li>
+  </ul>
+</div>
+
+<div class="section">
   <h3>v2.2.3 — 23/02/2026 23:00 (Horário de Brasília – UTC−3)</h3>
   <strong>Remoção Completa dos Banners de Notificação</strong>
 
