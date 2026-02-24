@@ -272,6 +272,14 @@
       border: 1px solid transparent; /* Adiciona borda transparente para manter o espaçamento */
     }
 
+    /* Modal de Opt-in de Notificações */
+    #notificationOptInModal .modalCard {
+      text-align: center;
+    }
+    #notificationOptInModal .modalActions {
+      justify-content: center;
+    }
+
     /* Modal de acesso não autorizado */
     .modalOverlay{
       position:fixed; inset:0;
@@ -1765,5 +1773,18 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
       }
     });
   </script>
-</body>
+    <!-- Modal de Opt-in de Notificações -->
+    <div id="notificationOptInModal" class="modalOverlay">
+      <div class="modalCard">
+        <h3>🔔 Ativar Notificações?</h3>
+        <p>Deseja receber alertas de prazos de OS diretamente no seu dispositivo Android?</p>
+        <p class="small">Você pode mudar essa preferência a qualquer momento nas configurações do seu perfil.</p>
+        <div class="modalActions">
+          <button class="btn" id="optInNo">Não, obrigado</button>
+          <button class="btn btnPrimary" id="optInYes">Sim, ativar</button>
+        </div>
+      </div>
+    </div>
+
+  </body>
 </html>
