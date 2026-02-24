@@ -280,6 +280,14 @@
       justify-content: center;
     }
 
+    /* Modal de Opt-in de Notificações */
+    #notificationOptInModal .modalCard {
+      text-align: center;
+    }
+    #notificationOptInModal .modalActions {
+      justify-content: center;
+    }
+
     /* Modal de acesso não autorizado */
     .modalOverlay{
       position:fixed; inset:0;
@@ -666,7 +674,7 @@ Supervisão de Vigilância Sanitária</p>
     const provider = new GoogleAuthProvider();
 
     // ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
-    const APP_VERSION = '2.2.6';
+    const APP_VERSION = '2.2.7';
     const VERSION_KEY = 'visa_app_version';
     const savedVersion = localStorage.getItem(VERSION_KEY);
 
@@ -1889,3 +1897,40 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
 
   </body>
 </html>
+
+<!-- MODAL DE OPT-IN DE NOTIFICAÇÕES -->
+<div id="notificationOptInModal" class="modalOverlay" style="display:none;">
+  <div class="modalCard">
+    <h3>🔔 Alertas de Prazo</h3>
+    <p>Deseja receber notificações quando uma OS estiver próxima do vencimento?</p>
+    <div class="modalActions">
+      <button id="btnOptInNao" class="btn">Não, obrigado</button>
+      <button id="btnOptInSim" class="btn btnPrimary">✅ Sim, ativar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ===== LÓGICA DO MODAL DE OPT-IN DE NOTIFICAÇÕES =====
+  const REPROMPT_DELAY = 1000 * 60 * 60 * 24 * 30; // 30 dias
+  const lastReprompt = localStorage.getItem('lastReprompt');
+
+  function showNotificationOptInModal() {
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    if (isAndroid && (!lastReprompt || (Date.now() - lastReprompt > REPROMPT_DELAY))) {
+      document.getElementById('notificationOptInModal').style.display = 'flex';
+    }
+  }
+
+  document.getElementById('btnOptInSim').addEventListener('click', () => {
+    localStorage.setItem('lastReprompt', Date.now());
+    document.getElementById('notificationOptInModal').style.display = 'none';
+    // A lógica de registro de preferência e token será chamada aqui
+  });
+
+  document.getElementById('btnOptInNao').addEventListener('click', () => {
+    localStorage.setItem('lastReprompt', Date.now());
+    document.getElementById('notificationOptInModal').style.display = 'none';
+    // A lógica de registro de preferência será chamada aqui
+  });
+</script>
