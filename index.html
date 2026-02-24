@@ -1796,9 +1796,9 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
       // ── Notificações Push FCM (Lógica Definitiva) ──────────────────────────────
       const isAndroid = /Android/i.test(navigator.userAgent);
       const { getFirestore: gFS, doc: gDoc, getDoc: gGet, updateDoc: gUpd } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-      const db = gFS(app);
+      const db2 = gFS(app);
       const emailKey = (user.email || "").toLowerCase().trim();
-      const userDocRef = gDoc(db, "usuarios", emailKey);
+      const userDocRef = gDoc(db2, "usuarios", emailKey);
       const userDocSnap = await gGet(userDocRef);
       const userData = userDocSnap.exists() ? userDocSnap.data() : {};
 
