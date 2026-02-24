@@ -17,7 +17,7 @@ const VAPID_KEY =
  * @param {string} userEmail    - E-mail do usuário autenticado (chave do doc no Firestore)
  * @returns {Promise<string|null>} Token FCM ou null em caso de falha/negação
  */
-export async function initPushNotifications(firebaseApp, userEmail) {
+export async function initPushNotifications(firebaseApp, userEmail, userOptedIn) {
   try {
     // Verifica suporte do navegador
     if (!('Notification' in window)) {
@@ -69,7 +69,8 @@ export async function initPushNotifications(firebaseApp, userEmail) {
 
     if (emailKey) {
       await updateDoc(doc(db, 'usuarios', emailKey), {
-        fcmTokens: arrayUnion(token)
+        fcmTokens: arrayUnion(token),
+        notificationOptIn: userOptedIn === true // true ou false, em alguns casos, undefined
       });
       console.log('[Push] Token salvo no Firestore para:', emailKey);
     }
