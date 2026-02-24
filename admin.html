@@ -420,6 +420,96 @@
 .fcm-tag.ativo   { background: rgba(52,199,89,.13); color: #34C759; }
 .fcm-tag.inativo { background: rgba(220,53,69,.11); color: #dc3545; }
 
+/* ── Botão Dispositivos (coluna Versão) ─────────── */
+.btn-disp {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border: 1px solid rgba(44,90,160,.25);
+  border-radius: 8px;
+  background: rgba(44,90,160,.07);
+  color: var(--brand1);
+  font-size: .74rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .15s;
+  margin-top: 4px;
+}
+.btn-disp:hover { background: rgba(44,90,160,.15); }
+
+/* ── Modal Dispositivos ─────────────────────────── */
+.disp-modal-card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 600px;
+  width: 94%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 18px 50px rgba(0,0,0,.25);
+  border: 1px solid var(--line);
+}
+.disp-modal-card h3 { margin: 0 0 6px 0; color: var(--brand1); font-size: 1.1rem; }
+.disp-modal-subtitle { color: var(--muted); font-size: .85rem; margin-bottom: 16px; }
+.disp-modal-item {
+  background: linear-gradient(135deg, rgba(44,90,160,.06), rgba(52,199,89,.05));
+  border: 1px dashed rgba(0,0,0,.10);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  font-size: .86rem;
+  line-height: 1.55;
+}
+.disp-modal-item .dm-header {
+  font-weight: 700;
+  color: var(--brand1);
+  margin-bottom: 4px;
+  font-size: .9rem;
+}
+.disp-modal-item .dm-row {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  margin: 2px 0;
+}
+.disp-modal-item .dm-row .k { color: var(--muted); font-weight: 800; margin-right: 4px; }
+.disp-modal-item .dm-ver {
+  display: inline-block;
+  background: rgba(44,90,160,.13);
+  color: var(--brand1);
+  border-radius: 5px;
+  padding: 1px 7px;
+  font-size: .78rem;
+  font-weight: 700;
+}
+.disp-modal-legend {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: .82rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.disp-modal-fcm {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: .84rem;
+  font-weight: 700;
+}
+.disp-modal-fcm.ativo { background: rgba(52,199,89,.10); color: #34C759; }
+.disp-modal-fcm.inativo { background: rgba(220,53,69,.10); color: #dc3545; }
+@media (prefers-color-scheme: dark) {
+  .btn-disp { border-color: rgba(158,197,255,.25); background: rgba(158,197,255,.10); color: #9ec5ff; }
+  .btn-disp:hover { background: rgba(158,197,255,.20); }
+  .disp-modal-card { background: #0f1b2e; border-color: rgba(255,255,255,.10); }
+  .disp-modal-item { border-color: rgba(255,255,255,.12); background: linear-gradient(135deg, rgba(44,90,160,.14), rgba(52,199,89,.08)); }
+  .disp-modal-item .dm-header { color: #9ec5ff; }
+  .disp-modal-item .dm-ver { background: rgba(158,197,255,.15); color: #9ec5ff; }
+}
+
+
     
   </style>
   <link rel="stylesheet" href="./css/design-tokens.css">
@@ -509,6 +599,24 @@
 
       <div style="text-align:center; padding: 20px;">
         <button class="btn" onclick="logout()">Encerrar sessão</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Dispositivos -->
+  <div class="modal-overlay" id="dispModal" onclick="if(event.target===this)this.style.display='none'">
+    <div class="disp-modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 id="dispModalTitle">📱 Dispositivos</h3>
+        <button onclick="document.getElementById('dispModal').style.display='none'" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted);">✖</button>
+      </div>
+      <div class="disp-modal-subtitle" id="dispModalSubtitle"></div>
+      <div id="dispModalBody"></div>
+      <div class="disp-modal-legend">
+        <strong>Legenda Opt-in:</strong><br>
+        ✅ Aceitou receber notificações (Android) &nbsp;•&nbsp;
+        ❌ Recusou notificações &nbsp;•&nbsp;
+        ❓ Nunca foi perguntado
       </div>
     </div>
   </div>
@@ -774,19 +882,33 @@
       const v = (u && (u.appVersionLast || (u.dispositivo && (u.dispositivo.appVersion || u.dispositivo.versaoApp)))) || "";
       const pagina = (u && (u.pageLast || (u.dispositivo && (u.dispositivo.page || u.dispositivo.pagina)))) || "";
       if(!v && !pagina) return '-';
+
+      // Opt-in icon
       const optIn = u.notificationOptIn;
       let optInIcon = '';
       if (optIn === true) {
-        optInIcon = '<div title="Notificações: Sim" style="font-size:1.1rem; margin-top:4px;">✅</div>';
+        optInIcon = '<div title="Notificações: Aceitas" style="font-size:1.1rem; margin-top:4px;">✅</div>';
       } else if (optIn === false) {
-        optInIcon = '<div title="Notificações: Não" style="font-size:1.1rem; margin-top:4px;">❌</div>';
+        optInIcon = '<div title="Notificações: Recusadas" style="font-size:1.1rem; margin-top:4px;">❌</div>';
       } else {
         optInIcon = '<div title="Notificações: Pendente" style="font-size:1.1rem; margin-top:4px;">❓</div>';
       }
 
-      if(v && pagina) return `${v}<div style="font-size:.78rem; color: var(--muted); margin-top:2px;">${pagina}</div>${optInIcon}`;
-      return (v || pagina) + optInIcon;
-      return v || pagina;
+      // Botão de dispositivos ou mensagem sem token
+      const qtdTokens = Array.isArray(u.fcmTokens) ? u.fcmTokens.length : 0;
+      const qtdDisp = u.dispositivos ? Object.keys(u.dispositivos).length : 0;
+      const totalDisp = Math.max(qtdDisp, qtdTokens > 0 ? 1 : 0);
+      let dispBtn = '';
+      if (qtdTokens > 0) {
+        const emailSafe = (u.email || u.id || '').replace(/'/g, "\\'");
+        dispBtn = `<div><button class="btn-disp" onclick="abrirModalDispositivos('${emailSafe}')">\uD83D\uDCF1 ${totalDisp || '?'}</button></div>`;
+      } else {
+        dispBtn = '<div style="margin-top:4px;"><span style="color:#dc3545;font-size:.76rem;font-weight:700;">\uD83D\uDD15 Sem push</span></div>';
+      }
+
+      const versaoHTML = v ? `${v}` : '';
+      const paginaHTML = pagina ? `<div style="font-size:.78rem; color: var(--muted); margin-top:2px;">${pagina}</div>` : '';
+      return versaoHTML + paginaHTML + optInIcon + dispBtn;
     }
 
 function renderizarUsuarios(usuarios){
@@ -1125,8 +1247,11 @@ function renderizarUsuarios(usuarios){
         const statusClass = ativo ? "" : "inativo";
         const disp = formatarDispositivoTexto(u.dispositivo);
         const _qtdFcmM = Array.isArray(u.fcmTokens) ? u.fcmTokens.length : 0;
+        const _qtdDispM = u.dispositivos ? Object.keys(u.dispositivos).length : 0;
+        const _totalDispM = Math.max(_qtdDispM, _qtdFcmM > 0 ? 1 : 0);
+        const emailSafeM = (u.email || u.id || '').replace(/'/g, "\\'");
         const fcmMobile = _qtdFcmM > 0
-        ? `<span style="color:#34C759;font-weight:700">📲 ${_qtdFcmM} disp. autorizado${_qtdFcmM!==1?'s':''}</span>`
+        ? `<button class="btn-disp" style="font-size:.82rem;padding:6px 14px;" onclick="abrirModalDispositivos('${emailSafeM}')">📱 Ver ${_totalDispM} dispositivo${_totalDispM!==1?'s':''}</button>`
         : `<span style="color:#dc3545;font-weight:700">🔕 Sem notificações push</span>`;
 
         const grupoLower = (u.grupo || '').toLowerCase();
@@ -1167,7 +1292,7 @@ function renderizarUsuarios(usuarios){
             <span class="card-info-text"><strong>Versão:</strong> ${u.appVersionLast || (u.dispositivo && (u.dispositivo.appVersion || u.dispositivo.versaoApp)) || "-"}</span>
           </div>
 
-           <div class="card-dispositivo">${disp || ""}${disp ? '<br>' : ''}${fcmMobile}</div>
+           <div class="card-dispositivo" style="text-align:center;">${fcmMobile}</div>
 
           <div class="card-actions">
             <button class="btn-card btn-card-edit" onclick="editarUsuario('${u.id}', '${(u.email || "").replace(/'/g, "\\'")}')">✏️ Editar</button>
@@ -1179,6 +1304,98 @@ function renderizarUsuarios(usuarios){
 
     // expõe para debug
     window.carregarUsuarios = carregarUsuarios;
+
+    // ===== MODAL DE DISPOSITIVOS =====
+    window.abrirModalDispositivos = function(email) {
+      const u = cachedUsuarios.find(x => (x.email || x.id) === email);
+      if (!u) return;
+
+      const modal = document.getElementById('dispModal');
+      const title = document.getElementById('dispModalTitle');
+      const subtitle = document.getElementById('dispModalSubtitle');
+      const body = document.getElementById('dispModalBody');
+
+      title.textContent = '\uD83D\uDCF1 Dispositivos — ' + (u.nome || email);
+
+      // Opt-in global
+      const optIn = u.notificationOptIn;
+      const optInTxt = optIn === true ? '✅ Aceitou notificações'
+                      : optIn === false ? '❌ Recusou notificações'
+                      : '❓ Nunca foi perguntado';
+      const qtdTokens = Array.isArray(u.fcmTokens) ? u.fcmTokens.length : 0;
+      subtitle.innerHTML = `${optInTxt} &nbsp;•&nbsp; <strong>${qtdTokens}</strong> token${qtdTokens !== 1 ? 's' : ''} FCM registrado${qtdTokens !== 1 ? 's' : ''}`;
+
+      // Cards de dispositivos
+      const dispositivos = u.dispositivos || {};
+      const chaves = Object.keys(dispositivos);
+
+      let html = '';
+
+      if (chaves.length === 0 && !u.dispositivo) {
+        html = '<div style="color:var(--muted);text-align:center;padding:20px;">Nenhum dispositivo registrado ainda.</div>';
+      } else {
+        // Dispositivos do novo mapa (v2.2.9+)
+        chaves.sort((a, b) => {
+          const ta = dispositivos[a].ultimoAcesso ? new Date(dispositivos[a].ultimoAcesso).getTime() : 0;
+          const tb = dispositivos[b].ultimoAcesso ? new Date(dispositivos[b].ultimoAcesso).getTime() : 0;
+          return tb - ta; // mais recente primeiro
+        }).forEach(chave => {
+          const d = dispositivos[chave];
+          const so = [d.sistemaOperacional, d.versaoSO].filter(Boolean).join(' ');
+          const nav = [d.navegador, d.versaoNavegador].filter(Boolean).join(' ');
+          const modo = d.modoAcesso || (d.isPWA ? 'PWA' : 'Navegador');
+          const res = d.resolucao || '';
+          const ver = d.appVersionLast || '';
+          const pag = d.pageLast || '';
+          let dt = '';
+          if (d.ultimoAcesso) {
+            try {
+              const ms = d.ultimoAcesso.seconds ? d.ultimoAcesso.seconds * 1000 : new Date(d.ultimoAcesso).getTime();
+              dt = new Date(ms).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+            } catch(e) {}
+          }
+          const icon = /iOS|iPhone|iPad/i.test(so) ? '📱'
+                     : /Android/i.test(so) ? '📱'
+                     : '💻';
+          html += `<div class="disp-modal-item">
+            <div class="dm-header">${icon} ${so || chave}</div>
+            ${nav ? `<div class="dm-row"><span class="k">🌐</span>${nav}</div>` : ''}
+            ${res ? `<div class="dm-row"><span class="k">📏</span>${res}</div>` : ''}
+            <div class="dm-row"><span class="k">🔑</span>${modo}</div>
+            ${ver ? `<div class="dm-row"><span class="k">🧩</span><span class="dm-ver">v${ver}</span>${pag ? ` &nbsp;<span style="color:var(--muted);font-size:.8rem;">${pag}</span>` : ''}</div>` : ''}
+            ${dt ? `<div class="dm-row"><span class="k">🕒</span>${dt}</div>` : ''}
+          </div>`;
+        });
+
+        // Dispositivo legado (campo dispositivo simples, antes da v2.2.9)
+        if (u.dispositivo && chaves.length === 0) {
+          const d = u.dispositivo;
+          const so = [d.sistemaOperacional, d.versaoSO].filter(Boolean).join(' ');
+          const nav = [d.navegador, d.versaoNavegador].filter(Boolean).join(' ');
+          const modo = d.modoAcesso || (d.isPWA ? 'PWA' : 'Navegador');
+          const res = d.resolucao || '';
+          const ver = u.appVersionLast || d.appVersion || d.versaoApp || '';
+          html += `<div class="disp-modal-item">
+            <div class="dm-header" style="color:var(--muted);">\uD83D\uDCDC Registro legado</div>
+            ${so ? `<div class="dm-row"><span class="k">💻</span>${so}</div>` : ''}
+            ${nav ? `<div class="dm-row"><span class="k">🌐</span>${nav}</div>` : ''}
+            ${res ? `<div class="dm-row"><span class="k">📏</span>${res}</div>` : ''}
+            <div class="dm-row"><span class="k">🔑</span>${modo}</div>
+            ${ver ? `<div class="dm-row"><span class="k">🧩</span><span class="dm-ver">v${ver}</span></div>` : ''}
+          </div>`;
+        }
+      }
+
+      // FCM tokens
+      const fcmClass = qtdTokens > 0 ? 'ativo' : 'inativo';
+      const fcmLabel = qtdTokens > 0
+        ? `📲 ${qtdTokens} token${qtdTokens !== 1 ? 's' : ''} FCM ativo${qtdTokens !== 1 ? 's' : ''}`
+        : '🔕 Nenhum token FCM registrado';
+      html += `<div class="disp-modal-fcm ${fcmClass}">${fcmLabel}</div>`;
+
+      body.innerHTML = html;
+      modal.style.display = 'flex';
+    };
   </script>
 </body>
 </html>
