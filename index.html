@@ -955,7 +955,17 @@ Supervisão de Vigilância Sanitária</p>
     }
 
     // ===== Coleta de dispositivo (mantida) =====
-    function coletarDadosDispositivo() {
+    
+    function getCurrentPageName(){
+      try{
+        const p = (location.pathname || '').split('/').pop();
+        return p || 'index.html';
+      }catch(_){
+        return 'index.html';
+      }
+    }
+
+function coletarDadosDispositivo() {
       const ua = navigator.userAgent;
       let so = 'Desconhecido', versaoSO = '';
       if (/android/i.test(ua)) {
@@ -1694,13 +1704,17 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
             await updateDoc(doc(db, "usuarios", userDocId), {
               photoURL: user.photoURL || '',
               ultimoAcesso: serverTimestamp(),
-              dispositivo: dadosDispositivo
+              dispositivo: dadosDispositivo,
+              appVersionLast: (typeof APP_VERSION !== "undefined" ? APP_VERSION : ""),
+              pageLast: getCurrentPageName()
             });
           } catch (dispErr) {
             try {
               await updateDoc(doc(db, "usuarios", userDocId), {
                 photoURL: user.photoURL || '',
-                ultimoAcesso: serverTimestamp()
+                ultimoAcesso: serverTimestamp(),
+                appVersionLast: (typeof APP_VERSION !== "undefined" ? APP_VERSION : ""),
+                pageLast: getCurrentPageName()
               });
             } catch(_) {}
           }

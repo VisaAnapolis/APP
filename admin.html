@@ -489,6 +489,7 @@
                   <th>E-mail</th>
                   <th>Perfil/Grupo</th>
                   <th>Status</th>
+                  <th>Versão</th>
                   <th>Dispositivo</th>
                   <th>Ações</th>
                 </tr>
@@ -762,7 +763,18 @@
       }
     }
 
-    function renderizarUsuarios(usuarios){
+    
+    function formatarVersao(u){
+      // Preferência: campo de topo appVersionLast (mais fácil de filtrar/ordenar).
+      // Fallbacks: alguns cadastros antigos podem ter versão dentro de dispositivo.
+      const v = (u && (u.appVersionLast || (u.dispositivo && (u.dispositivo.appVersion || u.dispositivo.versaoApp)))) || "";
+      const pagina = (u && (u.pageLast || (u.dispositivo && (u.dispositivo.page || u.dispositivo.pagina)))) || "";
+      if(!v && !pagina) return '-';
+      if(v && pagina) return `${v}<div style="font-size:.78rem; color: var(--muted); margin-top:2px;">${pagina}</div>`;
+      return v || pagina;
+    }
+
+function renderizarUsuarios(usuarios){
       const tbody = document.getElementById("usersTableBody");
       tbody.innerHTML = "";
 
@@ -793,6 +805,7 @@
           <td>${u.email || ""}</td>
           <td>${grupoBadge}</td>
           <td>${statusBadge}</td>
+          <td>${formatarVersao(u)}</td>
           <td>${dispositivoHTML}</td>
           <td>
             <button class="btn btn-primary" onclick="editarUsuario('${u.id}', '${(u.email || "").replace(/'/g, "\\'")}')">Editar</button>
@@ -1134,6 +1147,10 @@
             <span class="card-info-text">${ativo ? "Ativo" : "Inativo"}</span>
           </div>
 
+          <div class="card-info-row">
+            <span class="card-info-icon">🧩</span>
+            <span class="card-info-text"><strong>Versão:</strong> ${u.appVersionLast || (u.dispositivo && (u.dispositivo.appVersion || u.dispositivo.versaoApp)) || "-"}</span>
+          </div>
 
            <div class="card-dispositivo">${disp || ""}${disp ? '<br>' : ''}${fcmMobile}</div>
 
