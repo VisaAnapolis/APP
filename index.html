@@ -678,7 +678,7 @@ Supervisão de Vigilância Sanitária</p>
     const provider = new GoogleAuthProvider();
 
     // ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
-    const APP_VERSION = '2.2.9';
+    const APP_VERSION = '2.3.0';
     const VERSION_KEY = 'visa_app_version';
     const savedVersion = localStorage.getItem(VERSION_KEY);
 
@@ -1836,11 +1836,23 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
           // Usuário já recusou (notificationOptIn === false)
           console.log("[Push] Usuário optou por não receber notificações.");
         }
+      } else if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+        // iOS — só tenta token se for PWA instalado
+        const isIOSPWA = window.navigator.standalone === true;
+        if (isIOSPWA) {
+          try {
+            const { initPushNotifications } = await import("./js/push-notifications.js");
+            await initPushNotifications(app, user.email, null);
+            console.log('[Push] iOS PWA — token solicitado.');
+          } catch (e) { console.warn('[Push] iOS PWA — erro:', e.message); }
+        } else {
+          console.log('[Push] iOS via Safari — token não solicitado (não é PWA).');
+        }
       } else {
-        // Desktop e outros (não Android)
+        // Desktop (Windows, macOS, Linux)
         try {
           const { initPushNotifications } = await import("./js/push-notifications.js");
-          await initPushNotifications(app, user.email, false);
+          await initPushNotifications(app, user.email, null);
         } catch (e) { console.warn("[Push] Erro ao inicializar (desktop):", e.message); }
       }
       // ──────────────────────────────────────────────────────

@@ -68,10 +68,13 @@ export async function initPushNotifications(firebaseApp, userEmail, userOptedIn)
     const emailKey = (userEmail || '').toLowerCase().trim();
 
     if (emailKey) {
-      await updateDoc(doc(db, 'usuarios', emailKey), {
-        fcmTokens: arrayUnion(token),
-        notificationOptIn: userOptedIn === true // true ou false, em alguns casos, undefined
-      });
+      const updateData = { fcmTokens: arrayUnion(token) };
+      // Só grava notificationOptIn se foi explicitamente true/false (modal Android)
+      // null = desktop/iOS, não sobrescreve a preferência do usuário
+      if (userOptedIn === true || userOptedIn === false) {
+        updateData.notificationOptIn = userOptedIn;
+      }
+      await updateDoc(doc(db, 'usuarios', emailKey), updateData);
       console.log('[Push] Token salvo no Firestore para:', emailKey);
     }
 
