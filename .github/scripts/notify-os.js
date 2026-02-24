@@ -174,7 +174,7 @@ async function buscarTokensFCMPorFiscal() {
     snap.forEach(docSnap => {
       const data = docSnap.data();
       // Só envia para usuários ativos (ou sem campo ativo — compatibilidade)
-      if (data.ativo === false) return;
+      if (data.ativo === false || data.notificationOptIn === false) return;
       const nome = (data.nome || '').toUpperCase().trim();
       const fcmTokens = data.fcmTokens || [];
       const tokensValidos = fcmTokens.filter(t => t && typeof t === 'string' && t.length > 20);
@@ -186,7 +186,7 @@ async function buscarTokensFCMPorFiscal() {
     console.error('❌ Erro ao buscar tokens FCM:', err.message);
   }
   const totalTokens = Object.values(tokensPorFiscal).reduce((sum, arr) => sum + arr.length, 0);
-  console.log(`📱 ${totalTokens} token(s) FCM encontrado(s) para ${Object.keys(tokensPorFiscal).length} fiscal(is).`);
+  console.log(`📱 ${totalTokens} token(s) FCM encontrado(s) para ${Object.keys(tokensPorFiscal).length} fiscal(is) com opt-in.`);
   return tokensPorFiscal;
 }
 

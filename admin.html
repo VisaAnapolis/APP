@@ -770,7 +770,18 @@
       const v = (u && (u.appVersionLast || (u.dispositivo && (u.dispositivo.appVersion || u.dispositivo.versaoApp)))) || "";
       const pagina = (u && (u.pageLast || (u.dispositivo && (u.dispositivo.page || u.dispositivo.pagina)))) || "";
       if(!v && !pagina) return '-';
-      if(v && pagina) return `${v}<div style="font-size:.78rem; color: var(--muted); margin-top:2px;">${pagina}</div>`;
+      const optIn = u.notificationOptIn;
+      let optInIcon = '';
+      if (optIn === true) {
+        optInIcon = '<div title="Notificações: Sim" style="font-size:1.1rem; margin-top:4px;">✅</div>';
+      } else if (optIn === false) {
+        optInIcon = '<div title="Notificações: Não" style="font-size:1.1rem; margin-top:4px;">❌</div>';
+      } else {
+        optInIcon = '<div title="Notificações: Pendente" style="font-size:1.1rem; margin-top:4px;">❓</div>';
+      }
+
+      if(v && pagina) return `${v}<div style="font-size:.78rem; color: var(--muted); margin-top:2px;">${pagina}</div>${optInIcon}`;
+      return (v || pagina) + optInIcon;
       return v || pagina;
     }
 

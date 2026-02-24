@@ -666,7 +666,7 @@ Supervisão de Vigilância Sanitária</p>
     const provider = new GoogleAuthProvider();
 
     // ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
-    const APP_VERSION = '2.2.4';
+    const APP_VERSION = '2.2.6';
     const VERSION_KEY = 'visa_app_version';
     const savedVersion = localStorage.getItem(VERSION_KEY);
 
@@ -1756,6 +1756,107 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
         await initPushNotifications(app, user.email);
       } catch (pushErr) {
         console.warn('[Push] Não foi possível inicializar notificações:', pushErr.message);
+      }
+      // ── Notificações Push FCM (Opt-in para Android) ────────────────
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      const notificationPreference = localStorage.getItem('notificationOptIn'); // 'yes', 'no', ou null
+
+      if (isAndroid && notificationPreference === null) {
+        // Mostrar modal de opt-in apenas para Android e se a preferência não foi definida
+        document.getElementById('notificationOptInModal').style.display = 'flex';
+
+        document.getElementById('optInYes').onclick = async () => {
+          localStorage.setItem('notificationOptIn', 'yes');
+          document.getElementById('notificationOptInModal').style.display = 'none';
+          try {
+            const { initPushNotifications } = await import('./js/push-notifications.js');
+            await initPushNotifications(app, user.email);
+            console.log('[Push] Notificações ativadas pelo usuário.');
+          } catch (pushErr) {
+            console.warn('[Push] Não foi possível inicializar notificações após opt-in:', pushErr.message);
+          }
+        };
+
+        document.getElementById('optInNo').onclick = () => {
+          localStorage.setItem('notificationOptIn', 'no');
+          document.getElementById('notificationOptInModal').style.display = 'none';
+          console.log('[Push] Notificações desativadas pelo usuário.');
+        };
+      } else if (isAndroid && notificationPreference === 'yes') {
+        // Se já optou por 'sim', inicializa as notificações
+        try {
+          const { initPushNotifications } = await import('./js/push-notifications.js');
+          await initPushNotifications(app, user.email);
+        } catch (pushErr) {
+          console.warn('[Push] Não foi possível inicializar notificações (opt-in prévio):', pushErr.message);
+        }
+      } else if (isAndroid && notificationPreference === 'no') {
+        console.log('[Push] Usuário optou por não receber notificações.');
+      } else {
+        // Para iOS e outros, mantém a lógica anterior (ou nenhuma notificação)
+        try {
+          const { initPushNotifications } = await import('./js/push-notifications.js');
+          await initPushNotifications(app, user.email);
+        } catch (pushErr) {
+          console.warn('[Push] Não foi possível inicializar notificações (fallback):', pushErr.message);
+        }
+      }
+      // ── Notificações Push FCM (Opt-in para Android) ────────────────
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      const notificationPreference = localStorage.getItem('notificationOptIn'); // 'yes', 'no', ou null
+
+      if (isAndroid && notificationPreference === null) {
+        // Mostrar modal de opt-in apenas para Android e se a preferência não foi definida
+        document.getElementById('notificationOptInModal').style.display = 'flex';
+
+        document.getElementById('optInYes').onclick = async () => {
+          localStorage.setItem('notificationOptIn', 'yes');
+          document.getElementById('notificationOptInModal').style.display = 'none';
+          try {
+            const { initPushNotifications } = await import('./js/push-notifications.js');
+            await initPushNotifications(app, user.email, true);
+            console.log('[Push] Notificações ativadas pelo usuário.');
+          } catch (pushErr) {
+            console.warn('[Push] Não foi possível inicializar notificações após opt-in:', pushErr.message);
+          }
+        };
+
+        document.getElementById('optInNo').onclick = async () => {
+          localStorage.setItem('notificationOptIn', 'no');
+          document.getElementById('notificationOptInModal').style.display = 'none';
+          console.log('[Push] Notificações desativadas pelo usuário.');
+          // Atualiza o Firestore com a preferência do usuário
+          try {
+            const { getFirestore, doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+            const db = getFirestore(app);
+            const emailKey = (user.email || '').toLowerCase().trim();
+            if (emailKey) {
+              await updateDoc(doc(db, 'usuarios', emailKey), {
+                notificationOptIn: false
+              });
+            }
+          } catch (e) {
+            console.warn('[Push] Erro ao salvar preferência de opt-out:', e.message);
+          }
+        };
+      } else if (isAndroid && notificationPreference === 'yes') {
+        // Se já optou por 'sim', inicializa as notificações
+        try {
+          const { initPushNotifications } = await import('./js/push-notifications.js');
+          await initPushNotifications(app, user.email, true);
+        } catch (pushErr) {
+          console.warn('[Push] Não foi possível inicializar notificações (opt-in prévio):', pushErr.message);
+        }
+      } else if (isAndroid && notificationPreference === 'no') {
+        console.log('[Push] Usuário optou por não receber notificações.');
+      } else {
+        // Para iOS e outros, mantém a lógica anterior (ou nenhuma notificação)
+        try {
+          const { initPushNotifications } = await import('./js/push-notifications.js');
+          await initPushNotifications(app, user.email, false);
+        } catch (pushErr) {
+          console.warn('[Push] Não foi possível inicializar notificações (fallback):', pushErr.message);
+        }
       }
       // ──────────────────────────────────────────────────────
 
