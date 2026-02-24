@@ -525,69 +525,229 @@
             }
         }
 
-        /* MOBILE - células mais compactas em celular */
-        @media (max-width: 480px) {
-            #tabelaPlantao tbody td,
-            #tabelaTotal tbody td {
-                padding: 4px 3px;
-                font-size: 0.75em;
-                font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
-                font-weight: 400;
-                line-height: 1.2;
-            }
-            
-            #tabelaPlantao thead th,
-            #tabelaTotal thead th {
-                padding: 6px 3px;
-                font-size: 0.7em;
-            }
-        }
-    
-    /* ========= Mobile cards (mantém desktop intacto) ========= */
-    .mobileOnly { display: none; }
+
+    /* =====================================================
+       DARK MODE — overrides DataTables e linhas sem plantão
+       ===================================================== */
+
+    /* Linha sem plantão: usa classe CSS (dark mode safe) */
+    tr.row-no-plantao td {
+      opacity: 0.45;
+      font-style: italic;
+    }
+    table.dataTable tbody tr.row-no-plantao:hover td {
+      background: transparent !important;
+    }
+    table.dataTable tbody tr.row-no-plantao td:first-child {
+      background: var(--card) !important;
+    }
+
+    /* DataTables: inputs, selects e texto */
+    .dataTables_wrapper .dataTables_length label,
+    .dataTables_wrapper .dataTables_filter label,
+    .dataTables_wrapper .dataTables_info {
+      color: var(--text) !important;
+    }
+    .dataTables_wrapper .dataTables_length select,
+    .dataTables_wrapper .dataTables_filter input[type="search"] {
+      background-color: var(--input-bg) !important;
+      color: var(--input-text) !important;
+      border: 1px solid var(--input-border) !important;
+      border-radius: 8px !important;
+      padding: 7px 10px !important;
+      outline: none;
+    }
+    .dataTables_wrapper .dataTables_filter input[type="search"]:focus {
+      border-color: var(--brand1) !important;
+      box-shadow: 0 0 0 3px rgba(44,90,160,.15) !important;
+    }
+
+    /* Paginação dark-safe */
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+      color: var(--text) !important;
+      border-radius: 8px !important;
+      border: 1px solid transparent !important;
+      margin: 0 2px;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.disabled) {
+      background: rgba(44,90,160,.12) !important;
+      border-color: var(--line) !important;
+      color: var(--text) !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+      background: linear-gradient(135deg,var(--brand1),var(--brand2)) !important;
+      border-color: var(--brand1) !important;
+      color: #fff !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+      color: var(--muted) !important;
+      cursor: not-allowed;
+    }
+
+    /* Células da tabela dark-safe */
+    table.dataTable tbody td {
+      color: var(--text) !important;
+      background: var(--card) !important;
+    }
+    table.dataTable tbody tr:hover td {
+      background: rgba(44,90,160,.07) !important;
+    }
+    table.dataTable tbody tr:hover td:first-child {
+      background: rgba(44,90,160,.07) !important;
+    }
+    /* Linha de fim de semana/feriado: sticky column */
+    table.dataTable tbody tr.row-no-plantao td:first-child {
+      background: var(--card) !important;
+    }
+
+    /* =====================================================
+       MOBILE / RESPONSIVO
+       ===================================================== */
+
+    /* Esconde tabela DataTables no mobile, mostra cards */
+    .mobileOnly  { display: none; }
+    .mobileList  { display: none; }
     .desktopOnly { display: block; }
-    .mobileList { display:none; }
 
-    @media (max-width: 768px){
-      /* mantém o desktop intacto: só muda o que é mobileOnly */
-      .desktopOnly { display: none !important; }
-      .mobileOnly { display: block !important; }
-      .mobileList { display: block; }
+    @media (max-width: 768px) {
+      /* Oculta DataTable + controles no mobile */
+      .table-container      { display: none !important; }
+      .dataTables_wrapper   { display: none !important; }
+      .mobileList           { display: block !important; }
+      .mobileOnly           { display: block !important; }
+      .desktopOnly          { display: none !important; }
 
-      /* não forçar larguras em telas estreitas */
-      .dataTables_wrapper { width:100% !important; }
-
-      /* Cards */
-      .dayCard{
-        border: 1px solid var(--line);
+      /* Card base */
+      .dayCard {
         background: var(--card);
+        border: 1px solid var(--line);
+        border-left: 4px solid var(--brand1);
         border-radius: 14px;
-        padding: 10px 12px;
+        padding: 13px 14px;
         margin: 10px 0;
-        box-shadow: 0 6px 18px rgba(0,0,0,.06);
+        box-shadow: 0 2px 12px rgba(0,0,0,.07);
+        font-family: inherit;
       }
-      .dayHead{
-        display:flex;
+      /* Fim de semana / feriado: mais discreto */
+      .dayCard.isWeekend {
+        opacity: .42;
+        border-left-color: var(--line);
+      }
+      .dayCard.isWeekend .dayBody { display: none; }
+
+      /* Cabeçalho do card */
+      .dayHead {
+        display: flex;
         justify-content: space-between;
-        gap: 10px;
-        align-items: baseline;
-        font-weight: 800;
+        align-items: center;
+        gap: 8px;
+        padding-bottom: 9px;
+        margin-bottom: 9px;
+        border-bottom: 1px solid var(--line);
       }
-      .dayDate{ font-size: 15px; }
-      .dayDow{ font-size: 13px; opacity: .85; white-space: nowrap; }
-      .dayBody{ margin-top: 8px; display: grid; gap: 6px; }
-      .kv{ display:flex; gap:8px; align-items: baseline; }
-      .k{ min-width: 92px; font-weight: 800; font-size: 12px; opacity: .85; }
-      .v{ font-size: 14px; font-weight: 600; }
-      .obs{ margin-top: 8px; font-size: 12px; opacity: .9; }
-      .isWeekend .dayBody{ display:none; }
-      .isWeekend .obs{ margin-top: 6px; font-weight: 700; opacity: .8; }
-      .isNoPlantao{
-        background: rgba(220, 38, 38, 0.06);
+      .dayDate {
+        font-size: 1em;
+        font-weight: 800;
+        color: var(--text);
+      }
+      .dayDow {
+        font-size: .8em;
+        font-weight: 700;
+        color: var(--brand1);
+        background: rgba(44,90,160,.10);
+        padding: 2px 9px;
+        border-radius: 20px;
+        white-space: nowrap;
       }
 
-      /* fonte consistente */
-      .dayCard, .dayCard * { font-family: inherit !important; }
+      /* Corpo do card */
+      .dayBody {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+      .kv {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      .k {
+        min-width: 105px;
+        font-size: .72em;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+        padding-top: 3px;
+        white-space: nowrap;
+      }
+      .v {
+        font-size: .92em;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1.55;
+      }
+
+      /* Cores por tipo de turno */
+      .kv-mat .k  { color: #c87400; }
+      .kv-vesp .k { color: #7b5ea7; }
+      .kv-f40 .k  { color: var(--brand1); }
+
+      /* Nota do dia */
+      .dayNote {
+        margin-top: 6px;
+        font-size: .75em;
+        color: var(--muted);
+        background: rgba(44,90,160,.06);
+        padding: 3px 9px;
+        border-radius: 6px;
+        display: inline-block;
+      }
+
+      /* Sem plantão no dia */
+      .kv-empty .v { opacity: .5; font-style: italic; }
+
+      /* Cards da totalização */
+      .totalCard {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 11px 14px;
+        margin: 8px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+        box-shadow: 0 1px 8px rgba(0,0,0,.05);
+      }
+      .totalCard .tNome {
+        font-size: .9em;
+        font-weight: 700;
+        color: var(--text);
+        flex: 1;
+      }
+      .totalCard .tBadge {
+        min-width: 28px;
+        height: 28px;
+        background: linear-gradient(135deg,var(--brand1),var(--brand2));
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: .9em;
+        flex-shrink: 0;
+      }
+      .totalCard .tDatas {
+        font-size: .75em;
+        color: var(--muted);
+        margin-top: 3px;
+      }
+
+      /* Ajustes gerais */
+      .results-card { padding: 14px 10px; }
     }
 
 </style>
@@ -637,7 +797,7 @@
         <div class="card" id="cardTabela" style="display:none;">
             <h3>📅 Escala do mês: <span id="mesTitulo"></span></h3>
 
-            <div class="table-container">
+            <div class="table-container desktopOnly">
                 <table id="tabelaPlantao" class="display nowrap" style="width:100%">
                     <thead>
                         <tr>
@@ -658,7 +818,7 @@
         <!-- Card Totalização -->
         <div class="card" id="cardTotal" style="display:none;">
             <h3 id="totalTitulo">📊 Totalização de plantões por fiscal</h3>
-            <div class="table-container">
+            <div class="table-container desktopOnly">
                 <table id="tabelaTotal" class="display nowrap" style="width:100%">
                     <thead>
                         <tr>
@@ -742,7 +902,7 @@ const shortToFull = {"Acádia": "Acádia de Souza Vieira Silva", "Adriana": "Adr
 const fiscaisOrdem = ["Acádia de Souza Vieira Silva", "Adriana Christina de Rezende Carneiro", "Adriane Pereira Guimaraes", "Aline Castro Damásio de Lima", "Ana Paula Rodrigues Correa Guimaraes", "Angela Ribeiro Neves", "Arianne Ferreira Vieira", "Clóvis Rafael Borges Ferreira", "Daniela de Almeida Castro", "Edson Arantes Faria Filho", "Eduardo Lucas Magalhães Castro", "Fabíola Pedrosa Peixoto Marques", "Geraldo Edson Rosa", "Gleiciane Maria José da Silva", "Gúbio Dias Pereira", "José Luiz Ribeiro", "João Batista Lucas da Silva Reis", "Juliana Kênia Martins da Silva", "Juliana Ferreira Viturino", "Júlio César Teles Spindola", "Kamilla Chrystine Rolim dos Santos", "Lidiane Simoes Aires Campos", "Lívia Brito Ribeiro", "Luciana Consolação dos Santos", "Luciana Santana da Rocha", "Luciene de Souza Barbosa Gomes Silva", "Maria Edwiges Pinheiro de Souza Chaves", "Marina Perillo Navarrete Lavers", "Márcio Henrique Gomes Rodovalho", "Patrícia Cordeiro de Morais e Souza", "Pedro Henrique Aires Ribeiro", "Rodrigo Alessandro Tôgo Santos", "Rúbia Mara de Freitas", "Simone Duarte Grossi", "Silvia Marques Naves da Mota Souza", "Tathiane Pessoa de Souza", "Thiago Gomes Gobo", "Vanessa Santana", "Viviane Manoel da Silva Borges", "Viviane Miyada", "Wanessa de Brito Jorge"];
 
 // Escalas por mês
-const escalaPorMes = {"2026-01": [{"date": "2026-01-01", "dow": "Qui", "mat30": "", "vesp30": "", "f40": [], "note": "Confraternização Universal"}, {"date": "2026-01-02", "dow": "Sex", "mat30": "", "vesp30": "", "f40": [], "note": "Ponto Facultativo"}, {"date": "2026-01-03", "dow": "Sáb", "mat30": "", "vesp30": "", "f40": [], "note": ""}, {"date": "2026-01-04", "dow": "Dom", "mat30": "", "vesp30": "", "f40": [], "note": ""}, {"date": "2026-01-05", "dow": "Seg", "mat30": "Arianne", "vesp30": "Márcio", "f40": ["Vanessa Santana"], "note": ""}, {"date": "2026-01-06", "dow": "Ter", "mat30": "Júlio", "vesp30": "", "f40": ["Rúbia", "Viviane Miyada"], "note": ""}, {"date": "2026-01-07", "dow": "Qua", "mat30": "", "vesp30": "", "f40": ["Eduardo", "Lívia Brito"], "note": ""}, {"date": "2026-01-08", "dow": "Qui", "mat30": "", "vesp30": "", "f40": ["Acádia", "Viviane Manoel"], "note": ""}, {"date": "2026-01-09", "dow": "Sex", "mat30": "", "vesp30": "", "f40": ["Angela", "Luciana Santana"], "note": ""}, {"date": "2026-01-10", "dow": "Sáb", "mat30": "", "vesp30": "", "f40": [], "note": ""}, {"date": "2026-01-11", "dow": "Dom", "mat30": "", "vesp30": "", "f40": [], "note": ""}, {"date": "2026-01-12", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["Gleiciane", "Viviane Miyada"], "note": ""}, {"date": "2026-01-13", "dow": "Ter", "mat30": "", "vesp30": "", "f40": ["Eduardo", "Wanessa Brito"], "note": ""}, {"date": "2026-01-14", "dow": "Qua", "mat30": "", "vesp30": "", "f40": ["João Batista", "Juliana Kênia"], "note": ""}, {"date": "2026-01-15", "dow": "Qui", "mat30": "", "vesp30": "", "f40": ["Daniela", "Viviane Manoel"], "note": ""}, {"date": "2026-01-16", "dow": "Sex", "mat30": "", "vesp30": "", "f40": ["Adriana", "Maria Edwiges"], "note": ""}, {"date": "2026-01-17", "dow": "Sáb", "mat30": "", "vesp30": "", "f40": [], "note": ""}, {"date": "2026-01-18", "dow": "Dom", "mat30": "", "vesp30": "", "f40": [], "note": ""}, {"date": "2026-01-19", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["Pedro", "Thiago"], "note": ""}, {"date": "2026-01-20", "dow": "Ter", "mat30": "Kamilla", "vesp30": "Edson", "f40": ["Gúbio"], "note": ""}, {"date": "2026-01-21", "dow": "Qua", "mat30": "", "vesp30": "Geraldo", "f40": ["Acádia", "Lidiane"], "note": ""}, {"date": "2026-01-22", "dow": "Qui", "mat30": "", "vesp30": "Rodrigo", "f40": ["Ana Paula", "Simone"], "note": ""}, {"date": "2026-01-23", "dow": "Sex", "mat30": "", "vesp30": "Tathiane", "f40": ["Angela", "Clóvis"], "note": ""}, {"date": "2026-01-24", "dow": "Sáb", "mat30": "", "vesp30": "", "f40": [], "note": ""}, {"date": "2026-01-25", "dow": "Dom", "mat30": "", "vesp30": "", "f40": [], "note": ""}, {"date": "2026-01-26", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["João Batista", "Juliana Viturino"], "note": ""}, {"date": "2026-01-27", "dow": "Ter", "mat30": "Silvia", "vesp30": "", "f40": ["Aline", "Luciene"], "note": ""}, {"date": "2026-01-28", "dow": "Qua", "mat30": "", "vesp30": "", "f40": ["Adriane", "Luciana Consolação"], "note": ""}, {"date": "2026-01-29", "dow": "Qui", "mat30": "", "vesp30": "", "f40": ["Fabíola", "Marina"], "note": ""}, {"date": "2026-01-30", "dow": "Sex", "mat30": "", "vesp30": "", "f40": ["Gúbio", "Patrícia"], "note": ""}, {"date": "2026-01-31", "dow": "Sáb", "mat30": "", "vesp30": "", "f40": [], "note": ""}], "2026-02": [{"date": "2026-02-02", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["Daniela", "Marina"], "note": ""}, {"date": "2026-02-03", "dow": "Ter", "mat30": "Kamilla", "vesp30": "Edson", "f40": ["Pedro"], "note": ""}, {"date": "2026-02-04", "dow": "Qua", "mat30": "", "vesp30": "", "f40": ["Gleiciane", "Gúbio"], "note": ""}, {"date": "2026-02-05", "dow": "Qui", "mat30": "Silvia", "vesp30": "Márcio", "f40": ["Lidiane"], "note": ""}, {"date": "2026-02-06", "dow": "Sex", "mat30": "", "vesp30": "", "f40": ["Viviane Manoel", "Luciana Santana"], "note": ""}, {"date": "2026-02-09", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["Clóvis", "Ana Paula"], "note": ""}, {"date": "2026-02-10", "dow": "Ter", "mat30": "", "vesp30": "Rodrigo", "f40": ["Eduardo", "Simone"], "note": ""}, {"date": "2026-02-11", "dow": "Qua", "mat30": "", "vesp30": "", "f40": ["João Batista", "Luciene"], "note": ""}, {"date": "2026-02-12", "dow": "Qui", "mat30": "", "vesp30": "Tathiane", "f40": ["Adriana", "Patrícia"], "note": ""}, {"date": "2026-02-13", "dow": "Sex", "mat30": "", "vesp30": "", "f40": ["Maria Edwiges", "Viviane Miyada"], "note": ""}, {"date": "2026-02-16", "dow": "Seg", "mat30": "", "vesp30": "", "f40": [], "note": "Ponto Facultativo (Carnaval)"}, {"date": "2026-02-17", "dow": "Ter", "mat30": "", "vesp30": "", "f40": [], "note": "Ponto Facultativo (Carnaval)"}, {"date": "2026-02-18", "dow": "Qua", "mat30": "", "vesp30": "", "f40": ["Juliana Viturino", "Luciana Consolação"], "note": ""}, {"date": "2026-02-19", "dow": "Qui", "mat30": "", "vesp30": "", "f40": ["Fabíola", "Vanessa Santana"], "note": ""}, {"date": "2026-02-20", "dow": "Sex", "mat30": "Júlio", "vesp30": "José Luiz", "f40": ["Gúbio"], "note": ""}, {"date": "2026-02-23", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["Acádia", "Wanessa Brito"], "note": ""}, {"date": "2026-02-24", "dow": "Ter", "mat30": "Arianne", "vesp30": "Geraldo", "f40": ["Rúbia"], "note": ""}, {"date": "2026-02-25", "dow": "Qua", "mat30": "", "vesp30": "", "f40": ["Lívia Brito", "Clóvis"], "note": ""}, {"date": "2026-02-26", "dow": "Qui", "mat30": "", "vesp30": "", "f40": ["Patrícia", "Juliana Kênia"], "note": ""}, {"date": "2026-02-27", "dow": "Sex", "mat30": "", "vesp30": "", "f40": ["Aline", "Adriane"], "note": ""}], "2026-03": [{"date": "2026-03-01", "dow": "Dom", "mat30": "", "vesp30": "", "f40": [], "note": "Fim de semana"}, {"date": "2026-03-02", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["Gúbio", "João Batista"], "note": "2×40"}, {"date": "2026-03-03", "dow": "Ter", "mat30": "", "vesp30": "", "f40": ["Juliana Viturino", "Vanessa Santana"], "note": "2×40"}, {"date": "2026-03-04", "dow": "Qua", "mat30": "", "vesp30": "", "f40": ["Pedro", "Maria Edwiges"], "note": "2×40"}, {"date": "2026-03-05", "dow": "Qui", "mat30": "", "vesp30": "", "f40": ["Patrícia", "Gleiciane"], "note": "2×40"}, {"date": "2026-03-06", "dow": "Sex", "mat30": "", "vesp30": "", "f40": ["Luciana Santana", "Aline"], "note": "2×40"}, {"date": "2026-03-07", "dow": "Sáb", "mat30": "", "vesp30": "", "f40": [], "note": "Fim de semana"}, {"date": "2026-03-08", "dow": "Dom", "mat30": "", "vesp30": "", "f40": [], "note": "Fim de semana"}, {"date": "2026-03-09", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["Daniela", "Lívia Brito"], "note": "2×40"}, {"date": "2026-03-10", "dow": "Ter", "mat30": "Kamilla", "vesp30": "Edson", "f40": ["Adriana"], "note": "2×30 + 1×40"}, {"date": "2026-03-11", "dow": "Qua", "mat30": "Júlio", "vesp30": "Márcio", "f40": ["Simone"], "note": "2×30 + 1×40"}, {"date": "2026-03-12", "dow": "Qui", "mat30": "Arianne", "vesp30": "Rodrigo", "f40": ["Rúbia"], "note": "2×30 + 1×40"}, {"date": "2026-03-13", "dow": "Sex", "mat30": "", "vesp30": "", "f40": ["Juliana Kênia", "Luciene"], "note": "2×40"}, {"date": "2026-03-14", "dow": "Sáb", "mat30": "", "vesp30": "", "f40": [], "note": "Fim de semana"}, {"date": "2026-03-15", "dow": "Dom", "mat30": "", "vesp30": "", "f40": [], "note": "Fim de semana"}, {"date": "2026-03-16", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["Wanessa Brito", "Adriane"], "note": "2×40"}, {"date": "2026-03-17", "dow": "Ter", "mat30": "", "vesp30": "", "f40": ["Luciana Consolação", "Acádia"], "note": "2×40"}, {"date": "2026-03-18", "dow": "Qua", "mat30": "Sílvia", "vesp30": "Geraldo", "f40": ["Lidiane"], "note": "2×30 + 1×40"}, {"date": "2026-03-19", "dow": "Qui", "mat30": "", "vesp30": "", "f40": ["Viviane Miyada", "Fabíola"], "note": "2×40"}, {"date": "2026-03-20", "dow": "Sex", "mat30": "", "vesp30": "", "f40": ["Ana Paula", "Eduardo"], "note": "2×40"}, {"date": "2026-03-21", "dow": "Sáb", "mat30": "", "vesp30": "", "f40": [], "note": "Fim de semana"}, {"date": "2026-03-22", "dow": "Dom", "mat30": "", "vesp30": "", "f40": [], "note": "Fim de semana"}, {"date": "2026-03-23", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["Marina", "Clóvis"], "note": "2×40"}, {"date": "2026-03-24", "dow": "Ter", "mat30": "", "vesp30": "", "f40": ["Viviane Manoel", "Daniela"], "note": "2×40"}, {"date": "2026-03-25", "dow": "Qua", "mat30": "", "vesp30": "José Luiz", "f40": ["Adriana", "Angela"], "note": "2×40 + 30(sobra vesp)"}, {"date": "2026-03-26", "dow": "Qui", "mat30": "", "vesp30": "Tathiane", "f40": ["Aline", "Pedro"], "note": "2×40 + 30(sobra vesp)"}, {"date": "2026-03-27", "dow": "Sex", "mat30": "", "vesp30": "", "f40": ["Simone", "Lívia Brito"], "note": "2×40"}, {"date": "2026-03-28", "dow": "Sáb", "mat30": "", "vesp30": "", "f40": [], "note": "Fim de semana"}, {"date": "2026-03-29", "dow": "Dom", "mat30": "", "vesp30": "", "f40": [], "note": "Fim de semana"}, {"date": "2026-03-30", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["Gúbio", "Patrícia"], "note": "2×40"}, {"date": "2026-03-31", "dow": "Ter", "mat30": "", "vesp30": "", "f40": ["Thiago", "João Batista"], "note": "2×40"}]};
+const escalaPorMes = {"2026-01": [{"date": "2026-01-01", "dow": "Qui", "mat30": "", "vesp30": "", "f40": [], "note": "Confraternização Universal"}, {"date": "2026-01-02", "dow": "Sex", "mat30": "", "vesp30": "", "f40": [], "note": "Ponto Facultativo"}, {"date": "2026-01-03", "dow": "Sáb", "mat30": "", "vesp30": "", "f40": [], "note": ""}, {"date": "2026-01-04", "dow": "Dom", "mat30": "", "vesp30": "", "f40": [], "note": ""}, {"date": "2026-01-05", "dow": "Seg", "mat30": "Arianne", "vesp30": "Márcio", "f40": ["Vanessa Santana"], "note": ""}, {"date": "2026-01-06", "dow": "Ter", "mat30": "Júlio", "vesp30": "", "f40": ["Rúbia", "Viviane Miyada"], "note": ""}, {"date": "2026-01-07", "dow": "Qua", "mat30": "", "vesp30": "", "f40": ["Eduardo", "Lívia Brito"], "note": ""}, {"date": "2026-01-08", "dow": "Qui", "mat30": "", "vesp30": "", "f40": ["Acádia", "Viviane Manoel"], "note": ""}, {"date": "2026-01-09", "dow": "Sex", "mat30": "", "vesp30": "", "f40": ["Angela", "Luciana Santana"], "note": ""}, {"date": "2026-01-10", "dow": "Sáb", "mat30": "", "vesp30": "", "f40": [], "note": ""}, {"date": "2026-01-11", "dow": "Dom", "mat30": "", "vesp30": "", "f40": [], "note": ""}, {"date": "2026-01-12", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["Gleiciane", "Viviane Miyada"], "note": ""}, {"date": "2026-01-13", "dow": "Ter", "mat30": "", "vesp30": "", "f40": ["Eduardo", "Wanessa Brito"], "note": ""}, {"date": "2026-01-14", "dow": "Qua", "mat30": "", "vesp30": "", "f40": ["João Batista", "Juliana Kênia"], "note": ""}, {"date": "2026-01-15", "dow": "Qui", "mat30": "", "vesp30": "", "f40": ["Daniela", "Viviane Manoel"], "note": ""}, {"date": "2026-01-16", "dow": "Sex", "mat30": "", "vesp30": "", "f40": ["Adriana", "Maria Edwiges"], "note": ""}, {"date": "2026-01-17", "dow": "Sáb", "mat30": "", "vesp30": "", "f40": [], "note": ""}, {"date": "2026-01-18", "dow": "Dom", "mat30": "", "vesp30": "", "f40": [], "note": ""}, {"date": "2026-01-19", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["Pedro", "Thiago"], "note": ""}, {"date": "2026-01-20", "dow": "Ter", "mat30": "Kamilla", "vesp30": "Edson", "f40": ["Gúbio"], "note": ""}, {"date": "2026-01-21", "dow": "Qua", "mat30": "", "vesp30": "Geraldo", "f40": ["Acádia", "Lidiane"], "note": ""}, {"date": "2026-01-22", "dow": "Qui", "mat30": "", "vesp30": "Rodrigo", "f40": ["Ana Paula", "Simone"], "note": ""}, {"date": "2026-01-23", "dow": "Sex", "mat30": "", "vesp30": "Tathiane", "f40": ["Angela", "Clóvis"], "note": ""}, {"date": "2026-01-24", "dow": "Sáb", "mat30": "", "vesp30": "", "f40": [], "note": ""}, {"date": "2026-01-25", "dow": "Dom", "mat30": "", "vesp30": "", "f40": [], "note": ""}, {"date": "2026-01-26", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["João Batista", "Juliana Viturino"], "note": ""}, {"date": "2026-01-27", "dow": "Ter", "mat30": "Silvia", "vesp30": "", "f40": ["Aline", "Luciene"], "note": ""}, {"date": "2026-01-28", "dow": "Qua", "mat30": "", "vesp30": "", "f40": ["Adriane", "Luciana Consolação"], "note": ""}, {"date": "2026-01-29", "dow": "Qui", "mat30": "", "vesp30": "", "f40": ["Fabíola", "Marina"], "note": ""}, {"date": "2026-01-30", "dow": "Sex", "mat30": "", "vesp30": "", "f40": ["Gúbio", "Patrícia"], "note": ""}, {"date": "2026-01-31", "dow": "Sáb", "mat30": "", "vesp30": "", "f40": [], "note": ""}], "2026-02": [{"date": "2026-02-02", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["Daniela", "Marina"], "note": ""}, {"date": "2026-02-03", "dow": "Ter", "mat30": "Kamilla", "vesp30": "Edson", "f40": ["Pedro"], "note": ""}, {"date": "2026-02-04", "dow": "Qua", "mat30": "", "vesp30": "", "f40": ["Gleiciane", "Gúbio"], "note": ""}, {"date": "2026-02-05", "dow": "Qui", "mat30": "Silvia", "vesp30": "Márcio", "f40": ["Lidiane"], "note": ""}, {"date": "2026-02-06", "dow": "Sex", "mat30": "", "vesp30": "", "f40": ["Viviane Manoel", "Luciana Santana"], "note": ""}, {"date": "2026-02-09", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["Clóvis", "Ana Paula"], "note": ""}, {"date": "2026-02-10", "dow": "Ter", "mat30": "", "vesp30": "Rodrigo", "f40": ["Eduardo", "Simone"], "note": ""}, {"date": "2026-02-11", "dow": "Qua", "mat30": "", "vesp30": "", "f40": ["João Batista", "Luciene"], "note": ""}, {"date": "2026-02-12", "dow": "Qui", "mat30": "", "vesp30": "Tathiane", "f40": ["Adriana", "Patrícia"], "note": ""}, {"date": "2026-02-13", "dow": "Sex", "mat30": "", "vesp30": "", "f40": ["Maria Edwiges", "Viviane Miyada"], "note": ""}, {"date": "2026-02-16", "dow": "Seg", "mat30": "", "vesp30": "", "f40": [], "note": "Ponto Facultativo (Carnaval)"}, {"date": "2026-02-17", "dow": "Ter", "mat30": "", "vesp30": "", "f40": [], "note": "Ponto Facultativo (Carnaval)"}, {"date": "2026-02-18", "dow": "Qua", "mat30": "", "vesp30": "", "f40": ["Juliana Viturino", "Luciana Consolação"], "note": ""}, {"date": "2026-02-19", "dow": "Qui", "mat30": "", "vesp30": "", "f40": ["Fabíola", "Vanessa Santana"], "note": ""}, {"date": "2026-02-20", "dow": "Sex", "mat30": "Júlio", "vesp30": "José Luiz", "f40": ["Gúbio"], "note": ""}, {"date": "2026-02-23", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["Acádia", "Wanessa Brito"], "note": ""}, {"date": "2026-02-24", "dow": "Ter", "mat30": "Arianne", "vesp30": "Geraldo", "f40": ["Rúbia"], "note": ""}, {"date": "2026-02-25", "dow": "Qua", "mat30": "", "vesp30": "", "f40": ["Lívia Brito", "Clóvis"], "note": ""}, {"date": "2026-02-26", "dow": "Qui", "mat30": "", "vesp30": "", "f40": ["Patrícia", "Juliana Kênia"], "note": ""}, {"date": "2026-02-27", "dow": "Sex", "mat30": "", "vesp30": "", "f40": ["Aline", "Adriane"], "note": ""}], "2026-03": [{"date": "2026-03-01", "dow": "Dom", "mat30": "", "vesp30": "", "f40": [], "note": "Fim de semana"}, {"date": "2026-03-02", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["Marina", "Fabíola"], "note": "2×40"}, {"date": "2026-03-03", "dow": "Ter", "mat30": "", "vesp30": "", "f40": ["Juliana Viturino", "Vanessa Santana"], "note": "2×40"}, {"date": "2026-03-04", "dow": "Qua", "mat30": "", "vesp30": "", "f40": ["Pedro", "Maria Edwiges"], "note": "2×40"}, {"date": "2026-03-05", "dow": "Qui", "mat30": "", "vesp30": "", "f40": ["Gleiciane", "Ana Paula"], "note": "2×40"}, {"date": "2026-03-06", "dow": "Sex", "mat30": "", "vesp30": "", "f40": ["Luciana Santana", "Aline"], "note": "2×40"}, {"date": "2026-03-07", "dow": "Sáb", "mat30": "", "vesp30": "", "f40": [], "note": "Fim de semana"}, {"date": "2026-03-08", "dow": "Dom", "mat30": "", "vesp30": "", "f40": [], "note": "Fim de semana"}, {"date": "2026-03-09", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["Lívia Brito", "Luciana Consolação"], "note": "2×40"}, {"date": "2026-03-10", "dow": "Ter", "mat30": "Kamilla", "vesp30": "Edson", "f40": ["Thiago"], "note": "2×30 + 1×40"}, {"date": "2026-03-11", "dow": "Qua", "mat30": "Júlio", "vesp30": "Márcio", "f40": ["Simone"], "note": "2×30 + 1×40"}, {"date": "2026-03-12", "dow": "Qui", "mat30": "Arianne", "vesp30": "Rodrigo", "f40": ["Rúbia"], "note": "2×30 + 1×40"}, {"date": "2026-03-13", "dow": "Sex", "mat30": "", "vesp30": "", "f40": ["Juliana Kênia", "Luciene"], "note": "2×40"}, {"date": "2026-03-14", "dow": "Sáb", "mat30": "", "vesp30": "", "f40": [], "note": "Fim de semana"}, {"date": "2026-03-15", "dow": "Dom", "mat30": "", "vesp30": "", "f40": [], "note": "Fim de semana"}, {"date": "2026-03-16", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["Wanessa Brito", "Adriane"], "note": "2×40"}, {"date": "2026-03-17", "dow": "Ter", "mat30": "", "vesp30": "", "f40": ["Acádia", "Angela"], "note": "2×40"}, {"date": "2026-03-18", "dow": "Qua", "mat30": "Sílvia", "vesp30": "Geraldo", "f40": ["Lidiane"], "note": "2×30 + 1×40"}, {"date": "2026-03-19", "dow": "Qui", "mat30": "", "vesp30": "", "f40": ["Viviane Miyada", "Fabíola"], "note": "2×40"}, {"date": "2026-03-20", "dow": "Sex", "mat30": "", "vesp30": "José Luiz", "f40": ["Ana Paula", "Eduardo"], "note": "2×40 + 30(sobra vesp)"}, {"date": "2026-03-21", "dow": "Sáb", "mat30": "", "vesp30": "", "f40": [], "note": "Fim de semana"}, {"date": "2026-03-22", "dow": "Dom", "mat30": "", "vesp30": "", "f40": [], "note": "Fim de semana"}, {"date": "2026-03-23", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["Marina", "Juliana Viturino"], "note": "2×40"}, {"date": "2026-03-24", "dow": "Ter", "mat30": "", "vesp30": "", "f40": ["Viviane Manoel", "Daniela"], "note": "2×40"}, {"date": "2026-03-25", "dow": "Qua", "mat30": "", "vesp30": "", "f40": ["Adriana", "Luciana Consolação"], "note": "2×40"}, {"date": "2026-03-26", "dow": "Qui", "mat30": "", "vesp30": "Tathiane", "f40": ["Aline", "Simone"], "note": "2×40 + 30(sobra vesp)"}, {"date": "2026-03-27", "dow": "Sex", "mat30": "", "vesp30": "", "f40": ["Clóvis", "Lívia Brito"], "note": "2×40"}, {"date": "2026-03-28", "dow": "Sáb", "mat30": "", "vesp30": "", "f40": [], "note": "Fim de semana"}, {"date": "2026-03-29", "dow": "Dom", "mat30": "", "vesp30": "", "f40": [], "note": "Fim de semana"}, {"date": "2026-03-30", "dow": "Seg", "mat30": "", "vesp30": "", "f40": ["Gúbio", "Patrícia"], "note": "2×40"}, {"date": "2026-03-31", "dow": "Ter", "mat30": "", "vesp30": "", "f40": ["Thiago", "João Batista"], "note": "2×40"}]};
 
 /* =========================
    Utilitários de data
@@ -910,6 +1070,97 @@ function fillFiscalSelect(){
   });
 }
 
+/* ─── Mobile cards: escala ─── */
+function renderMobileCards(rows) {
+  const container = document.getElementById("mobilePlantao");
+  if (!container) return;
+  container.innerHTML = "";
+
+  rows.forEach(r => {
+    const card = document.createElement("div");
+    const weekend = r.noPlantao;
+    card.className = "dayCard" + (weekend ? " isWeekend" : "");
+
+    let bodyHtml = "";
+    if (!weekend) {
+      if (r.mat30) {
+        bodyHtml += `<div class="kv kv-mat">
+          <span class="k">☀ Matutino</span>
+          <span class="v">${r.mat30}</span>
+        </div>`;
+      }
+      if (r.vesp30) {
+        bodyHtml += `<div class="kv kv-vesp">
+          <span class="k">🌙 Vespertino</span>
+          <span class="v">${r.vesp30}</span>
+        </div>`;
+      }
+      if (r.f40 && r.f40.length) {
+        bodyHtml += `<div class="kv kv-f40">
+          <span class="k">⏱ Dia Todo</span>
+          <span class="v">${r.f40.join("<br>")}</span>
+        </div>`;
+      }
+      if (!r.mat30 && !r.vesp30 && (!r.f40 || !r.f40.length)) {
+        bodyHtml += `<div class="kv kv-empty"><span class="v">— sem plantão —</span></div>`;
+      }
+      if (r.note) {
+        bodyHtml += `<span class="dayNote">${r.note}</span>`;
+      }
+    }
+
+    card.innerHTML = `
+      <div class="dayHead">
+        <span class="dayDate">${r.dataBR}</span>
+        <span class="dayDow">${r.dow}</span>
+      </div>
+      <div class="dayBody">${bodyHtml}</div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+/* ─── Mobile cards: totalização ─── */
+function renderMobileTotal(rows, mesKey) {
+  const container = document.getElementById("mobileTotal");
+  if (!container) return;
+  container.innerHTML = "";
+
+  // Reutiliza a lógica de totalização (cópia simplificada)
+  function _norm(s){ return (s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/\s+/g," ").trim(); }
+  function _base(s){ return (s||"").toString().replace(/\s*\([^)]*\)\s*/g," ").replace(/\s+/g," ").trim(); }
+  function _resolve(nome){
+    const b = _norm(_base(nome)); if(!b) return "";
+    for(const f of fiscaisOrdem){ if(_norm(f)===b) return f; }
+    for(const f of fiscaisOrdem){ const n=_norm(f); if(n.includes(b)||b.includes(n)) return f; }
+    return _base(nome);
+  }
+
+  const totals = new Map();
+  fiscaisOrdem.forEach(f => totals.set(f, {count:0, dates:[]}));
+  rows.forEach(r => {
+    if(r.noPlantao) return;
+    const add = n => { if(!n) return; const k=_resolve(n); if(!k) return; if(!totals.has(k)) totals.set(k,{count:0,dates:[]}); const o=totals.get(k); o.count++; o.dates.push(r.dataBR); };
+    add(r.mat30); add(r.vesp30); (r.f40||[]).forEach(add);
+  });
+
+  Array.from(totals.entries())
+    .map(([name, o]) => ({name, count:o.count, dates:o.dates}))
+    .sort((a,b) => a.name.localeCompare(b.name,"pt-BR",{sensitivity:"base"}))
+    .forEach(it => {
+      const card = document.createElement("div");
+      card.className = "totalCard";
+      card.innerHTML = `
+        <div>
+          <div class="tNome">${it.name}</div>
+          ${it.dates.length ? `<div class="tDatas">${it.dates.join(", ")}</div>` : ""}
+        </div>
+        <div class="tBadge">${it.count}</div>
+      `;
+      container.appendChild(card);
+    });
+}
+
 function renderPlantao(rows){
   // IMPORTANTE: destruir DataTable ANTES de manipular o DOM
   if(dtPlantao) {
@@ -922,7 +1173,7 @@ function renderPlantao(rows){
 
   rows.forEach(r => {
     const tr = document.createElement("tr");
-    if(r.noPlantao) tr.style.background = "#f3f3f3";
+    if(r.noPlantao) tr.classList.add("row-no-plantao");
 
     const f40txt = r.f40.length ? r.f40.join(", ") : "—";
 
@@ -946,6 +1197,9 @@ function renderPlantao(rows){
     },
     scrollX: true
   });
+
+  // Renderiza versão mobile
+  renderMobileCards(rows);
 }
 
 function renderTotal(rows, mesKey){
@@ -1047,6 +1301,9 @@ const totals = new Map();
     },
     scrollX: true
   });
+
+  // Renderiza versão mobile da totalização
+  renderMobileTotal(rows, mesKey);
 }
 
 function applyFilters(rows){
