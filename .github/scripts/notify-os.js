@@ -192,7 +192,7 @@ async function buscarTokensFCMPorFiscal() {
 
 // ── Envia notificação para um fiscal específico ───────────────
 async function enviarNotificacaoFiscal(tokens, numero, tipo, motivo, diasParaPrazo) {
-  if (!tokens || tokens.length === 0) return;
+  if (!tokens || tokens.length === 0) return { enviados: 0, erros: 0 };
 
   let mensagem_texto = '';
   if (diasParaPrazo === 0) {
@@ -202,7 +202,8 @@ async function enviarNotificacaoFiscal(tokens, numero, tipo, motivo, diasParaPra
   } else if (diasParaPrazo >= 2 && diasParaPrazo <= 5) {
     mensagem_texto = `OS ${numero} — ${motivo}, prazo ${diasParaPrazo} dias`;
   } else {
-    return;  // Não envia se não estiver na "janela"
+    console.log(`[Notificação] OS ${numero} ignorada: fora da janela de prazo (${diasParaPrazo} dias).`);
+    return { enviados: 0, erros: 0 };  // Não envia se não estiver na "janela"
   }
 
   const titulo = `🔔 Alerta de Prazo — VISA Anápolis`;
