@@ -812,7 +812,7 @@ Supervisão de Vigilância Sanitária</p>
     }
 
     async function obterPerfilPorEmail(email) {
-      const emailNorm = (email || '').trim();
+      const emailNorm = (email || '').toLowerCase().trim();
       if (!emailNorm) return { perfil: null, userDocId: null, notFound: true };
 
       let lastErr = null;
