@@ -111,6 +111,41 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.2.8 — 24/02/2026 17:30 (Horário de Brasília – UTC−3)</h3>
+  <strong>Solução Definitiva de Cache e Opt-in de Notificações</strong>
+
+  <ul>
+    <li><strong>Correção de Cache (3 Camadas):</strong>
+      <ul>
+        <li><strong>Meta Tags:</strong> Adicionadas tags <code>no-cache</code> em todos os 21 arquivos HTML para forçar o navegador a sempre verificar a versão mais recente no servidor.</li>
+        <li><strong>Service Worker:</strong> Atualizado para estratégia <em>Network First</em>, garantindo que o app sempre tente carregar da rede antes de usar o cache (resolve problemas em PWAs no iOS).</li>
+        <li><strong>Verificação Ativa:</strong> Intervalo de detecção de nova versão reduzido de 1 hora para <strong>15 minutos</strong>.</li>
+      </ul>
+    </li>
+    <li><strong>Notificações Push (Lógica Definitiva):</strong>
+      <ul>
+        <li>O status de opt-in agora é consultado diretamente no <strong>Firestore</strong>, eliminando a dependência do <code>localStorage</code>.</li>
+        <li>Modal de opt-in obrigatório para Android agora salva a escolha (Sim/Não) permanentemente no banco de dados.</li>
+        <li>Renovação silenciosa de tokens para quem já aceitou, garantindo que as notificações não expirem.</li>
+      </ul>
+    </li>
+    <li><strong>Painel Administrativo:</strong>
+      <ul>
+        <li>Coluna de versão agora exibe ícones de status reais: ✅ (Aceitou), ❌ (Recusou), ❓ (Pendente).</li>
+        <li>Correção na gravação da <code>appVersionLast</code> para refletir a versão real do usuário após a limpeza do cache.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <p><strong>Arquivos Modificados:</strong></p>
+  <ul>
+    <li><code>index.html</code>, <code>admin.html</code> e outros 19 arquivos HTML — Meta tags e lógica de versão.</li>
+    <li><code>service-worker.js</code> — Nova estratégia de cache.</li>
+    <li><code>changelog.html</code> — Registro desta versão.</li>
+  </ul>
+</div>
+
+<div class="section">
   <h3>v2.2.4 — 23/02/2026 23:15 (Horário de Brasília – UTC−3)</h3>
   <strong>Restauração de Emergência: Revert para v2.1.7 (pré-banners)</strong>
 
