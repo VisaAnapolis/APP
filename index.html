@@ -741,7 +741,7 @@ Supervisão de Vigilância Sanitária</p>
     const provider = new GoogleAuthProvider();
 
     // ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
-    const APP_VERSION = '2.2.2';
+    const APP_VERSION = '2.2.3';
     const VERSION_KEY = 'visa_app_version';
     const savedVersion = localStorage.getItem(VERSION_KEY);
 
@@ -1818,75 +1818,12 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
         const token = await initPushNotifications(app, user.email);
         pushAtivado = !!token;
       } catch (pushErr) {
-        console.warn('[Push] Não foi possível inicializar notificações:', pushErr.message);
-      }
+        console.warn('[Push] Não foi possível inicializar notificações:', pushErr.messa
 
-      // ── Banner de ativação manual (para quem não autorizou) ────
-      const banner        = document.getElementById('notif-banner');
-      const bannerBtn     = document.getElementById('notif-banner-btn');
-      const bannerDismiss = document.getElementById('notif-banner-dismiss');
-      const BANNER_KEY    = 'notif_banner_dismissed';
 
-      // Só mostra banners de notificação se NÃO for iOS (evita bug de loop no Safari/PWA)
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      if (!isIOS) {
-        // Barra verde de confirmação (token já ativo)
-        const okBanner = document.getElementById('notif-ok-banner');
-        if (pushAtivado && okBanner) {
-          okBanner.style.display = 'flex';
-          // Some após a animação de 5s
-          setTimeout(() => { okBanner.style.display = 'none'; }, 5200);
-        }
 
-        // Mostra o banner âmbar para qualquer usuário sem token e que não dispensou permanentemente
-        if (!pushAtivado
-            && localStorage.getItem(BANNER_KEY) !== 'true'
-            && banner) {
-          banner.style.display = 'flex';
-        }
-      }
 
-      // Botão ATIVAR AGORA
-      if (bannerBtn) {
-        bannerBtn.addEventListener('click', async () => {
-          bannerBtn.textContent = 'Aguarde...';
-          bannerBtn.disabled = true;
-          try {
-            const { initPushNotifications } = await import('./js/push-notifications.js');
-            const token = await initPushNotifications(app, user.email);
-            if (token) {
-              banner.style.display = 'none';
-              // Toast de sucesso
-              const t = document.createElement('div');
-              t.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#16a34a;color:#fff;padding:10px 20px;border-radius:8px;font-size:0.85rem;font-weight:600;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.2)';
-              t.textContent = '✅ Alertas de prazo ativados com sucesso!';
-              document.body.appendChild(t);
-              setTimeout(() => t.remove(), 4000);
-            } else {
-              bannerBtn.textContent = 'ATIVAR AGORA';
-              bannerBtn.disabled = false;
-              const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-              let errorMessage = 'Não foi possível ativar. Verifique se as notificações estão permitidas nas configurações do seu dispositivo.';
-              if (isIOS) {
-                errorMessage += '\n\nNo iPhone/iPad, certifique-se de ter adicionado o app à Tela de Início e que as notificações estão ativadas nos Ajustes do sistema.';
-              }
-              alert(errorMessage);
-            }
-          } catch (e) {
-            bannerBtn.textContent = 'ATIVAR AGORA';
-            bannerBtn.disabled = false;
-            console.error('[Banner] Erro ao ativar:', e);
-          }
-        });
-      }
 
-      // Botão × (dispensar por hoje)
-      if (bannerDismiss) {
-        bannerDismiss.addEventListener('click', () => {
-          banner.style.display = 'none';
-          // Não salva permanentemente — vai aparecer de novo na próxima abertura
-        });
-      }
       // ──────────────────────────────────────────────────────────
 
       // Conteúdo por perfil
