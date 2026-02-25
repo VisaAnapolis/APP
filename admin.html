@@ -133,6 +133,28 @@
     }
     .stat-label{ font-size:.88rem; color: var(--muted); font-weight:700; }
 
+    /* ===== VERSION PILLS ===== */
+    .version-grid{
+      display:flex; flex-wrap:wrap; gap:8px;
+      margin-top:10px;
+    }
+    .version-pill{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:5px 12px;
+      border-radius:20px;
+      font-size:.82rem; font-weight:700;
+      background: var(--surface, #f1f5f9);
+      color: var(--text);
+      border:1px solid var(--line, #e2e8f0);
+    }
+    .version-pill .vp-count{
+      background: linear-gradient(135deg, var(--brand1), var(--brand2));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      background-clip:text;
+      font-size:.95rem; font-weight:900;
+    }
+    .version-pill.latest{ border-color: #34C759; background: rgba(52,199,89,.1); }
+
     /* ===== AUDIT ===== */
     .audit-section{ margin-top: 16px; }
     .audit-item{
@@ -548,6 +570,12 @@
           <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-info"><div class="stat-number" id="fiscaisComToken">0</div><div class="stat-label">Usuários com Alerta Ligado</div></div></div>
 
         </div>
+
+        <div style="margin-top:6px; padding-top:12px; border-top:1px solid var(--line, #e2e8f0);">
+          <div style="font-size:.88rem; font-weight:700; color:var(--muted); margin-bottom:8px;">📱 Dispositivos por Versão</div>
+          <div class="version-grid" id="versionGrid"></div>
+        </div>
+
       </div>
 
       <!-- Auditoria -->
@@ -994,6 +1022,35 @@ function renderizarUsuarios(usuarios){
       ).length;
       const elFiscaisToken = document.getElementById('fiscaisComToken');
       if(elFiscaisToken) elFiscaisToken.textContent = fiscaisComToken;
+
+      // Dispositivos por versão (conta cada dispositivo individualmente)
+      const versaoContagem = {};
+      usuarios.forEach(u => {
+        const disps = u.dispositivos ? Object.values(u.dispositivos) : [];
+        if (disps.length > 0) {
+          disps.forEach(d => {
+            const v = (d.appVersionLast || '').trim() || 'sem versão';
+            versaoContagem[v] = (versaoContagem[v] || 0) + 1;
+          });
+        } else if (u.appVersionLast) {
+          const v = u.appVersionLast.trim();
+          versaoContagem[v] = (versaoContagem[v] || 0) + 1;
+        }
+      });
+
+      const vGrid = document.getElementById('versionGrid');
+      if (vGrid) {
+        const sorted = Object.entries(versaoContagem).sort((a, b) => {
+          if (a[0] === 'sem versão') return 1;
+          if (b[0] === 'sem versão') return -1;
+          return b[0].localeCompare(a[0], undefined, { numeric: true });
+        });
+        const versaoMaior = sorted.length > 0 && sorted[0][0] !== 'sem versão' ? sorted[0][0] : '';
+        vGrid.innerHTML = sorted.map(([v, n]) => {
+          const isLatest = v === versaoMaior;
+          return `<span class="version-pill${isLatest ? ' latest' : ''}">v${v} <span class="vp-count">${n}</span></span>`;
+        }).join('');
+      }
       
     }
 
