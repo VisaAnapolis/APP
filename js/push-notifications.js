@@ -11,10 +11,29 @@ const VAPID_KEY =
   'BE9_750iCXVu1uz9bOsvlVZIeAPpujMOcGAbBQa-uzFnKs7-RTROCMNASyf9KrNoRSibXo4RFIpzffiMXwgyVaQ';
 
 /**
+ * Resolve o path base do SW a partir da URL atual.
+ * Funciona em GitHub Pages (/VISA/), localhost e qualquer subpath.
+ */
+function _resolverScopeSW() {
+  try {
+    const pathname = location.pathname; // ex: /VISA/index.html ou /VISA/
+    // Extrai tudo até a última barra
+    const base = pathname.substring(0, pathname.lastIndexOf('/') + 1);
+    return {
+      swPath: base + 'firebase-messaging-sw.js',
+      scope:  base
+    };
+  } catch (_) {
+    return { swPath: '/firebase-messaging-sw.js', scope: '/' };
+  }
+}
+
+/**
  * Inicializa o Firebase Messaging e registra o token FCM do usuário.
  *
  * @param {object} firebaseApp  - Instância já inicializada do Firebase App
  * @param {string} userEmail    - E-mail do usuário autenticado (chave do doc no Firestore)
+ * @param {boolean|null} userOptedIn - true = aceitou, false = recusou, null = silencioso
  * @returns {Promise<string|null>} Token FCM ou null em caso de falha/negação
  */
 export async function initPushNotifications(firebaseApp, userEmail, userOptedIn) {
@@ -39,20 +58,34 @@ export async function initPushNotifications(firebaseApp, userEmail, userOptedIn)
     // Importa módulos Firebase dinamicamente (mesma versão do projeto)
     const { getMessaging, getToken, onMessage } =
       await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js');
-    const { getFirestore, doc, updateDoc, arrayUnion } =
+    const { getFirestore, doc, setDoc } =
       await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
 
-    // Registra o service worker do FCM (deve estar na raiz do escopo)
-    const swReg = await navigator.serviceWorker.register('/VISA/firebase-messaging-sw.js', {
-      scope: '/VISA/'
-    });
+    // Resolve o path do SW dinamicamente (funciona em qualquer subpath/domínio)
+    const { swPath, scope } = _resolverScopeSW();
+
+    // Aguarda qualquer SW em estado "installing" ou "waiting" antes de registrar
+    // Isso evita corrida de condição após desregistro forçado na atualização de versão
+    const swExistente = await navigator.serviceWorker.getRegistration(scope);
+    if (swExistente && swExistente.installing) {
+      await new Promise(resolve => {
+        swExistente.installing.addEventListener('statechange', function handler(e) {
+          if (e.target.state === 'activated') {
+            this.removeEventListener('statechange', handler);
+            resolve();
+          }
+        });
+      });
+    }
+
+    const swReg = await navigator.serviceWorker.register(swPath, { scope });
     console.log('[Push] Service Worker FCM registrado:', swReg.scope);
 
     const messaging = getMessaging(firebaseApp);
 
     // Obtém o token FCM para este dispositivo/navegador
     const token = await getToken(messaging, {
-      vapidKey:            VAPID_KEY,
+      vapidKey:                  VAPID_KEY,
       serviceWorkerRegistration: swReg
     });
 
@@ -63,18 +96,25 @@ export async function initPushNotifications(firebaseApp, userEmail, userOptedIn)
 
     console.log('[Push] Token FCM obtido:', token.substring(0, 20) + '...');
 
-    // Salva o token no Firestore (arrayUnion evita duplicatas)
+    // Salva o token no Firestore usando setDoc + merge:true
+    // Isso CRIA o documento se não existir, ou ATUALIZA se já existir.
+    // updateDoc lançaria erro se o documento não existisse.
     const db = getFirestore(firebaseApp);
     const emailKey = (userEmail || '').toLowerCase().trim();
 
     if (emailKey) {
-      const updateData = { fcmTokens: arrayUnion(token) };
-      // Só grava notificationOptIn se foi explicitamente true/false (modal Android)
-      // null = desktop/iOS, não sobrescreve a preferência do usuário
+      const updateData = {
+        // arrayUnion via setDoc+merge não é suportado diretamente;
+        // usamos getDoc + spread manual para garantir deduplicação
+        fcmTokens: await _mergeToken(db, emailKey, token)
+      };
+
+      // Só grava notificationOptIn se foi explicitamente true/false (modal)
       if (userOptedIn === true || userOptedIn === false) {
         updateData.notificationOptIn = userOptedIn;
       }
-      await updateDoc(doc(db, 'usuarios', emailKey), updateData);
+
+      await setDoc(doc(db, 'usuarios', emailKey), updateData, { merge: true });
       console.log('[Push] Token salvo no Firestore para:', emailKey);
     }
 
@@ -93,6 +133,23 @@ export async function initPushNotifications(firebaseApp, userEmail, userOptedIn)
 }
 
 /**
+ * Lê os tokens existentes do Firestore e retorna o array atualizado (sem duplicatas).
+ * Substitui arrayUnion, que não funciona com setDoc+merge de forma confiável
+ * quando o documento pode não existir ainda.
+ */
+async function _mergeToken(db, emailKey, novoToken) {
+  try {
+    const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const snap = await getDoc(doc(db, 'usuarios', emailKey));
+    const tokensExistentes = snap.exists() ? (snap.data().fcmTokens || []) : [];
+    if (tokensExistentes.includes(novoToken)) return tokensExistentes;
+    return [...tokensExistentes, novoToken];
+  } catch (_) {
+    return [novoToken];
+  }
+}
+
+/**
  * Exibe uma notificação visual discreta quando o app está em foreground.
  *
  * IMPORTANTE: O servidor envia apenas o campo "data" (sem "notification").
@@ -101,16 +158,13 @@ export async function initPushNotifications(firebaseApp, userEmail, userOptedIn)
  * fallback de segurança, alinhando o comportamento com o firebase-messaging-sw.js.
  */
 function _exibirNotificacaoForeground(payload) {
-  // Prioriza payload.data (enviado pelo notify-os.js)
   const d = payload.data ?? {};
-  // Fallback para payload.notification (caso o servidor mude a estratégia)
   const n = payload.notification ?? {};
 
   const notifTitle = d.title || n.title || 'VISA Anápolis';
   const notifBody  = d.body  || n.body  || 'Novas Ordens de Serviço disponíveis.';
   const notifUrl   = d.url   || n.url   || null;
 
-  // Toast visual na própria página (não intrusivo)
   _mostrarToast(notifTitle, notifBody, notifUrl);
 }
 
@@ -118,7 +172,6 @@ function _exibirNotificacaoForeground(payload) {
  * Cria um toast (banner) no canto da tela para notificações em foreground.
  */
 function _mostrarToast(titulo, mensagem, url) {
-  // Remove toast anterior se existir
   const anterior = document.getElementById('visa-push-toast');
   if (anterior) anterior.remove();
 
@@ -157,7 +210,7 @@ function _mostrarToast(titulo, mensagem, url) {
     toast.remove();
     if (url) window.location.href = url;
     else if (!window.location.pathname.endsWith('os.html')) {
-      window.location.href = '/VISA/index.html';
+      window.location.href = location.origin + location.pathname.replace(/\/[^/]*$/, '/') + 'index.html';
     }
   });
 
