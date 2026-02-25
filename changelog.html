@@ -111,6 +111,41 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.3.3 — 25/02/2026 (Horário de Brasília – UTC−3)</h3>
+  <strong>Correção Crítica: Notificações de Requerimento e Protocolo no notify-os.js</strong>
+
+  <ul>
+    <li><strong>Requerimento — campo de fiscal corrigido:</strong>
+      <ul>
+        <li>O script <code>notify-os.js</code> usava o campo <code>Fiscal_Sugere</code> (quase sempre vazio) para determinar o fiscal responsável. Corrigido para <code>Fiscal_Encaminha</code>, que é o campo correto usado pelo <code>os.html</code>.</li>
+        <li>Resultado: notificações de prazo para Requerimentos agora chegam ao fiscal correto.</li>
+      </ul>
+    </li>
+    <li><strong>Protocolo — lógica de tramitação implementada:</strong>
+      <ul>
+        <li>Antes: <code>notify-os.js</code> usava o campo <code>Usuario</code> (criador do protocolo) como fiscal e não calculava prazo (<code>campoPrazo: null</code>), fazendo com que <strong>nenhum Protocolo gerasse notificação</strong>.</li>
+        <li>Agora: replica a mesma lógica do <code>os.html</code> — carrega <code>tramitacao.csv</code>, ordena cronologicamente (DATA + HORA convertida de AM/PM para 24h), e busca o último <code>DESTINO</code> que seja um fiscal válido (da lista oficial de fiscais).</li>
+        <li>Prazo calculado como 15 dias úteis a partir da data da última tramitação válida.</li>
+        <li>Lista de fiscais oficiais adicionada ao <code>notify-os.js</code> (mesma do <code>os.html</code>) com normalização de acentos para comparação.</li>
+      </ul>
+    </li>
+    <li><strong>os.html — initPushNotifications condicionado à permissão:</strong>
+      <ul>
+        <li>Antes: chamava <code>initPushNotifications(app, user.email)</code> incondicionalmente, podendo exibir o diálogo do navegador ou registrar token para quem recusou.</li>
+        <li>Agora: só executa se <code>Notification.permission === 'granted'</code>, evitando diálogos indesejados e registros desnecessários.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <p><strong>Arquivos modificados:</strong></p>
+  <ul>
+    <li><code>.github/scripts/notify-os.js</code> — Correção de fiscal para Requerimento, implementação de tramitação para Protocolo.</li>
+    <li><code>os.html</code> — Guard de permissão no initPushNotifications.</li>
+    <li><code>index.html</code> — Versão bumped para 2.3.3.</li>
+  </ul>
+</div>
+
+<div class="section">
   <h3>v2.3.2 — 25/02/2026 (Horário de Brasília – UTC−3)</h3>
   <strong>Correção Crítica: Tokens FCM não eram gravados no Firestore</strong>
 
