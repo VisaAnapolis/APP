@@ -111,6 +111,55 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.3.2 — 25/02/2026 (Horário de Brasília – UTC−3)</h3>
+  <strong>Correção Crítica: Tokens FCM não eram gravados no Firestore</strong>
+
+  <ul>
+    <li><strong>Bug principal corrigido — token FCM nunca chegava ao Firestore:</strong>
+      <ul>
+        <li>O código usava <code>updateDoc()</code>, que lança erro silencioso se o documento do usuário não existir. Substituído por <code>setDoc(..., { merge: true })</code>, que cria o documento automaticamente caso necessário.</li>
+        <li>Implementada função <code>_mergeToken()</code> para deduplicação segura do array <code>fcmTokens</code>, evitando tokens duplicados sem depender de <code>arrayUnion</code> (incompatível com <code>setDoc+merge</code>).</li>
+      </ul>
+    </li>
+    <li><strong>Path do Service Worker FCM agora é dinâmico:</strong>
+      <ul>
+        <li>Antes: path fixo <code>/VISA/firebase-messaging-sw.js</code> — falhava em qualquer outro domínio ou teste local.</li>
+        <li>Agora: resolvido automaticamente a partir de <code>location.pathname</code>, compatível com GitHub Pages, localhost e qualquer subpath.</li>
+      </ul>
+    </li>
+    <li><strong>Corrida de condição entre reload de versão e registro FCM eliminada:</strong>
+      <ul>
+        <li>Adicionada flag <code>window.__visaVersionReloading</code>: quando uma atualização de versão está em andamento e o app vai recarregar, o fluxo de autenticação/FCM é interrompido imediatamente, evitando tentativa de registrar SW recém-desregistrado.</li>
+        <li>Adicionada espera pelo estado <code>activated</code> do SW antes de solicitar o token FCM.</li>
+      </ul>
+    </li>
+    <li><strong>Lógica de opt-in corrigida — usuários que recusaram não ficam mais presos:</strong>
+      <ul>
+        <li>Novo fluxo de três estados: <strong>nunca decidiu</strong> → exibe modal; <strong>aceitou</strong> → renova token silenciosamente; <strong>recusou</strong> → exibe banner discreto de reativação por 10 segundos, sem forçar modal.</li>
+        <li>Antes, qualquer <code>notificationOptIn !== true</code> (incluindo <code>false</code>) exibia o modal novamente — usuários que recusaram eram incomodados a cada acesso.</li>
+      </ul>
+    </li>
+    <li><strong>Texto do modal de opt-in corrigido:</strong>
+      <ul>
+        <li>Removida menção exclusiva a "Android". O modal agora é genérico e funciona para celular, tablet e computador.</li>
+      </ul>
+    </li>
+    <li><strong>Segurança — <code>.gitignore</code> atualizado:</strong>
+      <ul>
+        <li>Adicionado padrão <code>*firebase-adminsdk*.json</code> para proteger chaves de service account do Firebase independente do nome do arquivo.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <p><strong>Arquivos modificados:</strong></p>
+  <ul>
+    <li><code>js/push-notifications.js</code> — Correções de token FCM, path dinâmico do SW e deduplicação.</li>
+    <li><code>index.html</code> — Lógica de opt-in, flag de reload, texto do modal e versão bumped.</li>
+    <li><code>.gitignore</code> — Proteção de chaves Firebase Admin SDK.</li>
+  </ul>
+</div>
+
+<div class="section">
   <h3>v2.3.0 — 24/02/2026 21:00 (Horário de Brasília – UTC−3)</h3>
   <strong>Modal de Dispositivos, isIOS e Correções de Opt-in</strong>
 
