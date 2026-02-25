@@ -678,7 +678,7 @@ Supervisão de Vigilância Sanitária</p>
     const provider = new GoogleAuthProvider();
 
     // ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
-    const APP_VERSION = '2.3.0';
+    const APP_VERSION = '2.3.1';
     const VERSION_KEY = 'visa_app_version';
     const savedVersion = localStorage.getItem(VERSION_KEY);
 
@@ -1793,8 +1793,7 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
       setUserInfoPerfil(perfil, user);
       applyLinkPermissions(perfil.grupo);
 
-      // ── Notificações Push FCM (Lógica Definitiva) ──────────────────────────────
-      const isAndroid = /Android/i.test(navigator.userAgent);
+      // ── Notificações Push FCM (Lógica Definitiva v2.3.1) ───────────────────────
       const { getFirestore: gFS, doc: gDoc, getDoc: gGet, updateDoc: gUpd } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
       const db2 = gFS(app);
       const emailKey = (user.email || "").toLowerCase().trim();
@@ -1802,58 +1801,35 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
       const userDocSnap = await gGet(userDocRef);
       const userData = userDocSnap.exists() ? userDocSnap.data() : {};
 
-      if (isAndroid) {
-        if (userData.notificationOptIn === undefined) {
-          // Usuário nunca respondeu, exibir modal
-          document.getElementById("notificationOptInModal").style.display = "flex";
+      if (userData.notificationOptIn !== true) {
+        // Usuário ainda não aceitou explicitamente — exibir modal obrigatório para TODOS
+        document.getElementById("notificationOptInModal").style.display = "flex";
 
-          document.getElementById("optInYes").onclick = async () => {
-            document.getElementById("notificationOptInModal").style.display = "none";
-            try {
-              await gUpd(userDocRef, { notificationOptIn: true });
-              const { initPushNotifications } = await import("./js/push-notifications.js");
-              await initPushNotifications(app, user.email, true);
-              console.log("[Push] Notificações ativadas pelo usuário.");
-            } catch (e) { console.warn("[Push] Erro ao ativar:", e.message); }
-          };
-
-          document.getElementById("optInNo").onclick = async () => {
-            document.getElementById("notificationOptInModal").style.display = "none";
-            console.log("[Push] Usuário recusou notificações.");
-            try {
-              await gUpd(userDocRef, { notificationOptIn: false });
-            } catch (e) { console.warn("[Push] Erro ao salvar recusa:", e.message); }
-          };
-
-        } else if (userData.notificationOptIn === true) {
-          // Usuário já aceitou, renovar token silenciosamente
+        document.getElementById("optInYes").onclick = async () => {
+          document.getElementById("notificationOptInModal").style.display = "none";
           try {
+            await gUpd(userDocRef, { notificationOptIn: true });
             const { initPushNotifications } = await import("./js/push-notifications.js");
             await initPushNotifications(app, user.email, true);
-          } catch (e) { console.warn("[Push] Erro ao renovar token:", e.message); }
+            console.log("[Push] Notificações ativadas pelo usuário.");
+          } catch (e) { console.warn("[Push] Erro ao ativar:", e.message); }
+        };
 
-        } else {
-          // Usuário já recusou (notificationOptIn === false)
-          console.log("[Push] Usuário optou por não receber notificações.");
-        }
-      } else if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-        // iOS — só tenta token se for PWA instalado
-        const isIOSPWA = window.navigator.standalone === true;
-        if (isIOSPWA) {
+        document.getElementById("optInNo").onclick = async () => {
+          document.getElementById("notificationOptInModal").style.display = "none";
+          console.log("[Push] Usuário recusou notificações.");
           try {
-            const { initPushNotifications } = await import("./js/push-notifications.js");
-            await initPushNotifications(app, user.email, null);
-            console.log('[Push] iOS PWA — token solicitado.');
-          } catch (e) { console.warn('[Push] iOS PWA — erro:', e.message); }
-        } else {
-          console.log('[Push] iOS via Safari — token não solicitado (não é PWA).');
-        }
+            await gUpd(userDocRef, { notificationOptIn: false });
+          } catch (e) { console.warn("[Push] Erro ao salvar recusa:", e.message); }
+        };
+
       } else {
-        // Desktop (Windows, macOS, Linux)
+        // Usuário já aceitou — renovar token silenciosamente
         try {
           const { initPushNotifications } = await import("./js/push-notifications.js");
-          await initPushNotifications(app, user.email, null);
-        } catch (e) { console.warn("[Push] Erro ao inicializar (desktop):", e.message); }
+          await initPushNotifications(app, user.email, true);
+          console.log("[Push] Token renovado silenciosamente.");
+        } catch (e) { console.warn("[Push] Erro ao renovar token:", e.message); }
       }
       // ──────────────────────────────────────────────────────
 
