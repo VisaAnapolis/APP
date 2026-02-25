@@ -2343,10 +2343,11 @@ function obterDataPrazo(os) {
   protectPage({
     firebaseConfig,
     onAuthorized: ({ user, app }) => {
-      // Inicializa notificações push após autenticação bem-sucedida
-      initPushNotifications(app, user.email).catch(err => {
-        console.warn('[Push] Não foi possível inicializar notificações:', err.message);
-      });
+      if (window.Notification && Notification.permission === 'granted') {
+        initPushNotifications(app, user.email).catch(err => {
+          console.warn('[Push] Não foi possível inicializar notificações:', err.message);
+        });
+      }
     }
   });
 </script>

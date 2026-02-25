@@ -115,6 +115,18 @@
   <strong>Correção Crítica: Tokens FCM não eram gravados no Firestore</strong>
 
   <ul>
+    <li><strong>Correção one-shot para dados já inconsistentes (opt-in true sem token):</strong>
+      <ul>
+        <li>Vários usuários ficaram com <code>notificationOptIn: true</code> e sem <code>fcmTokens</code> porque o opt-in era gravado <em>antes</em> de obter o token; se <code>getToken()</code> falhasse (Safari, Firefox, etc.), só o opt-in era salvo.</li>
+        <li><strong>O que fazer:</strong> rodar uma vez o script <code>scripts/fix-optin-without-token.js</code>. Ele seta <code>notificationOptIn: false</code> <strong>apenas</strong> em usuários que estão com opt-in true e sem nenhum token (quem já tem token não é alterado). Assim, no próximo login o modal de notificações volta a aparecer para esses usuários; ao clicar "Sim", a lógica nova grava token e opt-in juntos.</li>
+        <li>Uso: <code>node scripts/fix-optin-without-token.js</code> para listar (dry-run); <code>node scripts/fix-optin-without-token.js --apply</code> para aplicar.</li>
+      </ul>
+    </li>
+    <li><strong>Ordem do opt-in corrigida (evita novo opt-in sem token):</strong>
+      <ul>
+        <li>No modal "Sim, ativar" e no botão "Reativar", o código <em>não</em> grava mais <code>notificationOptIn: true</code> antes de chamar <code>initPushNotifications</code>. Agora só se chama <code>initPushNotifications</code>; ela grava <code>fcmTokens</code> e <code>notificationOptIn</code> numa única escrita, e só após obter o token. Se <code>getToken()</code> falhar, nada é gravado e o usuário vê um toast explicando que não foi possível ativar naquele navegador.</li>
+      </ul>
+    </li>
     <li><strong>Bug principal corrigido — token FCM nunca chegava ao Firestore:</strong>
       <ul>
         <li>O código usava <code>updateDoc()</code>, que lança erro silencioso se o documento do usuário não existir. Substituído por <code>setDoc(..., { merge: true })</code>, que cria o documento automaticamente caso necessário.</li>

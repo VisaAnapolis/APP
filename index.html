@@ -717,9 +717,9 @@ Supervisão de Vigilância Sanitária</p>
             if ('caches' in window) {
               caches.keys().then(cacheNames => {
                 return Promise.all(cacheNames.map(name => caches.delete(name)));
-              }).then(() => location.reload(true));
+              }).then(() => location.reload());
             } else {
-              location.reload(true);
+              location.reload();
             }
           });
         });
@@ -744,21 +744,24 @@ Supervisão de Vigilância Sanitária</p>
     // Único ponto de verdade: apenas o APP_VERSION no index.html precisa ser alterado.
     async function checkVersionUpdate() {
       try {
-        const resp = await fetch('/VISA/index.html?t=' + Date.now());
+        const base = location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1);
+        const resp = await fetch(base + 'index.html?t=' + Date.now(), { cache: 'no-store' });
         if (!resp.ok) return;
         const html = await resp.text();
         const match = html.match(/APP_VERSION\s*=\s*'([\d.]+)'/);
         if (match && match[1] !== APP_VERSION) {
           console.log(`🔄 [VersionCheck] Nova versão detectada: ${match[1]}. Forçando atualização...`);
-          localStorage.setItem(VERSION_KEY, match[1]); // força o ciclo de limpeza
-          location.reload(true);
+          // NÃO gravar a versão nova no localStorage antes do reload.
+          // Assim, ao recarregar, savedVersion (antiga) ≠ APP_VERSION (nova)
+          // → bloco de limpeza (desregistro de SWs + caches.delete) executa corretamente.
+          location.reload();
         }
       } catch (e) {
         console.warn('[VersionCheck] Falha ao verificar versão:', e);
       }
     }
     setInterval(checkVersionUpdate, 900000); // verifica a cada 15 min
-    setTimeout(checkVersionUpdate, 300000);   // verifica 5 min após abrir
+    setTimeout(checkVersionUpdate, 60000);    // primeira verificação: 1 min após abrir
 
     // ===== ESCUTAR MENSAGENS DO SERVICE WORKER =====
     if ('serviceWorker' in navigator) {
@@ -1840,11 +1843,20 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
             document.getElementById("optInYes").onclick = async () => {
               if (modal) modal.style.display = "none";
               try {
-                await gSet(userDocRef, { notificationOptIn: true }, { merge: true });
+                // Não gravar notificationOptIn antes: só gravar quando o token for obtido e salvo
+                // (initPushNotifications grava fcmTokens + notificationOptIn numa única escrita).
+                // Assim evitamos usuários com optIn true mas sem token (getToken falha em Safari/Firefox etc).
                 const { initPushNotifications } = await import("./js/push-notifications.js");
-                await initPushNotifications(app, user.email, true);
-                console.log("[Push] Notificações ativadas pelo usuário.");
-              } catch (e) { console.warn("[Push] Erro ao ativar:", e.message); }
+                const token = await initPushNotifications(app, user.email, true);
+                if (token) {
+                  console.log("[Push] Notificações ativadas pelo usuário.");
+                } else {
+                  _toastPushFalha();
+                }
+              } catch (e) {
+                console.warn("[Push] Erro ao ativar:", e.message);
+                _toastPushFalha();
+              }
             };
 
             document.getElementById("optInNo").onclick = async () => {
@@ -1859,6 +1871,15 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
           console.warn("[Push] Erro ao inicializar fluxo de notificações:", e.message);
         }
       })();
+
+      function _toastPushFalha() {
+        const msg = "Não foi possível ativar notificações neste navegador. Tente o Chrome no Android ou instale o app como PWA.";
+        const el = document.createElement("div");
+        el.style.cssText = "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#8b0000;color:#fff;padding:12px 20px;border-radius:12px;z-index:9999;max-width:90%;font-size:0.9rem;box-shadow:0 4px 20px rgba(0,0,0,0.3);";
+        el.textContent = msg;
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 6000);
+      }
 
       // Banner discreto para usuários que recusaram anteriormente
       function _exibirBannerReativacao(db2, userDocRef, firebaseApp, email) {
@@ -1889,12 +1910,18 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
         document.getElementById('btnReativarNotif').onclick = async () => {
           banner.remove();
           try {
-            const { setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-            await setDoc(userDocRef, { notificationOptIn: true }, { merge: true });
+            // Grava optIn só quando o token for obtido (initPushNotifications grava os dois juntos)
             const { initPushNotifications } = await import("./js/push-notifications.js");
-            await initPushNotifications(firebaseApp, email, true);
-            console.log("[Push] Notificações reativadas pelo usuário.");
-          } catch (e) { console.warn("[Push] Erro ao reativar:", e.message); }
+            const token = await initPushNotifications(firebaseApp, email, true);
+            if (token) {
+              console.log("[Push] Notificações reativadas pelo usuário.");
+            } else {
+              _toastPushFalha();
+            }
+          } catch (e) {
+            console.warn("[Push] Erro ao reativar:", e.message);
+            _toastPushFalha();
+          }
         };
       }
       // ──────────────────────────────────────────────────────

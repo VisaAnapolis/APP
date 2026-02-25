@@ -3,7 +3,7 @@
 // Detecta OSs com prazo vencendo e envia notificações push via FCM
 //
 // Lógica:
-//   1. Lê os 4 CSVs de OS (requerimento, oficio, denuncia, protocolo)
+//   1. Lê os 5 CSVs de OS (requerimento, oficio, denuncia, protocolo, tramitacao)
 //   2. Compara com o snapshot anterior (data/os_snapshot.json)
 //   3. Calcula dias para o prazo de cada OS
 //   4. Identifica OSs nos gatilhos de prazo:
@@ -40,12 +40,70 @@ const messaging = admin.messaging();
 const ROOT          = path.join(__dirname, '..', '..');   // raiz do repo
 const SNAPSHOT_FILE = path.join(ROOT, 'data', 'os_snapshot.json');
 
-// Mapeamento: tipo → arquivo CSV → campo número
+// Lista oficial de fiscais (mesma do os.html) — usada para validar DESTINO da tramitação
+const FISCAIS_OFICIAIS = [
+  "ACADIA DE SOUZA VIEIRA SILVA",
+  "ADRIANA CRHISTINA DE REZENDE CARNEIRO",
+  "ADRIANE PEREIRA GUIMARÃES",
+  "ALINE CASTRO DAMASIO",
+  "ANA PAULA RODRIGUES CORRÊA GUIMARÃES",
+  "ANGELA RIBEIRO NEVES",
+  "ARIANNE FERREIRA VIEIRA",
+  "CÉSIO MALAQUIAS",
+  "CLÁUDIO NASCIMENTO SILVA",
+  "CLÓVIS RAFAEL BORGES FERREIRA",
+  "DANIEL SOARES BARBOSA",
+  "DANIELA DE ALMEIDA CASTRO",
+  "EDSON ARANTES FARIA FILHO",
+  "EDUARDO LUCAS MAGALHÃES CASTRO",
+  "FABÍOLA PEDROSA PEIXOTO MARQUES",
+  "GERALDO EDSON ROSA",
+  "GLEICIANE MARIA JOSÉ DA SILVA",
+  "GÚBIO DIAS PEREIRA",
+  "JOÃO BATISTA LUCAS DA SILVA REIS",
+  "JOSE LUIZ RIBEIRO",
+  "JULIANA FERREIRA VITURINO",
+  "JULIANA KÊNIA MARTINS DA SILVA",
+  "JULIO CÉSAR TELES SPINDOLA",
+  "KAMILLA CHRYSTINE ROLIM D. SANTOS GARCÊS",
+  "LIDIANE SIMÕES",
+  "LIVIA BRITO",
+  "LUCIANA CONSOLAÇÃO DOS SANTOS",
+  "LUCIANA SANTANA DA ROCHA",
+  "LUCIENE DE SOUZA BARBOSA GOMES SILVA",
+  "MARCIO HENRIQUE GOMES RODOVALHO",
+  "MARIA EDWIGES PINHEIRO DE SOUZA CHAVES",
+  "MARINA PERILLO NAVARRETE LAVERS",
+  "PATRÍCIA CORDEIRO DE MORAES E SOUZA",
+  "PEDRO HENRIQUE AIRES RIBEIRO",
+  "RODRIGO ALESSANDRO TÔGO SANTOS",
+  "RÚBIA MARA DE FREITAS",
+  "SILVIA MARQUES NAVES DA MOTA SOUZA",
+  "SIMONE DUARTE GROSSI",
+  "TATHIANE PESSOA DE SOUZA",
+  "THIAGO GOMES GOBO",
+  "VANESSA SANTANA",
+  "VIVIANE MANOEL DA SILVA BORGES",
+  "VIVIANE MIYADA",
+  "WANESSA DE BRITO JORGE"
+];
+
+const FISCAIS_NORM = new Set(
+  FISCAIS_OFICIAIS.map(f => f.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim())
+);
+
+function fiscalValido(nome) {
+  if (!nome || nome.trim() === '') return false;
+  const norm = nome.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+  return FISCAIS_NORM.has(norm);
+}
+
+// Mapeamento: tipo → arquivo CSV → campos
+// Protocolo não entra aqui — tem lógica especial via tramitacao.csv
 const CSV_CONFIGS = [
-  { tipo: 'Requerimento', arquivo: 'data/requerimento.csv', campoNumero: 'OS',       campoFiscal: 'Fiscal_Sugere', campoMotivo: 'Motivo', campoPrazo: 'Prazo', campoAtendida: 'Atendimento', campoCancelada: 'Cancelado' },
-  { tipo: 'Ofício',       arquivo: 'data/oficio.csv',       campoNumero: 'Oficio',   campoFiscal: 'Fiscalencaminha', campoMotivo: 'Motivo', campoPrazo: 'Prazo', campoAtendida: 'Archive', campoCancelada: 'Cancela' },
-  { tipo: 'Denúncia',     arquivo: 'data/denuncia.csv',     campoNumero: 'Denuncia', campoFiscal: 'FiscalEncaminha', campoMotivo: 'Objeto1', campoPrazo: 'Prazo', campoAtendida: 'Archive', campoCancelada: null },
-  { tipo: 'Protocolo',    arquivo: 'data/protocolo.csv',    campoNumero: 'Protocolo', campoFiscal: 'Usuario',        campoMotivo: 'Assunto', campoPrazo: null, campoAtendida: null, campoCancelada: null }
+  { tipo: 'Requerimento', arquivo: 'data/requerimento.csv', campoNumero: 'OS',       campoFiscal: 'Fiscal_Encaminha', campoMotivo: 'Motivo', campoPrazo: 'Prazo', campoAtendida: 'Atendimento', campoCancelada: 'Cancelado' },
+  { tipo: 'Ofício',       arquivo: 'data/oficio.csv',       campoNumero: 'Oficio',   campoFiscal: 'Fiscalencaminha',  campoMotivo: 'Motivo', campoPrazo: 'Prazo', campoAtendida: 'Archive',     campoCancelada: 'Cancela' },
+  { tipo: 'Denúncia',     arquivo: 'data/denuncia.csv',     campoNumero: 'Denuncia', campoFiscal: 'FiscalEncaminha',  campoMotivo: 'Objeto1', campoPrazo: 'Prazo', campoAtendida: 'Archive',    campoCancelada: null },
 ];
 
 // ── Parser CSV simples (sem dependências externas) ───────────
@@ -97,6 +155,55 @@ function converterData(dataStr) {
   return new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
 }
 
+// ── Converte data para string YYYY-MM-DD (para comparação) ────
+function dataParaISO(dataStr) {
+  const d = converterData(dataStr);
+  if (!d) return '';
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+// ── Converte hora AM/PM para 24h (mesma lógica do os.html) ────
+function converterHora12para24(horaStr) {
+  if (!horaStr || horaStr.trim() === '') return '00:00:00';
+  let s = horaStr.trim().toUpperCase();
+  if (s.includes('.') && !s.includes(':')) s = s.replace(/\./g, ':');
+  const mPeriodo = s.match(/\b(AM|PM)\b/);
+  const periodo = mPeriodo ? mPeriodo[1] : null;
+  s = s.replace(/\b(AM|PM)\b/g, '').trim().replace(/\s+/g, '');
+  const partes = s.split(':').map(p => p.trim()).filter(Boolean);
+  if (partes.length < 2) return '00:00:00';
+  let h = parseInt(partes[0], 10);
+  let m = parseInt(partes[1], 10);
+  let sec = partes.length >= 3 ? parseInt(partes[2], 10) : 0;
+  if ([h, m, sec].some(n => Number.isNaN(n))) return '00:00:00';
+  if (periodo) {
+    if (periodo === 'PM' && h !== 12) h += 12;
+    if (periodo === 'AM' && h === 12) h = 0;
+  }
+  h = Math.min(Math.max(h, 0), 23);
+  m = Math.min(Math.max(m, 0), 59);
+  sec = Math.min(Math.max(sec, 0), 59);
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+}
+
+// ── Adiciona N dias úteis a uma data ISO (YYYY-MM-DD) ─────────
+function adicionarDiasUteis(dataISO, diasUteis) {
+  if (!dataISO) return null;
+  const data = new Date(dataISO + 'T00:00:00');
+  let adicionados = 0;
+  while (adicionados < diasUteis) {
+    data.setDate(data.getDate() + 1);
+    if (data.getDay() !== 0 && data.getDay() !== 6) adicionados++;
+  }
+  const y = data.getFullYear();
+  const m = String(data.getMonth() + 1).padStart(2, '0');
+  const d = String(data.getDate()).padStart(2, '0');
+  return `${d}.${m}.${y}`;
+}
+
 // ── Calcula dias até a data (negativo = vencido) ──────────────
 function calcularDiasAte(dataStr) {
   const data = converterData(dataStr);
@@ -108,10 +215,52 @@ function calcularDiasAte(dataStr) {
   return Math.floor(diff / (1000 * 60 * 60 * 24));
 }
 
+// ── Carrega e indexa tramitações por número de protocolo ──────
+function carregarTramitacoes() {
+  const arq = path.join(ROOT, 'data', 'tramitacao.csv');
+  if (!fs.existsSync(arq)) {
+    console.warn('⚠️  tramitacao.csv não encontrado');
+    return {};
+  }
+  const registros = parseCSV(fs.readFileSync(arq, 'utf8'));
+  const mapa = {};
+  for (const r of registros) {
+    const proto = (r['PROTOCOLO'] || '').trim();
+    if (!proto) continue;
+    if (!mapa[proto]) mapa[proto] = [];
+    mapa[proto].push(r);
+  }
+  return mapa;
+}
+
+// ── Busca o último fiscal válido na tramitação de um protocolo ─
+function buscarFiscalTramitacao(tramitacoes) {
+  if (!tramitacoes || tramitacoes.length === 0) return { fiscal: null, dataEncaminha: null };
+
+  const comChave = tramitacoes.map(t => {
+    const dataISO = dataParaISO(t['DATA'] || '');
+    const hora24 = converterHora12para24(t['HORA'] || '');
+    return { ...t, _chave: dataISO + 'T' + hora24 };
+  });
+  comChave.sort((a, b) => (a._chave > b._chave ? 1 : a._chave < b._chave ? -1 : 0));
+
+  for (let i = comChave.length - 1; i >= 0; i--) {
+    const destino = (comChave[i]['DESTINO'] || '').trim();
+    if (fiscalValido(destino)) {
+      return {
+        fiscal: destino,
+        dataEncaminha: dataParaISO(comChave[i]['DATA'] || '')
+      };
+    }
+  }
+  return { fiscal: null, dataEncaminha: null };
+}
+
 // ── Lê todos os números de OS dos CSVs com prazo ──────────────
 function lerTodasOSs() {
-  const todas = {};   // { "20260589": { tipo, fiscal, motivo, prazo, atendida, cancelada } }
+  const todas = {};
 
+  // ── Requerimento, Ofício, Denúncia ─────────────────────────
   for (const cfg of CSV_CONFIGS) {
     const caminhoArquivo = path.join(ROOT, cfg.arquivo);
     if (!fs.existsSync(caminhoArquivo)) {
@@ -128,8 +277,6 @@ function lerTodasOSs() {
 
       const atendida = cfg.campoAtendida ? (r[cfg.campoAtendida] || '').toLowerCase() === 'sim' : false;
       const cancelada = cfg.campoCancelada ? (r[cfg.campoCancelada] || '').toLowerCase() === 'sim' : false;
-
-      // Só registra OSs pendentes (não atendidas e não canceladas)
       if (atendida || cancelada) continue;
 
       todas[numero] = {
@@ -141,6 +288,34 @@ function lerTodasOSs() {
         cancelada
       };
     }
+  }
+
+  // ── Protocolo (fiscal vem da tramitação, prazo = 15 dias úteis) ─
+  const protocoloArq = path.join(ROOT, 'data', 'protocolo.csv');
+  if (fs.existsSync(protocoloArq)) {
+    const registrosProto = parseCSV(fs.readFileSync(protocoloArq, 'utf8'));
+    const tramitacoes = carregarTramitacoes();
+
+    for (const r of registrosProto) {
+      const numero = (r['Protocolo'] || '').trim();
+      if (!numero) continue;
+
+      const { fiscal, dataEncaminha } = buscarFiscalTramitacao(tramitacoes[numero]);
+      if (!fiscal || !dataEncaminha) continue;
+
+      const prazo = adicionarDiasUteis(dataEncaminha, 15);
+
+      todas[numero] = {
+        tipo:      'Protocolo',
+        fiscal:    fiscal,
+        motivo:    (r['Assunto'] || '').trim(),
+        prazo:     prazo,
+        atendida:  false,
+        cancelada: false
+      };
+    }
+  } else {
+    console.warn('⚠️  Arquivo não encontrado: data/protocolo.csv');
   }
 
   return todas;
