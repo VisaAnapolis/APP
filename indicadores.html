@@ -11,10 +11,8 @@
   <link rel="stylesheet" href="./css/design-tokens.css" />
   <link rel="stylesheet" href="./css/header-component.css" />
 
-  <!-- Biblioteca SHA-256 -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-  <!-- PapaParse -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; }
@@ -26,16 +24,15 @@
       line-height: 1.6;
     }
 
-    /* ── CONTEÚDO principal oculto até auth ── */
     .main-content { display: none; }
 
     /* ── USER INFO BAR ── */
     .user-info-bar {
-      background: rgba(52, 199, 89, 0.08);
+      background: rgba(52,199,89,0.08);
       padding: 8px 20px;
       font-size: 0.75rem;
       color: #34C759;
-      border-bottom: 1px solid rgba(52, 199, 89, 0.15);
+      border-bottom: 1px solid rgba(52,199,89,0.15);
       text-align: left;
       line-height: 1.4;
     }
@@ -68,12 +65,21 @@
 
     /* ── CONTAINER ── */
     .container {
-      max-width: 1100px;
+      max-width: 900px;
       margin: 22px auto 30px;
       padding: 0 16px;
     }
 
-    /* ── INDICADORES ── */
+    /* ── CARD ── */
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow2);
+    }
+
+    /* ── INDICADORES (idêntico ao index.html) ── */
     .indicadores-section {
       margin-top: 8px;
       padding-top: 20px;
@@ -89,76 +95,10 @@
       text-align: center;
       padding: 20px;
       color: var(--muted);
-    }
-    .ind-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 14px;
-      margin-bottom: 20px;
-    }
-    .ind-card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 16px 14px 12px;
-      box-shadow: var(--shadow2);
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      transition: transform .15s, box-shadow .15s;
-    }
-    .ind-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
-    .ind-card__label {
-      font-size: .78rem;
-      color: var(--muted);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .04em;
-    }
-    .ind-card__value {
-      font-size: 1.9rem;
-      font-weight: 800;
-      color: var(--brand1);
-      line-height: 1.1;
-    }
-    .ind-card__sub {
-      font-size: .78rem;
-      color: var(--muted);
-    }
-    .ind-card.verde  .ind-card__value { color: #34C759; }
-    .ind-card.amarelo .ind-card__value { color: #d1a000; }
-    .ind-card.vermelho .ind-card__value { color: #e53935; }
-
-    /* Gráfico de barras simples */
-    .bar-section { margin-top: 24px; }
-    .bar-section h4 {
-      font-size: .92rem;
-      color: var(--brand1);
-      margin-bottom: 12px;
-      font-weight: 700;
-    }
-    .bar-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-      font-size: .83rem;
-    }
-    .bar-label { width: 160px; flex-shrink: 0; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .bar-track { flex: 1; background: var(--line); border-radius: 6px; height: 16px; overflow: hidden; }
-    .bar-fill  { height: 100%; background: linear-gradient(90deg, var(--brand1), var(--brand2)); border-radius: 6px; transition: width .4s ease; }
-    .bar-num   { width: 36px; text-align: right; font-weight: 700; color: var(--brand1); }
-
-    /* Período badge */
-    .periodo-badge {
-      display: inline-block;
-      background: rgba(44,90,160,.1);
-      color: var(--brand1);
-      border-radius: 20px;
-      padding: 3px 14px;
-      font-size: .82rem;
-      font-weight: 700;
-      margin-bottom: 14px;
+      font-size: 0.9rem;
+      background: transparent;
+      border-radius: 8px;
+      border: 1px solid transparent;
     }
 
     /* Acesso negado */
@@ -169,7 +109,6 @@
     }
     .acesso-negado span { font-size: 3rem; display: block; margin-bottom: 12px; }
 
-    /* Header sticky */
     header {
       position: sticky;
       top: 0;
@@ -179,40 +118,41 @@
 </head>
 <body>
 
-  <!-- ══════════════ CONTEÚDO PRINCIPAL ══════════════ -->
   <div class="main-content" id="mainContent">
 
     <header class="app-header">
       <a href="index.html" class="btn-done-ios">OK</a>
       <h1 class="app-header__title">Vigilância Sanitária</h1>
-      <h2 class="app-header__subtitle">Indicadores de Inspeção</h2>
+      <h2 class="app-header__subtitle">Indicadores do Mês</h2>
     </header>
 
     <div id="userInfo" class="user-info-bar"></div>
 
     <div class="container">
-      <!-- Acesso restrito a Admin -->
+
+      <!-- Acesso restrito -->
       <div id="acessoNegado" class="acesso-negado" style="display:none;">
         <span>🔒</span>
         <strong>Acesso restrito.</strong><br>
         Esta página está disponível apenas para Administradores.
       </div>
 
-      <!-- Seção de indicadores -->
-      <div class="indicadores-section" id="indicadoresSection">
-        <h3>📊 Indicadores de Inspeção</h3>
-        <div id="indicadores-content">
-          <div class="indicadores-loading">⏳ Carregando dados...</div>
+      <!-- Seção de indicadores dentro de card -->
+      <div class="card" id="cardIndicadores" style="display:none;">
+        <div class="indicadores-section">
+          <h3>📊 Indicadores do Mês</h3>
+          <div id="indicadores-content">
+            <div class="indicadores-loading">📊 Carregando...</div>
+          </div>
         </div>
       </div>
-    </div>
 
+    </div>
   </div><!-- /main-content -->
 
-  <!-- ══════════════ JAVASCRIPT ══════════════ -->
+  <!-- ══════════════ JAVASCRIPT (lógica 100% idêntica ao index.html) ══════════════ -->
   <script>
-    // ===== Indicadores: leitura e processamento =====
-    function carregarIndicadores() {
+    window.carregarIndicadores = function carregarIndicadores() {
       const container = document.getElementById('indicadores-content');
       if (!container) return;
 
@@ -225,52 +165,56 @@
           processarDados(results.data, container);
         },
         error: function() {
-          container.innerHTML = '<div class="indicadores-loading">⚠️ Erro ao carregar data/inspecoes.csv</div>';
+          container.innerHTML = '<div class="indicadores-loading">⚠️ Erro: data/inspecoes.csv</div>';
         }
       });
-    }
+    };
 
     function processarDados(data, container) {
       const rows = data || [];
       const mesesPt = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
                        'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-      const pad2 = n => String(n).padStart(2, '0');
+      const pad2 = (n) => String(n).padStart(2, '0');
 
       function parseDMY(str) {
         if (!str) return null;
         const m = String(str).trim().match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{2,4})/);
         if (!m) return null;
-        let [, d, mo, y] = m.map(Number);
-        if (y < 100) y += 2000;
-        if (!(d >= 1 && d <= 31 && mo >= 1 && mo <= 12)) return null;
-        return { day: d, month: mo, year: y };
+        const day = parseInt(m[1], 10);
+        const month = parseInt(m[2], 10);
+        let year = parseInt(m[3], 10);
+        if (year < 100) year += 2000;
+        if (!(day >= 1 && day <= 31 && month >= 1 && month <= 12)) return null;
+        return { day, month, year };
       }
-      function labelMesAno(mo, y) { return `${mesesPt[mo - 1]} ${y}`; }
-      function prevMesAno(mo, y)  { return mo === 1 ? { month: 12, year: y - 1 } : { month: mo - 1, year: y }; }
-      function keyMesAno(mo, y)   { return `${pad2(mo)}.${y}`; }
+      function labelMesAno(month, year) { return `${mesesPt[month - 1]} ${year}`; }
+      function prevMesAno(month, year)  { return month === 1 ? { month: 12, year: year - 1 } : { month: month - 1, year }; }
+      function keyMesAno(month, year)   { return `${pad2(month)}.${year}`; }
 
-      const hoje      = new Date();
-      const hojeDia   = hoje.getDate();
-      const mesAtual  = hoje.getMonth() + 1;
-      const anoAtual  = hoje.getFullYear();
-      const atualKey  = keyMesAno(mesAtual, anoAtual);
-      const anterior  = prevMesAno(mesAtual, anoAtual);
+      const hoje     = new Date();
+      const hojeDia  = hoje.getDate();
+      const mesAtual = hoje.getMonth() + 1;
+      const anoAtual = hoje.getFullYear();
+
+      const atualKey    = keyMesAno(mesAtual, anoAtual);
+      const anterior    = prevMesAno(mesAtual, anoAtual);
       const anteriorKey = keyMesAno(anterior.month, anterior.year);
 
-      const rowsMesAtual   = rows.filter(r => r.DT_VISITA && String(r.DT_VISITA).includes(atualKey));
-      const rowsMesAnterior = rows.filter(r => r.DT_VISITA && String(r.DT_VISITA).includes(anteriorKey));
+      const rowsMesAtual    = rows.filter(row => row.DT_VISITA && String(row.DT_VISITA).includes(atualKey));
+      const rowsMesAnterior = rows.filter(row => row.DT_VISITA && String(row.DT_VISITA).includes(anteriorKey));
 
-      const existeDia15 = rowsMesAtual.some(r => {
-        const dmy = parseDMY(r.DT_VISITA);
+      const existeDia15ouMaisNoMesAtual = rowsMesAtual.some(row => {
+        const dmy = parseDMY(row.DT_VISITA);
         return dmy && dmy.year === anoAtual && dmy.month === mesAtual && dmy.day >= 15;
       });
 
       let inspecoesFiltradas, periodoTexto;
+
       if (hojeDia < 15) {
         inspecoesFiltradas = rowsMesAnterior;
         periodoTexto = labelMesAno(anterior.month, anterior.year);
       } else {
-        if (existeDia15) {
+        if (existeDia15ouMaisNoMesAtual) {
           inspecoesFiltradas = rowsMesAtual;
           periodoTexto = labelMesAno(mesAtual, anoAtual);
         } else {
@@ -280,112 +224,130 @@
       }
 
       if (!inspecoesFiltradas || inspecoesFiltradas.length === 0) {
-        container.innerHTML = `<div class="indicadores-loading">📭 Sem dados de inspeção para o período atual.</div>`;
-        return;
+        inspecoesFiltradas = rows.slice(-1000);
+        periodoTexto = 'Últimos 1000';
       }
 
-      // ── KPIs ──
-      const total = inspecoesFiltradas.length;
-      const porFiscal = {};
-      const porAtividade = {};
-      const porResultado = {};
+      const totalInspecoes = inspecoesFiltradas.length;
+      const autos = inspecoesFiltradas.filter(row => row.TIPO && row.TIPO.includes('AUTO DE INFRAÇÃO')).length;
 
-      inspecoesFiltradas.forEach(r => {
-        const fiscal = (r.FISCAL || r.Nome || r.NOME || '–').trim();
-        const ativ   = (r.ATIVIDADE || r.Atividade || '–').trim();
-        const result = (r.RESULTADO || r.Resultado || '–').trim();
-        porFiscal[fiscal]     = (porFiscal[fiscal] || 0) + 1;
-        porAtividade[ativ]    = (porAtividade[ativ] || 0) + 1;
-        porResultado[result]  = (porResultado[result] || 0) + 1;
+      const fiscaisSet = new Set();
+      inspecoesFiltradas.forEach(row => {
+        if (row.Fiscal1 && row.Fiscal1.trim()) fiscaisSet.add(row.Fiscal1.trim());
+        if (row.Fiscal2 && row.Fiscal2.trim()) fiscaisSet.add(row.Fiscal2.trim());
+        if (row.Fiscal3 && row.Fiscal3.trim()) fiscaisSet.add(row.Fiscal3.trim());
+      });
+      const totalFiscais = fiscaisSet.size;
+
+      const denuncias     = new Set();
+      const requerimentos = new Set();
+      const oficios       = new Set();
+      const protocolos    = new Set();
+
+      inspecoesFiltradas.forEach(row => {
+        if (row.Denuncia  && row.Denuncia.trim()  !== '') denuncias.add(row.Denuncia.trim());
+        if (row.OS        && row.OS.trim()        !== '') requerimentos.add(row.OS.trim());
+        if (row.Oficio    && row.Oficio.trim()    !== '') oficios.add(row.Oficio.trim());
+        if (row.Protocolo && row.Protocolo.trim() !== '') protocolos.add(row.Protocolo.trim());
       });
 
-      const numFiscais    = Object.keys(porFiscal).length;
-      const numAtividades = Object.keys(porAtividade).length;
-      const topFiscal     = Object.entries(porFiscal).sort((a,b) => b[1]-a[1])[0] || ['–', 0];
+      const osDetalhadas = {
+        requerimentos: requerimentos.size,
+        oficios:       oficios.size,
+        denuncias:     denuncias.size,
+        protocolos:    protocolos.size,
+        total: requerimentos.size + oficios.size + denuncias.size + protocolos.size
+      };
 
-      // ── Renderiza ──
-      let html = `
-        <div class="periodo-badge">📅 ${periodoTexto}</div>
-        <div class="ind-grid">
-          <div class="ind-card">
-            <span class="ind-card__label">Total de Inspeções</span>
-            <span class="ind-card__value">${total}</span>
-            <span class="ind-card__sub">no período selecionado</span>
-          </div>
-          <div class="ind-card">
-            <span class="ind-card__label">Fiscais Ativos</span>
-            <span class="ind-card__value">${numFiscais}</span>
-            <span class="ind-card__sub">realizaram inspeções</span>
-          </div>
-          <div class="ind-card">
-            <span class="ind-card__label">Atividades</span>
-            <span class="ind-card__value">${numAtividades}</span>
-            <span class="ind-card__sub">tipos distintos</span>
-          </div>
-          <div class="ind-card verde">
-            <span class="ind-card__label">Maior Produtor</span>
-            <span class="ind-card__value">${topFiscal[1]}</span>
-            <span class="ind-card__sub">${topFiscal[0].split(' ')[0]}</span>
-          </div>
-        </div>`;
+      const tiposDocumentos = {};
+      inspecoesFiltradas.forEach(row => {
+        if (row.TIPO && row.TIPO.trim())
+          tiposDocumentos[row.TIPO.trim()] = (tiposDocumentos[row.TIPO.trim()] || 0) + 1;
+      });
 
-      // ── Resultados ──
-      const resultEntries = Object.entries(porResultado).sort((a,b) => b[1]-a[1]);
-      if (resultEntries.length) {
-        const maxR = resultEntries[0][1];
-        html += `<div class="bar-section"><h4>📋 Por Resultado</h4>`;
-        resultEntries.forEach(([label, val]) => {
-          const pct = Math.round((val / maxR) * 100);
-          html += `
-            <div class="bar-row">
-              <span class="bar-label" title="${label}">${label}</span>
-              <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
-              <span class="bar-num">${val}</span>
-            </div>`;
-        });
-        html += `</div>`;
+      const topTipos       = Object.entries(tiposDocumentos).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      const mediaPorFiscal = totalFiscais > 0 ? Math.round(totalInspecoes / totalFiscais) : 0;
+      const taxaAutos      = totalInspecoes > 0 ? ((autos / totalInspecoes) * 100).toFixed(1) : 0;
+
+      renderizarIndicadores(container, {
+        totalInspecoes, autos, totalFiscais, osDetalhadas,
+        mediaPorFiscal, taxaAutos, topTipos, periodoTexto
+      });
+    }
+
+    function renderizarIndicadores(container, dados) {
+      let html =
+        '<table style="width:100%;font-size:0.875rem;border-collapse:collapse;margin-bottom:8px;">' +
+        '<tr style="border-bottom:1px solid rgba(0,0,0,0.05);"><td style="padding:8px 4px;">🔍 Inspeções</td>' +
+        '<td style="text-align:right;font-weight:600;color:#2c5aa0;">' + dados.totalInspecoes +
+        ' <small style="color:var(--muted);font-weight:normal;">• Média ' + dados.mediaPorFiscal + '/fiscal</small></td></tr>' +
+        '<tr style="border-bottom:1px solid rgba(0,0,0,0.05);"><td style="padding:8px 4px;">📋 Autos</td>' +
+        '<td style="text-align:right;font-weight:600;color:#2c5aa0;">' + dados.autos +
+        ' <small style="color:var(--muted);font-weight:normal;">• Taxa ' + dados.taxaAutos + '%</small></td></tr>' +
+        '<tr><td style="padding:8px 4px;">👥 Fiscais Ativos</td>' +
+        '<td style="text-align:right;font-weight:600;color:#2c5aa0;">' + dados.totalFiscais + '</td></tr>' +
+        '</table>' +
+        '<div style="border-top:1px solid rgba(0,0,0,0.08);margin:20px 0 16px 0;"></div>' +
+        '<div>' +
+        '<h4 style="margin:0 0 12px 0;color:#2c5aa0;font-size:0.95rem;font-weight:600;">📝 Ordens de Serviço: <strong>' +
+        dados.osDetalhadas.total + '</strong> <small style="color:var(--muted);font-weight:normal;">Atendidas</small></h4>' +
+        '<table style="width:100%;font-size:0.875rem;border-collapse:collapse;">' +
+        '<tr style="border-bottom:1px solid rgba(0,0,0,0.05);"><td style="padding:8px 4px;">📄 Requerimento</td>' +
+        '<td style="text-align:right;font-weight:600;color:#2c5aa0;">' + dados.osDetalhadas.requerimentos + '</td></tr>' +
+        '<tr style="border-bottom:1px solid rgba(0,0,0,0.05);"><td style="padding:8px 4px;">📮 Ofício</td>' +
+        '<td style="text-align:right;font-weight:600;color:#2c5aa0;">' + dados.osDetalhadas.oficios + '</td></tr>' +
+        '<tr style="border-bottom:1px solid rgba(0,0,0,0.05);"><td style="padding:8px 4px;">🔔 Denúncia</td>' +
+        '<td style="text-align:right;font-weight:600;color:#2c5aa0;">' + dados.osDetalhadas.denuncias + '</td></tr>' +
+        '<tr><td style="padding:8px 4px;">📋 Protocolo</td>' +
+        '<td style="text-align:right;font-weight:600;color:#2c5aa0;">' + dados.osDetalhadas.protocolos + '</td></tr>' +
+        '</table></div>' +
+        '<div style="border-top:1px solid rgba(0,0,0,0.08);margin:20px 0 16px 0;"></div>' +
+        '<div>' +
+        '<h4 style="margin:0 0 12px 0;color:#2c5aa0;font-size:0.95rem;font-weight:600;">📄 Tipos de Documentos: <strong>' +
+        dados.totalInspecoes + '</strong> <small style="color:var(--muted);font-weight:normal;">Total</small></h4>' +
+        '<table style="width:100%;font-size:0.875rem;border-collapse:collapse;">';
+
+      function toTitleCase(str) {
+        var min = ['de','da','do','das','dos','e','em','a','o'];
+        return str.toLowerCase().split(' ').map(function(p, i) {
+          if (i === 0) return p.charAt(0).toUpperCase() + p.slice(1);
+          if (min.indexOf(p) > -1) return p;
+          return p.charAt(0).toUpperCase() + p.slice(1);
+        }).join(' ');
       }
 
-      // ── Top 10 fiscais ──
-      const fiscalEntries = Object.entries(porFiscal).sort((a,b) => b[1]-a[1]).slice(0, 10);
-      if (fiscalEntries.length) {
-        const maxF = fiscalEntries[0][1];
-        html += `<div class="bar-section"><h4>👷 Inspeções por Fiscal (Top 10)</h4>`;
-        fiscalEntries.forEach(([label, val]) => {
-          const pct = Math.round((val / maxF) * 100);
-          const nome = label.split(' ').slice(0,2).join(' ');
-          html += `
-            <div class="bar-row">
-              <span class="bar-label" title="${label}">${nome}</span>
-              <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
-              <span class="bar-num">${val}</span>
-            </div>`;
-        });
-        html += `</div>`;
+      function getIconeDocumento(tipo) {
+        var t = tipo.toLowerCase();
+        if (t.includes('intimaç') || t.includes('intimac')) return '⚠️';
+        if (t.includes('notificaç') || t.includes('notificac')) return '📢';
+        if (t.includes('certidão') || t.includes('certidao')) return '📜';
+        if (t.includes('análise') || t.includes('analise')) return '🔍';
+        if (t.includes('prorrogaç') || t.includes('prorrogac')) return '⏳';
+        if (t.includes('auto')) return '📋';
+        if (t.includes('alvar')) return '✅';
+        if (t.includes('relatório') || t.includes('relatorio')) return '📊';
+        if (t.includes('ofício') || t.includes('oficio')) return '📮';
+        return '📄';
       }
 
-      // ── Top atividades ──
-      const ativEntries = Object.entries(porAtividade).sort((a,b) => b[1]-a[1]).slice(0, 8);
-      if (ativEntries.length) {
-        const maxA = ativEntries[0][1];
-        html += `<div class="bar-section"><h4>🏭 Por Atividade (Top 8)</h4>`;
-        ativEntries.forEach(([label, val]) => {
-          const pct = Math.round((val / maxA) * 100);
-          html += `
-            <div class="bar-row">
-              <span class="bar-label" title="${label}">${label}</span>
-              <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
-              <span class="bar-num">${val}</span>
-            </div>`;
-        });
-        html += `</div>`;
-      }
+      dados.topTipos.forEach(function(item, index) {
+        var nome = toTitleCase(item[0]);
+        if (nome.length > 32) nome = nome.substring(0, 29) + '...';
+        var icone = getIconeDocumento(item[0]);
+        var borda = (index < dados.topTipos.length - 1) ? 'border-bottom:1px solid rgba(0,0,0,0.05);' : '';
+        html += '<tr style="' + borda + '"><td style="padding:8px 4px;">' + icone + ' ' + nome + '</td>' +
+                '<td style="text-align:right;font-weight:600;color:#2c5aa0;">' + item[1] + '</td></tr>';
+      });
 
+      html += '</table></div>';
+      html += '<div style="margin-top:20px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.08);' +
+              'text-align:right;font-size:0.85rem;color:var(--muted);">📅 ' +
+              dados.periodoTexto + ' • 🔄 Atualizado</div>';
       container.innerHTML = html;
     }
   </script>
 
-  <!-- ══════════════ FIREBASE AUTH (igual ao rmpf.html) ══════════════ -->
+  <!-- ══════════════ FIREBASE AUTH ══════════════ -->
   <script type="module">
     const firebaseConfig = {
       apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
@@ -398,10 +360,9 @@
     import { protectPage } from './js/guard1.js';
 
     protectPage(firebaseConfig, (user, auth, perfil) => {
-      // ── Guarda perfil global ──
       window.perfilGlobal = perfil || null;
 
-      // ── User info bar ──
+      // User info bar
       const userInfo = document.getElementById('userInfo');
       if (userInfo && perfil) {
         userInfo.innerHTML =
@@ -409,26 +370,25 @@
           `<span class="user-email">${user.email}</span>`;
       }
 
-      // ── Remove overlay de auth (caso exista) ──
+      // Remove overlay de auth caso exista
       const overlay = document.getElementById('authOverlay');
       if (overlay) overlay.remove();
 
-      // ── Mostra conteúdo ──
+      // Mostra conteúdo
       const mainContent = document.getElementById('mainContent');
       if (mainContent) mainContent.style.display = 'block';
 
-      // ── Validação de perfil: só Admin acessa indicadores ──
+      // Só Admin acessa
       const isAdmin = perfil && perfil.grupo === 'Administrador';
 
       if (!isAdmin) {
-        // Oculta seção e exibe mensagem de acesso negado
-        document.getElementById('indicadoresSection').style.display = 'none';
         document.getElementById('acessoNegado').style.display = 'block';
         return;
       }
 
-      // ── Admin: carrega dados ──
-      carregarIndicadores();
+      // Admin: mostra card e carrega dados
+      document.getElementById('cardIndicadores').style.display = 'block';
+      window.carregarIndicadores();
     });
   </script>
 
