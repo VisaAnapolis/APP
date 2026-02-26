@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Indicadores – VISA Anápolis</title>
+
+  <link rel="stylesheet" href="./css/design-tokens.css" />
+  <link rel="stylesheet" href="./css/header-component.css" />
+
+  <!-- Biblioteca SHA-256 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <!-- PapaParse -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── CONTEÚDO principal oculto até auth ── */
+    .main-content { display: none; }
+
+    /* ── USER INFO BAR ── */
+    .user-info-bar {
+      background: rgba(52, 199, 89, 0.08);
+      padding: 8px 20px;
+      font-size: 0.75rem;
+      color: #34C759;
+      border-bottom: 1px solid rgba(52, 199, 89, 0.15);
+      text-align: left;
+      line-height: 1.4;
+    }
+    .user-info-bar .user-name {
+      font-weight: 700;
+      display: inline;
+      margin-right: 10px;
+      color: #1a3a6b;
+      font-size: 0.8rem;
+    }
+    .user-info-bar .user-name::after {
+      content: "•";
+      margin-left: 10px;
+      opacity: 0.5;
+      color: #64748b;
+    }
+    .user-info-bar .user-email {
+      font-weight: 400;
+      opacity: 0.85;
+      display: inline;
+      color: #5b6b83;
+      font-size: 0.75rem;
+    }
+    @media (max-width: 640px) {
+      .user-info-bar { font-size: 0.7rem; padding: 6px 12px; }
+      .user-info-bar .user-name { display: block; margin-bottom: 2px; font-size: 0.75rem; }
+      .user-info-bar .user-name::after { display: none; }
+      .user-info-bar .user-email { display: block; font-size: 0.7rem; }
+    }
+
+    /* ── CONTAINER ── */
+    .container {
+      max-width: 1100px;
+      margin: 22px auto 30px;
+      padding: 0 16px;
+    }
+
+    /* ── INDICADORES ── */
+    .indicadores-section {
+      margin-top: 8px;
+      padding-top: 20px;
+    }
+    .indicadores-section h3 {
+      margin: 0 0 16px 0;
+      color: var(--brand1);
+      padding-left: 10px;
+      border-left: 6px solid var(--brand1);
+      font-size: 1.05rem;
+    }
+    .indicadores-loading {
+      text-align: center;
+      padding: 20px;
+      color: var(--muted);
+    }
+    .ind-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .ind-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 14px 12px;
+      box-shadow: var(--shadow2);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .ind-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .ind-card__label {
+      font-size: .78rem;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .ind-card__value {
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: var(--brand1);
+      line-height: 1.1;
+    }
+    .ind-card__sub {
+      font-size: .78rem;
+      color: var(--muted);
+    }
+    .ind-card.verde  .ind-card__value { color: #34C759; }
+    .ind-card.amarelo .ind-card__value { color: #d1a000; }
+    .ind-card.vermelho .ind-card__value { color: #e53935; }
+
+    /* Gráfico de barras simples */
+    .bar-section { margin-top: 24px; }
+    .bar-section h4 {
+      font-size: .92rem;
+      color: var(--brand1);
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: .83rem;
+    }
+    .bar-label { width: 160px; flex-shrink: 0; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bar-track { flex: 1; background: var(--line); border-radius: 6px; height: 16px; overflow: hidden; }
+    .bar-fill  { height: 100%; background: linear-gradient(90deg, var(--brand1), var(--brand2)); border-radius: 6px; transition: width .4s ease; }
+    .bar-num   { width: 36px; text-align: right; font-weight: 700; color: var(--brand1); }
+
+    /* Período badge */
+    .periodo-badge {
+      display: inline-block;
+      background: rgba(44,90,160,.1);
+      color: var(--brand1);
+      border-radius: 20px;
+      padding: 3px 14px;
+      font-size: .82rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    /* Acesso negado */
+    .acesso-negado {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    .acesso-negado span { font-size: 3rem; display: block; margin-bottom: 12px; }
+
+    /* Header sticky */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════ CONTEÚDO PRINCIPAL ══════════════ -->
+  <div class="main-content" id="mainContent">
+
+    <header class="app-header">
+      <a href="index.html" class="btn-done-ios">OK</a>
+      <h1 class="app-header__title">Vigilância Sanitária</h1>
+      <h2 class="app-header__subtitle">Indicadores de Inspeção</h2>
+    </header>
+
+    <div id="userInfo" class="user-info-bar"></div>
+
+    <div class="container">
+      <!-- Acesso restrito a Admin -->
+      <div id="acessoNegado" class="acesso-negado" style="display:none;">
+        <span>🔒</span>
+        <strong>Acesso restrito.</strong><br>
+        Esta página está disponível apenas para Administradores.
+      </div>
+
+      <!-- Seção de indicadores -->
+      <div class="indicadores-section" id="indicadoresSection">
+        <h3>📊 Indicadores de Inspeção</h3>
+        <div id="indicadores-content">
+          <div class="indicadores-loading">⏳ Carregando dados...</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+
+  <!-- ══════════════ JAVASCRIPT ══════════════ -->
+  <script>
+    // ===== Indicadores: leitura e processamento =====
+    function carregarIndicadores() {
+      const container = document.getElementById('indicadores-content');
+      if (!container) return;
+
+      Papa.parse('data/inspecoes.csv', {
+        download: true,
+        header: true,
+        delimiter: ';',
+        skipEmptyLines: true,
+        complete: function(results) {
+          processarDados(results.data, container);
+        },
+        error: function() {
+          container.innerHTML = '<div class="indicadores-loading">⚠️ Erro ao carregar data/inspecoes.csv</div>';
+        }
+      });
+    }
+
+    function processarDados(data, container) {
+      const rows = data || [];
+      const mesesPt = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                       'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+      const pad2 = n => String(n).padStart(2, '0');
+
+      function parseDMY(str) {
+        if (!str) return null;
+        const m = String(str).trim().match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{2,4})/);
+        if (!m) return null;
+        let [, d, mo, y] = m.map(Number);
+        if (y < 100) y += 2000;
+        if (!(d >= 1 && d <= 31 && mo >= 1 && mo <= 12)) return null;
+        return { day: d, month: mo, year: y };
+      }
+      function labelMesAno(mo, y) { return `${mesesPt[mo - 1]} ${y}`; }
+      function prevMesAno(mo, y)  { return mo === 1 ? { month: 12, year: y - 1 } : { month: mo - 1, year: y }; }
+      function keyMesAno(mo, y)   { return `${pad2(mo)}.${y}`; }
+
+      const hoje      = new Date();
+      const hojeDia   = hoje.getDate();
+      const mesAtual  = hoje.getMonth() + 1;
+      const anoAtual  = hoje.getFullYear();
+      const atualKey  = keyMesAno(mesAtual, anoAtual);
+      const anterior  = prevMesAno(mesAtual, anoAtual);
+      const anteriorKey = keyMesAno(anterior.month, anterior.year);
+
+      const rowsMesAtual   = rows.filter(r => r.DT_VISITA && String(r.DT_VISITA).includes(atualKey));
+      const rowsMesAnterior = rows.filter(r => r.DT_VISITA && String(r.DT_VISITA).includes(anteriorKey));
+
+      const existeDia15 = rowsMesAtual.some(r => {
+        const dmy = parseDMY(r.DT_VISITA);
+        return dmy && dmy.year === anoAtual && dmy.month === mesAtual && dmy.day >= 15;
+      });
+
+      let inspecoesFiltradas, periodoTexto;
+      if (hojeDia < 15) {
+        inspecoesFiltradas = rowsMesAnterior;
+        periodoTexto = labelMesAno(anterior.month, anterior.year);
+      } else {
+        if (existeDia15) {
+          inspecoesFiltradas = rowsMesAtual;
+          periodoTexto = labelMesAno(mesAtual, anoAtual);
+        } else {
+          inspecoesFiltradas = rowsMesAnterior;
+          periodoTexto = labelMesAno(anterior.month, anterior.year);
+        }
+      }
+
+      if (!inspecoesFiltradas || inspecoesFiltradas.length === 0) {
+        container.innerHTML = `<div class="indicadores-loading">📭 Sem dados de inspeção para o período atual.</div>`;
+        return;
+      }
+
+      // ── KPIs ──
+      const total = inspecoesFiltradas.length;
+      const porFiscal = {};
+      const porAtividade = {};
+      const porResultado = {};
+
+      inspecoesFiltradas.forEach(r => {
+        const fiscal = (r.FISCAL || r.Nome || r.NOME || '–').trim();
+        const ativ   = (r.ATIVIDADE || r.Atividade || '–').trim();
+        const result = (r.RESULTADO || r.Resultado || '–').trim();
+        porFiscal[fiscal]     = (porFiscal[fiscal] || 0) + 1;
+        porAtividade[ativ]    = (porAtividade[ativ] || 0) + 1;
+        porResultado[result]  = (porResultado[result] || 0) + 1;
+      });
+
+      const numFiscais    = Object.keys(porFiscal).length;
+      const numAtividades = Object.keys(porAtividade).length;
+      const topFiscal     = Object.entries(porFiscal).sort((a,b) => b[1]-a[1])[0] || ['–', 0];
+
+      // ── Renderiza ──
+      let html = `
+        <div class="periodo-badge">📅 ${periodoTexto}</div>
+        <div class="ind-grid">
+          <div class="ind-card">
+            <span class="ind-card__label">Total de Inspeções</span>
+            <span class="ind-card__value">${total}</span>
+            <span class="ind-card__sub">no período selecionado</span>
+          </div>
+          <div class="ind-card">
+            <span class="ind-card__label">Fiscais Ativos</span>
+            <span class="ind-card__value">${numFiscais}</span>
+            <span class="ind-card__sub">realizaram inspeções</span>
+          </div>
+          <div class="ind-card">
+            <span class="ind-card__label">Atividades</span>
+            <span class="ind-card__value">${numAtividades}</span>
+            <span class="ind-card__sub">tipos distintos</span>
+          </div>
+          <div class="ind-card verde">
+            <span class="ind-card__label">Maior Produtor</span>
+            <span class="ind-card__value">${topFiscal[1]}</span>
+            <span class="ind-card__sub">${topFiscal[0].split(' ')[0]}</span>
+          </div>
+        </div>`;
+
+      // ── Resultados ──
+      const resultEntries = Object.entries(porResultado).sort((a,b) => b[1]-a[1]);
+      if (resultEntries.length) {
+        const maxR = resultEntries[0][1];
+        html += `<div class="bar-section"><h4>📋 Por Resultado</h4>`;
+        resultEntries.forEach(([label, val]) => {
+          const pct = Math.round((val / maxR) * 100);
+          html += `
+            <div class="bar-row">
+              <span class="bar-label" title="${label}">${label}</span>
+              <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+              <span class="bar-num">${val}</span>
+            </div>`;
+        });
+        html += `</div>`;
+      }
+
+      // ── Top 10 fiscais ──
+      const fiscalEntries = Object.entries(porFiscal).sort((a,b) => b[1]-a[1]).slice(0, 10);
+      if (fiscalEntries.length) {
+        const maxF = fiscalEntries[0][1];
+        html += `<div class="bar-section"><h4>👷 Inspeções por Fiscal (Top 10)</h4>`;
+        fiscalEntries.forEach(([label, val]) => {
+          const pct = Math.round((val / maxF) * 100);
+          const nome = label.split(' ').slice(0,2).join(' ');
+          html += `
+            <div class="bar-row">
+              <span class="bar-label" title="${label}">${nome}</span>
+              <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+              <span class="bar-num">${val}</span>
+            </div>`;
+        });
+        html += `</div>`;
+      }
+
+      // ── Top atividades ──
+      const ativEntries = Object.entries(porAtividade).sort((a,b) => b[1]-a[1]).slice(0, 8);
+      if (ativEntries.length) {
+        const maxA = ativEntries[0][1];
+        html += `<div class="bar-section"><h4>🏭 Por Atividade (Top 8)</h4>`;
+        ativEntries.forEach(([label, val]) => {
+          const pct = Math.round((val / maxA) * 100);
+          html += `
+            <div class="bar-row">
+              <span class="bar-label" title="${label}">${label}</span>
+              <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+              <span class="bar-num">${val}</span>
+            </div>`;
+        });
+        html += `</div>`;
+      }
+
+      container.innerHTML = html;
+    }
+  </script>
+
+  <!-- ══════════════ FIREBASE AUTH (igual ao rmpf.html) ══════════════ -->
+  <script type="module">
+    const firebaseConfig = {
+      apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
+      authDomain: "visam-3a30b.firebaseapp.com",
+      projectId: "visam-3a30b",
+      messagingSenderId: "308899251430",
+      appId: "1:308899251430:web:0053cdbd0bed7f0de76727"
+    };
+
+    import { protectPage } from './js/guard1.js';
+
+    protectPage(firebaseConfig, (user, auth, perfil) => {
+      // ── Guarda perfil global ──
+      window.perfilGlobal = perfil || null;
+
+      // ── User info bar ──
+      const userInfo = document.getElementById('userInfo');
+      if (userInfo && perfil) {
+        userInfo.innerHTML =
+          `<span class="user-name">${perfil.nome}</span>` +
+          `<span class="user-email">${user.email}</span>`;
+      }
+
+      // ── Remove overlay de auth (caso exista) ──
+      const overlay = document.getElementById('authOverlay');
+      if (overlay) overlay.remove();
+
+      // ── Mostra conteúdo ──
+      const mainContent = document.getElementById('mainContent');
+      if (mainContent) mainContent.style.display = 'block';
+
+      // ── Validação de perfil: só Admin acessa indicadores ──
+      const isAdmin = perfil && perfil.grupo === 'Administrador';
+
+      if (!isAdmin) {
+        // Oculta seção e exibe mensagem de acesso negado
+        document.getElementById('indicadoresSection').style.display = 'none';
+        document.getElementById('acessoNegado').style.display = 'block';
+        return;
+      }
+
+      // ── Admin: carrega dados ──
+      carregarIndicadores();
+    });
+  </script>
+
+</body>
+</html>
