@@ -994,11 +994,6 @@ Supervisão de Vigilância Sanitária</p>
         disableLink(LINKS.admin, 'Exclusivo para Administrador');
       }
     }
-// Exibe link de Indicadores na tela inicial (Admin only)
-const linkIndicadores = document.getElementById('linkIndicadores');
-if (linkIndicadores && perfil && perfil.grupo === 'Administrador') {
-  linkIndicadores.style.display = '';  // remove o display:none
-}
 
     // ===== Coleta de dispositivo (mantida) =====
     
