@@ -111,37 +111,44 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
-  <h3>v2.3.3 — 25/02/2026 (Horário de Brasília – UTC−3)</h3>
-  <strong>Correção Crítica: Notificações de Requerimento e Protocolo no notify-os.js</strong>
+  <h3>v2.3.4 — 26/02/2026 (Horário de Brasília – UTC−3)</h3>
+  <strong>Alinhamento de versão, dashboard do fiscal, logs do notificador e notificação de teste</strong>
 
   <ul>
-    <li><strong>Requerimento — campo de fiscal corrigido:</strong>
+    <li><strong>Versão única 2.3.4:</strong>
       <ul>
-        <li>O script <code>notify-os.js</code> usava o campo <code>Fiscal_Sugere</code> (quase sempre vazio) para determinar o fiscal responsável. Corrigido para <code>Fiscal_Encaminha</code>, que é o campo correto usado pelo <code>os.html</code>.</li>
-        <li>Resultado: notificações de prazo para Requerimentos agora chegam ao fiscal correto.</li>
+        <li>Parte dos usuários via 2.3.3 (cache) e o repositório em 2.3.2 após reversão acidental. <code>APP_VERSION</code> definido como <code>2.3.4</code> no <code>index.html</code> como único ponto de verdade; na próxima carga todos alinham a esta versão.</li>
       </ul>
     </li>
-    <li><strong>Protocolo — lógica de tramitação implementada:</strong>
+    <li><strong>Banner de reativação de notificações — uma vez por sessão:</strong>
       <ul>
-        <li>Antes: <code>notify-os.js</code> usava o campo <code>Usuario</code> (criador do protocolo) como fiscal e não calculava prazo (<code>campoPrazo: null</code>), fazendo com que <strong>nenhum Protocolo gerasse notificação</strong>.</li>
-        <li>Agora: replica a mesma lógica do <code>os.html</code> — carrega <code>tramitacao.csv</code>, ordena cronologicamente (DATA + HORA convertida de AM/PM para 24h), e busca o último <code>DESTINO</code> que seja um fiscal válido (da lista oficial de fiscais).</li>
-        <li>Prazo calculado como 15 dias úteis a partir da data da última tramitação válida.</li>
-        <li>Lista de fiscais oficiais adicionada ao <code>notify-os.js</code> (mesma do <code>os.html</code>) com normalização de acentos para comparação.</li>
+        <li>Quem havia recusado notificações via modal passava a ver o banner "Notificações desativadas • Reativar" em <em>todo</em> acesso. Agora o banner só aparece uma vez por sessão (<code>sessionStorage</code>), evitando ruído repetido.</li>
       </ul>
     </li>
-    <li><strong>os.html — initPushNotifications condicionado à permissão:</strong>
+    <li><strong>Dashboard do fiscal (index.html) — Protocolos alinhado com os.html:</strong>
       <ul>
-        <li>Antes: chamava <code>initPushNotifications(app, user.email)</code> incondicionalmente, podendo exibir o diálogo do navegador ou registrar token para quem recusou.</li>
-        <li>Agora: só executa se <code>Notification.permission === 'granted'</code>, evitando diálogos indesejados e registros desnecessários.</li>
+        <li>O contador de Protocolos no dashboard do perfil fiscal iterava apenas <code>tramitacao.csv</code>, contando tramitações órfãs (sem correspondente em <code>protocolo.csv</code>) e gerando divergência em relação à tela de OS. Agora carrega <code>protocolo.csv</code> e <code>tramitacao.csv</code> em paralelo, itera <code>protocolo.csv</code> como fonte de verdade e descarta protocolos sem tramitação — mesma lógica do <code>os.html</code>.</li>
+      </ul>
+    </li>
+    <li><strong>Workflow "Detectar e Notificar Novas OS" — log corrigido:</strong>
+      <ul>
+        <li>O aviso <code>⚠️ sem token FCM para "NOME"</code> era impresso incondicionalmente para toda OS no gatilho, mesmo quando o fiscal tinha token e recebia a notificação. Corrigido: o aviso só é emitido quando <code>tokens.length === 0</code>; a confirmação de envio passou a exibir o nome do fiscal.</li>
+      </ul>
+    </li>
+    <li><strong>Notificação de teste (todos os tokens):</strong>
+      <ul>
+        <li>Script <code>scripts/test-notify.js</code> reescrito: usa apenas o campo <code>data</code> (não <code>notification</code>) para o Service Worker exibir a notificação, alinhado ao <code>notify-os.js</code>. Envia para todos os tokens no Firestore; remove tokens inválidos após o envio. Novo workflow <code>.github/workflows/test-notify.yml</code> para disparo manual (Actions → Enviar Notificação de Teste → Run workflow).</li>
       </ul>
     </li>
   </ul>
 
   <p><strong>Arquivos modificados:</strong></p>
   <ul>
-    <li><code>.github/scripts/notify-os.js</code> — Correção de fiscal para Requerimento, implementação de tramitação para Protocolo.</li>
-    <li><code>os.html</code> — Guard de permissão no initPushNotifications.</li>
-    <li><code>index.html</code> — Versão bumped para 2.3.3.</li>
+    <li><code>index.html</code> — Banner uma vez por sessão; <code>processarProtocolo</code> com protocolo.csv + tramitacao.csv; <code>APP_VERSION</code> 2.3.4.</li>
+    <li><code>.github/scripts/notify-os.js</code> — Lógica de log por gatilho (aviso só sem token).</li>
+    <li><code>scripts/test-notify.js</code> — Campo <code>data</code>, envio em lote, remoção de tokens inválidos.</li>
+    <li><code>.github/workflows/test-notify.yml</code> — Novo workflow de notificação de teste (disparo manual).</li>
+    <li><code>changelog.html</code> — Entrada v2.3.4.</li>
   </ul>
 </div>
 
@@ -150,18 +157,6 @@
   <strong>Correção Crítica: Tokens FCM não eram gravados no Firestore</strong>
 
   <ul>
-    <li><strong>Correção one-shot para dados já inconsistentes (opt-in true sem token):</strong>
-      <ul>
-        <li>Vários usuários ficaram com <code>notificationOptIn: true</code> e sem <code>fcmTokens</code> porque o opt-in era gravado <em>antes</em> de obter o token; se <code>getToken()</code> falhasse (Safari, Firefox, etc.), só o opt-in era salvo.</li>
-        <li><strong>O que fazer:</strong> rodar uma vez o script <code>scripts/fix-optin-without-token.js</code>. Ele seta <code>notificationOptIn: false</code> <strong>apenas</strong> em usuários que estão com opt-in true e sem nenhum token (quem já tem token não é alterado). Assim, no próximo login o modal de notificações volta a aparecer para esses usuários; ao clicar "Sim", a lógica nova grava token e opt-in juntos.</li>
-        <li>Uso: <code>node scripts/fix-optin-without-token.js</code> para listar (dry-run); <code>node scripts/fix-optin-without-token.js --apply</code> para aplicar.</li>
-      </ul>
-    </li>
-    <li><strong>Ordem do opt-in corrigida (evita novo opt-in sem token):</strong>
-      <ul>
-        <li>No modal "Sim, ativar" e no botão "Reativar", o código <em>não</em> grava mais <code>notificationOptIn: true</code> antes de chamar <code>initPushNotifications</code>. Agora só se chama <code>initPushNotifications</code>; ela grava <code>fcmTokens</code> e <code>notificationOptIn</code> numa única escrita, e só após obter o token. Se <code>getToken()</code> falhar, nada é gravado e o usuário vê um toast explicando que não foi possível ativar naquele navegador.</li>
-      </ul>
-    </li>
     <li><strong>Bug principal corrigido — token FCM nunca chegava ao Firestore:</strong>
       <ul>
         <li>O código usava <code>updateDoc()</code>, que lança erro silencioso se o documento do usuário não existir. Substituído por <code>setDoc(..., { merge: true })</code>, que cria o documento automaticamente caso necessário.</li>
