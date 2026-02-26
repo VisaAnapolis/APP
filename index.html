@@ -961,6 +961,7 @@ Supervisão de Vigilância Sanitária</p>
       rmpf: document.getElementById('link-rmpf'),
       inspecoes: document.getElementById('link-inspecoes'),
       admin: document.getElementById('link-admin')
+      indicadores:  document.getElementById('link-indicadores') 
     };
     function disableLink(a, reason){
       if (!a) return;
@@ -978,6 +979,7 @@ Supervisão de Vigilância Sanitária</p>
       disableLink(LINKS.rmpf, 'Carregando perfil...');
       disableLink(LINKS.inspecoes, 'Carregando perfil...');
       disableLink(LINKS.admin, 'Carregando perfil...');
+      disableLink(LINKS.indicadores, 'Carregando perfil...'); 
     }
     function applyLinkPermissions(grupo){
       if (grupo === 'Fiscal' || grupo === 'Administrador'){
@@ -990,8 +992,10 @@ Supervisão de Vigilância Sanitária</p>
 
       if (grupo === 'Administrador'){
         enableLink(LINKS.admin);
+        enableLink(LINKS.indicadores);           // ← adicionar
       } else {
         disableLink(LINKS.admin, 'Exclusivo para Administrador');
+        disableLink(LINKS.indicadores,  'Exclusivo para Administrador');  // ← 
       }
     }
 
