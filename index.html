@@ -1191,63 +1191,74 @@ function horaParaSegundos(horaStr) {
           return 'futura';
         }
 
+        // Carrega protocolo.csv e tramitacao.csv em paralelo — mesma lógica do os.html.
+        // Itera protocolo.csv como fonte de verdade; descarta protocolos sem tramitação.
+        // Isso evita contar tramitações órfãs (presentes em tramitacao.csv mas removidas
+        // de protocolo.csv), que causavam divergência com os resultados de os.html.
         function processarProtocolo() {
           return new Promise((resolve) => {
-            Papa.parse('data/tramitacao.csv?' + timestamp, {
-              download: true,
-              header: true,
-              delimiter: ';',
-              skipEmptyLines: true,
-              complete: function(results) {
-                const dados = results.data;
-                const porProtocolo = {};
 
-                dados.forEach(row => {
-                  const numProtocolo = (row.PROTOCOLO || '').trim();
-                  if (!numProtocolo) return;
+            function carregarCSV(arquivo) {
+              return new Promise((res) => {
+                Papa.parse(arquivo + '?' + timestamp, {
+                  download: true, header: true, delimiter: ';', skipEmptyLines: true,
+                  complete: (r) => res(r.data),
+                  error: () => res([])
+                });
+              });
+            }
 
-                  if (!porProtocolo[numProtocolo]) porProtocolo[numProtocolo] = [];
-                  porProtocolo[numProtocolo].push(row);
+            Promise.all([
+              carregarCSV('data/protocolo.csv'),
+              carregarCSV('data/tramitacao.csv')
+            ]).then(([dadosProtocolo, dadosTramitacao]) => {
+
+              // Índice de tramitações por número de protocolo (com trim)
+              const porProtocolo = {};
+              dadosTramitacao.forEach(row => {
+                const num = (row.PROTOCOLO || '').trim();
+                if (!num) return;
+                if (!porProtocolo[num]) porProtocolo[num] = [];
+                porProtocolo[num].push(row);
+              });
+
+              let vencidas = 0;
+              let aVencer = 0;
+
+              dadosProtocolo.forEach(p => {
+                const numProto = (p.Protocolo || '').trim();
+                if (!numProto) return;
+
+                // Descarta protocolo sem tramitação (igual ao os.html)
+                const registros = porProtocolo[numProto];
+                if (!registros || registros.length === 0) return;
+
+                // Pega a tramitação mais recente (DATA + HORA, decrescente)
+                registros.sort((a, b) => {
+                  const dataA = parseData(a.DATA || '');
+                  const dataB = parseData(b.DATA || '');
+                  if (!dataA && !dataB) return 0;
+                  if (!dataA) return 1;
+                  if (!dataB) return -1;
+                  if (dataA.getTime() !== dataB.getTime()) return dataB.getTime() - dataA.getTime();
+                  return horaParaSegundos(b.HORA) - horaParaSegundos(a.HORA);
                 });
 
-                let vencidas = 0;
-                let aVencer = 0;
+                const maisRecente = registros[0];
+                const destino = (maisRecente.DESTINO || '').trim().toUpperCase();
 
-                Object.keys(porProtocolo).forEach(numProto => {
-                  const registros = porProtocolo[numProto];
+                if (destino !== nomeFiscalUpper) return;
 
-                  registros.sort((a, b) => {
-                    const dataA = parseData(a.DATA || '');
-                    const dataB = parseData(b.DATA || '');
+                const dataTramitacao = parseData(maisRecente.DATA || '');
+                if (!dataTramitacao) return;
 
-                    if (!dataA && !dataB) return 0;
-                    if (!dataA) return 1;
-                    if (!dataB) return -1;
+                const prazo = calcularPrazoUteis(dataTramitacao, 15);
+                const tipo = classificarPrazo(prazo);
+                if (tipo === 'vencida') vencidas++;
+                else if (tipo === 'avencer') aVencer++;
+              });
 
-                    if (dataA.getTime() !== dataB.getTime()) return dataB.getTime() - dataA.getTime();
-
-                  const segA = horaParaSegundos(a.HORA);
-                  const segB = horaParaSegundos(b.HORA);
-                  return segB - segA;
-               });
-
-                  const maisRecente = registros[0];
-                  const destino = (maisRecente.DESTINO || '').trim().toUpperCase();
-
-                  if (destino === nomeFiscalUpper) {
-                    const dataTramitacao = parseData(maisRecente.DATA || '');
-                    if (dataTramitacao) {
-                      const prazo = calcularPrazoUteis(dataTramitacao, 15);
-                      const tipo = classificarPrazo(prazo);
-                      if (tipo === 'vencida') vencidas++;
-                      else if (tipo === 'avencer') aVencer++;
-                    }
-                  }
-                });
-
-                resolve({ vencidas, aVencer, total: vencidas + aVencer });
-              },
-              error: () => resolve({ vencidas: 0, aVencer: 0, total: 0 })
+              resolve({ vencidas, aVencer, total: vencidas + aVencer });
             });
           });
         }
