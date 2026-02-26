@@ -273,7 +273,7 @@
       font-size:0.9rem;
       background:transparent;
       border-radius:8px;
-      border: 1px solid transparent; /* Adiciona borda transparente para manter o espaçamento sim*/
+      border: 1px solid transparent; /* Adiciona borda transparente para manter o espaçamento */
     }
 
     /* Modal de Opt-in de Notificações */
@@ -584,13 +584,6 @@ Supervisão de Vigilância Sanitária</p>
             <li><a class="linkPill" href="areas.html"><div>Áreas<br /><small>Fiscais por bairro e CNAEs</small></div><div class="arrow">🧩</div></a></li>
             <li><a class="linkPill" href="cnae.html"><div>CNAEs<br /><small>Distribuição por área</small></div><div class="arrow">👥</div></a></li>
             <li><a class="linkPill" href="total.html"><div>Totalização<br /><small>Regulados de alta por área</small></div><div class="arrow">🧮</div></a></li>
-
-            <li>
-  <a class="linkPill" id="link-indicadores" href="indicadores.html">
-    <div>Indicadores<br /><small>Indicadores mensais de inspeção</small></div>
-    <div class="arrow">📊</div>
-  </a>
-</li>
 
             <li>
               <a class="linkPill" id="link-admin" href="admin.html">
@@ -955,8 +948,7 @@ Supervisão de Vigilância Sanitária</p>
     const LINKS = {
       rmpf: document.getElementById('link-rmpf'),
       inspecoes: document.getElementById('link-inspecoes'),
-      admin: document.getElementById('link-admin'),
-      indicadores:  document.getElementById('link-indicadores') 
+      admin: document.getElementById('link-admin')
     };
     function disableLink(a, reason){
       if (!a) return;
@@ -974,7 +966,6 @@ Supervisão de Vigilância Sanitária</p>
       disableLink(LINKS.rmpf, 'Carregando perfil...');
       disableLink(LINKS.inspecoes, 'Carregando perfil...');
       disableLink(LINKS.admin, 'Carregando perfil...');
-      disableLink(LINKS.indicadores, 'Carregando perfil...'); 
     }
     function applyLinkPermissions(grupo){
       if (grupo === 'Fiscal' || grupo === 'Administrador'){
@@ -987,10 +978,8 @@ Supervisão de Vigilância Sanitária</p>
 
       if (grupo === 'Administrador'){
         enableLink(LINKS.admin);
-        enableLink(LINKS.indicadores);           // ← adicionar
       } else {
         disableLink(LINKS.admin, 'Exclusivo para Administrador');
-        disableLink(LINKS.indicadores,  'Exclusivo para Administrador');  // ← 
       }
     }
 
@@ -1428,6 +1417,222 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
         console.error('Erro ao carregar OS:', e);
       }
     }
+
+
+    // ===== Dashboard OS (Admin: todos os fiscais) =====
+    window.carregarOSAdmin = async function carregarOSAdmin() {
+      try {
+        const timestamp = new Date().getTime();
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        const cincoProxDias = new Date(hoje);
+        cincoProxDias.setDate(cincoProxDias.getDate() + 5);
+
+        const VISA_DATE_ORDER = (localStorage.getItem('VISA_DATE_ORDER') || 'AUTO').toUpperCase();
+
+        function parseData(dataStr) {
+          if (!dataStr) return null;
+          const s = String(dataStr).trim();
+          const sep = s.includes('.') ? '.' : (s.includes('/') ? '/' : (s.includes('-') ? '-' : null));
+          if (!sep) return null;
+          const p = s.split(sep).map(x => x.trim()).filter(Boolean);
+          if (p.length !== 3) return null;
+          const n = p.map(x => parseInt(x, 10));
+          if (n.some(v => Number.isNaN(v))) return null;
+          let y, m, d;
+          let pref = VISA_DATE_ORDER;
+          if (pref !== 'DMY' && pref !== 'MDY') {
+            const lang = (navigator.language || '').toLowerCase();
+            pref = lang.startsWith('en') ? 'MDY' : 'DMY';
+          }
+          if (p[0].length === 4) { y = n[0]; m = n[1]; d = n[2]; }
+          else if (p[2].length === 4) {
+            y = n[2];
+            const a = n[0], b = n[1];
+            if (a > 12 && b <= 12) { d = a; m = b; }
+            else if (b > 12 && a <= 12) { d = b; m = a; }
+            else { if (pref === 'MDY') { m = a; d = b; } else { d = a; m = b; } }
+          } else { return null; }
+          const dt = new Date(y, m - 1, d);
+          dt.setHours(0, 0, 0, 0);
+          if (dt.getFullYear() !== y || dt.getMonth() !== (m - 1) || dt.getDate() !== d) return null;
+          return dt;
+        }
+
+        function normalizarHora(horaStr) {
+          if (!horaStr || String(horaStr).trim() === '') return '00:00:00';
+          let s = String(horaStr).trim().toUpperCase();
+          if (s.includes('.') && !s.includes(':')) s = s.replace(/\./g, ':');
+          const mPeriodo = s.match(/\b(AM|PM)\b/);
+          const periodo = mPeriodo ? mPeriodo[1] : null;
+          s = s.replace(/\b(AM|PM)\b/g, '').trim().replace(/\s+/g, '');
+          const partes = s.split(':').map(p => p.trim()).filter(Boolean);
+          if (partes.length < 2) return '00:00:00';
+          let h = parseInt(partes[0], 10), mi = parseInt(partes[1], 10);
+          let sec = partes.length >= 3 ? parseInt(partes[2], 10) : 0;
+          if ([h, mi, sec].some(n => Number.isNaN(n))) return '00:00:00';
+          if (periodo) { if (periodo === 'PM' && h !== 12) h += 12; if (periodo === 'AM' && h === 12) h = 0; }
+          h = Math.min(Math.max(h,0),23); mi = Math.min(Math.max(mi,0),59); sec = Math.min(Math.max(sec,0),59);
+          return `${String(h).padStart(2,'0')}:${String(mi).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+        }
+
+        function horaParaSegundos(horaStr) {
+          const norm = normalizarHora(horaStr);
+          const [hh, mm, ss] = norm.split(':').map(v => parseInt(v, 10));
+          return (hh * 3600) + (mm * 60) + ss;
+        }
+
+        function calcularPrazoUteis(dataInicial, diasUteis) {
+          const data = new Date(dataInicial);
+          let diasAdicionados = 0;
+          while (diasAdicionados < diasUteis) {
+            data.setDate(data.getDate() + 1);
+            const dia = data.getDay();
+            if (dia !== 0 && dia !== 6) diasAdicionados++;
+          }
+          data.setHours(0, 0, 0, 0);
+          return data;
+        }
+
+        function classificarPrazo(dataPrazo) {
+          if (!dataPrazo) return null;
+          if (dataPrazo < hoje) return 'vencida';
+          if (dataPrazo <= cincoProxDias) return 'avencer';
+          return 'futura';
+        }
+
+        function carregarCSV(arquivo) {
+          return new Promise((res) => {
+            Papa.parse(arquivo + '?' + timestamp, {
+              download: true, header: true, delimiter: ';', skipEmptyLines: true,
+              complete: (r) => res(r.data), error: () => res([])
+            });
+          });
+        }
+
+        // Protocolo: todos os fiscais
+        function processarProtocoloAdmin() {
+          return new Promise((resolve) => {
+            Promise.all([carregarCSV('data/protocolo.csv'), carregarCSV('data/tramitacao.csv')])
+            .then(([dadosProtocolo, dadosTramitacao]) => {
+              const porProtocolo = {};
+              dadosTramitacao.forEach(row => {
+                const num = (row.PROTOCOLO || '').trim();
+                if (!num) return;
+                if (!porProtocolo[num]) porProtocolo[num] = [];
+                porProtocolo[num].push(row);
+              });
+              let vencidas = 0, aVencer = 0;
+              dadosProtocolo.forEach(p => {
+                const numProto = (p.Protocolo || '').trim();
+                if (!numProto) return;
+                const registros = porProtocolo[numProto];
+                if (!registros || registros.length === 0) return;
+                registros.sort((a, b) => {
+                  const dA = parseData(a.DATA||''), dB = parseData(b.DATA||'');
+                  if (!dA && !dB) return 0; if (!dA) return 1; if (!dB) return -1;
+                  if (dA.getTime() !== dB.getTime()) return dB.getTime() - dA.getTime();
+                  return horaParaSegundos(b.HORA) - horaParaSegundos(a.HORA);
+                });
+                const dataTramitacao = parseData(registros[0].DATA || '');
+                if (!dataTramitacao) return;
+                const prazo = calcularPrazoUteis(dataTramitacao, 15);
+                const tipo = classificarPrazo(prazo);
+                if (tipo === 'vencida') vencidas++;
+                else if (tipo === 'avencer') aVencer++;
+              });
+              resolve({ vencidas, aVencer, total: vencidas + aVencer });
+            });
+          });
+        }
+
+        // Requerimento: todos
+        function processarRequerimentoAdmin() {
+          return carregarCSV('data/requerimento.csv').then(dados => {
+            let vencidas = 0, aVencer = 0;
+            dados.forEach(row => {
+              if (String(row.Atendimento||'').trim().toUpperCase() === 'TRUE') return;
+              if (String(row.Cancelado||'').trim().toUpperCase()   === 'TRUE') return;
+              const prazo = parseData(row.Prazo || '');
+              if (!prazo) return;
+              const tipo = classificarPrazo(prazo);
+              if (tipo === 'vencida') vencidas++; else if (tipo === 'avencer') aVencer++;
+            });
+            return { vencidas, aVencer, total: vencidas + aVencer };
+          });
+        }
+
+        // Denúncia: todos
+        function processarDenunciaAdmin() {
+          return carregarCSV('data/denuncia.csv').then(dados => {
+            let vencidas = 0, aVencer = 0;
+            dados.forEach(row => {
+              if (String(row.Archive||'').trim().toUpperCase() === 'TRUE') return;
+              const prazo = parseData(row.Prazo || '');
+              if (!prazo) return;
+              const tipo = classificarPrazo(prazo);
+              if (tipo === 'vencida') vencidas++; else if (tipo === 'avencer') aVencer++;
+            });
+            return { vencidas, aVencer, total: vencidas + aVencer };
+          });
+        }
+
+        // Ofício: todos
+        function processarOficioAdmin() {
+          return carregarCSV('data/oficio.csv').then(dados => {
+            let vencidas = 0, aVencer = 0;
+            dados.forEach(row => {
+              if (String(row.Cancela||'').trim().toUpperCase() === 'TRUE') return;
+              if (String(row.Archive||'').trim().toUpperCase() === 'TRUE') return;
+              const prazo = parseData(row.Prazo || '');
+              if (!prazo) return;
+              const tipo = classificarPrazo(prazo);
+              if (tipo === 'vencida') vencidas++; else if (tipo === 'avencer') aVencer++;
+            });
+            return { vencidas, aVencer, total: vencidas + aVencer };
+          });
+        }
+
+        const [protocolos, requerimentos, denuncias, oficios] = await Promise.all([
+          processarProtocoloAdmin(),
+          processarRequerimentoAdmin(),
+          processarDenunciaAdmin(),
+          processarOficioAdmin()
+        ]);
+
+        const statCards = document.querySelectorAll('.stat-card .stat-number');
+        if (statCards.length >= 4) {
+          statCards[0].textContent = protocolos.total;
+          statCards[1].textContent = requerimentos.total;
+          statCards[2].textContent = denuncias.total;
+          statCards[3].textContent = oficios.total;
+
+          document.getElementById('detProtocolos').textContent =
+            `${protocolos.vencidas} vencidas | ${protocolos.aVencer} próximas`;
+          document.getElementById('detRequerimentos').textContent =
+            `${requerimentos.vencidas} vencidas | ${requerimentos.aVencer} próximas`;
+          document.getElementById('detDenuncias').textContent =
+            `${denuncias.vencidas} vencidas | ${denuncias.aVencer} próximas`;
+          document.getElementById('detOficios').textContent =
+            `${oficios.vencidas} vencidas | ${oficios.aVencer} próximas`;
+
+          function aplicarCorCard(cardEl, vencidas, aVencer) {
+            if (!cardEl) return;
+            cardEl.classList.remove('alert-red', 'alert-yellow', 'alert-ok');
+            if (vencidas > 0) cardEl.classList.add('alert-red');
+            else if (aVencer > 0) cardEl.classList.add('alert-yellow');
+            else cardEl.classList.add('alert-ok');
+          }
+          const cards = document.querySelectorAll('#fiscalStats .stat-card');
+          aplicarCorCard(cards[0], protocolos.vencidas,    protocolos.aVencer);
+          aplicarCorCard(cards[1], requerimentos.vencidas, requerimentos.aVencer);
+          aplicarCorCard(cards[2], denuncias.vencidas,     denuncias.aVencer);
+          aplicarCorCard(cards[3], oficios.vencidas,       oficios.aVencer);
+        }
+      } catch(e) {
+        console.error('Erro ao carregar OS (Admin):', e);
+      }
+    };
 
     // ===== Indicadores (NÃO auto-carrega; só Admin chama) =====
     window.carregarIndicadores = function carregarIndicadores() {
@@ -1929,8 +2134,8 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
         if (fiscalStats) fiscalStats.style.display = 'block';
         carregarOSPendentesFiscal(perfil.nome);
       } else if (perfil.grupo === 'Administrador') {
-        if (indicadoresSection) indicadoresSection.style.display = 'block';
-        window.carregarIndicadores();
+        if (fiscalStats) fiscalStats.style.display = 'block';
+        window.carregarOSAdmin();
       } else {
         // Administrativo / outros: não carrega nada pesado
         if (fiscalStats) fiscalStats.style.display = 'none';
