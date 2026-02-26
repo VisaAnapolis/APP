@@ -525,60 +525,64 @@ async function main() {
     // (rodadas das 12:30 e 16:30). No dia seguinte, a OS já estará
     // vencida (diasParaPrazo < 0) e não entrará mais neste gatilho.
     if (diasParaPrazo === 0 && !osAnterior.notif_hoje) {
-      console.log(`⚠️  VENCE_HOJE ${numero}: sem token FCM para "${osAtual.fiscal}"`);
       alertas.VENCE_HOJE++;
-      if (tokens.length > 0) {
+      if (tokens.length === 0) {
+        console.log(`⚠️  VENCE_HOJE ${numero}: sem token FCM para "${osAtual.fiscal}"`);
+      } else {
         const { enviados, erros } = await enviarNotificacaoFiscal(tokens, numero, osAtual.tipo, osAtual.motivo, diasParaPrazo);
         totalEnviados += enviados;
         totalErros += erros;
         if (enviados > 0) {
           novoSnapshot[numero].notif_hoje = true;
-          console.log(`✅ VENCE_HOJE ${numero}: ${enviados} notificação(ões) enviada(s)`);
+          console.log(`✅ VENCE_HOJE ${numero}: ${enviados} notificação(ões) enviada(s) para "${osAtual.fiscal}"`);
         }
       }
     }
 
     // ── GATILHO 1: Prazo exatamente em 5 dias ────────────────
     if (diasParaPrazo === 5 && !osAnterior.notif_5d) {
-      console.log(`⚠️  PRAZO_5D ${numero}: sem token FCM para "${osAtual.fiscal}"`);
       alertas.PRAZO_5D++;
-      if (tokens.length > 0) {
+      if (tokens.length === 0) {
+        console.log(`⚠️  PRAZO_5D ${numero}: sem token FCM para "${osAtual.fiscal}"`);
+      } else {
         const { enviados, erros } = await enviarNotificacaoFiscal(tokens, numero, osAtual.tipo, osAtual.motivo, diasParaPrazo);
         totalEnviados += enviados;
         totalErros += erros;
         if (enviados > 0) {
           novoSnapshot[numero].notif_5d = true;
-          console.log(`✅ PRAZO_5D ${numero}: ${enviados} notificação(ões) enviada(s)`);
+          console.log(`✅ PRAZO_5D ${numero}: ${enviados} notificação(ões) enviada(s) para "${osAtual.fiscal}"`);
         }
       }
     }
 
     // ── GATILHO 2: "Janela de Recuperação" (2-4 dias) ────────
     if (diasParaPrazo >= 2 && diasParaPrazo <= 4 && !osAnterior.notif_5d && !osAnterior.notif_recuperacao) {
-      console.log(`⚠️  RECUPERACAO ${numero}: sem token FCM para "${osAtual.fiscal}"`);
       alertas.RECUPERACAO++;
-      if (tokens.length > 0) {
+      if (tokens.length === 0) {
+        console.log(`⚠️  RECUPERACAO ${numero}: sem token FCM para "${osAtual.fiscal}"`);
+      } else {
         const { enviados, erros } = await enviarNotificacaoFiscal(tokens, numero, osAtual.tipo, osAtual.motivo, diasParaPrazo);
         totalEnviados += enviados;
         totalErros += erros;
         if (enviados > 0) {
           novoSnapshot[numero].notif_recuperacao = true;
-          console.log(`✅ RECUPERACAO ${numero}: ${enviados} notificação(ões) enviada(s)`);
+          console.log(`✅ RECUPERACAO ${numero}: ${enviados} notificação(ões) enviada(s) para "${osAtual.fiscal}"`);
         }
       }
     }
 
     // ── GATILHO 3: Prazo exatamente amanhã (1 dia) ───────────
     if (diasParaPrazo === 1 && !osAnterior.notif_amanha) {
-      console.log(`⚠️  AMANHA ${numero}: sem token FCM para "${osAtual.fiscal}"`);
       alertas.AMANHA++;
-      if (tokens.length > 0) {
+      if (tokens.length === 0) {
+        console.log(`⚠️  AMANHA ${numero}: sem token FCM para "${osAtual.fiscal}"`);
+      } else {
         const { enviados, erros } = await enviarNotificacaoFiscal(tokens, numero, osAtual.tipo, osAtual.motivo, diasParaPrazo);
         totalEnviados += enviados;
         totalErros += erros;
         if (enviados > 0) {
           novoSnapshot[numero].notif_amanha = true;
-          console.log(`✅ AMANHA ${numero}: ${enviados} notificação(ões) enviada(s)`);
+          console.log(`✅ AMANHA ${numero}: ${enviados} notificação(ões) enviada(s) para "${osAtual.fiscal}"`);
         }
       }
     }
