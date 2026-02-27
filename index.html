@@ -1484,8 +1484,41 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
           return 'futura';
         }
 
-        // Protocolo: último registro de tramitação com DESTINO preenchido (está com algum fiscal)
+        // Protocolo: último registro cronológico de tramitacao.csv cujo DESTINO
+        // é o nome de um fiscal oficial (mesma lista do os.html)
         function processarProtocoloAdmin() {
+          // Lista oficial de fiscais — idêntica à do os.html
+          const fiscaisOficiais = [
+            "ACADIA DE SOUZA VIEIRA SILVA","ADRIANA CRHISTINA DE REZENDE CARNEIRO",
+            "ADRIANE PEREIRA GUIMARÃES","ALINE CASTRO DAMASIO",
+            "ANA PAULA RODRIGUES CORRÊA GUIMARÃES","ANGELA RIBEIRO NEVES",
+            "ARIANNE FERREIRA VIEIRA","CÉSIO MALAQUIAS",
+            "CLÁUDIO NASCIMENTO SILVA","CLÓVIS RAFAEL BORGES FERREIRA",
+            "DANIEL SOARES BARBOSA","DANIELA DE ALMEIDA CASTRO",
+            "EDSON ARANTES FARIA FILHO","EDUARDO LUCAS MAGALHÃES CASTRO",
+            "FABÍOLA PEDROSA PEIXOTO MARQUES","GERALDO EDSON ROSA",
+            "GLEICIANE MARIA JOSÉ DA SILVA","GÚBIO DIAS PEREIRA",
+            "JOÃO BATISTA LUCAS DA SILVA REIS","JOSE LUIZ RIBEIRO",
+            "JULIANA FERREIRA VITURINO","JULIANA KÊNIA MARTINS DA SILVA",
+            "JULIO CÉSAR TELES SPINDOLA","KAMILLA CHRYSTINE ROLIM D. SANTOS GARCÊS",
+            "LIDIANE SIMÕES","LIVIA BRITO","LUCIANA CONSOLAÇÃO DOS SANTOS",
+            "LUCIANA SANTANA DA ROCHA","LUCIENE DE SOUZA BARBOSA GOMES SILVA",
+            "MARCIO HENRIQUE GOMES RODOVALHO","MARIA EDWIGES PINHEIRO DE SOUZA CHAVES",
+            "MARINA PERILLO NAVARRETE LAVERS","PATRÍCIA CORDEIRO DE MORAES E SOUZA",
+            "PEDRO HENRIQUE AIRES RIBEIRO","RODRIGO ALESSANDRO TÔGO SANTOS",
+            "RÚBIA MARA DE FREITAS","SILVIA MARQUES NAVES DA MOTA SOUZA",
+            "SIMONE DUARTE GROSSI","TATHIANE PESSOA DE SOUZA",
+            "THIAGO GOMES GOBO","VANESSA SANTANA",
+            "VIVIANE MANOEL DA SILVA BORGES","VIVIANE MIYADA",
+            "WANESSA DE BRITO JORGE"
+          ];
+          function normTxt(s) {
+            return String(s || '').trim().toUpperCase()
+              .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+          }
+          const fiscaisNorm = new Set(fiscaisOficiais.map(normTxt));
+          function ehFiscal(nome) { return fiscaisNorm.has(normTxt(nome)); }
+
           return new Promise((resolve) => {
             Papa.parse('data/tramitacao.csv?' + timestamp, {
               download: true, header: true, delimiter: ';', skipEmptyLines: true,
@@ -1500,6 +1533,7 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
                 let vencidas = 0, aVencer = 0;
                 Object.keys(porProtocolo).forEach(numProto => {
                   const registros = porProtocolo[numProto];
+                  // Ordena decrescente por DATA + HORA para pegar o mais recente
                   registros.sort((a, b) => {
                     const dA = parseData(a.DATA || ''), dB = parseData(b.DATA || '');
                     if (!dA && !dB) return 0;
@@ -1507,15 +1541,15 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
                     if (dA.getTime() !== dB.getTime()) return dB.getTime() - dA.getTime();
                     return horaParaSegundos(b.HORA) - horaParaSegundos(a.HORA);
                   });
-                  const destino = (registros[0].DESTINO || '').trim();
-                  if (destino !== '') {
-                    const dataTram = parseData(registros[0].DATA || '');
-                    if (dataTram) {
-                      const tipo = classificarPrazo(calcularPrazoUteis(dataTram, 15));
-                      if (tipo === 'vencida') vencidas++;
-                      else if (tipo === 'avencer') aVencer++;
-                    }
-                  }
+                  const maisRecente = registros[0];
+                  const destino = (maisRecente.DESTINO || '').trim();
+                  // Conta apenas se o DESTINO do último registro é nome de fiscal oficial
+                  if (!ehFiscal(destino)) return;
+                  const dataTram = parseData(maisRecente.DATA || '');
+                  if (!dataTram) return;
+                  const tipo = classificarPrazo(calcularPrazoUteis(dataTram, 15));
+                  if (tipo === 'vencida') vencidas++;
+                  else if (tipo === 'avencer') aVencer++;
                 });
                 resolve({ vencidas, aVencer, total: vencidas + aVencer });
               },
