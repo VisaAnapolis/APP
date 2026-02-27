@@ -1586,9 +1586,11 @@ function converterData(dataStr) {
                         
                         const atendida = processarBool(o.Archive) ? 'Sim' : 'Não';
                         if (filtros.atendida && atendida !== filtros.atendida) return;
+                        if (!filtros.atendida  && atendida  === 'Sim') return;
                         
                         const cancelado = processarBool(o.Cancela) ? 'Sim' : 'Não';
                         if (filtros.cancelado && cancelado !== filtros.cancelado) return;
+                        if (!filtros.cancelado && cancelado === 'Sim') return;
                         
                         const razaoSocial = o.Regulado || '';
                         if (filtros.razaoSocial && !razaoSocial.toUpperCase().includes(filtros.razaoSocial)) return;
