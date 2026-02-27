@@ -1574,6 +1574,7 @@ function converterData(dataStr) {
                         if (filtros.numero && o.Oficio !== filtros.numero) return;
                         
                         const fiscal = o.Fiscalencaminha || '';
+                        if (!fiscal || !fiscal.trim()) return;  // sem fiscal = não encaminhada = ignora
                         if (filtros.fiscal && fiscal !== filtros.fiscal) return;
                         // REMOVIDO: if (fiscal && fiscal.trim() !== '' && !fiscalValido(fiscal)) return;
                         
