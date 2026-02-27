@@ -111,6 +111,33 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.3.5 — 26/02/2026 (Horário de Brasília – UTC−3)</h3>
+  <strong>Dashboard de OS para Administrador — totalização de todos os fiscais</strong>
+  <ul>
+    <li><strong>Perfil Administrador — cards de OS corrigidos:</strong>
+      <ul>
+        <li>A seção "Indicadores do Mês" (que carregava <code>inspecoes.csv</code> e exibia estatísticas de vistorias por período) foi removida. Em seu lugar, o perfil Administrador agora exibe os mesmos 4 cards de OS do perfil Fiscal (Protocolos, Requerimentos, Denúncias e Ofícios), totalizando as OS pendentes de <strong>todos os fiscais</strong>, sem filtro por nome.</li>
+        <li>Protocolo: usa o último registro de <code>tramitacao.csv</code> ordenado por DATA+HORA; conta o protocolo se o campo DESTINO estiver preenchido (em tramitação com algum fiscal), calculando prazo de 15 dias úteis a partir da data desse registro.</li>
+        <li>Requerimento, Denúncia e Ofício seguem os mesmos filtros de exclusão do perfil Fiscal (<code>Atendimento/Cancelado/Archive/Cancela = TRUE</code>), sem restrição de fiscal.</li>
+        <li>Cores dos cards (vermelho/amarelo/verde) e detalhamento ("X vencidas | Y próximas") idênticos ao perfil Fiscal.</li>
+      </ul>
+    </li>
+    <li><strong>Limpeza de código:</strong>
+      <ul>
+        <li>Removidas as funções <code>window.carregarIndicadores</code>, <code>processarDados</code> e <code>renderizarIndicadores</code> — que carregavam <code>inspecoes.csv</code> desnecessariamente.</li>
+        <li>Removidos o bloco HTML <code>.indicadores-section</code> e o CSS associado.</li>
+        <li>Removidas todas as referências a <code>indicadoresSection</code> no fluxo de autenticação.</li>
+      </ul>
+    </li>
+  </ul>
+  <p><strong>Arquivos modificados:</strong></p>
+  <ul>
+    <li><code>index.html</code> — Nova função <code>carregarOSAdmin</code>, remoção da seção de indicadores, <code>APP_VERSION</code> 2.3.5.</li>
+    <li><code>changelog.html</code> — Entrada v2.3.5.</li>
+  </ul>
+</div>
+
+<div class="section">
   <h3>v2.3.4 — 26/02/2026 (Horário de Brasília – UTC−3)</h3>
   <strong>Alinhamento de versão, dashboard do fiscal, logs do notificador e notificação de teste</strong>
 
