@@ -1980,7 +1980,7 @@ function obterDataPrazo(os) {
                 hoje.setHours(0, 0, 0, 0);
 
                 const prazo = new Date(prazoData + 'T00:00:00');
-                const diffDias = Math.ceil((prazo - hoje) / (1000 * 60 * 60 * 24));
+                const diffDias = Math.round((prazo - hoje) / (1000 * 60 * 60 * 24));
 
                 let icone = '📅';
                 let texto = dataFormatada;
@@ -2044,7 +2044,7 @@ function obterDataPrazo(os) {
                 hoje.setHours(0, 0, 0, 0);
 
                 const prazo = new Date(prazoData + 'T00:00:00');
-                const diffDias = Math.ceil((prazo - hoje) / (1000 * 60 * 60 * 24));
+                const diffDias = Math.round((prazo - hoje) / (1000 * 60 * 60 * 24));
 
                 let icone = '📅';
                 let texto = dataFormatada;
