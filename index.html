@@ -252,29 +252,7 @@
     }
     .linkPill.is-disabled .arrow{opacity:.8}
 
-    /* INDICADORES (fora de media query, corrigido) */
-    .indicadores-section{
-      margin-top:24px;
-      padding-top:20px;
-      border-top:2px solid var(--line);
-      display:none; /* ✅ por padrão, só Admin libera */
-    }
-    .indicadores-section h3{
-      margin:0 0 16px 0;
-      color:var(--brand1);
-      padding-left:10px;
-      border-left:6px solid var(--brand1);
-      font-size:1.05rem;
-    }
-    .indicadores-loading{
-      text-align:center;
-      padding:20px;
-      color:var(--muted);
-      font-size:0.9rem;
-      background:transparent;
-      border-radius:8px;
-      border: 1px solid transparent; /* Adiciona borda transparente para manter o espaçamento */
-    }
+
 
     /* Modal de Opt-in de Notificações */
     #notificationOptInModal .modalCard {
@@ -551,12 +529,7 @@ Supervisão de Vigilância Sanitária</p>
               </div>
 -->
           
-          <div class="indicadores-section">
-            <h3>📊 Indicadores do Mês</h3>
-            <div id="indicadores-content">
-              <div class="indicadores-loading">📊 Carregando...</div>
-            </div>
-          </div>
+
         </div>
 
         <div class="card links-section">
@@ -584,6 +557,13 @@ Supervisão de Vigilância Sanitária</p>
             <li><a class="linkPill" href="areas.html"><div>Áreas<br /><small>Fiscais por bairro e CNAEs</small></div><div class="arrow">🧩</div></a></li>
             <li><a class="linkPill" href="cnae.html"><div>CNAEs<br /><small>Distribuição por área</small></div><div class="arrow">👥</div></a></li>
             <li><a class="linkPill" href="total.html"><div>Totalização<br /><small>Regulados de alta por área</small></div><div class="arrow">🧮</div></a></li>
+
+            <li>
+  <a class="linkPill" id="link-indicadores" href="indicadores.html">
+    <div>Indicadores<br /><small>Indicadores mensais de inspeção</small></div>
+    <div class="arrow">📊</div>
+  </a>
+</li>
 
             <li>
               <a class="linkPill" id="link-admin" href="admin.html">
@@ -678,7 +658,7 @@ Supervisão de Vigilância Sanitária</p>
     const provider = new GoogleAuthProvider();
 
     // ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
-    const APP_VERSION = '2.3.3';
+    const APP_VERSION = '2.3.5';
     const VERSION_KEY = 'visa_app_version';
     const savedVersion = localStorage.getItem(VERSION_KEY);
 
@@ -717,9 +697,9 @@ Supervisão de Vigilância Sanitária</p>
             if ('caches' in window) {
               caches.keys().then(cacheNames => {
                 return Promise.all(cacheNames.map(name => caches.delete(name)));
-              }).then(() => location.reload());
+              }).then(() => location.reload(true));
             } else {
-              location.reload();
+              location.reload(true);
             }
           });
         });
@@ -744,24 +724,21 @@ Supervisão de Vigilância Sanitária</p>
     // Único ponto de verdade: apenas o APP_VERSION no index.html precisa ser alterado.
     async function checkVersionUpdate() {
       try {
-        const base = location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1);
-        const resp = await fetch(base + 'index.html?t=' + Date.now(), { cache: 'no-store' });
+        const resp = await fetch('/VISA/index.html?t=' + Date.now());
         if (!resp.ok) return;
         const html = await resp.text();
         const match = html.match(/APP_VERSION\s*=\s*'([\d.]+)'/);
         if (match && match[1] !== APP_VERSION) {
           console.log(`🔄 [VersionCheck] Nova versão detectada: ${match[1]}. Forçando atualização...`);
-          // NÃO gravar a versão nova no localStorage antes do reload.
-          // Assim, ao recarregar, savedVersion (antiga) ≠ APP_VERSION (nova)
-          // → bloco de limpeza (desregistro de SWs + caches.delete) executa corretamente.
-          location.reload();
+          localStorage.setItem(VERSION_KEY, match[1]); // força o ciclo de limpeza
+          location.reload(true);
         }
       } catch (e) {
         console.warn('[VersionCheck] Falha ao verificar versão:', e);
       }
     }
     setInterval(checkVersionUpdate, 900000); // verifica a cada 15 min
-    setTimeout(checkVersionUpdate, 60000);    // primeira verificação: 1 min após abrir
+    setTimeout(checkVersionUpdate, 300000);   // verifica 5 min após abrir
 
     // ===== ESCUTAR MENSAGENS DO SERVICE WORKER =====
     if ('serviceWorker' in navigator) {
@@ -951,7 +928,8 @@ Supervisão de Vigilância Sanitária</p>
     const LINKS = {
       rmpf: document.getElementById('link-rmpf'),
       inspecoes: document.getElementById('link-inspecoes'),
-      admin: document.getElementById('link-admin')
+      admin: document.getElementById('link-admin'),
+      indicadores:  document.getElementById('link-indicadores') 
     };
     function disableLink(a, reason){
       if (!a) return;
@@ -969,6 +947,7 @@ Supervisão de Vigilância Sanitária</p>
       disableLink(LINKS.rmpf, 'Carregando perfil...');
       disableLink(LINKS.inspecoes, 'Carregando perfil...');
       disableLink(LINKS.admin, 'Carregando perfil...');
+      disableLink(LINKS.indicadores, 'Carregando perfil...'); 
     }
     function applyLinkPermissions(grupo){
       if (grupo === 'Fiscal' || grupo === 'Administrador'){
@@ -981,8 +960,10 @@ Supervisão de Vigilância Sanitária</p>
 
       if (grupo === 'Administrador'){
         enableLink(LINKS.admin);
+        enableLink(LINKS.indicadores);           // ← adicionar
       } else {
         disableLink(LINKS.admin, 'Exclusivo para Administrador');
+        disableLink(LINKS.indicadores,  'Exclusivo para Administrador');  // ← 
       }
     }
 
@@ -1194,63 +1175,74 @@ function horaParaSegundos(horaStr) {
           return 'futura';
         }
 
+        // Carrega protocolo.csv e tramitacao.csv em paralelo — mesma lógica do os.html.
+        // Itera protocolo.csv como fonte de verdade; descarta protocolos sem tramitação.
+        // Isso evita contar tramitações órfãs (presentes em tramitacao.csv mas removidas
+        // de protocolo.csv), que causavam divergência com os resultados de os.html.
         function processarProtocolo() {
           return new Promise((resolve) => {
-            Papa.parse('data/tramitacao.csv?' + timestamp, {
-              download: true,
-              header: true,
-              delimiter: ';',
-              skipEmptyLines: true,
-              complete: function(results) {
-                const dados = results.data;
-                const porProtocolo = {};
 
-                dados.forEach(row => {
-                  const numProtocolo = (row.PROTOCOLO || '').trim();
-                  if (!numProtocolo) return;
+            function carregarCSV(arquivo) {
+              return new Promise((res) => {
+                Papa.parse(arquivo + '?' + timestamp, {
+                  download: true, header: true, delimiter: ';', skipEmptyLines: true,
+                  complete: (r) => res(r.data),
+                  error: () => res([])
+                });
+              });
+            }
 
-                  if (!porProtocolo[numProtocolo]) porProtocolo[numProtocolo] = [];
-                  porProtocolo[numProtocolo].push(row);
+            Promise.all([
+              carregarCSV('data/protocolo.csv'),
+              carregarCSV('data/tramitacao.csv')
+            ]).then(([dadosProtocolo, dadosTramitacao]) => {
+
+              // Índice de tramitações por número de protocolo (com trim)
+              const porProtocolo = {};
+              dadosTramitacao.forEach(row => {
+                const num = (row.PROTOCOLO || '').trim();
+                if (!num) return;
+                if (!porProtocolo[num]) porProtocolo[num] = [];
+                porProtocolo[num].push(row);
+              });
+
+              let vencidas = 0;
+              let aVencer = 0;
+
+              dadosProtocolo.forEach(p => {
+                const numProto = (p.Protocolo || '').trim();
+                if (!numProto) return;
+
+                // Descarta protocolo sem tramitação (igual ao os.html)
+                const registros = porProtocolo[numProto];
+                if (!registros || registros.length === 0) return;
+
+                // Pega a tramitação mais recente (DATA + HORA, decrescente)
+                registros.sort((a, b) => {
+                  const dataA = parseData(a.DATA || '');
+                  const dataB = parseData(b.DATA || '');
+                  if (!dataA && !dataB) return 0;
+                  if (!dataA) return 1;
+                  if (!dataB) return -1;
+                  if (dataA.getTime() !== dataB.getTime()) return dataB.getTime() - dataA.getTime();
+                  return horaParaSegundos(b.HORA) - horaParaSegundos(a.HORA);
                 });
 
-                let vencidas = 0;
-                let aVencer = 0;
+                const maisRecente = registros[0];
+                const destino = (maisRecente.DESTINO || '').trim().toUpperCase();
 
-                Object.keys(porProtocolo).forEach(numProto => {
-                  const registros = porProtocolo[numProto];
+                if (destino !== nomeFiscalUpper) return;
 
-                  registros.sort((a, b) => {
-                    const dataA = parseData(a.DATA || '');
-                    const dataB = parseData(b.DATA || '');
+                const dataTramitacao = parseData(maisRecente.DATA || '');
+                if (!dataTramitacao) return;
 
-                    if (!dataA && !dataB) return 0;
-                    if (!dataA) return 1;
-                    if (!dataB) return -1;
+                const prazo = calcularPrazoUteis(dataTramitacao, 15);
+                const tipo = classificarPrazo(prazo);
+                if (tipo === 'vencida') vencidas++;
+                else if (tipo === 'avencer') aVencer++;
+              });
 
-                    if (dataA.getTime() !== dataB.getTime()) return dataB.getTime() - dataA.getTime();
-
-                  const segA = horaParaSegundos(a.HORA);
-                  const segB = horaParaSegundos(b.HORA);
-                  return segB - segA;
-               });
-
-                  const maisRecente = registros[0];
-                  const destino = (maisRecente.DESTINO || '').trim().toUpperCase();
-
-                  if (destino === nomeFiscalUpper) {
-                    const dataTramitacao = parseData(maisRecente.DATA || '');
-                    if (dataTramitacao) {
-                      const prazo = calcularPrazoUteis(dataTramitacao, 15);
-                      const tipo = classificarPrazo(prazo);
-                      if (tipo === 'vencida') vencidas++;
-                      else if (tipo === 'avencer') aVencer++;
-                    }
-                  }
-                });
-
-                resolve({ vencidas, aVencer, total: vencidas + aVencer });
-              },
-              error: () => resolve({ vencidas: 0, aVencer: 0, total: 0 })
+              resolve({ vencidas, aVencer, total: vencidas + aVencer });
             });
           });
         }
@@ -1410,205 +1402,270 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
       }
     }
 
-    // ===== Indicadores (NÃO auto-carrega; só Admin chama) =====
-    window.carregarIndicadores = function carregarIndicadores() {
-      const container = document.getElementById('indicadores-content');
-      if (!container) return;
+    // ===== Dashboard OS (Admin: todos os fiscais) =====
+    // Replica exatamente a lógica de carregarOSPendentesFiscal,
+    // mas sem filtrar por nome de fiscal: soma as OS de TODOS os fiscais.
+    window.carregarOSAdmin = async function carregarOSAdmin() {
+      try {
+        const timestamp = new Date().getTime();
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        const cincoProxDias = new Date(hoje);
+        cincoProxDias.setDate(cincoProxDias.getDate() + 5);
 
-      Papa.parse('data/inspecoes.csv', {
-        download: true,
-        header: true,
-        delimiter: ';',
-        skipEmptyLines: true,
-        complete: function(results) {
-          processarDados(results.data, container);
-        },
-        error: function() {
-          container.innerHTML = '<div class="indicadores-loading">⚠️ Erro: data/inspecoes.csv</div>';
+        const VISA_DATE_ORDER = (localStorage.getItem('VISA_DATE_ORDER') || 'AUTO').toUpperCase();
+        function parseData(dataStr) {
+          if (!dataStr) return null;
+          const s = String(dataStr).trim();
+          const sep = s.includes('.') ? '.' : (s.includes('/') ? '/' : (s.includes('-') ? '-' : null));
+          if (!sep) return null;
+          const p = s.split(sep).map(x => x.trim()).filter(Boolean);
+          if (p.length !== 3) return null;
+          const n = p.map(x => parseInt(x, 10));
+          if (n.some(v => Number.isNaN(v))) return null;
+          let y, m, d;
+          let pref = VISA_DATE_ORDER;
+          if (pref !== 'DMY' && pref !== 'MDY') {
+            const lang = (navigator.language || '').toLowerCase();
+            pref = lang.startsWith('en') ? 'MDY' : 'DMY';
+          }
+          if (p[0].length === 4) { y = n[0]; m = n[1]; d = n[2]; }
+          else if (p[2].length === 4) {
+            y = n[2];
+            const a = n[0], b = n[1];
+            if (a > 12 && b <= 12) { d = a; m = b; }
+            else if (b > 12 && a <= 12) { d = b; m = a; }
+            else { if (pref === 'MDY') { m = a; d = b; } else { d = a; m = b; } }
+          } else { return null; }
+          const dt = new Date(y, m - 1, d);
+          dt.setHours(0, 0, 0, 0);
+          if (dt.getFullYear() !== y || dt.getMonth() !== (m - 1) || dt.getDate() !== d) return null;
+          return dt;
         }
-      });
+        function normalizarHora(horaStr) {
+          if (!horaStr || String(horaStr).trim() === '') return '00:00:00';
+          let s = String(horaStr).trim().toUpperCase();
+          if (s.includes('.') && !s.includes(':')) s = s.replace(/\./g, ':');
+          const mPeriodo = s.match(/\b(AM|PM)\b/);
+          const periodo = mPeriodo ? mPeriodo[1] : null;
+          s = s.replace(/\b(AM|PM)\b/g, '').trim().replace(/\s+/g, '');
+          const partes = s.split(':').map(p => p.trim()).filter(Boolean);
+          if (partes.length < 2) return '00:00:00';
+          let h = parseInt(partes[0], 10);
+          let mi = parseInt(partes[1], 10);
+          let sec = partes.length >= 3 ? parseInt(partes[2], 10) : 0;
+          if ([h, mi, sec].some(n => Number.isNaN(n))) return '00:00:00';
+          if (periodo) { if (periodo === 'PM' && h !== 12) h += 12; if (periodo === 'AM' && h === 12) h = 0; }
+          h = Math.min(Math.max(h, 0), 23);
+          mi = Math.min(Math.max(mi, 0), 59);
+          sec = Math.min(Math.max(sec, 0), 59);
+          return `${String(h).padStart(2, '0')}:${String(mi).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+        }
+        function horaParaSegundos(horaStr) {
+          const norm = normalizarHora(horaStr);
+          const [hh, mm, ss] = norm.split(':').map(v => parseInt(v, 10));
+          return (hh * 3600) + (mm * 60) + ss;
+        }
+        function calcularPrazoUteis(dataInicial, diasUteis) {
+          const data = new Date(dataInicial);
+          let diasAdicionados = 0;
+          while (diasAdicionados < diasUteis) {
+            data.setDate(data.getDate() + 1);
+            const diaSemana = data.getDay();
+            if (diaSemana !== 0 && diaSemana !== 6) diasAdicionados++;
+          }
+          data.setHours(0, 0, 0, 0);
+          return data;
+        }
+        function classificarPrazo(dataPrazo) {
+          if (!dataPrazo) return null;
+          if (dataPrazo < hoje) return 'vencida';
+          if (dataPrazo <= cincoProxDias) return 'avencer';
+          return 'futura';
+        }
+
+        // Protocolo: último registro cronológico de tramitacao.csv cujo DESTINO
+        // é o nome de um fiscal oficial (mesma lista do os.html)
+        function processarProtocoloAdmin() {
+          // Lista oficial de fiscais — idêntica à do os.html
+          const fiscaisOficiais = [
+            "ACADIA DE SOUZA VIEIRA SILVA","ADRIANA CRHISTINA DE REZENDE CARNEIRO",
+            "ADRIANE PEREIRA GUIMARÃES","ALINE CASTRO DAMASIO",
+            "ANA PAULA RODRIGUES CORRÊA GUIMARÃES","ANGELA RIBEIRO NEVES",
+            "ARIANNE FERREIRA VIEIRA","CÉSIO MALAQUIAS",
+            "CLÁUDIO NASCIMENTO SILVA","CLÓVIS RAFAEL BORGES FERREIRA",
+            "DANIEL SOARES BARBOSA","DANIELA DE ALMEIDA CASTRO",
+            "EDSON ARANTES FARIA FILHO","EDUARDO LUCAS MAGALHÃES CASTRO",
+            "FABÍOLA PEDROSA PEIXOTO MARQUES","GERALDO EDSON ROSA",
+            "GLEICIANE MARIA JOSÉ DA SILVA","GÚBIO DIAS PEREIRA",
+            "JOÃO BATISTA LUCAS DA SILVA REIS","JOSE LUIZ RIBEIRO",
+            "JULIANA FERREIRA VITURINO","JULIANA KÊNIA MARTINS DA SILVA",
+            "JULIO CÉSAR TELES SPINDOLA","KAMILLA CHRYSTINE ROLIM D. SANTOS GARCÊS",
+            "LIDIANE SIMÕES","LIVIA BRITO","LUCIANA CONSOLAÇÃO DOS SANTOS",
+            "LUCIANA SANTANA DA ROCHA","LUCIENE DE SOUZA BARBOSA GOMES SILVA",
+            "MARCIO HENRIQUE GOMES RODOVALHO","MARIA EDWIGES PINHEIRO DE SOUZA CHAVES",
+            "MARINA PERILLO NAVARRETE LAVERS","PATRÍCIA CORDEIRO DE MORAES E SOUZA",
+            "PEDRO HENRIQUE AIRES RIBEIRO","RODRIGO ALESSANDRO TÔGO SANTOS",
+            "RÚBIA MARA DE FREITAS","SILVIA MARQUES NAVES DA MOTA SOUZA",
+            "SIMONE DUARTE GROSSI","TATHIANE PESSOA DE SOUZA",
+            "THIAGO GOMES GOBO","VANESSA SANTANA",
+            "VIVIANE MANOEL DA SILVA BORGES","VIVIANE MIYADA",
+            "WANESSA DE BRITO JORGE"
+          ];
+          function normTxt(s) {
+            return String(s || '').trim().toUpperCase()
+              .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+          }
+          const fiscaisNorm = new Set(fiscaisOficiais.map(normTxt));
+          function ehFiscal(nome) { return fiscaisNorm.has(normTxt(nome)); }
+
+          return new Promise((resolve) => {
+            Papa.parse('data/tramitacao.csv?' + timestamp, {
+              download: true, header: true, delimiter: ';', skipEmptyLines: true,
+              complete: function(results) {
+                const porProtocolo = {};
+                results.data.forEach(row => {
+                  const num = (row.PROTOCOLO || '').trim();
+                  if (!num) return;
+                  if (!porProtocolo[num]) porProtocolo[num] = [];
+                  porProtocolo[num].push(row);
+                });
+                let vencidas = 0, aVencer = 0;
+                Object.keys(porProtocolo).forEach(numProto => {
+                  const registros = porProtocolo[numProto];
+                  // Ordena decrescente por DATA + HORA para pegar o mais recente
+                  registros.sort((a, b) => {
+                    const dA = parseData(a.DATA || ''), dB = parseData(b.DATA || '');
+                    if (!dA && !dB) return 0;
+                    if (!dA) return 1; if (!dB) return -1;
+                    if (dA.getTime() !== dB.getTime()) return dB.getTime() - dA.getTime();
+                    return horaParaSegundos(b.HORA) - horaParaSegundos(a.HORA);
+                  });
+                  const maisRecente = registros[0];
+                  const destino = (maisRecente.DESTINO || '').trim();
+                  // Conta apenas se o DESTINO do último registro é nome de fiscal oficial
+                  if (!ehFiscal(destino)) return;
+                  const dataTram = parseData(maisRecente.DATA || '');
+                  if (!dataTram) return;
+                  const tipo = classificarPrazo(calcularPrazoUteis(dataTram, 15));
+                  if (tipo === 'vencida') vencidas++;
+                  else if (tipo === 'avencer') aVencer++;
+                });
+                resolve({ vencidas, aVencer, total: vencidas + aVencer });
+              },
+              error: () => resolve({ vencidas: 0, aVencer: 0, total: 0 })
+            });
+          });
+        }
+
+        // Requerimento: todos os fiscais, não atendidos e não cancelados
+        function processarRequerimentoAdmin() {
+          return new Promise((resolve) => {
+            Papa.parse('data/requerimento.csv?' + timestamp, {
+              download: true, header: true, delimiter: ';', skipEmptyLines: true,
+              complete: function(results) {
+                let vencidas = 0, aVencer = 0;
+                results.data.forEach(row => {
+                  if (!(row.Fiscal_Encaminha || '').trim()) return;
+                  if (String(row.Atendimento||'').trim().toUpperCase() === 'TRUE') return;
+                  if (String(row.Cancelado||'').trim().toUpperCase()   === 'TRUE') return;
+                  const prazo = parseData(row.Prazo || '');
+                  if (!prazo) return;
+                  const tipo = classificarPrazo(prazo);
+                  if (tipo === 'vencida') vencidas++; else if (tipo === 'avencer') aVencer++;
+                });
+                resolve({ vencidas, aVencer, total: vencidas + aVencer });
+              },
+              error: () => resolve({ vencidas: 0, aVencer: 0, total: 0 })
+            });
+          });
+        }
+
+        // Denúncia: todos os fiscais, não arquivadas
+        function processarDenunciaAdmin() {
+          return new Promise((resolve) => {
+            Papa.parse('data/denuncia.csv?' + timestamp, {
+              download: true, header: true, delimiter: ';', skipEmptyLines: true,
+              complete: function(results) {
+                let vencidas = 0, aVencer = 0;
+                results.data.forEach(row => {
+                  if (!(row.FiscalEncaminha || '').trim()) return;
+                  if (String(row.Archive||'').trim().toUpperCase() === 'TRUE') return;
+                  const prazo = parseData(row.Prazo || '');
+                  if (!prazo) return;
+                  const tipo = classificarPrazo(prazo);
+                  if (tipo === 'vencida') vencidas++; else if (tipo === 'avencer') aVencer++;
+                });
+                resolve({ vencidas, aVencer, total: vencidas + aVencer });
+              },
+              error: () => resolve({ vencidas: 0, aVencer: 0, total: 0 })
+            });
+          });
+        }
+
+        // Ofício: todos os fiscais, não cancelados e não arquivados
+        function processarOficioAdmin() {
+          return new Promise((resolve) => {
+            Papa.parse('data/oficio.csv?' + timestamp, {
+              download: true, header: true, delimiter: ';', skipEmptyLines: true,
+              complete: function(results) {
+                let vencidas = 0, aVencer = 0;
+                results.data.forEach(row => {
+                  if (!(row.Fiscalencaminha || '').trim()) return;
+                  if (String(row.Cancela||'').trim().toUpperCase() === 'TRUE') return;
+                  if (String(row.Archive||'').trim().toUpperCase() === 'TRUE') return;
+                  const prazo = parseData(row.Prazo || '');
+                  if (!prazo) return;
+                  const tipo = classificarPrazo(prazo);
+                  if (tipo === 'vencida') vencidas++; else if (tipo === 'avencer') aVencer++;
+                });
+                resolve({ vencidas, aVencer, total: vencidas + aVencer });
+              },
+              error: () => resolve({ vencidas: 0, aVencer: 0, total: 0 })
+            });
+          });
+        }
+
+        const [protocolos, requerimentos, denuncias, oficios] = await Promise.all([
+          processarProtocoloAdmin(),
+          processarRequerimentoAdmin(),
+          processarDenunciaAdmin(),
+          processarOficioAdmin()
+        ]);
+
+        const statCards = document.querySelectorAll('.stat-card .stat-number');
+        if (statCards.length >= 4) {
+          statCards[0].textContent = protocolos.total;
+          statCards[1].textContent = requerimentos.total;
+          statCards[2].textContent = denuncias.total;
+          statCards[3].textContent = oficios.total;
+          document.getElementById('detProtocolos').textContent =
+            `${protocolos.vencidas} vencidas | ${protocolos.aVencer} próximas`;
+          document.getElementById('detRequerimentos').textContent =
+            `${requerimentos.vencidas} vencidas | ${requerimentos.aVencer} próximas`;
+          document.getElementById('detDenuncias').textContent =
+            `${denuncias.vencidas} vencidas | ${denuncias.aVencer} próximas`;
+          document.getElementById('detOficios').textContent =
+            `${oficios.vencidas} vencidas | ${oficios.aVencer} próximas`;
+          function aplicarCorCard(cardEl, vencidas, aVencer) {
+            if (!cardEl) return;
+            cardEl.classList.remove('alert-red', 'alert-yellow', 'alert-ok');
+            if (vencidas > 0) cardEl.classList.add('alert-red');
+            else if (aVencer > 0) cardEl.classList.add('alert-yellow');
+            else cardEl.classList.add('alert-ok');
+          }
+          const cards = document.querySelectorAll('#fiscalStats .stat-card');
+          aplicarCorCard(cards[0], protocolos.vencidas,    protocolos.aVencer);
+          aplicarCorCard(cards[1], requerimentos.vencidas, requerimentos.aVencer);
+          aplicarCorCard(cards[2], denuncias.vencidas,     denuncias.aVencer);
+          aplicarCorCard(cards[3], oficios.vencidas,       oficios.aVencer);
+        }
+      } catch(e) {
+        console.error('Erro ao carregar OS (Admin):', e);
+      }
     };
 
-    function processarDados(data, container) {
-      const rows = data || [];
-      const mesesPt = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-      const pad2 = (n) => String(n).padStart(2, '0');
-
-      function parseDMY(str) {
-        if (!str) return null;
-        const m = String(str).trim().match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{2,4})/);
-        if (!m) return null;
-        const day = parseInt(m[1], 10);
-        const month = parseInt(m[2], 10);
-        let year = parseInt(m[3], 10);
-        if (year < 100) year += 2000;
-        if (!(day >= 1 && day <= 31 && month >= 1 && month <= 12)) return null;
-        return { day, month, year };
-      }
-      function labelMesAno(month, year) { return `${mesesPt[month - 1]} ${year}`; }
-      function prevMesAno(month, year) { return month === 1 ? { month: 12, year: year - 1 } : { month: month - 1, year }; }
-      function keyMesAno(month, year) { return `${pad2(month)}.${year}`; }
-
-      const hoje = new Date();
-      const hojeDia = hoje.getDate();
-      const mesAtual = hoje.getMonth() + 1;
-      const anoAtual = hoje.getFullYear();
-
-      const atualKey = keyMesAno(mesAtual, anoAtual);
-      const anterior = prevMesAno(mesAtual, anoAtual);
-      const anteriorKey = keyMesAno(anterior.month, anterior.year);
-
-      const rowsMesAtual = rows.filter(row => row.DT_VISITA && String(row.DT_VISITA).includes(atualKey));
-      const rowsMesAnterior = rows.filter(row => row.DT_VISITA && String(row.DT_VISITA).includes(anteriorKey));
-
-      const existeDia15ouMaisNoMesAtual = rowsMesAtual.some(row => {
-        const dmy = parseDMY(row.DT_VISITA);
-        return dmy && dmy.year === anoAtual && dmy.month === mesAtual && dmy.day >= 15;
-      });
-
-      let inspecoesFiltradas;
-      let periodoTexto;
-
-      if (hojeDia < 15) {
-        inspecoesFiltradas = rowsMesAnterior;
-        periodoTexto = labelMesAno(anterior.month, anterior.year);
-      } else {
-        if (existeDia15ouMaisNoMesAtual) {
-          inspecoesFiltradas = rowsMesAtual;
-          periodoTexto = labelMesAno(mesAtual, anoAtual);
-        } else {
-          inspecoesFiltradas = rowsMesAnterior;
-          periodoTexto = labelMesAno(anterior.month, anterior.year);
-        }
-      }
-
-      if (!inspecoesFiltradas || inspecoesFiltradas.length === 0) {
-        inspecoesFiltradas = rows.slice(-1000);
-        periodoTexto = 'Últimos 1000';
-      }
-
-      const totalInspecoes = inspecoesFiltradas.length;
-      const autos = inspecoesFiltradas.filter(row => row.TIPO && row.TIPO.includes('AUTO DE INFRAÇÃO')).length;
-
-      const fiscaisSet = new Set();
-      inspecoesFiltradas.forEach(row => {
-        if (row.Fiscal1 && row.Fiscal1.trim()) fiscaisSet.add(row.Fiscal1.trim());
-        if (row.Fiscal2 && row.Fiscal2.trim()) fiscaisSet.add(row.Fiscal2.trim());
-        if (row.Fiscal3 && row.Fiscal3.trim()) fiscaisSet.add(row.Fiscal3.trim());
-      });
-      const totalFiscais = fiscaisSet.size;
-
-      const denuncias = new Set();
-      const requerimentos = new Set();
-      const oficios = new Set();
-      const protocolos = new Set();
-
-      inspecoesFiltradas.forEach(row => {
-        if (row.Denuncia && row.Denuncia.trim() !== '') denuncias.add(row.Denuncia.trim());
-        if (row.OS && row.OS.trim() !== '') requerimentos.add(row.OS.trim());
-        if (row.Oficio && row.Oficio.trim() !== '') oficios.add(row.Oficio.trim());
-        if (row.Protocolo && row.Protocolo.trim() !== '') protocolos.add(row.Protocolo.trim());
-      });
-
-      const osDetalhadas = {
-        requerimentos: requerimentos.size,
-        oficios: oficios.size,
-        denuncias: denuncias.size,
-        protocolos: protocolos.size,
-        total: requerimentos.size + oficios.size + denuncias.size + protocolos.size
-      };
-
-      const tiposDocumentos = {};
-      inspecoesFiltradas.forEach(row => {
-        if (row.TIPO && row.TIPO.trim()) tiposDocumentos[row.TIPO.trim()] = (tiposDocumentos[row.TIPO.trim()] || 0) + 1;
-      });
-
-      const topTipos = Object.entries(tiposDocumentos).sort((a, b) => b[1] - a[1]).slice(0, 5);
-      const mediaPorFiscal = totalFiscais > 0 ? Math.round(totalInspecoes / totalFiscais) : 0;
-      const taxaAutos = totalInspecoes > 0 ? ((autos / totalInspecoes) * 100).toFixed(1) : 0;
-
-      renderizarIndicadores(container, {
-        totalInspecoes, autos, totalFiscais, osDetalhadas, mediaPorFiscal, taxaAutos, topTipos, periodoTexto
-      });
-    }
-
-    function renderizarIndicadores(container, dados) {
-      let html =
-        '<table style="width: 100%; font-size: 0.875rem; border-collapse: collapse; margin-bottom: 8px;">' +
-        '<tr style="border-bottom: 1px solid rgba(0,0,0,0.05);"><td style="padding: 8px 4px;">🔍 Inspeções</td><td style="text-align: right; font-weight: 600; color: #2c5aa0;">' +
-        dados.totalInspecoes +
-        ' <small style="color: var(--muted); font-weight: normal;">• Média ' + dados.mediaPorFiscal + '/fiscal</small></td></tr>' +
-        '<tr style="border-bottom: 1px solid rgba(0,0,0,0.05);"><td style="padding: 8px 4px;">📋 Autos</td><td style="text-align: right; font-weight: 600; color: #2c5aa0;">' +
-        dados.autos +
-        ' <small style="color: var(--muted); font-weight: normal;">• Taxa ' + dados.taxaAutos + '%</small></td></tr>' +
-        '<tr><td style="padding: 8px 4px;">👥 Fiscais Ativos</td><td style="text-align: right; font-weight: 600; color: #2c5aa0;">' +
-        dados.totalFiscais +
-        '</td></tr>' +
-        '</table>' +
-        '<div style="border-top: 1px solid rgba(0,0,0,0.08); margin: 20px 0 16px 0;"></div>' +
-        '<div style="margin-top: 0px; padding-top: 0px;">' +
-        '<h4 style="margin: 0 0 12px 0; color: #2c5aa0; font-size: 0.95rem; font-weight: 600;">📝 Ordens de Serviço: <strong style="font-size: 0.95rem;">' +
-        dados.osDetalhadas.total +
-        '</strong> <small style="color: var(--muted); font-weight: normal;">Atendidas</small></h4>' +
-        '<table style="width: 100%; font-size: 0.875rem; border-collapse: collapse;">' +
-        '<tr style="border-bottom: 1px solid rgba(0,0,0,0.05);"><td style="padding: 8px 4px;">📄 Requerimento</td><td style="text-align: right; font-weight: 600; color: #2c5aa0;">' +
-        dados.osDetalhadas.requerimentos +
-        '</td></tr>' +
-        '<tr style="border-bottom: 1px solid rgba(0,0,0,0.05);"><td style="padding: 8px 4px;">📮 Ofício</td><td style="text-align: right; font-weight: 600; color: #2c5aa0;">' +
-        dados.osDetalhadas.oficios +
-        '</td></tr>' +
-        '<tr style="border-bottom: 1px solid rgba(0,0,0,0.05);"><td style="padding: 8px 4px;">🔔 Denúncia</td><td style="text-align: right; font-weight: 600; color: #2c5aa0;">' +
-        dados.osDetalhadas.denuncias +
-        '</td></tr>' +
-        '<tr><td style="padding: 8px 4px;">📋 Protocolo</td><td style="text-align: right; font-weight: 600; color: #2c5aa0;">' +
-        dados.osDetalhadas.protocolos +
-        '</td></tr>' +
-        '</table></div>' +
-        '<div style="border-top: 1px solid rgba(0,0,0,0.08); margin: 20px 0 16px 0;"></div>' +
-        '<div style="margin-top: 8px; padding-top: 0px;">' +
-        '<h4 style="margin: 0 0 12px 0; color: #2c5aa0; font-size: 0.95rem; font-weight: 600;">📄 Tipos de Documentos: <strong style="font-size: 0.95rem;">' +
-        dados.totalInspecoes +
-        '</strong> <small style="color: var(--muted); font-weight: normal;">Total</small></h4>' +
-        '<table style="width: 100%; font-size: 0.875rem; border-collapse: collapse;">';
-
-      function toTitleCase(str) {
-        var minusculas = ['de', 'da', 'do', 'das', 'dos', 'e', 'em', 'a', 'o'];
-        return str.toLowerCase().split(' ').map(function(palavra, indice) {
-          if (indice === 0) return palavra.charAt(0).toUpperCase() + palavra.slice(1);
-          if (minusculas.indexOf(palavra) > -1) return palavra;
-          return palavra.charAt(0).toUpperCase() + palavra.slice(1);
-        }).join(' ');
-      }
-      function getIconeDocumento(tipo) {
-        var tipoLower = tipo.toLowerCase();
-        if (tipoLower.indexOf('intimação') > -1 || tipoLower.indexOf('intimacao') > -1) return '⚠️';
-        if (tipoLower.indexOf('notificação') > -1 || tipoLower.indexOf('notificacao') > -1) return '📢';
-        if (tipoLower.indexOf('certidão') > -1 || tipoLower.indexOf('certidao') > -1) return '📜';
-        if (tipoLower.indexOf('análise') > -1 || tipoLower.indexOf('analise') > -1) return '🔍';
-        if (tipoLower.indexOf('prorrogação') > -1 || tipoLower.indexOf('prorrogacao') > -1) return '⏳';
-        if (tipoLower.indexOf('auto') > -1) return '📋';
-        if (tipoLower.indexOf('alvará') > -1 || tipoLower.indexOf('alvara') > -1) return '✅';
-        if (tipoLower.indexOf('relatório') > -1 || tipoLower.indexOf('relatorio') > -1) return '📊';
-        if (tipoLower.indexOf('ofício') > -1 || tipoLower.indexOf('oficio') > -1) return '📮';
-        return '📄';
-      }
-
-      dados.topTipos.forEach(function(item, index) {
-        var nomeOriginal = item[0];
-        var quantidade = item[1];
-        var nomeFormatado = toTitleCase(nomeOriginal);
-        if (nomeFormatado.length > 32) nomeFormatado = nomeFormatado.substring(0, 29) + '...';
-        var icone = getIconeDocumento(nomeOriginal);
-        var estiloBorda = (index < dados.topTipos.length - 1) ? 'border-bottom: 1px solid rgba(0,0,0,0.05);' : '';
-        html += '<tr style="' + estiloBorda + '"><td style="padding: 8px 4px;">' + icone + ' ' + nomeFormatado + '</td><td style="text-align: right; font-weight: 600; color: #2c5aa0;">' + quantidade + '</td></tr>';
-      });
-
-      html += '</table></div>';
-      html += '<div style="margin-top: 20px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.08); text-align: right; font-size: 0.85rem; color: var(--muted);">📅 ' + dados.periodoTexto + ' • 🔄 Atualizado</div>';
-      container.innerHTML = html;
-    }
-
-    // ===== Sincronização CVS =====
+        // ===== Sincronização CVS =====
     document.addEventListener('DOMContentLoaded', function () {
       const el = document.getElementById('sync-cvs-info');
       if (!el) return;
@@ -1717,11 +1774,9 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
       lockLinksUntilProfile();
       setUserInfoLoading(user);
 
-      // Oculta ambos até perfil decidir
+      // Oculta stats até perfil decidir
       const fiscalStats = document.getElementById('fiscalStats');
-      const indicadoresSection = document.querySelector('.indicadores-section');
       if (fiscalStats) fiscalStats.style.display = 'none';
-      if (indicadoresSection) indicadoresSection.style.display = 'none';
 
       // Busca perfil (Camada 2)
       let perfil = null;
@@ -1831,9 +1886,12 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
             } catch (e) { console.warn("[Push] Erro ao renovar token:", e.message); }
 
           } else if (optIn === false) {
-            // ── Já recusou: não exibe modal, mas mostra link discreto de reativação ──
-            console.log("[Push] Usuário havia recusado notificações. Exibindo opção de reativar.");
-            _exibirBannerReativacao(db2, userDocRef, app, user.email);
+            // ── Já recusou: banner discreto apenas uma vez por sessão ──
+            if (!sessionStorage.getItem('visa_reativar_shown')) {
+              sessionStorage.setItem('visa_reativar_shown', '1');
+              console.log("[Push] Usuário havia recusado. Exibindo banner de reativação.");
+              _exibirBannerReativacao(db2, userDocRef, app, user.email);
+            }
 
           } else {
             // ── Nunca decidiu: exibe modal de opt-in ──
@@ -1843,20 +1901,11 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
             document.getElementById("optInYes").onclick = async () => {
               if (modal) modal.style.display = "none";
               try {
-                // Não gravar notificationOptIn antes: só gravar quando o token for obtido e salvo
-                // (initPushNotifications grava fcmTokens + notificationOptIn numa única escrita).
-                // Assim evitamos usuários com optIn true mas sem token (getToken falha em Safari/Firefox etc).
+                await gSet(userDocRef, { notificationOptIn: true }, { merge: true });
                 const { initPushNotifications } = await import("./js/push-notifications.js");
-                const token = await initPushNotifications(app, user.email, true);
-                if (token) {
-                  console.log("[Push] Notificações ativadas pelo usuário.");
-                } else {
-                  _toastPushFalha();
-                }
-              } catch (e) {
-                console.warn("[Push] Erro ao ativar:", e.message);
-                _toastPushFalha();
-              }
+                await initPushNotifications(app, user.email, true);
+                console.log("[Push] Notificações ativadas pelo usuário.");
+              } catch (e) { console.warn("[Push] Erro ao ativar:", e.message); }
             };
 
             document.getElementById("optInNo").onclick = async () => {
@@ -1871,15 +1920,6 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
           console.warn("[Push] Erro ao inicializar fluxo de notificações:", e.message);
         }
       })();
-
-      function _toastPushFalha() {
-        const msg = "Não foi possível ativar notificações neste navegador. Tente o Chrome no Android ou instale o app como PWA.";
-        const el = document.createElement("div");
-        el.style.cssText = "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#8b0000;color:#fff;padding:12px 20px;border-radius:12px;z-index:9999;max-width:90%;font-size:0.9rem;box-shadow:0 4px 20px rgba(0,0,0,0.3);";
-        el.textContent = msg;
-        document.body.appendChild(el);
-        setTimeout(() => el.remove(), 6000);
-      }
 
       // Banner discreto para usuários que recusaram anteriormente
       function _exibirBannerReativacao(db2, userDocRef, firebaseApp, email) {
@@ -1910,18 +1950,12 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
         document.getElementById('btnReativarNotif').onclick = async () => {
           banner.remove();
           try {
-            // Grava optIn só quando o token for obtido (initPushNotifications grava os dois juntos)
+            const { setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+            await setDoc(userDocRef, { notificationOptIn: true }, { merge: true });
             const { initPushNotifications } = await import("./js/push-notifications.js");
-            const token = await initPushNotifications(firebaseApp, email, true);
-            if (token) {
-              console.log("[Push] Notificações reativadas pelo usuário.");
-            } else {
-              _toastPushFalha();
-            }
-          } catch (e) {
-            console.warn("[Push] Erro ao reativar:", e.message);
-            _toastPushFalha();
-          }
+            await initPushNotifications(firebaseApp, email, true);
+            console.log("[Push] Notificações reativadas pelo usuário.");
+          } catch (e) { console.warn("[Push] Erro ao reativar:", e.message); }
         };
       }
       // ──────────────────────────────────────────────────────
@@ -1931,12 +1965,11 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
         if (fiscalStats) fiscalStats.style.display = 'block';
         carregarOSPendentesFiscal(perfil.nome);
       } else if (perfil.grupo === 'Administrador') {
-        if (indicadoresSection) indicadoresSection.style.display = 'block';
-        window.carregarIndicadores();
+        if (fiscalStats) fiscalStats.style.display = 'block';
+        window.carregarOSAdmin();
       } else {
         // Administrativo / outros: não carrega nada pesado
         if (fiscalStats) fiscalStats.style.display = 'none';
-        if (indicadoresSection) indicadoresSection.style.display = 'none';
       }
     });
   </script>

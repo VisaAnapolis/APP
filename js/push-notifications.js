@@ -96,9 +96,7 @@ export async function initPushNotifications(firebaseApp, userEmail, userOptedIn)
 
     console.log('[Push] Token FCM obtido:', token.substring(0, 20) + '...');
 
-    // Salva o token no Firestore usando setDoc + merge:true (só chegamos aqui com token válido).
-    // notificationOptIn só é gravado junto com fcmTokens nesta única escrita, evitando
-    // usuários com optIn true mas sem token (ex.: getToken falha em Safari iOS / Firefox).
+    // Salva o token no Firestore usando setDoc + merge:true
     // Isso CRIA o documento se não existir, ou ATUALIZA se já existir.
     // updateDoc lançaria erro se o documento não existisse.
     const db = getFirestore(firebaseApp);
