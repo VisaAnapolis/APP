@@ -39,7 +39,7 @@ jobs:
         working-directory: .github/scripts
         env:
           FIREBASE_SERVICE_ACCOUNT_PATH: service-account.json
-        run: node ../../scripts/test-notify.js
+        run: node test-notify.js
 
       - name: Remover Service Account
         if: always()
