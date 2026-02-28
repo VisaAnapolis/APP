@@ -695,7 +695,7 @@ Supervisão de Vigilância Sanitária</p>
     const provider = new GoogleAuthProvider();
 
     // ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
-    const APP_VERSION = '2.3.8';
+    const APP_VERSION = '2.3.9';
     const VERSION_KEY = 'visa_app_version';
     const savedVersion = localStorage.getItem(VERSION_KEY);
 
@@ -1443,7 +1443,7 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
       } catch(e) {
         console.error('Erro ao carregar OS:', e);
       }
-    }}
+    }
 
     // ===== Dashboard OS (Admin: todos os fiscais) =====
     // Replica exatamente a lógica de carregarOSPendentesFiscal,
