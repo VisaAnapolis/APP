@@ -1576,6 +1576,7 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
               resolve({ vencidas, aVencer, total: vencidas + aVencer });
             });
           });
+        }
 
         // Requerimento: todos os fiscais, não atendidos e não cancelados
         function processarRequerimentoAdmin() {
@@ -1643,6 +1644,7 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
               error: () => resolve({ vencidas: 0, aVencer: 0, total: 0 })
             });
           });
+        }
       
         const [protocolos, requerimentos, denuncias, oficios] = await Promise.all([
           processarProtocoloAdmin(),
