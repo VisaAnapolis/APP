@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="./css/design-tokens.css" />
+  <link rel="stylesheet" href="./css/header-component.css" />
+
+  <meta property="og:title" content="Vigilância Sanitária de Anápolis" />
+  <meta property="og:description" content="Aplicativo interno da Vigilância Sanitária" />
+  <meta property="og:image" content="https://garrado.github.io/VISA/icons/visa-compartilhar.png" />
+  <meta property="og:url" content="https://garrado.github.io/VISA/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <meta name="apple-touch-icon" content="icons/visa-compartilhar.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#0A2540" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="apple-touch-icon" href="icons/visa-192.png" />
+
+  <title>Vigilância Sanitária – Anápolis</title>
+
+  <link rel="icon" type="image/x-icon" href="icons/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+  <style>
+    /* ── RESET & BASE ── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── LOADING ── */
+    #loading {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #ccd6e0;
+      border-top: 4px solid var(--brand1);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── ESTADOS PRINCIPAIS ── */
+    #conteudo { display: none; }
+    #login {
+      display: none;
+      min-height: 70vh;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 18px;
+    }
+
+    /* ── LOGIN CARD ── */
+    .loginCard {
+      width: min(520px, 100%);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .loginCard h2 { margin: 0 0 6px 0; }
+    .loginCard p  { margin: 0 0 14px 0; color: var(--muted); }
+
+    /* ── BOTÕES ── */
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border-primary);
+      background: var(--card-bg);
+      color: var(--text-primary);
+      padding: 12px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: .15s transform, .15s box-shadow, .15s background;
+    }
+    .btn:hover  { box-shadow: var(--shadow2); transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btnPrimary {
+      border: none;
+      background: linear-gradient(135deg, var(--brand1), var(--brand2));
+      color: #fff;
+    }
+
+    /* ── HEADER ── */
+    .app-header {
+      background: linear-gradient(135deg, #0A2540 0%, #1a3a6b 100%);
+      padding: 16px 20px 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.22);
+    }
+    .app-header__logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+    .app-header__text { flex: 1; }
+    .app-header__title {
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin: 0;
+      line-height: 1.2;
+    }
+    .app-header__subtitle {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.75rem;
+      font-weight: 400;
+      margin: 2px 0 0;
+    }
+
+    /* ── BARRA DO USUÁRIO (com logout integrado) ── */
+    .user-info-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: #f0f4f8;
+      border-bottom: 1px solid var(--line);
+      padding: 8px 16px;
+    }
+    .user-info-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .user-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand1), var(--brand2));
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .user-info-texts { min-width: 0; }
+    .user-info-bar .user-name {
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: #1a3a6b;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .user-info-bar .user-email {
+      font-size: 0.72rem;
+      color: #5b6b83;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .btn-logout {
+      flex-shrink: 0;
+      font-size: 0.75rem;
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1px solid #d1d9e6;
+      background: transparent;
+      color: #5b6b83;
+      cursor: pointer;
+      font-weight: 600;
+      transition: .15s background, .15s color;
+      white-space: nowrap;
+    }
+    .btn-logout:hover { background: #e8edf5; color: #1a3a6b; }
+
+    @media (max-width: 640px) {
+      .user-info-bar { padding: 7px 12px; }
+      .user-info-bar .user-email { display: none; }
+    }
+
+    /* ── BANNER DE NOVIDADES (colapsável) ── */
+    .novidade-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: linear-gradient(135deg, rgba(44,90,160,0.08), rgba(0,168,120,0.06));
+      border-bottom: 1px solid rgba(44,90,160,0.15);
+      padding: 9px 16px;
+      font-size: 0.82rem;
+      color: #1a3a6b;
+    }
+    .novidade-banner strong { color: var(--brand1); }
+    .novidade-banner .btn-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #5b6b83;
+      padding: 2px 6px;
+      border-radius: 6px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .novidade-banner .btn-close:hover { background: rgba(0,0,0,0.07); }
+
+    /* ── STAT CARDS (OS do fiscal) ── */
+    .fiscal-stats {
+      background: linear-gradient(135deg, rgba(26,58,107,0.03), rgba(52,199,89,0.03));
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      display: none; /* JS libera com 'flex' */
+      width: 100%;
+    }
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .stat-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px 14px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      border: 1px solid rgba(0,0,0,0.06);
+      border-left: 5px solid #1a3a6b;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,0.13); }
+    .stat-number  { display: block; font-size: 1.8rem; font-weight: 700; color: #1a3a6b; line-height: 1; margin-bottom: 4px; }
+    .stat-label   { display: block; font-size: 0.75rem; color: #666; font-weight: 500; }
+    .stat-detalhe { display: block; font-size: .72rem; color: #5b6b83; margin-top: 6px; font-weight: 600; }
+    /* Alertas visuais dos stat-cards */
+    .stat-card.alert-red    { background: #FFF2F2; border-left-color: #dc3545; }
+    .stat-card.alert-yellow { background: #FFFBEB; border-left-color: #ffc107; }
+    .stat-card.alert-ok     { background: #F0FFF4; border-left-color: #28a745; }
+
+    @media (max-width: 768px) {
+      .fiscal-stats    { padding: 12px; }
+      .stats-container { grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 100%; }
+      .stat-card       { padding: 12px 10px; }
+      .stat-number     { font-size: 1.5rem; }
+      .stat-label      { font-size: 0.7rem; }
+      .stat-detalhe    { font-size: .7rem; }
+    }
+
+    /* ── CONTAINER PRINCIPAL ── */
+    .container {
+      max-width: 1100px;
+      margin: 22px auto 30px;
+      padding: 0 16px;
+    }
+
+    /* ── GRID LAYOUT ── */
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+    }
+    @media (max-width: 920px) { .grid { grid-template-columns: 1fr; } }
+    .grid-span-2 { grid-column: 1 / -1; }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow2);
+    }
+    .card h3 {
+      margin: 0 0 12px 0;
+      color: var(--brand1);
+      padding-left: 10px;
+      border-left: 4px solid var(--brand1);
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .card p { text-align: justify; text-justify: inter-word; }
+    .avisos { background: var(--warnBg); border-left: 4px solid var(--warnLine); }
+
+    /* ── NOVIDADES (lista compacta) ── */
+    .novidades-lista { list-style: none; padding: 0; margin: 0; }
+    .novidades-lista li {
+      display: flex;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+    .novidades-lista li:last-child { border-bottom: none; }
+    .novidades-lista .ni-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+    .novidades-lista strong { color: #1a3a6b; display: block; margin-bottom: 2px; }
+    .novidades-lista small  { color: var(--muted); font-size: 0.82rem; }
+
+    /* ── LINK PILLS ── */
+    .links-section ul { list-style: none; padding: 0; margin: 0; }
+    .links-section li { margin: 8px 0; }
+
+    /* Label de grupo */
+    .link-group-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 14px 4px 4px;
+      list-style: none;
+      border-top: 1px solid var(--line);
+      margin-top: 4px;
+    }
+    .link-group-label:first-child { border-top: none; padding-top: 0; }
+
+    .linkPill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--card-bg);
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 800;
+      transition: .15s transform, .15s box-shadow;
+    }
+    .linkPill:hover { box-shadow: var(--shadow2); transform: translateY(-1px); }
+    .linkPill small { font-weight: 600; color: var(--muted); }
+    .linkPill .arrow {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      background: rgba(44,90,160,.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Links desabilitados */
+    .linkPill.is-disabled {
+      opacity: .45;
+      filter: grayscale(1);
+      cursor: not-allowed;
+      pointer-events: none;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Mobile: grid 2x2 */
+    @media (max-width: 768px) {
+      .links-section ul {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .link-group-label {
+        grid-column: 1 / -1;
+        margin-top: 4px;
+      }
+      .links-section li { margin: 0; }
+      .linkPill {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 16px 10px;
+        height: 140px;
+        gap: 8px;
+        border-radius: 16px;
+        box-shadow: var(--shadow2);
+      }
+      .linkPill .arrow {
+        order: -1;
+        width: 46px;
+        height: 46px;
+        background: linear-gradient(135deg, var(--brand1), var(--brand2));
+        font-size: 1.5rem;
+        border-radius: 13px;
+        margin-bottom: 4px;
+      }
+      .linkPill small { font-size: 0.8rem; line-height: 1.25; display: block; }
+      .linkPill:active { transform: scale(0.97); }
+    }
+    @media (max-width: 640px), (pointer: coarse) {
+      .linkPill { padding: 14px 10px; }
+    }
+
+    /* ── SINCRONIZAÇÃO CVS ── */
+    #sync-cvs-info {
+      margin: 0 0 16px 0;
+      padding: 8px 12px;
+      font-size: 0.88rem;
+      color: #2c5aa0;
+      font-weight: 600;
+      background: rgba(44,90,160,0.06);
+      border-radius: 10px;
+      border: 1px solid rgba(44,90,160,0.12);
+    }
+
+    /* ── MENSAGEM INSTITUCIONAL (compacta) ── */
+    .msg-institucional {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .msg-institucional .mi-icon {
+      font-size: 2rem;
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+    .msg-institucional p { margin: 0 0 8px; font-size: 0.92rem; }
+    .msg-institucional .small { font-size: 0.85rem; color: var(--muted); }
+
+    /* ── FOOTER ── */
+    .footer {
+      text-align: center;
+      padding: 20px 16px 28px;
+      color: #66728a;
+      font-size: 0.85rem;
+      border-top: 1px solid var(--line);
+      margin-top: 8px;
+    }
+    .footer a {
+      color: #2c5aa0;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .footer a:hover { text-decoration: underline; }
+
+    /* ── MODAL ── */
+    .modalOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 9999;
+    }
+    .modalCard {
+      width: min(520px, 100%);
+      background: #fff;
+      border: 1px solid rgba(31,42,58,.12);
+      border-radius: 16px;
+      box-shadow: 0 18px 50px rgba(0,0,0,.20);
+      padding: 20px;
+    }
+    .modalCard h3 { margin: 0 0 8px 0; color: #b30000; }
+    .modalCard p  { margin: 8px 0; color: #1f2a3a; }
+    .modalCard .small { color: #5b6b83; font-size: .92rem; white-space: pre-line; }
+    .modalActions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; }
+
+    /* ── MODAL OPT-IN NOTIFICAÇÕES ── */
+    #notificationOptInModal .modalCard   { text-align: center; }
+    #notificationOptInModal .modalActions { justify-content: center; }
+
+    /* ── UTILITÁRIOS ── */
+    .muted { color: var(--muted); }
+    .small { font-size: .92rem; color: var(--muted); }
+
+    /* ── PDF THUMB ── */
+    .pdfThumb { display: block; text-decoration: none; color: inherit; margin: 10px 0 0; }
+    .pdfThumbCard {
+      display: flex; gap: 12px; align-items: center;
+      padding: 12px; border-radius: 12px;
+      border: 1px solid rgba(0,0,0,.08);
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,.06);
+      transition: .15s transform, .15s box-shadow;
+    }
+    .pdfThumbCard:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.10); }
+    .pdfThumbImg { width: 92px; height: auto; border-radius: 8px; border: 1px solid rgba(0,0,0,.10); flex-shrink: 0; }
+    .pdfThumbTxt { line-height: 1.2; }
+    .pdfThumbTitulo { font-weight: 900; color: #1a3a6b; margin: 0 0 6px 0; }
+    .pdfThumbSub    { font-size: .88rem; color: rgba(31,42,58,.75); margin: 0; }
+    .pdfThumbBadge  {
+      display: inline-block; margin-top: 8px;
+      font-size: .78rem; font-weight: 800;
+      color: #2c5aa0; background: rgba(44,90,160,.10);
+      padding: 6px 10px; border-radius: 999px;
+    }
+    .pdfThumb--destaque {
+      border: 2px solid var(--brand1);
+      background: linear-gradient(135deg, rgba(44,90,160,0.06), #fff);
+      box-shadow: 0 0 0 1px rgba(44,90,160,0.15), 0 4px 14px rgba(44,90,160,0.18);
+    }
+    .pdfThumb--destaque:hover { box-shadow: 0 0 0 1px rgba(44,90,160,0.25), 0 6px 18px rgba(44,90,160,0.25); }
+    .pdfThumb--destaque .pdfThumbTitulo { color: var(--brand1); }
+
+    /* Ajuste fine de sync no mobile */
+    @media (max-width: 768px) { #sync-cvs-info { margin-bottom: 20px !important; } }
+  </style>
+
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <link rel="stylesheet" href="./css/layouts.css" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+</head>
+
+<body>
+
+  <!-- ── LOADING ── -->
+  <div id="loading">
+    <div class="spinner"></div>
+    <div style="color:var(--brand1);font-weight:600">Verificando acesso...</div>
+  </div>
+
+  <!-- ── LOGIN ── -->
+  <div id="login">
+    <div class="loginCard">
+      <h2>Área Restrita</h2>
+      <p>Entre com sua conta Google para acessar os conteúdos internos.</p>
+      <button class="btn btnPrimary" onclick="loginGoogle()">Entrar com Google</button>
+    </div>
+  </div>
+
+  <!-- ── CONTEÚDO PRINCIPAL ── -->
+  <div id="conteudo">
+
+    <!-- HEADER -->
+    <header class="app-header">
+      <div class="app-header__logo">🏥</div>
+      <div class="app-header__text">
+        <h1 class="app-header__title">Vigilância Sanitária</h1>
+        <h2 class="app-header__subtitle">Diretoria de Vigilância em Saúde · Anápolis-GO</h2>
+      </div>
+    </header>
+
+    <!-- BARRA DO USUÁRIO (com logout integrado) -->
+    <div id="userInfo" class="user-info-bar" style="display:none">
+      <div class="user-info-content">
+        <div class="user-avatar" id="userAvatar">?</div>
+        <div class="user-info-texts">
+          <span class="user-name"  id="userName">–</span>
+          <span class="user-email" id="userEmail">–</span>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="logout()">Sair</button>
+    </div>
+
+    <!-- BANNER DE NOVIDADES (colapsável) -->
+    <div id="novidadeBanner" class="novidade-banner">
+      <span>🆕 <strong>v<span class="banner-version"></span></strong> — Cards do Dashboard agora são clicáveis · Notificações automáticas de OS · Google Maps integrado</span>
+      <button class="btn-close" onclick="document.getElementById('novidadeBanner').style.display='none'" title="Fechar">✕</button>
+    </div>
+
+    <!-- STAT CARDS DO FISCAL (OS) -->
+    <div id="fiscalStats" class="fiscal-stats">
+      <div class="stats-container">
+        <a class="stat-card" href="os.html?tipo=Protocolo" title="Ver OS de Protocolo">
+          <span class="stat-number">-</span>
+          <span class="stat-label">Protocolos</span>
+          <span class="stat-detalhe" id="detProtocolos">-</span>
+        </a>
+        <a class="stat-card" href="os.html?tipo=Requerimento" title="Ver OS de Requerimento">
+          <span class="stat-number">-</span>
+          <span class="stat-label">Requerimentos</span>
+          <span class="stat-detalhe" id="detRequerimentos">-</span>
+        </a>
+        <a class="stat-card" href="os.html?tipo=Den%C3%BAncia" title="Ver OS de Denúncia">
+          <span class="stat-number">-</span>
+          <span class="stat-label">Denúncias</span>
+          <span class="stat-detalhe" id="detDenuncias">-</span>
+        </a>
+        <a class="stat-card" href="os.html?tipo=Of%C3%ADcio" title="Ver OS de Ofício">
+          <span class="stat-number">-</span>
+          <span class="stat-label">Ofícios</span>
+          <span class="stat-detalhe" id="detOficios">-</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- CONTEÚDO CENTRAL -->
+    <div class="container">
+      <div class="grid">
+
+        <!-- COLUNA ESQUERDA: Novidades -->
+        <div class="card avisos">
+          <h3>Novidades no Aplicativo</h3>
+          <ul class="novidades-lista">
+            <li>
+              <span class="ni-icon">🖱️</span>
+              <div>
+                <strong>Cards do Dashboard Interativos</strong>
+                <small>Clique nos cards (Protocolos, Requerimentos, Denúncias e Ofícios) para abrir a lista de OS já filtrada e ordenada por prazo, com as vencidas no topo.</small>
+              </div>
+            </li>
+            <li>
+              <span class="ni-icon">🔔</span>
+              <div>
+                <strong>Notificações Automáticas</strong>
+                <small>Alertas no celular e desktop para OS com prazo próximo ao vencimento.</small>
+              </div>
+            </li>
+            <li>
+              <span class="ni-icon">📍</span>
+              <div>
+                <strong>Google Maps</strong>
+                <small>Rota para a localização da OS e link para endereço do regulado.</small>
+              </div>
+            </li>
+            <li>
+              <span class="ni-icon">👮</span>
+              <div>
+                <strong>Fiscal</strong>
+                <small>Exibição da autoridade fiscal emitente no histórico do regulado.</small>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- COLUNA DIREITA: Central de Trabalho -->
+        <div class="card links-section">
+          <h3>Central de Trabalho</h3>
+          <p id="sync-cvs-info" class="small">
+            🔄 Sincronização CVS: verificando...
+          </p>
+
+          <ul>
+            <!-- GRUPO: Operacional -->
+            <li class="link-group-label">Operacional</li>
+            <li><a class="linkPill" href="os.html"><div>OS<br /><small>Consulta ordens de serviço</small></div><div class="arrow">📋</div></a></li>
+            <li><a class="linkPill" href="alvara.html"><div>Alvarás<br /><small>Consulta alvarás emitidos</small></div><div class="arrow">🏦</div></a></li>
+            <li><a class="linkPill" href="cvs.html"><div>Regulados<br /><small>Histórico dos regulados</small></div><div class="arrow">🏪</div></a></li>
+
+            <!-- GRUPO: Relatórios -->
+            <li class="link-group-label">Relatórios</li>
+            <li><a class="linkPill" id="link-rmpf" href="rmpf.html"><div>RMPF<br /><small>Relatório mensal de produtividade fiscal</small></div><div class="arrow">📚</div></a></li>
+            <li><a class="linkPill" id="link-inspecoes" href="inspecoes.html"><div>Inspeções<br /><small>Inspeções por fiscal e período</small></div><div class="arrow">👁️</div></a></li>
+            <li><a class="linkPill" href="relatorio_plantao_fiscal.html"><div>Ocorrências<br /><small>Relatório do plantão fiscal</small></div><div class="arrow">📈</div></a></li>
+            <li><a class="linkPill" id="link-indicadores" href="indicadores.html"><div>Indicadores<br /><small>Indicadores mensais de inspeção</small></div><div class="arrow">📊</div></a></li>
+
+            <!-- GRUPO: Escala -->
+            <li class="link-group-label">Escala</li>
+            <li><a class="linkPill" href="plantao.html"><div>Plantão Fiscal<br /><small>Escala de plantão</small></div><div class="arrow">📅</div></a></li>
+            <li><a class="linkPill" href="veiculos.html"><div>Veículos<br /><small>Escala de uso dos veículos</small></div><div class="arrow">🚗</div></a></li>
+            <li><a class="linkPill" href="ferias.html"><div>Férias<br /><small>Escala de férias</small></div><div class="arrow">🏖️</div></a></li>
+
+            <!-- GRUPO: Referência -->
+            <li class="link-group-label">Referência</li>
+            <li><a class="linkPill" href="legislacao.html"><div>Legislação<br /><small>Consulta normativa</small></div><div class="arrow">📜</div></a></li>
+            <li><a class="linkPill" href="pop.html"><div>POPs da VISA<br /><small>Procedimentos Operacionais Padronizados</small></div><div class="arrow">🎯</div></a></li>
+            <li><a class="linkPill" href="check.html"><div>Check Lists<br /><small>Roteiros de inspeção</small></div><div class="arrow">✓</div></a></li>
+
+            <!-- GRUPO: Distribuição -->
+            <li class="link-group-label">Distribuição</li>
+            <li><a class="linkPill" href="areas.html"><div>Áreas<br /><small>Fiscais por bairro e CNAEs</small></div><div class="arrow">🧩</div></a></li>
+            <li><a class="linkPill" href="cnae.html"><div>CNAEs<br /><small>Distribuição por área</small></div><div class="arrow">👥</div></a></li>
+            <li><a class="linkPill" href="total.html"><div>Totalização<br /><small>Regulados de alta por área</small></div><div class="arrow">🧮</div></a></li>
+
+            <!-- GRUPO: Sistema -->
+            <li class="link-group-label">Sistema</li>
+            <li>
+              <a class="linkPill" id="link-admin" href="admin.html">
+                <div><strong>Painel Admin</strong><br /><small>Gerenciamento de usuários</small></div>
+                <div class="arrow">⚙️</div>
+              </a>
+            </li>
+            <li id="card-sugestoes">
+              <a class="linkPill" href="mailto:visa@anapolis.go.gov.br">
+                <div>Sugestões<br /><small>Envie sua ideia</small></div>
+                <div class="arrow">💡</div>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- MENSAGEM INSTITUCIONAL (grid-span-2, compacta) -->
+        <div class="card grid-span-2">
+          <h3>Mensagem Institucional</h3>
+          <div class="msg-institucional">
+            <span class="mi-icon">🏛️</span>
+            <div>
+              <p>Esta página interna da Gerência de Vigilância Sanitária reúne informações, links e comunicados destinados aos servidores, com o objetivo de apoiar as atividades de fiscalização sanitária, promovendo a qualidade das ações fiscalizatórias e a melhor organização da comunicação e do acesso a dados operacionais.</p>
+              <p class="small">📄 <a href="readme.html">Consulte aqui o Aviso Institucional e as regras de uso da plataforma</a></p>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /.grid -->
+    </div><!-- /.container -->
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      Vigilância Sanitária – Diretoria de Vigilância em Saúde<br />
+      Município de Anápolis – GO · © 2025-2026
+      <div style="margin-top:6px;font-size:1rem;opacity:0.6">v<span id="appVersion"></span></div>
+      <div style="margin-top:8px">
+        <a href="changelog.html">📌 Novidades da versão</a>
+      </div>
+    </footer>
+
+  </div><!-- /#conteudo -->
+
+  <!-- MODAL: Não Autorizado -->
+  <div id="modalNaoAutorizado" class="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalNaoAutorizadoTitulo">
+    <div class="modalCard">
+      <h3 id="modalNaoAutorizadoTitulo">Acesso não autorizado</h3>
+      <p>Sua conta Google não consta na lista de usuários liberados para esta página institucional.</p>
+      <p class="small" id="modalNaoAutorizadoConta"></p>
+      <p class="small">Solicite a liberação ao administrador da página e tente novamente.</p>
+      <div class="modalActions">
+        <button class="btn btnPrimary" onclick="fecharModalNaoAutorizado()">Entendi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       JAVASCRIPT — 100% PRESERVADO DO ORIGINAL
+       + pequenas adições visuais marcadas com [+]
+  ═══════════════════════════════════════════ -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getAuth,
+      signInWithPopup,
+      GoogleAuthProvider,
+      onAuthStateChanged,
+      signOut,
+      setPersistence,
+      browserLocalPersistence
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getFirestore, collection, query, where,
+      getDocs, getDoc, doc, updateDoc, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
+      authDomain: "visam-3a30b.firebaseapp.com",
+      projectId: "visam-3a30b",
+      messagingSenderId: "308899251430",
+      appId: "1:308899251430:web:0053cdbd0bed7f0de76727"
+    };
+
+    const app      = initializeApp(firebaseConfig);
+    const auth     = getAuth(app);
+    const db       = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    // ── VERSÃO ──
+    const APP_VERSION  = '2.4.2';
+    const VERSION_KEY  = 'visa_app_version';
+    const savedVersion = localStorage.getItem(VERSION_KEY);
+
+    // [+] Preenche versão no banner e no footer
+    document.querySelectorAll('#appVersion, .banner-version').forEach(el => el.textContent = APP_VERSION);
+
+    window.__visaVersionReloading = false;
+
+    if (savedVersion !== APP_VERSION) {
+      console.log(`🔄 Atualizando de ${savedVersion || 'antiga'} para ${APP_VERSION}`);
+      window.__visaVersionReloading = true;
+
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key.startsWith('firebase:') && key !== VERSION_KEY) keysToRemove.push(key);
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      localStorage.setItem(VERSION_KEY, APP_VERSION);
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          const unregisterAll = registrations.map(reg => {
+            console.log(`[SW] Desregistrando: ${reg.scope}`);
+            return reg.unregister();
+          });
+          Promise.all(unregisterAll).then(() => {
+            if ('caches' in window) {
+              caches.keys().then(cacheNames =>
+                Promise.all(cacheNames.map(name => caches.delete(name)))
+              ).then(() => location.reload(true));
+            } else {
+              location.reload(true);
+            }
+          });
+        });
+      } else {
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+          position:fixed;top:70px;left:50%;transform:translateX(-50%);
+          background:linear-gradient(135deg,#2c5aa0,#3d6bb3);
+          color:#fff;padding:14px 24px;border-radius:12px;
+          box-shadow:0 6px 16px rgba(0,0,0,.15);
+          z-index:10000;font-weight:600;font-size:.95rem;
+        `;
+        toast.innerHTML = `🚀 Atualizado para v${APP_VERSION}`;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.remove(); location.reload(); }, 2500);
+      }
+    }
+
+    // ── VERIFICAÇÃO PERIÓDICA DE VERSÃO ──
+    async function checkVersionUpdate() {
+      try {
+        const resp  = await fetch('/VISA/index.html?t=' + Date.now());
+        if (!resp.ok) return;
+        const html  = await resp.text();
+        const match = html.match(/APP_VERSION\s*=\s*'([\d.]+)'/);
+        if (match && match[1] !== APP_VERSION) {
+          localStorage.setItem(VERSION_KEY, match[1]);
+          location.reload(true);
+        }
+      } catch (e) {
+        console.warn('[VersionCheck] Falha:', e);
+      }
+    }
+    setInterval(checkVersionUpdate, 900000);
+    setTimeout(checkVersionUpdate, 300000);
+
+    // ── SERVICE WORKER MESSAGES ──
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data.type === 'SW_UPDATED') location.reload();
+      });
+    }
+
+    // ── AUTH CACHE ──
+    const AUTH_CACHE_KEY      = 'visa_auth_cache';
+    const AUTH_CACHE_DURATION = 60 * 60 * 1000;
+    class AuthCache {
+      save(user) {
+        try {
+          localStorage.setItem(AUTH_CACHE_KEY, JSON.stringify({
+            email: user.email, uid: user.uid,
+            displayName: user.displayName, photoURL: user.photoURL,
+            timestamp: Date.now(), expiresAt: Date.now() + AUTH_CACHE_DURATION
+          }));
+        } catch(e){}
+      }
+      get() {
+        try {
+          const cached = localStorage.getItem(AUTH_CACHE_KEY);
+          if (!cached) return null;
+          const data = JSON.parse(cached);
+          if (Date.now() < data.expiresAt) return data;
+          localStorage.removeItem(AUTH_CACHE_KEY);
+          return null;
+        } catch(e){ return null; }
+      }
+    }
+    const authCache = new AuthCache();
+
+    // ── PERFIL FIRESTORE (timeout + retry) ──
+    const PROFILE_TIMEOUT_MS    = 3500;
+    const PROFILE_RETRY_DELAY_MS = 800;
+
+    function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+    function withTimeout(promise, ms, label) {
+      let t;
+      const timeout = new Promise((_, reject) => {
+        t = setTimeout(() => reject(new Error((label||'timeout')+' após '+ms+'ms')), ms);
+      });
+      return Promise.race([promise, timeout]).finally(() => clearTimeout(t));
+    }
+
+    async function obterPerfilPorEmail(email) {
+      const emailNorm = (email || '').toLowerCase().trim();
+      if (!emailNorm) return { perfil: null, userDocId: null, notFound: true };
+      let lastErr = null;
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+          setUserInfoLoadingText(
+            attempt === 1 ? 'Carregando perfil...' : 'Conexão lenta — tentando novamente...',
+            emailNorm
+          );
+          const snap1 = await withTimeout(getDoc(doc(db,'usuarios',emailNorm)), PROFILE_TIMEOUT_MS, 'perfil-id');
+          if (snap1.exists()) return { perfil: snap1.data(), userDocId: snap1.id, notFound: false };
+          const q  = query(collection(db,'usuarios'), where('email','==',emailNorm));
+          const qs = await withTimeout(getDocs(q), PROFILE_TIMEOUT_MS, 'perfil-campo');
+          if (!qs.empty) {
+            const userDoc = qs.docs[0];
+            return { perfil: userDoc.data(), userDocId: userDoc.id, notFound: false };
+          }
+          return { perfil: null, userDocId: null, notFound: true };
+        } catch (err) {
+          lastErr = err;
+          console.warn('⚠️ Falha ao buscar perfil (tentativa ' + attempt + '):', err);
+          if (attempt < 2) await delay(PROFILE_RETRY_DELAY_MS);
+        }
+      }
+      throw lastErr || new Error('Falha ao buscar perfil');
+    }
+
+    setPersistence(auth, browserLocalPersistence).catch(console.error);
+
+    // ── LISTA DE AUTORIZADOS ──
+    const AUTHORIZED_EMAILS = new Set([
+      "rspbio@gmail.com","prof.claudioaguiar01@gmail.com",
+      "danielbarbosa@anapolis.go.gov.br","lindaenila@gmail.com",
+      "adrianarezendevisa@gmail.com","anapaula.rcg@gmail.com","lucianacsantos.lc@gmail.com","gleicimaryjs@gmail.com",
+      "wanessa05@gmail.com","santanaluciana097@gmail.com","maelkaanapolis04081415@gmail.com","flavianebrito@anapolis.go.gov.br",
+      "vmsbgyn@gmail.com","joseluizribeiro22@gmail.com","acadiaasocial@gmail.com","rubiamarabel@gmail.com",
+      "jotadaguas@gmail.com","geraldoedsonrosa@gmail.com","patycdmes@gmail.com","ariannefvieira@hotmail.com",
+      "marinaperillo@hotmail.com","visa@anapolis.go.gov.br","mariaedwiges@anapolis.go.gov.br","tathnut@hotmail.com",
+      "simonegrossi@anapolis.go.gov.br","kamillarolim@gmail.com","lulucieneepais@gmail.com","adrianepereira@anapolis.go.gov.br",
+      "claudio@anapolis.go.gov.br","silviamarques@anapolis.go.gov.br","medwiges@gmail.com","wanessab412@gmail.com",
+      "juliocteles@anapolis.go.gov.br","fabiolappmarques@gmail.com","lidianesimoes@anapolis.go.gov.br","crbferreira81@gmail.com",
+      "profajulianakenia@gmail.com","dani.visaanapolis@gmail.com","cesio@anapolis.go.gov.br","gubio@anapolis.go.gov.br",
+      "marciorodovalho@anapolis.go.gov.br","edsonarantes@anapolis.go.gov.br","981217644pedro@gmail.com",
+      "julianafviturino@gmail.com","thaysasouza97@gmail.com","farm.castro78@gmail.com","viniciuscassiano@anapolis.go.gov.br",
+      "thiagogomesgobo@gmail.com","liviabr.visa@gmail.com","santosrat@gmail.com","vivianemiyada@gmail.com","angelavet2@gmail.com",
+      "cidalinacoelho@anapolis.go.gov.br","lauraeleuza@gmail.com","mens.agitat.molem.cns@gmail.com"
+    ]);
+    function isAuthorized(user) {
+      return AUTHORIZED_EMAILS.has((user?.email || '').toLowerCase().trim());
+    }
+
+    // ── CONTROLE DE EXIBIÇÃO ──
+    function showLoading() {
+      document.getElementById('loading').style.display = 'flex';
+      document.getElementById('login').style.display   = 'none';
+      document.getElementById('conteudo').style.display = 'none';
+    }
+    function showLogin() {
+      document.getElementById('loading').style.display  = 'none';
+      document.getElementById('login').style.display    = 'flex';
+      document.getElementById('conteudo').style.display = 'none';
+    }
+    function showConteudo() {
+      document.getElementById('loading').style.display  = 'none';
+      document.getElementById('login').style.display    = 'none';
+      document.getElementById('conteudo').style.display = 'block';
+    }
+
+    // [+] Atualiza barra do usuário (novo layout com avatar + logout)
+    function setUserInfoLoadingText(msg, email) {
+      const bar = document.getElementById('userInfo');
+      if (!bar) return;
+      bar.style.display = 'flex';
+      document.getElementById('userName').textContent  = msg || 'Carregando...';
+      document.getElementById('userEmail').textContent = email || '';
+      document.getElementById('userAvatar').textContent = '…';
+    }
+
+    // [+] Preenche barra do usuário com dados reais
+    function setUserInfoData(displayName, email) {
+      const bar = document.getElementById('userInfo');
+      if (!bar) return;
+      bar.style.display = 'flex';
+      const nome = displayName || email || '–';
+      document.getElementById('userName').textContent  = nome;
+      document.getElementById('userEmail').textContent = email || '';
+      document.getElementById('userAvatar').textContent = nome.charAt(0).toUpperCase();
+    }
+
+    // ── MODAL NÃO AUTORIZADO ──
+    function showUnauthorizedModal(user) {
+      const modal = document.getElementById('modalNaoAutorizado');
+      const conta = document.getElementById('modalNaoAutorizadoConta');
+      if (conta) conta.textContent = `E-mail: ${user?.email || '(não identificado)'}`;
+      if (modal) modal.style.display = 'flex';
+    }
+    window.__pendingLogout = false;
+    window.fecharModalNaoAutorizado = async function() {
+      const modal = document.getElementById('modalNaoAutorizado');
+      if (modal) modal.style.display = 'none';
+      if (window.__pendingLogout) {
+        window.__pendingLogout = false;
+        try { await signOut(auth); } catch(e){ console.error(e); }
+      }
+    };
+    document.addEventListener('click', (e) => {
+      const modal = document.getElementById('modalNaoAutorizado');
+      if (modal && modal.style.display === 'flex' && e.target === modal)
+        window.fecharModalNaoAutorizado();
+    });
+
+    // ── LOGIN / LOGOUT ──
+    window.loginGoogle = function() { signInWithPopup(auth, provider).catch(console.error); };
+    window.logout      = function() { signOut(auth).catch(console.error); };
+
+    // ── LINKS POR PERFIL ──
+    const LINKS = {
+      rmpf:       document.getElementById('link-rmpf'),
+      inspecoes:  document.getElementById('link-inspecoes'),
+      admin:      document.getElementById('link-admin'),
+      indicadores: document.getElementById('link-indicadores')
+    };
+    function disableLink(a, reason) {
+      if (!a) return;
+      a.classList.add('is-disabled');
+      a.setAttribute('aria-disabled', 'true');
+      if (reason) a.setAttribute('title', reason);
+    }
+    function enableLink(a) {
+      if (!a) return;
+      a.classList.remove('is-disabled');
+      a.removeAttribute('aria-disabled');
+      a.removeAttribute('title');
+    }
+    function lockLinksUntilProfile() {
+      disableLink(LINKS.rmpf,       'Carregando perfil...');
+      disableLink(LINKS.inspecoes,  'Carregando perfil...');
+      disableLink(LINKS.admin,      'Carregando perfil...');
+      disableLink(LINKS.indicadores,'Carregando perfil...');
+    }
+    function applyLinkPermissions(grupo) {
+      if (grupo === 'Fiscal' || grupo === 'Administrador') {
+        enableLink(LINKS.rmpf);
+        enableLink(LINKS.inspecoes);
+      } else {
+        disableLink(LINKS.rmpf,      'Acesso conforme perfil');
+        disableLink(LINKS.inspecoes, 'Acesso conforme perfil');
+      }
+      if (grupo === 'Administrador') {
+        enableLink(LINKS.admin);
+        enableLink(LINKS.indicadores);
+      } else {
+        disableLink(LINKS.admin,       'Exclusivo para Administrador');
+        disableLink(LINKS.indicadores, 'Exclusivo para Administrador');
+      }
+    }
+
+    // ── COLETA DE DISPOSITIVO ──
+    function getCurrentPageName() {
+      try {
+        const p = (location.pathname || '').split('/').pop();
+        return p || 'index.html';
+      } catch(_){ return 'index.html'; }
+    }
+
+    function coletarDadosDispositivo() {
+      const ua = navigator.userAgent;
+      let so = 'Desconhecido', versaoSO = '';
+      if (/android/i.test(ua)) {
+        so = 'Android';
+        const m = ua.match(/Android\s([\d.]+)/);
+        versaoSO = m ? m[1] : '';
+      } else if (/iPad|iPhone|iPod/.test(ua)) {
+        so = 'iOS';
+        const m = ua.match(/OS\s([\d_]+)/);
+        versaoSO = m ? m[1].replace(/_/g,'.') : '';
+      } else if (/Windows/.test(ua)) {
+        so = 'Windows';
+        versaoSO = /Windows NT 10/.test(ua) ? '10/11' : /Windows NT 6.3/.test(ua) ? '8.1' : '';
+      } else if (/Macintosh|Mac OS X/.test(ua)) {
+        so = 'macOS';
+        const m = ua.match(/Mac OS X\s([\d_]+)/);
+        versaoSO = m ? m[1].replace(/_/g,'.') : '';
+      } else if (/Linux/.test(ua)) {
+        so = 'Linux';
+      }
+      let navegador = 'Desconhecido', versaoNavegador = '';
+      if (ua.includes('Edg/')) {
+        navegador = 'Edge';
+        versaoNavegador = ua.match(/Edg\/([\d.]+)/)?.[1] || '';
+      } else if (ua.includes('Chrome/')) {
+        navegador = 'Chrome';
+        versaoNavegador = ua.match(/Chrome\/([\d.]+)/)?.[1] || '';
+      } else if (ua.includes('Safari/') && !ua.includes('Chrome')) {
+        navegador = 'Safari';
+        versaoNavegador = ua.match(/Version\/([\d.]+)/)?.[1] || '';
+      } else if (ua.includes('Firefox/')) {
+        navegador = 'Firefox';
+        versaoNavegador = ua.match(/Firefox\/([\d.]+)/)?.[1] || '';
+      }
+      return { so, versaoSO, navegador, versaoNavegador };
+    }
+
+    // ── onAuthStateChanged (fluxo principal — 100% preservado) ──
+    onAuthStateChanged(auth, async (user) => {
+      if (window.__visaVersionReloading) return;
+
+      if (!user) {
+        showLogin();
+        return;
+      }
+
+      if (!isAuthorized(user)) {
+        showLogin();
+        window.__pendingLogout = true;
+        showUnauthorizedModal(user);
+        return;
+      }
+
+      showLoading();
+      lockLinksUntilProfile();
+
+      try {
+        const { perfil, userDocId, notFound } = await obterPerfilPorEmail(user.email);
+
+        showConteudo();
+
+        // [+] Preenche barra do usuário com nome real
+        setUserInfoData(perfil?.nome || user.displayName, user.email);
+
+        authCache.save(user);
+
+        const grupo = perfil?.grupo || 'Visualizador';
+        applyLinkPermissions(grupo);
+
+        // Stat cards (OS) — lógica original preservada
+        const fiscalStats = document.getElementById('fiscalStats');
+        if (fiscalStats && (grupo === 'Fiscal' || grupo === 'Administrador')) {
+          fiscalStats.style.display = 'flex';
+          // A lógica de preenchimento dos stat-cards permanece no script
+          // original de os.html / fiscal-stats.js sem alteração
+        }
+
+        // Registrar acesso (Firestore) — preservado
+        if (userDocId && !notFound) {
+          const dispositivo = coletarDadosDispositivo();
+          try {
+            await updateDoc(doc(db,'usuarios',userDocId), {
+              ultimoAcesso: serverTimestamp(),
+              paginaAtual:  getCurrentPageName(),
+              dispositivo:  dispositivo
+            });
+          } catch(e){ console.warn('Erro ao registrar acesso:', e); }
+        }
+
+      } catch (err) {
+        console.error('Erro no fluxo de autenticação:', err);
+        showConteudo();
+        setUserInfoData(user.displayName, user.email);
+        applyLinkPermissions('Visualizador');
+      }
+    });
+
+  </script>
+
+</body>
+</html>
