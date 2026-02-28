@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <!-- ── Cache-Control: sempre busca versão mais recente do servidor ── -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documento</title>
+
+  <!-- Reaproveita seu design system (opcional) -->
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/header-component.css">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/layouts.css">
+
+  <style>
+    /* Header agora usa header-component.css */
+
+    body { margin:0; background: var(--card-bg); }
+    .topbar {
+      position: sticky; top: 0;
+      display:flex; align-items:center; gap:12px;
+      padding: 10px 12px;
+      background: var(--card-bg);
+      border-bottom: 1px solid rgba(0,0,0,.08);
+      z-index: 10;
+    }
+    .topbar .btnVoltar{
+      appearance:none; border:none; background:transparent;
+      font-size: 17px; cursor:pointer;
+      color: #007AFF;
+      padding: 6px 8px;
+    }
+    .topbar .btnVoltar::before{
+      content:"‹";
+      font-size: 34px;
+      font-weight: 300;
+      vertical-align: middle;
+      margin-right: 2px;
+    }
+    .topbar .titulo{
+      font-weight: 800;
+      color: #1a3a6b;
+      font-size: 0.95rem;
+      line-height: 1.2;
+    }
+    .wrap{
+      height: calc(100vh - 54px);
+    }
+    iframe{
+      width:100%;
+      height:100%;
+      border:0;
+    }
+    .fallback{
+      padding: 14px;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color:#1f2a3a;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <button class="btnVoltar" onclick="history.back()">Voltar</button>
+    <div class="titulo" id="ttl">Documento</div>
+  </div>
+
+  <div class="wrap">
+    <iframe id="pdfFrame" title="Documento PDF"></iframe>
+  </div>
+
+  <noscript>
+    <div class="fallback">
+      Seu navegador está com JavaScript desativado. Abra o PDF diretamente.
+    </div>
+  </noscript>
+
+  <script>
+    // Pega parâmetros: ?src=docs/arquivo.pdf&title=Algum%20Título
+    const params = new URLSearchParams(location.search);
+    const src = params.get('src');
+    const title = params.get('title');
+
+    if (title) document.getElementById('ttl').textContent = decodeURIComponent(title);
+
+    const frame = document.getElementById('pdfFrame');
+
+    if (!src) {
+      frame.outerHTML = '<div class="fallback">PDF não informado. Volte e tente novamente.</div>';
+    } else {
+      // Dica: alguns leitores respeitam #view=FitH / #zoom=page-width
+      frame.src = src + '#view=FitH';
+    }
+  </script>
+</body>
+</html>

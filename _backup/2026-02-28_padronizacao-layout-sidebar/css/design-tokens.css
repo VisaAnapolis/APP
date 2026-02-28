@@ -1,0 +1,305 @@
+/**
+ * DESIGN TOKENS - VISA ANÁPOLIS (VERSÃO 3.0)
+ * Sistema completo com Dark Mode para Android, iOS e Web
+ * Suporte: Material Design 3, iOS Human Interface Guidelines
+ */
+
+:root {
+  /* === CORES PRINCIPAIS (LIGHT MODE) === */
+  --primary: #2c5aa0;
+  --primary-dark: #1e3f70;
+  --primary-light: #4a7bc8;
+  
+  --secondary: #5c6bc0;
+  --accent: #00bcd4;
+  
+  /* === CORES DE SUPERFÍCIE === */
+  --bg-primary: #f5f7fa;
+  --bg-secondary: #ffffff;
+  --surface: #ffffff;
+  --surface-variant: #f8f9fa;
+  
+  /* === CORES DE TEXTO === */
+  --text-primary: #1a202c;
+  --text-secondary: #4a5568;
+  --text-tertiary: #718096;
+  --text-disabled: #a0aec0;
+  
+  /* === HEADER ADAPTATIVO === */
+  --header-bg-start: #5b8fd9;
+  --header-bg-end: #7ba7e3;
+  --header-text: #1a202c;
+  --header-text-secondary: rgba(26, 32, 44, 0.85);
+  
+  /* === BORDAS === */
+  --border-primary: rgba(0, 0, 0, 0.12);
+  --border-secondary: rgba(0, 0, 0, 0.08);
+  --border-focus: #2c5aa0;
+  
+  /* === INPUTS E FORMULÁRIOS === */
+  --input-bg: #ffffff;
+  --input-border: rgba(0, 0, 0, 0.23);
+  --input-focus: #2c5aa0;
+  --input-text: #1a202c;
+  --input-placeholder: #a0aec0;
+  
+  /* === CARDS E INDICADORES === */
+  --card-bg: #ffffff;
+  --card-border: rgba(0, 0, 0, 0.12);
+  --indicator-loading-bg: #f8f9fb;
+  --warning-bg: #fff7dd;
+  --warning-border: #d1a000;
+  
+  /* === ESTADOS === */
+  --success: #38a169;
+  --warning: #ed8936;
+  --error: #e53e3e;
+  --info: #3182ce;
+  
+  /* === SOMBRAS === */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  
+  /* === ESPAÇAMENTOS === */
+  --space-1: 0.25rem;  --space-2: 0.5rem;   --space-3: 0.75rem;
+  --space-4: 1rem;     --space-5: 1.25rem;  --space-6: 1.5rem;
+  --space-8: 2rem;     --space-10: 2.5rem;  --space-12: 3rem;
+  
+  /* === RAIO DE BORDA === */
+  --radius-sm: 4px;    --radius-md: 8px;
+  --radius-lg: 12px;   --radius-xl: 16px;
+  --radius-full: 9999px;
+  
+  /* === TRANSIÇÕES === */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* === TIPOGRAFIA === */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
+               'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace;
+  
+  --text-xs: 0.75rem;    --text-sm: 0.875rem;   --text-base: 1rem;
+  --text-lg: 1.125rem;   --text-xl: 1.25rem;    --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  
+  /* === Z-INDEX === */
+  --z-dropdown: 1000;   --z-sticky: 1020;    --z-fixed: 1030;
+  --z-modal-backdrop: 1040;  --z-modal: 1050;  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
+
+
+  /* === DARK MODE - WEB/DESKTOP === */
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.platform-ios):not(.platform-android) {
+    --bg-primary: #1e1e24;
+    --bg-secondary: #2a2a31;
+    --surface: #2a2a31;
+    --surface-variant: #323239;
+    --text-primary: #e8e6e3;
+    --text-secondary: #a8a29e;
+    --text-tertiary: #78716c;
+    --text-disabled: #57534e;
+    --header-bg-start: #1a3a6b;
+    --header-bg-end: #2c5aa0;
+    --header-text: #ffffff;
+    --header-text-secondary: rgba(255, 255, 255, 0.9);
+    --border-primary: rgba(168, 162, 158, 0.15);
+    --border-secondary: rgba(168, 162, 158, 0.08);
+    --border-focus: #6b9ad4;
+    --input-bg: #2f2f37;
+    --input-border: rgba(168, 162, 158, 0.25);
+    --input-text: #e8e6e3;
+    --input-placeholder: #78716c;
+    --input-focus: #6b9ad4;
+    --card-bg: #2a2a31;
+    --card-border: rgba(168, 162, 158, 0.12);
+    --indicator-loading-bg: #323239;
+    --warning-bg: #2f2a1f;
+    --warning-border: #d9b955;
+    --primary: #6b9ad4;
+    --primary-light: #8ab0df;
+    --success: #4ade80;
+    --warning: #fbbf24;
+    --error: #f87171;
+    --info: #60a5fa;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+  }
+}
+
+
+/* ===================================================================
+   iOS - LIGHT MODE
+   ================================================================ */
+@supports (-webkit-touch-callout: none) {
+  :root {
+    /* San Francisco como fonte padrão */
+    --font-sans: -apple-system, BlinkMacSystemFont, sans-serif;
+    
+    /* Bordas mais arredondadas */
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 18px;
+    
+    /* Cores iOS */
+    --primary: #007AFF;
+    --success: #34C759;
+    --warning: #FF9500;
+    --error: #FF3B30;
+    --info: #5AC8FA;
+    
+    /* Header iOS */
+    --header-bg-start: #5b8fd9;
+    --header-bg-end: #7ba7e3;
+    --header-text: #1a202c;
+    
+    /* Inputs iOS */
+    --input-border: rgba(0, 0, 0, 0.15);
+    --input-focus: #007AFF;
+    --border-focus: #007AFF;
+  }
+}
+
+   /* === iOS - DARK MODE === */
+
+@supports (-webkit-touch-callout: none) {
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-primary: #1e1e24;
+      --bg-secondary: #2a2a31;
+      --surface: #2a2a31;
+      --surface-variant: #323239;
+      --text-primary: #e8e6e3;
+      --text-secondary: #a8a29e;
+      --text-tertiary: #78716c;
+      --text-disabled: #57534e;
+      --header-bg-start: #1a3a6b;
+      --header-bg-end: #2c5aa0;
+      --header-text: #ffffff;
+      --header-text-secondary: rgba(255, 255, 255, 0.9);
+      --border-primary: rgba(168, 162, 158, 0.15);
+      --border-secondary: rgba(168, 162, 158, 0.10);
+      --input-bg: #2a2a31;
+      --input-border: rgba(168, 162, 158, 0.15);
+      --input-text: #e8e6e3;
+      --input-placeholder: #78716c;
+      --card-bg: #2a2a31;
+      --card-border: rgba(168, 162, 158, 0.15);
+      --indicator-loading-bg: #323239;
+      --warning-bg: #2f2a1f;
+      --primary: #6b9ad4;
+      --primary-light: #8ab0df;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --error: #f87171;
+      --info: #60a5fa;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    }
+  }
+}
+
+
+/* ===================================================================
+   ANDROID - LIGHT MODE (Material Design 3)
+   ================================================================ */
+html.platform-android {
+  /* Roboto como fonte padrão */
+  --font-sans: Roboto, 'Helvetica Neue', Arial, sans-serif;
+  
+  /* Bordas Material Design */
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  
+  /* Cores Material You */
+  --primary: #1976d2;
+  --success: #4caf50;
+  --warning: #ff9800;
+  --error: #f44336;
+  --info: #2196f3;
+  
+  /* Header Android */
+  --header-bg-start: #1976d2;
+  --header-bg-end: #1565c0;
+  --header-text: #ffffff;
+  --header-text-secondary: rgba(255, 255, 255, 0.87);
+  
+  /* Inputs Material */
+  --input-border: rgba(0, 0, 0, 0.42);
+  --input-focus: #1976d2;
+  --border-focus: #1976d2;
+}
+
+/* === ANDROID - DARK MODE === */
+@media (prefers-color-scheme: dark) {
+  html.platform-android {
+    --bg-primary: #1e1e24;
+    --bg-secondary: #2a2a31;
+    --surface: #2a2a31;
+    --surface-variant: #323239;
+    --text-primary: #e8e6e3;
+    --text-secondary: #a8a29e;
+    --text-tertiary: #78716c;
+    --text-disabled: #57534e;
+    --header-bg-start: #1a3a6b;
+    --header-bg-end: #2c5aa0;
+    --header-text: #ffffff;
+    --header-text-secondary: rgba(255, 255, 255, 0.9);
+    --border-primary: rgba(168, 162, 158, 0.12);
+    --border-secondary: rgba(168, 162, 158, 0.08);
+    --input-bg: #2a2a31;
+    --input-border: rgba(168, 162, 158, 0.42);
+    --input-text: #e8e6e3;
+    --input-placeholder: #78716c;
+    --card-bg: #2a2a31;
+    --card-border: rgba(168, 162, 158, 0.12);
+    --indicator-loading-bg: #323239;
+    --warning-bg: #2f2a1f;
+    --primary: #6b9ad4;
+    --primary-light: #8ab0df;
+    --success: #4ade80;
+    --warning: #fbbf24;
+    --error: #f87171;
+    --info: #60a5fa;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  }
+}
+
+
+/* ===================================================================
+   SAFE AREAS (iOS notch, Android gestures)
+   ================================================================ */
+:root {
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+}
+
+/* ===================================================================
+   VARIÁVEIS EXTRAS PARA COMPATIBILIDADE
+   (index.html ainda usa --brand1, --brand2, etc)
+   ================================================================ */
+:root {
+  --brand1: var(--primary);
+  --brand2: var(--primary-dark);
+  --bg: var(--bg-primary);
+  --text: var(--text-primary);
+  --muted: var(--text-tertiary);
+  --card: var(--card-bg);
+  --line: var(--border-primary);
+  --warnBg: var(--warning-bg);
+  --warnLine: var(--warning-border);
+}

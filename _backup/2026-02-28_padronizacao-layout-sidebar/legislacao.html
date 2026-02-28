@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <!-- ── Cache-Control: sempre busca versão mais recente do servidor ── -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Legislação Sanitária — Acessos Rápidos</title>
+  <meta name="theme-color" content="#1a3a6b">
+
+  <!-- Sistema de Design - VISA Anápolis -->
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/header-component.css">
+  <!-- regulados.css removido - conflita com dark mode -->
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/layouts.css">
+
+  <style>
+    /* Header agora usa header-component.css */
+
+    /* ========================================
+       HEADER PADRONIZADO - VISA Anápolis
+       ======================================== */
+    header.main-header.main-header.main-/* ========================================
+       CONTAINER
+       ======================================== */
+    .container {
+      max-width: 900px;
+      margin: 22px auto 30px;
+      padding: 0 16px;
+      padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* ========================================
+       CARDS
+       ======================================== */
+    .card {
+      background: var(--card, #ffffff);
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      border: 1px solid var(--line, #e2e8f0);
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    .card__title {
+      color: var(--brand1, #1a3a6b);
+      font-size: 1.1em;
+      font-weight: 700;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--brand1, #1a3a6b);
+    }
+
+    .card__subtitle {
+      font-size: 0.9em;
+      color: var(--muted, #64748b);
+      margin-bottom: 12px;
+    }
+
+    /* ========================================
+       SEÇÕES DE LEGISLAÇÃO
+       ======================================== */
+    .section-title {
+      color: var(--brand1, #1a3a6b);
+      font-size: 1.05em;
+      font-weight: 700;
+      margin: 0 0 12px 0;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, rgba(26, 58, 107, 0.08), rgba(44, 90, 160, 0.05));
+      border-left: 4px solid var(--brand1, #1a3a6b);
+      border-radius: 0 8px 8px 0;
+    }
+
+    /* ========================================
+       LISTA DE LINKS
+       ======================================== */
+    .link-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px 0;
+    }
+
+    .link-list li {
+      margin: 0;
+      border-bottom: 1px solid var(--line, #e2e8f0);
+    }
+
+    .link-list li:last-child {
+      border-bottom: none;
+    }
+
+    .link-list a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 12px;
+      text-decoration: none;
+      color: var(--text, #1a202c);
+      font-weight: 600;
+      font-size: 0.95em;
+      transition: background 0.2s;
+      border-radius: 8px;
+    }
+
+    .link-list a:hover {
+      background: rgba(26, 58, 107, 0.05);
+    }
+
+    .link-list a::before {
+      content: "📜";
+      font-size: 1.1em;
+    }
+
+    .link-list a::after {
+      content: "↗";
+      margin-left: auto;
+      font-size: 1em;
+      color: var(--muted, #64748b);
+    }
+
+    /* Links internos (sem ícone de external) */
+    .link-list a[href^="normas"]::after {
+      content: "›";
+      font-size: 1.4em;
+      font-weight: 300;
+    }
+
+    /* ========================================
+       OBSERVAÇÃO
+       ======================================== */
+    .obs-text {
+      font-size: 0.9em;
+      color: var(--muted, #64748b);
+      line-height: 1.5;
+      padding: 12px 16px;
+      background: rgba(26, 58, 107, 0.04);
+      border-radius: 8px;
+      border-left: 4px solid var(--brand1, #1a3a6b);
+      margin-top: 16px;
+    }
+
+    /* ========================================
+       RESPONSIVO
+       ======================================== */
+    @media (max-width: 768px) {
+      header.main-header {
+        padding: 28px 70px 26px 20px;
+      }
+
+      .container {
+        padding: 0 12px;
+        margin: 16px auto 24px;
+      }
+
+      .card {
+        padding: 16px;
+        border-radius: 14px;
+      }
+
+      .link-list a {
+        padding: 12px 10px;
+        font-size: 0.9em;
+      }
+
+      .section-title {
+        font-size: 1em;
+        padding: 10px 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ========================================
+       HEADER PADRONIZADO
+       ======================================== -->
+  <header class="app-header">
+    <a href="index.html" class="btn-done-ios">OK</a>
+    <h1 class="app-header__title">Vigilância Sanitária</h1>
+    <h2 class="app-header__subtitle">Legislação Sanitária</h2>
+  </header>
+
+  <!-- ========================================
+       CONTEÚDO PRINCIPAL
+       ======================================== -->
+  <div class="container">
+    
+    <!-- Card Introdução -->
+    <section class="card">
+      <div class="card__title">📚 Acessos Rápidos</div>
+      <p class="card__subtitle">
+        Links oficiais para consulta (abrem em nova aba). Uso institucional pelos
+        servidores da Vigilância Sanitária Municipal.
+      </p>
+    </section>
+
+    <!-- Legislação Nacional -->
+    <section class="card">
+      <h2 class="section-title">🇧🇷 Legislação Nacional</h2>
+      <ul class="link-list">
+        <li>
+          <a href="https://www.planalto.gov.br/ccivil_03/leis/l8080.htm" target="_blank" rel="noopener">
+            Lei nº 8.080/1990 (SUS)
+          </a>
+        </li>
+        <li>
+          <a href="https://www.planalto.gov.br/ccivil_03/leis/l6437.htm" target="_blank" rel="noopener">
+            Lei nº 6.437/1977 (Infrações Sanitárias)
+          </a>
+        </li>
+        <li>
+          <a href="https://www.planalto.gov.br/ccivil_03/LEIS/L9782.htm" target="_blank" rel="noopener">
+            Lei nº 9.782/1999 (SNVS / Anvisa)
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Legislação Estadual -->
+    <section class="card">
+      <h2 class="section-title">🏛️ Legislação Estadual — Goiás</h2>
+      <ul class="link-list">
+        <li>
+          <a href="https://legisla.casacivil.go.gov.br/pesquisa_legislacao/86552" target="_blank" rel="noopener">
+            Lei nº 16.140/2007 (SUS no Estado de Goiás)
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Legislação Municipal -->
+    <section class="card">
+      <h2 class="section-title">🏙️ Legislação Municipal — Anápolis</h2>
+      <ul class="link-list">
+        <li>
+          <a href="normas/lc377.html">
+            LC nº 377/2018 (Código Sanitário Municipal)
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ANVISA -->
+    <section class="card">
+      <h2 class="section-title">🔬 ANVISA — Portal de Legislação</h2>
+      <ul class="link-list">
+        <li>
+          <a href="https://anvisalegis.datalegis.net/" target="_blank" rel="noopener">
+            AnvisaLegis (RDCs, INs, Portarias e outros atos)
+          </a>
+        </li>
+      </ul>
+
+      <p class="obs-text">
+        <strong>💡 Dica:</strong> para uso em celular, recomenda-se "Adicionar à Tela de Início".
+      </p>
+    </section>
+
+  </div>
+
+  <!-- Platform Detector -->
+  <script src="./js/platform-detector.js"></script>
+</body>
+</html>

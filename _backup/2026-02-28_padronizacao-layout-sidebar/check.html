@@ -29,7 +29,7 @@
        ======================================== */
     .container {
       max-width: 900px;
-      margin: 0 auto 30px;
+      margin: 22px auto 30px;
       padding: 0 16px;
       padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
     }
@@ -291,7 +291,7 @@
 
       .container {
         padding: 0 12px;
-        margin: 0 auto 24px;
+        margin: 16px auto 24px;
       }
 
       .card {
@@ -315,86 +315,18 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="./css/sidebar.css">
 </head>
 
-<body class="with-sidebar">
-  <div class="app-layout">
-
-    <!-- ════════════ SIDEBAR ════════════ -->
-    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Menu principal">
-      <div class="sidebar__header">
-        <div class="sidebar__logo" style="background:none;">
-          <img src="icons/visa.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;" alt="VISA">
-        </div>
-        <div>
-          <div class="sidebar__app-name">Vigilância Sanitária</div>
-          <div class="sidebar__app-sub">Anápolis – GO</div>
-        </div>
-      </div>
-      <nav class="sidebar__nav">
-        <a class="visa-nav-item" href="index.html"><span class="nav-icon">📊</span> Dashboard</a>
-        <div class="nav-section-label">Operacional</div>
-        <a class="visa-nav-item" href="os.html"><span class="nav-icon">📋</span> OS</a>
-        <a class="visa-nav-item" href="alvara.html"><span class="nav-icon">🏦</span> Alvarás</a>
-        <a class="visa-nav-item" href="cvs.html"><span class="nav-icon">🏪</span> Regulados</a>
-        <div class="nav-section-label">Relatórios</div>
-        <a class="visa-nav-item" href="rmpf.html"><span class="nav-icon">📚</span> RMPF</a>
-        <a class="visa-nav-item" href="inspecoes.html"><span class="nav-icon">👁️</span> Inspeções</a>
-        <a class="visa-nav-item" href="relatorio_plantao_fiscal.html"><span class="nav-icon">📈</span> Ocorrências</a>
-        <a class="visa-nav-item" href="indicadores.html"><span class="nav-icon">📊</span> Indicadores</a>
-        <div class="nav-section-label">Escala</div>
-        <a class="visa-nav-item" href="plantao.html"><span class="nav-icon">📅</span> Plantão Fiscal</a>
-        <a class="visa-nav-item" href="veiculos.html"><span class="nav-icon">🚗</span> Veículos</a>
-        <a class="visa-nav-item" href="ferias.html"><span class="nav-icon">🏖️</span> Férias</a>
-        <div class="nav-section-label">Referência</div>
-        <a class="visa-nav-item" href="legislacao.html"><span class="nav-icon">📜</span> Legislação</a>
-        <a class="visa-nav-item" href="pop.html"><span class="nav-icon">🎯</span> POPs da VISA</a>
-        <a class="visa-nav-item active" href="check.html"><span class="nav-icon">✅</span> Check Lists</a>
-        <div class="nav-section-label">Distribuição</div>
-        <a class="visa-nav-item" href="areas.html"><span class="nav-icon">🧩</span> Áreas</a>
-        <a class="visa-nav-item" href="cnae.html"><span class="nav-icon">👥</span> CNAEs</a>
-        <a class="visa-nav-item" href="total.html"><span class="nav-icon">🧮</span> Totalização</a>
-        <div class="nav-section-label">Sistema</div>
-        <a class="visa-nav-item" href="admin.html"><span class="nav-icon">⚙️</span> Painel Admin</a>
-        <a class="visa-nav-item" href="mailto:visa@anapolis.go.gov.br"><span class="nav-icon">💡</span> Sugestões</a>
-        <a class="visa-nav-item" href="changelog.html"><span class="nav-icon">📌</span> Novidades da versão</a>
-        <a class="visa-nav-item" href="readme.html"><span class="nav-icon">📄</span> Aviso Institucional</a>
-      </nav>
-      <div class="sidebar__footer">
-        <div class="sidebar__version">
-          <span class="version-badge">v2.4.3</span>
-          <span class="version-date">fev/2026</span>
-        </div>
-      </div>
-    </aside>
-    <!-- ════ FIM SIDEBAR ════ -->
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
-    <!-- ════════════ MAIN AREA ════════════ -->
-    <div class="main-area">
-
-      <!-- TOPBAR (mobile only) -->
-      <header class="topbar">
-        <button class="btn-hamburger" onclick="toggleSidebar()" aria-label="Abrir menu">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-            <line x1="3" y1="6"  x2="21" y2="6"/>
-            <line x1="3" y1="12" x2="21" y2="12"/>
-            <line x1="3" y1="18" x2="21" y2="18"/>
-          </svg>
-        </button>
-        <span class="topbar__title">Check Lists</span>
-      </header>
-
-      <main class="page-content">
-        <div class="page-header">
-          <h1 class="page-title">✅ Check Lists de Inspeção</h1>
-          <p class="page-subtitle">Formulários padronizados para fiscalização sanitária por tipo de estabelecimento.</p>
-        </div>
-
-<!-- ========================================
+<body>
+  <!-- ========================================
        HEADER PADRONIZADO
        ======================================== -->
+  <header class="app-header">
+    <a href="index.html" class="btn-done-ios">OK</a>
+    <h1 class="app-header__title">Vigilância Sanitária</h1>
+    <h2 class="app-header__subtitle">Checklists de Inspeção</h2>
+  </header>
+
   <!-- ========================================
        CONTEÚDO PRINCIPAL
        ======================================== -->
@@ -561,12 +493,5 @@
 
   <!-- Platform Detector -->
   <script src="./js/platform-detector.js"></script>
-
-      </main><!-- /.page-content -->
-    </div><!-- /.main-area -->
-  </div><!-- /.app-layout -->
-
-  <script src="./js/sidebar.js"></script>
-
 </body>
 </html>

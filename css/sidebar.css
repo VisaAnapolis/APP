@@ -1,0 +1,311 @@
+/* ===================================================================
+   SIDEBAR.CSS — Layout e menu lateral compartilhado
+   VISA Anápolis — v2.4.3+
+   Inclua APÓS design-tokens.css e header-component.css
+   =================================================================== */
+
+/* ── RESET BODY para layout de APP ── */
+body.with-sidebar {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* ── WRAPPER GLOBAL ── */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===================================================================
+   SIDEBAR
+   =================================================================== */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  background: var(--card, #fff);
+  border-right: 1px solid var(--line, #e2e8f0);
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Cabeçalho da sidebar ── */
+.sidebar__header {
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid var(--line, #e2e8f0);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  position: sticky; top: 0;
+  background: var(--card, #fff);
+  z-index: 1;
+}
+.sidebar__logo {
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  background: none;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; flex-shrink: 0;
+}
+.sidebar__app-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #1a3a6b;
+  line-height: 1.2;
+}
+.sidebar__app-sub {
+  font-size: 0.68rem;
+  color: var(--muted, #64748b);
+}
+
+/* ── Navegação ── */
+.sidebar__nav { flex: 1; padding: 6px 0; }
+
+.nav-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted, #94a3b8);
+  padding: 14px 16px 4px;
+}
+
+.visa-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  color: var(--text, #374151);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.visa-nav-item:hover {
+  background: rgba(44,90,160,0.06);
+  color: #1a3a6b;
+}
+.visa-nav-item.active {
+  background: rgba(44,90,160,0.10);
+  border-left-color: #2c5aa0;
+  color: #2c5aa0;
+  font-weight: 700;
+}
+.nav-icon {
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.visa-nav-item.is-disabled {
+  opacity: .38;
+  filter: grayscale(1);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Rodapé da sidebar ── */
+.sidebar__footer {
+  padding: 12px 14px;
+  border-top: 1px solid var(--line, #e2e8f0);
+  flex-shrink: 0;
+  position: sticky; bottom: 0;
+  background: var(--card, #fff);
+}
+.sidebar__version {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 10px;
+}
+.version-badge {
+  background: rgba(44,90,160,.10);
+  color: #2c5aa0;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.7rem;
+}
+.version-date {
+  font-size: 0.68rem;
+  color: var(--muted, #94a3b8);
+}
+.sidebar__user {
+  display: flex; align-items: center; gap: 10px;
+}
+.user-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a3a6b, #2c5aa0);
+  color: #fff;
+  font-weight: 700; font-size: 0.85rem;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.sidebar__user-texts { flex: 1; min-width: 0; }
+.sidebar__user-name {
+  font-weight: 700; font-size: 0.78rem; color: #1a3a6b;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;
+}
+.sidebar__user-email {
+  font-size: 0.67rem; color: var(--muted, #64748b);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;
+}
+.btn-logout-text {
+  width: 100%;
+  margin-top: 8px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line, #e2e8f0);
+  background: transparent;
+  cursor: pointer;
+  color: var(--muted, #64748b);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: left;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.btn-logout-text:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+/* ===================================================================
+   OVERLAY MOBILE
+   =================================================================== */
+.sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 299;
+}
+.sidebar-overlay.active { display: block; }
+
+/* ===================================================================
+   MAIN AREA
+   =================================================================== */
+.main-area {
+  margin-left: 240px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── TOPBAR (mobile only) ── */
+.topbar {
+  display: none;
+  position: sticky; top: 0;
+  z-index: 200;
+  background: var(--card, #fff);
+  border-bottom: 1px solid var(--line, #e2e8f0);
+  padding: 0 16px;
+  height: 52px;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.btn-hamburger {
+  background: none; border: none;
+  cursor: pointer; padding: 6px;
+  border-radius: 8px;
+  color: var(--text, #1a1a2e);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.btn-hamburger:hover { background: rgba(0,0,0,0.06); }
+.topbar__title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex: 1;
+  color: #1a3a6b;
+}
+
+/* ── CONTEÚDO DA PÁGINA ── */
+.page-content {
+  flex: 1;
+  padding: 28px 28px 40px;
+}
+.page-header { margin-bottom: 24px; }
+.page-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1a3a6b;
+  margin: 0 0 4px;
+}
+.page-subtitle {
+  font-size: 0.88rem;
+  color: var(--muted, #64748b);
+  margin: 0;
+}
+
+/* ===================================================================
+   RESPONSIVO — MOBILE (≤ 768px)
+   =================================================================== */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    box-shadow: none;
+    z-index: 9000 !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 28px rgba(0,0,0,.25);
+  }
+  .sidebar .visa-nav-item {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  .sidebar-overlay { z-index: 8999 !important; }
+  .main-area { margin-left: 0; }
+  .topbar { display: flex; }
+  .page-content { padding: 16px 14px 32px; }
+  .page-title { font-size: 1.25rem; }
+
+  /* Oculta o app-header original no mobile (topbar assume o papel) */
+  .main-area .app-header { display: none; }
+}
+
+/* ===================================================================
+   DARK MODE
+   =================================================================== */
+@media (prefers-color-scheme: dark) {
+  .sidebar {
+    background: var(--card-bg, #2a2a31);
+    border-right-color: var(--border-primary, rgba(168,162,158,0.15));
+  }
+  .sidebar__header { background: var(--card-bg, #2a2a31); }
+  .sidebar__footer { background: var(--card-bg, #2a2a31); }
+  .sidebar__app-name { color: #e8e6e3; }
+  .sidebar__user-name { color: #e8e6e3; }
+  .topbar {
+    background: var(--card-bg, #2a2a31);
+    border-bottom-color: var(--border-primary, rgba(168,162,158,0.15));
+  }
+  .topbar__title { color: #e8e6e3; }
+  .page-title { color: #e8e6e3; }
+  .visa-nav-item { color: var(--text-primary, #e8e6e3); }
+  .visa-nav-item.active { color: #6b9ad4; border-left-color: #6b9ad4; }
+  .visa-nav-item:hover { color: #e8e6e3; }
+}
+
+/* ===================================================================
+   PRINT — oculta sidebar e topbar
+   =================================================================== */
+@media print {
+  .sidebar, .sidebar-overlay, .topbar { display: none !important; }
+  .main-area { margin-left: 0 !important; }
+}

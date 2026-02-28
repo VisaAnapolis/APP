@@ -2,7 +2,6 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <!-- ── Cache-Control: sempre busca versão mais recente do servidor ── -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -13,30 +12,20 @@
   <!-- Sistema de Design - VISA Anápolis -->
   <link rel="stylesheet" href="./css/design-tokens.css">
   <link rel="stylesheet" href="./css/header-component.css">
-  <!-- regulados.css removido - conflita com dark mode -->
   <link rel="stylesheet" href="./css/base.css">
   <link rel="stylesheet" href="./css/components.css">
   <link rel="stylesheet" href="./css/layouts.css">
+  <link rel="stylesheet" href="./css/sidebar.css">
 
   <style>
-    /* Header agora usa header-component.css */
-
-    /* ========================================
-       HEADER PADRONIZADO - VISA Anápolis
-       ======================================== */
-    header.main-header.main-header.main-/* ========================================
-       CONTAINER
-       ======================================== */
+    /* ── CONTAINER DA PÁGINA ── */
     .container {
       max-width: 900px;
-      margin: 22px auto 30px;
-      padding: 0 16px;
+      margin: 0 auto;
       padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
     }
 
-    /* ========================================
-       CARDS
-       ======================================== */
+    /* ── CARDS ── */
     .card {
       background: var(--card, #ffffff);
       border-radius: 16px;
@@ -45,7 +34,6 @@
       border: 1px solid var(--line, #e2e8f0);
       box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     }
-
     .card__title {
       color: var(--brand1, #1a3a6b);
       font-size: 1.1em;
@@ -54,215 +42,215 @@
       padding-bottom: 10px;
       border-bottom: 2px solid var(--brand1, #1a3a6b);
     }
-
     .card__subtitle {
       font-size: 0.9em;
       color: var(--muted, #64748b);
       margin-bottom: 12px;
     }
 
-    /* ========================================
-       SEÇÕES DE LEGISLAÇÃO
-       ======================================== */
+    /* ── SEÇÕES ── */
     .section-title {
       color: var(--brand1, #1a3a6b);
       font-size: 1.05em;
       font-weight: 700;
       margin: 0 0 12px 0;
       padding: 12px 16px;
-      background: linear-gradient(135deg, rgba(26, 58, 107, 0.08), rgba(44, 90, 160, 0.05));
+      background: linear-gradient(135deg, rgba(26,58,107,0.08), rgba(44,90,160,0.05));
       border-left: 4px solid var(--brand1, #1a3a6b);
       border-radius: 0 8px 8px 0;
     }
 
-    /* ========================================
-       LISTA DE LINKS
-       ======================================== */
-    .link-list {
-      list-style: none;
-      padding: 0;
-      margin: 0 0 20px 0;
-    }
-
-    .link-list li {
-      margin: 0;
-      border-bottom: 1px solid var(--line, #e2e8f0);
-    }
-
-    .link-list li:last-child {
-      border-bottom: none;
-    }
-
+    /* ── LISTA DE LINKS ── */
+    .link-list { list-style: none; padding: 0; margin: 0 0 20px 0; }
+    .link-list li { margin: 0; border-bottom: 1px solid var(--line, #e2e8f0); }
+    .link-list li:last-child { border-bottom: none; }
     .link-list a {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      display: flex; align-items: center; gap: 12px;
       padding: 14px 12px;
       text-decoration: none;
       color: var(--text, #1a202c);
-      font-weight: 600;
-      font-size: 0.95em;
+      font-weight: 600; font-size: 0.95em;
       transition: background 0.2s;
       border-radius: 8px;
     }
+    .link-list a:hover { background: rgba(26,58,107,0.05); }
+    .link-list a::before { content: "📜"; font-size: 1.1em; }
+    .link-list a::after { content: "↗"; margin-left: auto; font-size: 1em; color: var(--muted, #64748b); }
+    .link-list a[href^="normas"]::after { content: "›"; font-size: 1.4em; font-weight: 300; }
 
-    .link-list a:hover {
-      background: rgba(26, 58, 107, 0.05);
-    }
-
-    .link-list a::before {
-      content: "📜";
-      font-size: 1.1em;
-    }
-
-    .link-list a::after {
-      content: "↗";
-      margin-left: auto;
-      font-size: 1em;
-      color: var(--muted, #64748b);
-    }
-
-    /* Links internos (sem ícone de external) */
-    .link-list a[href^="normas"]::after {
-      content: "›";
-      font-size: 1.4em;
-      font-weight: 300;
-    }
-
-    /* ========================================
-       OBSERVAÇÃO
-       ======================================== */
+    /* ── OBSERVAÇÃO ── */
     .obs-text {
-      font-size: 0.9em;
-      color: var(--muted, #64748b);
-      line-height: 1.5;
-      padding: 12px 16px;
-      background: rgba(26, 58, 107, 0.04);
+      font-size: 0.9em; color: var(--muted, #64748b);
+      line-height: 1.5; padding: 12px 16px;
+      background: rgba(26,58,107,0.04);
       border-radius: 8px;
       border-left: 4px solid var(--brand1, #1a3a6b);
       margin-top: 16px;
     }
 
-    /* ========================================
-       RESPONSIVO
-       ======================================== */
     @media (max-width: 768px) {
-      header.main-header {
-        padding: 28px 70px 26px 20px;
-      }
-
-      .container {
-        padding: 0 12px;
-        margin: 16px auto 24px;
-      }
-
-      .card {
-        padding: 16px;
-        border-radius: 14px;
-      }
-
-      .link-list a {
-        padding: 12px 10px;
-        font-size: 0.9em;
-      }
-
-      .section-title {
-        font-size: 1em;
-        padding: 10px 12px;
-      }
+      .card { padding: 16px; border-radius: 14px; }
+      .link-list a { padding: 12px 10px; font-size: 0.9em; }
+      .section-title { font-size: 1em; padding: 10px 12px; }
     }
   </style>
 </head>
 
-<body>
-  <!-- ========================================
-       HEADER PADRONIZADO
-       ======================================== -->
-  <header class="app-header">
-    <a href="index.html" class="btn-done-ios">OK</a>
-    <h1 class="app-header__title">Vigilância Sanitária</h1>
-    <h2 class="app-header__subtitle">Legislação Sanitária</h2>
-  </header>
+<body class="with-sidebar">
+  <div class="app-layout">
 
-  <!-- ========================================
-       CONTEÚDO PRINCIPAL
-       ======================================== -->
-  <div class="container">
-    
-    <!-- Card Introdução -->
-    <section class="card">
-      <div class="card__title">📚 Acessos Rápidos</div>
-      <p class="card__subtitle">
-        Links oficiais para consulta (abrem em nova aba). Uso institucional pelos
-        servidores da Vigilância Sanitária Municipal.
-      </p>
-    </section>
+    <!-- ════════════ SIDEBAR ════════════ -->
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Menu principal">
+      <div class="sidebar__header">
+        <div class="sidebar__logo" style="background:none;">
+          <img src="icons/visa.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;" alt="VISA">
+        </div>
+        <div>
+          <div class="sidebar__app-name">Vigilância Sanitária</div>
+          <div class="sidebar__app-sub">Anápolis – GO</div>
+        </div>
+      </div>
+      <nav class="sidebar__nav">
+        <a class="visa-nav-item" href="index.html"><span class="nav-icon">📊</span> Dashboard</a>
+        <div class="nav-section-label">Operacional</div>
+        <a class="visa-nav-item" href="os.html"><span class="nav-icon">📋</span> OS</a>
+        <a class="visa-nav-item" href="alvara.html"><span class="nav-icon">🏦</span> Alvarás</a>
+        <a class="visa-nav-item" href="cvs.html"><span class="nav-icon">🏪</span> Regulados</a>
+        <div class="nav-section-label">Relatórios</div>
+        <a class="visa-nav-item" href="rmpf.html"><span class="nav-icon">📚</span> RMPF</a>
+        <a class="visa-nav-item" href="inspecoes.html"><span class="nav-icon">👁️</span> Inspeções</a>
+        <a class="visa-nav-item" href="relatorio_plantao_fiscal.html"><span class="nav-icon">📈</span> Ocorrências</a>
+        <a class="visa-nav-item" href="indicadores.html"><span class="nav-icon">📊</span> Indicadores</a>
+        <div class="nav-section-label">Escala</div>
+        <a class="visa-nav-item" href="plantao.html"><span class="nav-icon">📅</span> Plantão Fiscal</a>
+        <a class="visa-nav-item" href="veiculos.html"><span class="nav-icon">🚗</span> Veículos</a>
+        <a class="visa-nav-item" href="ferias.html"><span class="nav-icon">🏖️</span> Férias</a>
+        <div class="nav-section-label">Referência</div>
+        <a class="visa-nav-item active" href="legislacao.html"><span class="nav-icon">📜</span> Legislação</a>
+        <a class="visa-nav-item" href="pop.html"><span class="nav-icon">🎯</span> POPs da VISA</a>
+        <a class="visa-nav-item" href="check.html"><span class="nav-icon">✅</span> Check Lists</a>
+        <div class="nav-section-label">Distribuição</div>
+        <a class="visa-nav-item" href="areas.html"><span class="nav-icon">🧩</span> Áreas</a>
+        <a class="visa-nav-item" href="cnae.html"><span class="nav-icon">👥</span> CNAEs</a>
+        <a class="visa-nav-item" href="total.html"><span class="nav-icon">🧮</span> Totalização</a>
+        <div class="nav-section-label">Sistema</div>
+        <a class="visa-nav-item" href="admin.html"><span class="nav-icon">⚙️</span> Painel Admin</a>
+        <a class="visa-nav-item" href="mailto:visa@anapolis.go.gov.br"><span class="nav-icon">💡</span> Sugestões</a>
+        <a class="visa-nav-item" href="changelog.html"><span class="nav-icon">📌</span> Novidades da versão</a>
+        <a class="visa-nav-item" href="readme.html"><span class="nav-icon">📄</span> Aviso Institucional</a>
+      </nav>
+      <div class="sidebar__footer">
+        <div class="sidebar__version">
+          <span class="version-badge">v2.4.3</span>
+          <span class="version-date">fev/2026</span>
+        </div>
+      </div>
+    </aside>
+    <!-- ════ FIM SIDEBAR ════ -->
 
-    <!-- Legislação Nacional -->
-    <section class="card">
-      <h2 class="section-title">🇧🇷 Legislação Nacional</h2>
-      <ul class="link-list">
-        <li>
-          <a href="https://www.planalto.gov.br/ccivil_03/leis/l8080.htm" target="_blank" rel="noopener">
-            Lei nº 8.080/1990 (SUS)
-          </a>
-        </li>
-        <li>
-          <a href="https://www.planalto.gov.br/ccivil_03/leis/l6437.htm" target="_blank" rel="noopener">
-            Lei nº 6.437/1977 (Infrações Sanitárias)
-          </a>
-        </li>
-        <li>
-          <a href="https://www.planalto.gov.br/ccivil_03/LEIS/L9782.htm" target="_blank" rel="noopener">
-            Lei nº 9.782/1999 (SNVS / Anvisa)
-          </a>
-        </li>
-      </ul>
-    </section>
+    <!-- Overlay mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-    <!-- Legislação Estadual -->
-    <section class="card">
-      <h2 class="section-title">🏛️ Legislação Estadual — Goiás</h2>
-      <ul class="link-list">
-        <li>
-          <a href="https://legisla.casacivil.go.gov.br/pesquisa_legislacao/86552" target="_blank" rel="noopener">
-            Lei nº 16.140/2007 (SUS no Estado de Goiás)
-          </a>
-        </li>
-      </ul>
-    </section>
+    <!-- ════════════ MAIN AREA ════════════ -->
+    <div class="main-area">
 
-    <!-- Legislação Municipal -->
-    <section class="card">
-      <h2 class="section-title">🏙️ Legislação Municipal — Anápolis</h2>
-      <ul class="link-list">
-        <li>
-          <a href="normas/lc377.html">
-            LC nº 377/2018 (Código Sanitário Municipal)
-          </a>
-        </li>
-      </ul>
-    </section>
+      <!-- TOPBAR (mobile only) -->
+      <header class="topbar">
+        <button class="btn-hamburger" onclick="toggleSidebar()" aria-label="Abrir menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="3" y1="6"  x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <span class="topbar__title">Legislação Sanitária</span>
+      </header>
 
-    <!-- ANVISA -->
-    <section class="card">
-      <h2 class="section-title">🔬 ANVISA — Portal de Legislação</h2>
-      <ul class="link-list">
-        <li>
-          <a href="https://anvisalegis.datalegis.net/" target="_blank" rel="noopener">
-            AnvisaLegis (RDCs, INs, Portarias e outros atos)
-          </a>
-        </li>
-      </ul>
+      <!-- CONTEÚDO -->
+      <main class="page-content">
+        <div class="page-header">
+          <h1 class="page-title">📜 Legislação Sanitária</h1>
+          <p class="page-subtitle">Links oficiais para consulta. Uso institucional pelos servidores da Vigilância Sanitária Municipal.</p>
+        </div>
 
-      <p class="obs-text">
-        <strong>💡 Dica:</strong> para uso em celular, recomenda-se "Adicionar à Tela de Início".
-      </p>
-    </section>
+        <div class="container">
 
-  </div>
+          <!-- Card Introdução -->
+          <section class="card">
+            <div class="card__title">📚 Acessos Rápidos</div>
+            <p class="card__subtitle">
+              Links oficiais para consulta (abrem em nova aba). Uso institucional pelos
+              servidores da Vigilância Sanitária Municipal.
+            </p>
+          </section>
 
-  <!-- Platform Detector -->
+          <!-- Legislação Nacional -->
+          <section class="card">
+            <h2 class="section-title">🇧🇷 Legislação Nacional</h2>
+            <ul class="link-list">
+              <li>
+                <a href="https://www.planalto.gov.br/ccivil_03/leis/l8080.htm" target="_blank" rel="noopener">
+                  Lei nº 8.080/1990 (SUS)
+                </a>
+              </li>
+              <li>
+                <a href="https://www.planalto.gov.br/ccivil_03/leis/l6437.htm" target="_blank" rel="noopener">
+                  Lei nº 6.437/1977 (Infrações Sanitárias)
+                </a>
+              </li>
+              <li>
+                <a href="https://www.planalto.gov.br/ccivil_03/LEIS/L9782.htm" target="_blank" rel="noopener">
+                  Lei nº 9.782/1999 (SNVS / Anvisa)
+                </a>
+              </li>
+            </ul>
+          </section>
+
+          <!-- Legislação Estadual -->
+          <section class="card">
+            <h2 class="section-title">🏛️ Legislação Estadual — Goiás</h2>
+            <ul class="link-list">
+              <li>
+                <a href="https://legisla.casacivil.go.gov.br/pesquisa_legislacao/86552" target="_blank" rel="noopener">
+                  Lei nº 16.140/2007 (SUS no Estado de Goiás)
+                </a>
+              </li>
+            </ul>
+          </section>
+
+          <!-- Legislação Municipal -->
+          <section class="card">
+            <h2 class="section-title">🏙️ Legislação Municipal — Anápolis</h2>
+            <ul class="link-list">
+              <li>
+                <a href="normas/lc377.html">
+                  LC nº 377/2018 (Código Sanitário Municipal)
+                </a>
+              </li>
+            </ul>
+          </section>
+
+          <!-- ANVISA -->
+          <section class="card">
+            <h2 class="section-title">🔬 ANVISA — Portal de Legislação</h2>
+            <ul class="link-list">
+              <li>
+                <a href="https://anvisalegis.datalegis.net/" target="_blank" rel="noopener">
+                  AnvisaLegis (RDCs, INs, Portarias e outros atos)
+                </a>
+              </li>
+            </ul>
+            <p class="obs-text">
+              <strong>💡 Dica:</strong> para uso em celular, recomenda-se "Adicionar à Tela de Início".
+            </p>
+          </section>
+
+        </div><!-- /.container -->
+      </main><!-- /.page-content -->
+    </div><!-- /.main-area -->
+  </div><!-- /.app-layout -->
+
   <script src="./js/platform-detector.js"></script>
+  <script src="./js/sidebar.js"></script>
 </body>
 </html>

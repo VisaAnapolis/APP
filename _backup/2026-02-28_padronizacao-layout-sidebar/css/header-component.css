@@ -1,0 +1,264 @@
+/* ===================================================================
+   HEADER GLOBAL - VISA ANÁPOLIS (VERSÃO PADRONIZADA)
+   Header adaptativo para todas as páginas
+   Atualizado: 01/02/2026
+   ================================================================ */
+
+.app-header {
+  background: linear-gradient(135deg, var(--header-bg-start), var(--header-bg-end));
+  color: var(--header-text);
+  padding: 28px 20px 26px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  position: relative;  /* Para posicionamento absoluto dos botões */
+}
+
+.app-header__title {
+  margin: 0;
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--header-text);
+}
+
+.app-header__subtitle {
+  margin: 8px 0 0;
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
+  font-weight: 400;
+  opacity: 0.92;
+  color: var(--header-text-secondary);
+  line-height: 1.3;
+}
+
+/* ===================================================================
+   BOTÃO OK/DONE - VISÍVEL EM TODAS AS TELAS
+   ================================================================ */
+
+.btn-done-ios {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  
+  background: transparent;
+  border: none;
+ /* color: #34C759;  /* Verde iOS */
+  color: #ffffff;  /* Branco */ 
+  
+  font-size: 17px;
+  font-weight: 600;
+  padding: 16px 12px;
+  
+  display: inline-flex;  /* Sempre visível */
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  
+  transition: opacity 0.15s ease;
+  
+  /* Área de toque mínima (acessibilidade) */
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.btn-done-ios:hover {
+  opacity: 0.7;
+}
+
+.btn-done-ios:active {
+  opacity: 0.5;
+}
+
+/* Botão Voltar (esquerda) - opcional para futuro uso */
+.btn-back-ios {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  
+  background: transparent;
+  border: none;
+  color: #34C759;
+  
+  font-size: 17px;
+  font-weight: 400;
+  padding: 16px 12px;
+  
+  text-decoration: none;
+  display: none;  /* Oculto por padrão */
+  align-items: center;
+  gap: 2px;
+  
+  transition: opacity 0.15s ease;
+  cursor: pointer;
+}
+
+.btn-back-ios:hover {
+  opacity: 0.7;
+}
+
+.btn-back-ios::before {
+  content: "‹";
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+/* ===================================================================
+   DARK MODE - PADRONIZADO
+   Dark mode agora controlado por design-tokens.css
+   ================================================================ */
+
+@media (prefers-color-scheme: dark) {
+  .app-header {
+    /* Cores controladas por design-tokens.css via variáveis CSS */
+    border-bottom: 1px solid rgba(168, 162, 158, 0.15);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  }
+  
+  .btn-done-ios {
+    color: #32D74B;  /* Verde iOS dark mode */
+  }
+  
+  .btn-back-ios {
+    color: #32D74B;
+  }
+}
+
+/* ===================================================================
+   AJUSTES ESPECÍFICOS POR PLATAFORMA
+   ================================================================ */
+
+/* iOS: Ajustar para safe areas (notch) */
+@supports (-webkit-touch-callout: none) {
+  .app-header {
+    padding-top: calc(28px + env(safe-area-inset-top, 0px));
+  }
+}
+
+/* Android: Ajustes Material Design */
+html.platform-android .app-header {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+html.platform-android .btn-done-ios,
+html.platform-android .btn-back-ios {
+  font-weight: 500;
+}
+
+/* ===================================================================
+   ANIMAÇÕES E TRANSIÇÕES
+   ================================================================ */
+
+.app-header {
+  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Desabilitar animação se usuário preferir reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .app-header {
+    animation: none;
+  }
+  
+  .btn-done-ios,
+  .btn-back-ios {
+    transition: none;
+  }
+}
+
+/* ===================================================================
+   RESPONSIVIDADE
+   ================================================================ */
+
+/* Mobile: Ajustar padding do header para acomodar botões */
+@media (max-width: 768px) {
+  .app-header {
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+  
+  .app-header__title {
+    font-size: clamp(1.4rem, 2.4vw, 1.8rem);
+  }
+}
+
+/* Telas muito pequenas */
+@media (max-width: 360px) {
+  .app-header {
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+  
+  .btn-done-ios {
+    font-size: 16px;
+    padding: 12px 8px;
+  }
+}
+
+/* Desktop grande */
+@media (min-width: 1440px) {
+  .app-header__title {
+    font-size: 2.2rem;
+  }
+  
+  .app-header__subtitle {
+    font-size: 1.1rem;
+  }
+}
+
+/* ===================================================================
+   ACESSIBILIDADE
+   ================================================================ */
+
+/* Foco visível para navegação por teclado */
+.btn-done-ios:focus,
+.btn-back-ios:focus {
+  outline: 2px solid #34C759;
+  outline-offset: 2px;
+}
+
+/* Alto contraste */
+@media (prefers-contrast: high) {
+  .app-header {
+    border-bottom: 2px solid #ffffff;
+  }
+  
+  .btn-done-ios,
+  .btn-back-ios {
+    font-weight: 700;
+  }
+}
+
+/* ===================================================================
+   PRINT
+   ================================================================ */
+
+@media print {
+  .app-header {
+    position: static;
+    box-shadow: none;
+    border-bottom: 2px solid #1a3a6b;
+  }
+  
+  .btn-done-ios,
+  .btn-back-ios {
+    display: none;
+  }
+}
