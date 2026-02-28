@@ -1520,43 +1520,62 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
           function ehFiscal(nome) { return fiscaisNorm.has(normTxt(nome)); }
 
           return new Promise((resolve) => {
-            Papa.parse('data/tramitacao.csv?' + timestamp, {
-              download: true, header: true, delimiter: ';', skipEmptyLines: true,
-              complete: function(results) {
-                const porProtocolo = {};
-                results.data.forEach(row => {
-                  const num = (row.PROTOCOLO || '').trim();
-                  if (!num) return;
-                  if (!porProtocolo[num]) porProtocolo[num] = [];
-                  porProtocolo[num].push(row);
+            function carregarCSVLocal(arquivo) {
+              return new Promise((res) => {
+                Papa.parse(arquivo + '?' + timestamp, {
+                  download: true, header: true, delimiter: ';', skipEmptyLines: true,
+                  complete: (r) => res(r.data),
+                  error: () => res([])
                 });
-                let vencidas = 0, aVencer = 0;
-                Object.keys(porProtocolo).forEach(numProto => {
-                  const registros = porProtocolo[numProto];
-                  // Ordena decrescente por DATA + HORA para pegar o mais recente
-                  registros.sort((a, b) => {
-                    const dA = parseData(a.DATA || ''), dB = parseData(b.DATA || '');
-                    if (!dA && !dB) return 0;
-                    if (!dA) return 1; if (!dB) return -1;
-                    if (dA.getTime() !== dB.getTime()) return dB.getTime() - dA.getTime();
-                    return horaParaSegundos(b.HORA) - horaParaSegundos(a.HORA);
-                  });
-                  const maisRecente = registros[0];
-                  const destino = (maisRecente.DESTINO || '').trim();
-                  // Conta apenas se o DESTINO do último registro é nome de fiscal oficial
-                  if (!ehFiscal(destino)) return;
-                  const dataTram = parseData(maisRecente.DATA || '');
-                  if (!dataTram) return;
-                  const tipo = classificarPrazo(calcularPrazoUteis(dataTram, 15));
-                  if (tipo === 'vencida') vencidas++;
-                  else if (tipo === 'avencer') aVencer++;
+              });
+            }
+
+            Promise.all([
+              carregarCSVLocal('data/protocolo.csv'),
+              carregarCSVLocal('data/tramitacao.csv')
+            ]).then(([dadosProtocolo, dadosTramitacao]) => {
+              const porProtocolo = {};
+              dadosTramitacao.forEach(row => {
+                const num = (row.PROTOCOLO || '').trim();
+                if (!num) return;
+                if (!porProtocolo[num]) porProtocolo[num] = [];
+                porProtocolo[num].push(row);
+              });
+
+              let vencidas = 0, aVencer = 0;
+
+              // Itera protocolo.csv como fonte de verdade (igual ao os.html)
+              dadosProtocolo.forEach(p => {
+                const numProto = (p.Protocolo || '').trim();
+                if (!numProto) return;
+
+                const registros = porProtocolo[numProto];
+                if (!registros || registros.length === 0) return;
+
+                // Ordena decrescente por DATA + HORA para pegar o mais recente
+                registros.sort((a, b) => {
+                  const dA = parseData(a.DATA || ''), dB = parseData(b.DATA || '');
+                  if (!dA && !dB) return 0;
+                  if (!dA) return 1; if (!dB) return -1;
+                  if (dA.getTime() !== dB.getTime()) return dB.getTime() - dA.getTime();
+                  return horaParaSegundos(b.HORA) - horaParaSegundos(a.HORA);
                 });
-                resolve({ vencidas, aVencer, total: vencidas + aVencer });
-              },
-              error: () => resolve({ vencidas: 0, aVencer: 0, total: 0 })
+
+                const maisRecente = registros[0];
+                const destino = (maisRecente.DESTINO || '').trim();
+                // Conta apenas se o DESTINO do último registro é nome de fiscal oficial
+                if (!ehFiscal(destino)) return;
+
+                const dataTram = parseData(maisRecente.DATA || '');
+                if (!dataTram) return;
+                const tipo = classificarPrazo(calcularPrazoUteis(dataTram, 15));
+                if (tipo === 'vencida') vencidas++;
+                else if (tipo === 'avencer') aVencer++;
+              });
+
+              resolve({ vencidas, aVencer, total: vencidas + aVencer });
             });
           });
-        }
 
         // Requerimento: todos os fiscais, não atendidos e não cancelados
         function processarRequerimentoAdmin() {
