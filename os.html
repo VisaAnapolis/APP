@@ -1936,7 +1936,7 @@ function converterData(dataStr) {
                                 || document.body.scrollTop
                                 || 0;
                             const posicaoAlvo = rect.top + scrollTop - 8;
-                            // Scroll instantâneo (funciona em todos os browsers/Android)
+                            // Scroll instantâneo: funciona em todos os browsers (iOS, Android, desktop)
                             window.scrollTo(0, posicaoAlvo);
                         });
                     });
