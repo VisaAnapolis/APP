@@ -111,6 +111,33 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.3.8 — 28/02/2026 (Horário de Brasília – UTC−3)</h3>
+  <strong>Correções de alinhamento dos cards e filtro do fiscal logado</strong>
+  <ul>
+    <li><strong>Cards do dashboard — alinhamento corrigido no desktop e mobile:</strong>
+      <ul>
+        <li>O elemento <code>.fiscal-stats</code> agora tem <code>width: 100%</code> e <code>box-sizing: border-box</code>, garantindo que ocupe toda a largura da página.</li>
+        <li>O <code>.stats-container</code> recebeu <code>margin: 0 auto</code> para centralizar os cards horizontalmente no desktop.</li>
+        <li>No mobile, os cards voltam a ocupar <code>width: 100%</code> em coluna única, sem deslocamento lateral.</li>
+      </ul>
+    </li>
+    <li><strong>Filtro do fiscal logado ao clicar no card (perfil Fiscal):</strong>
+      <ul>
+        <li>Ao clicar em um card, o perfil Fiscal agora passa o próprio nome na URL (<code>?tipo=Protocolo&amp;fiscal=NOME</code>), de modo que a página OS já abre filtrada pelo fiscal logado, sem necessidade de ajuste manual.</li>
+        <li>O perfil Administrador continua sem filtro de fiscal (exibe OS de todos os fiscais).</li>
+        <li>Em <code>os.html</code>, o parâmetro <code>fiscal</code> da URL é lido e pré-selecionado no select <code>#filterFiscal</code> antes de disparar a busca automática.</li>
+      </ul>
+    </li>
+  </ul>
+  <p><strong>Arquivos modificados:</strong></p>
+  <ul>
+    <li><code>index.html</code> — CSS dos cards corrigido; JS injeta <code>&amp;fiscal=NOME</code> no href dos cards do perfil Fiscal; <code>APP_VERSION</code> 2.3.8.</li>
+    <li><code>os.html</code> — Leitura do parâmetro <code>fiscal</code> da URL e pré-seleção do select <code>#filterFiscal</code>.</li>
+    <li><code>changelog.html</code> — Entrada v2.3.8.</li>
+  </ul>
+</div>
+
+<div class="section">
   <h3>v2.3.7 — 28/02/2026 (Horário de Brasília – UTC−3)</h3>
   <strong>Correções nos cards interativos do dashboard</strong>
   <ul>

@@ -379,16 +379,28 @@
     }
 
     /* Stats do fiscal */
+    /* === PAINEL DE CARDS DE OS (fiscal-stats) === */
     .fiscal-stats {
       background: linear-gradient(135deg, rgba(26, 58, 107, 0.03), rgba(52, 199, 89, 0.03));
       padding: 16px 20px;
       border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-      display:none; /* ✅ por padrão; só Fiscal libera */
+      display: none; /* ✅ por padrão; JS libera com 'flex' */
+      width: 100%;   /* ocupa toda a largura da página */
+      box-sizing: border-box;
     }
-    .stats-container { display: flex; gap: 16px; max-width: 900px; flex-wrap: wrap; }
+    /* Container dos 4 cards: linha única no desktop, centralizado */
+    .stats-container {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 16px;
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;  /* centraliza horizontalmente no desktop */
+    }
+    /* Cada card ocupa fração igual da linha */
     .stat-card {
-      flex: 1;
-      min-width: 190px;
+      flex: 1 1 180px;   /* cresce e encolhe; base mínima 180 px */
       background: white;
       border-radius: 12px;
       padding: 16px 20px;
@@ -399,11 +411,8 @@
       cursor: pointer;
       transition: transform 0.18s ease, box-shadow 0.18s ease;
       text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
       color: inherit;
+      /* NÃO usar display:flex aqui — o flex já vem do .stats-container */
     }
     .stat-card:hover {
       transform: translateY(-3px);
@@ -417,15 +426,24 @@
       line-height: 1;
       margin-bottom: 4px;
     }
-    .stat-label { display:block; font-size: 0.75rem; color: #666; font-weight: 500; }
-    .stat-detalhe { display:block; font-size: .72rem; color: #5b6b83; margin-top: 6px; font-weight: 600; }
+    .stat-label   { display: block; font-size: 0.75rem; color: #666; font-weight: 500; }
+    .stat-detalhe { display: block; font-size: .72rem; color: #5b6b83; margin-top: 6px; font-weight: 600; }
 
+    /* Mobile: coluna única, cada card ocupa 100% da largura */
     @media (max-width: 768px) {
-      .fiscal-stats { padding: 12px; }
-      .stats-container { flex-direction: column; gap: 10px; max-width: 100%; }
-      .stat-card { padding: 10px; }
-      .stat-number { font-size: 1.5rem; }
-      .stat-label { font-size: 0.7rem; }
+      .fiscal-stats   { padding: 12px; }
+      .stats-container {
+        flex-direction: column;
+        gap: 10px;
+        max-width: 100%;
+      }
+      .stat-card {
+        flex: 0 0 auto;
+        width: 100%;
+        padding: 10px 14px;
+      }
+      .stat-number  { font-size: 1.5rem; }
+      .stat-label   { font-size: 0.7rem; }
       .stat-detalhe { font-size: .7rem; }
     }
 
@@ -677,7 +695,7 @@ Supervisão de Vigilância Sanitária</p>
     const provider = new GoogleAuthProvider();
 
     // ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
-    const APP_VERSION = '2.3.7';
+    const APP_VERSION = '2.3.8';
     const VERSION_KEY = 'visa_app_version';
     const savedVersion = localStorage.getItem(VERSION_KEY);
 
@@ -1409,17 +1427,23 @@ function aplicarCorCard(cardEl, vencidas, aVencer) {
   }
 }
 const cards = document.querySelectorAll('#fiscalStats .stat-card');
-
 aplicarCorCard(cards[0], protocolos.vencidas, protocolos.aVencer);
 aplicarCorCard(cards[1], requerimentos.vencidas, requerimentos.aVencer);
 aplicarCorCard(cards[2], denuncias.vencidas, denuncias.aVencer);
 aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
+
+          // Injetar o nome do fiscal no href dos cards para que a página OS filtre pelo fiscal logado
+          const fiscalEncoded = encodeURIComponent(nomeFiscalUpper);
+          const tiposCards = ['Protocolo', 'Requerimento', 'Den%C3%BAncia', 'Of%C3%ADcio'];
+          cards.forEach(function(card, i) {
+            card.href = 'os.html?tipo=' + tiposCards[i] + '&fiscal=' + fiscalEncoded;
+          });
    
         }
       } catch(e) {
         console.error('Erro ao carregar OS:', e);
       }
-    }
+    }}
 
     // ===== Dashboard OS (Admin: todos os fiscais) =====
     // Replica exatamente a lógica de carregarOSPendentesFiscal,
