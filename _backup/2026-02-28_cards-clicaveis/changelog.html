@@ -111,36 +111,6 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
-  <h3>v2.3.6 — 28/02/2026 (Horário de Brasília – UTC−3)</h3>
-  <strong>Cards do Dashboard Interativos e melhoria de layout desktop</strong>
-  <ul>
-    <li><strong>Cards do dashboard como atalhos para OS filtradas:</strong>
-      <ul>
-        <li>Os 4 cards do dashboard na página inicial (Protocolos, Requerimentos, Denúncias e Ofícios) agora são completamente clicáveis — qualquer clique na área do card redireciona para <code>os.html</code>.</li>
-        <li>Ao abrir via card, a página de OS pré-seleciona automaticamente o tipo correspondente no filtro e dispara a busca, exibindo apenas OS não atendidas e não canceladas.</li>
-        <li>A tabela de resultados é ordenada por <strong>data de vencimento crescente</strong>, garantindo que as OS vencidas (vermelhas) apareçam primeiro, seguidas pelas próximas a vencer (amarelas).</li>
-        <li>Quando acessada normalmente (sem parâmetro na URL), a ordenação padrão por Número OS é mantida.</li>
-      </ul>
-    </li>
-    <li><strong>Melhoria de layout dos cards no desktop:</strong>
-      <ul>
-        <li>Largura máxima do contêiner de cards ampliada de 760 px para 900 px.</li>
-        <li>Largura mínima de cada card ampliada de 160 px para 190 px, com padding interno aumentado.</li>
-        <li>Adicionada borda lateral esquerda colorida em cada card, seguindo a mesma regra de cores já existente: <strong>vermelha</strong> (OS vencidas), <strong>amarela</strong> (próximas a vencer) e <strong>verde</strong> (no prazo).</li>
-        <li>Adicionado efeito visual de elevação (<em>hover</em>) ao passar o cursor sobre o card, reforçando a interatividade.</li>
-      </ul>
-    </li>
-  </ul>
-  <p><strong>Arquivos modificados:</strong></p>
-  <ul>
-    <li><code>index.html</code> — Cards transformados em links, CSS dos cards aprimorado, novidade adicionada, <code>APP_VERSION</code> 2.3.6.</li>
-    <li><code>os.html</code> — Leitura de parâmetro <code>tipo</code> da URL, pré-seleção do filtro e ordenação por prazo via <code>__buscaViaDashboard</code>.</li>
-    <li><code>changelog.html</code> — Entrada v2.3.6.</li>
-    <li><code>_backup/2026-02-28_cards-clicaveis/</code> — Cópias originais dos arquivos alterados.</li>
-  </ul>
-</div>
-
-<div class="section">
   <h3>v2.3.5 — 26/02/2026 (Horário de Brasília – UTC−3)</h3>
   <strong>Dashboard de OS para Administrador — totalização de todos os fiscais</strong>
   <ul>

@@ -1899,16 +1899,12 @@ function converterData(dataStr) {
 
             
             // Inicializar DataTable
-            // Quando a busca vem do dashboard (card clicado), ordena por Prazo crescente
-            // para que as OS vencidas (datas mais antigas) apareçam primeiro.
-            // Caso contrário, mantém a ordenação padrão por Número OS decrescente.
-            const ordemInicial = window.__buscaViaDashboard ? [[7, 'asc']] : [[0, 'desc']];
             $('#tabelaOS').show();
             dataTable = $('#tabelaOS').DataTable({
                 language: {
                     url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json'
                 },
-                order: ordemInicial,
+                order: [[0, 'desc']],
                 pageLength: 25
             });
             
@@ -2332,24 +2328,6 @@ function obterDataPrazo(os) {
                     buscarOrdens();
                 }
             });
-
-            // ===== ATALHO DO DASHBOARD: pré-filtrar via parâmetro da URL =====
-            // Quando o usuário clica num card do dashboard (index.html), a URL chega
-            // com ?tipo=Protocolo (ou Requerimento, Denúncia, Ofício).
-            // Nesse caso: pré-seleciona o filtro de tipo e dispara a busca automaticamente.
-            const urlParams = new URLSearchParams(window.location.search);
-            const tipoParam = urlParams.get('tipo');
-            if (tipoParam) {
-                // Marcar que a busca veio do dashboard (para ordenar por prazo)
-                window.__buscaViaDashboard = true;
-                // Pré-selecionar o tipo no select (os valores já estão com acentos corretos)
-                $('#filterTipo').val(tipoParam);
-                // Garantir que cancelado=Não e atendido=Não (já são padrão, mas reforça)
-                if (!$('#filterCancelado').val()) $('#filterCancelado').val('Não');
-                if (!$('#filterAtendido').val())  $('#filterAtendido').val('Não');
-                // Disparar a busca automaticamente
-                setTimeout(function() { buscarOrdens(); }, 300);
-            }
         });
     </script>
 

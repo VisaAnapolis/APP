@@ -385,26 +385,16 @@
       border-bottom: 1px solid rgba(0, 0, 0, 0.08);
       display:none; /* ✅ por padrão; só Fiscal libera */
     }
-    .stats-container { display: flex; gap: 16px; max-width: 900px; flex-wrap: wrap; }
+    .stats-container { display: flex; gap: 16px; max-width: 760px; flex-wrap: wrap; }
     .stat-card {
       flex: 1;
-      min-width: 190px;
+      min-width: 160px;
       background: white;
       border-radius: 12px;
-      padding: 16px 20px;
+      padding: 12px 16px;
       text-align: center;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
       border: 1px solid rgba(0, 0, 0, 0.06);
-      border-left: 5px solid #1a3a6b;
-      cursor: pointer;
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-      text-decoration: none;
-      display: block;
-      color: inherit;
-    }
-    .stat-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.13);
     }
     .stat-number {
       display: block;
@@ -431,17 +421,14 @@
   /* === ALERTAS VISUAIS DOS CARDS DE OS (Paleta C) === */
   .stat-card.alert-red {
     background: #FFF2F2;
-    border-left-color: #dc3545;
   }
 
   .stat-card.alert-yellow {
     background: #FFFBEB;
-    border-left-color: #ffc107;
   }
 
   .stat-card.alert-ok {
     background: #F0FFF4;
-    border-left-color: #28a745;
   }
     
   </style>
@@ -483,26 +470,26 @@
     <!-- Stats do fiscal -->
     <div id="fiscalStats" class="fiscal-stats">
       <div class="stats-container">
-        <a class="stat-card" href="os.html?tipo=Protocolo" title="Ver OS de Protocolo">
+        <div class="stat-card">
           <span class="stat-number">-</span>
           <span class="stat-label">Protocolos</span>
           <span class="stat-detalhe" id="detProtocolos">-</span>
-        </a>
-        <a class="stat-card" href="os.html?tipo=Requerimento" title="Ver OS de Requerimento">
+        </div>
+        <div class="stat-card">
           <span class="stat-number">-</span>
           <span class="stat-label">Requerimentos</span>
           <span class="stat-detalhe" id="detRequerimentos">-</span>
-        </a>
-        <a class="stat-card" href="os.html?tipo=Den%C3%BAncia" title="Ver OS de Denúncia">
+        </div>
+        <div class="stat-card">
           <span class="stat-number">-</span>
           <span class="stat-label">Denúncias</span>
           <span class="stat-detalhe" id="detDenuncias">-</span>
-        </a>
-        <a class="stat-card" href="os.html?tipo=Of%C3%ADcio" title="Ver OS de Ofício">
+        </div>
+        <div class="stat-card">
           <span class="stat-number">-</span>
           <span class="stat-label">Ofícios</span>
           <span class="stat-detalhe" id="detOficios">-</span>
-        </a>
+        </div>
       </div>
     </div>
 
@@ -510,9 +497,6 @@
       <div class="grid">
         <div class="card avisos">
           <h3>Novidades no Aplicativo</h3>
-
-          <p>🖱️ <strong>Cards do Dashboard Interativos</strong><br />Clique diretamente nos cards do dashboard (Protocolos, Requerimentos, Denúncias e Ofícios) para abrir a lista de OS já filtrada e ordenada por prazo, com as vencidas no topo.</p>
-          <br />
 
           <p>🔔 <strong>Notificações Automáticas</strong><br>Alertas no celular e desktop para OS com prazo próximo ao vencimento.</p>
           <br />
@@ -674,7 +658,7 @@ Supervisão de Vigilância Sanitária</p>
     const provider = new GoogleAuthProvider();
 
     // ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
-    const APP_VERSION = '2.3.6';
+    const APP_VERSION = '2.3.5';
     const VERSION_KEY = 'visa_app_version';
     const savedVersion = localStorage.getItem(VERSION_KEY);
 
