@@ -120,6 +120,8 @@ window.sidebarLogout = function() {
     window.__sidebarAuth = auth;
 
     firebaseAuth.onAuthStateChanged(auth, function(user) {
+      // Se a página tem guard próprio que já gerencia o #userInfo, não interferir
+      if (window.__sidebarUserManaged) return;
       if (!user) {
         sidebarSetUserAnon();
         return;
