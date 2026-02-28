@@ -1915,12 +1915,17 @@ function converterData(dataStr) {
             // Armazenar resultados filtrados para o modal
             window.resultadosFiltrados = resultados;
 
-            // Scroll até a tabela quando a busca veio do dashboard (card clicado)
+            // Scroll até os resultados quando a busca veio do dashboard (card clicado)
+            // No mobile (<=768px): rola até os cards mobile (#mobileCards)
+            // No desktop: rola até a tabela HTML (#tabelaOS)
             if (window.__buscaViaDashboard) {
                 setTimeout(function() {
-                    const tabelaEl = document.getElementById('tabelaOS');
-                    if (tabelaEl) tabelaEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 400);
+                    const isMobile = window.innerWidth <= 768;
+                    const alvo = isMobile
+                        ? document.getElementById('mobileCards')
+                        : document.getElementById('tabelaOS');
+                    if (alvo) alvo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 500);
             }
         }
 

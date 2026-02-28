@@ -111,6 +111,16 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.4.0 — 28/02/2026 (Horário de Brasília – UTC−3)</h3>
+  <strong>Correção do scroll automático no mobile ao chegar via dashboard</strong>
+  <ul>
+    <li>No mobile, a tabela HTML fica oculta e os resultados são exibidos como cards (<code>#mobileCards</code>). O scroll anterior apontava para <code>#tabelaOS</code>, que é invisível no mobile, fazendo o usuário não perceber que a busca já havia sido executada.</li>
+    <li>Corrigido: o scroll agora detecta o tamanho da tela (<code>window.innerWidth &lt;= 768</code>) e rola até <code>#mobileCards</code> no celular ou até <code>#tabelaOS</code> no desktop.</li>
+  </ul>
+  <p><strong>Arquivos modificados:</strong> <code>os.html</code> — scroll adaptativo mobile/desktop; <code>index.html</code> — <code>APP_VERSION</code> 2.4.0; <code>changelog.html</code>.</p>
+</div>
+
+<div class="section">
   <h3>v2.3.9 — 28/02/2026 (Horário de Brasília – UTC−3)</h3>
   <strong>Hotfix: SyntaxError corrigido em index.html</strong>
   <ul>
