@@ -138,8 +138,40 @@ body.with-sidebar {
   font-size: 0.68rem;
   color: var(--muted, #94a3b8);
 }
+
+/* ── userInfo no rodapé do sidebar ── */
+.sidebar__footer #userInfo {
+  background: none;
+  border: none;
+  padding: 4px 0 6px;
+  font-size: 0; /* zera para não herdar font-size do pai */
+}
+.sidebar__footer #userInfo .user-name {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1a3a6b;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sidebar__footer #userInfo .user-name::after { display: none; }
+.sidebar__footer #userInfo .user-email {
+  display: block;
+  font-size: 0.65rem;
+  color: #64748b;
+  line-height: 1.4;
+  word-break: break-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Avatar circular com inicial do usuário ── */
 .sidebar__user {
   display: flex; align-items: center; gap: 10px;
+  margin-bottom: 6px;
 }
 .user-avatar {
   width: 32px; height: 32px;
@@ -159,18 +191,21 @@ body.with-sidebar {
   font-size: 0.67rem; color: var(--muted, #64748b);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;
 }
+
+/* ── Botão de logout ── */
 .btn-logout-text {
   width: 100%;
-  margin-top: 8px;
-  padding: 7px 12px;
+  margin-top: 6px;
+  padding: 7px 10px;
   border-radius: 8px;
   border: 1px solid var(--line, #e2e8f0);
-  background: transparent;
+  background: none;
   cursor: pointer;
-  color: var(--muted, #64748b);
-  font-size: 0.78rem;
+  color: #5b6b83;
+  font-size: 0.8rem;
   font-weight: 600;
-  text-align: left;
+  text-align: center;
+  display: block;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .btn-logout-text:hover {
