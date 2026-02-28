@@ -1918,14 +1918,29 @@ function converterData(dataStr) {
             // Scroll até os resultados quando a busca veio do dashboard (card clicado)
             // No mobile (<=768px): rola até os cards mobile (#mobileCards)
             // No desktop: rola até a tabela HTML (#tabelaOS)
+            // Usa requestAnimationFrame duplo + scroll instantâneo para garantir
+            // compatibilidade com Chrome Android (que ignora smooth em páginas recém-carregadas)
             if (window.__buscaViaDashboard) {
                 setTimeout(function() {
                     const isMobile = window.innerWidth <= 768;
                     const alvo = isMobile
                         ? document.getElementById('mobileCards')
                         : document.getElementById('tabelaOS');
-                    if (alvo) alvo.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 500);
+                    if (!alvo) return;
+                    // Duplo rAF: garante que o browser finalizou o layout antes de calcular a posição
+                    requestAnimationFrame(function() {
+                        requestAnimationFrame(function() {
+                            const rect = alvo.getBoundingClientRect();
+                            const scrollTop = window.pageYOffset
+                                || document.documentElement.scrollTop
+                                || document.body.scrollTop
+                                || 0;
+                            const posicaoAlvo = rect.top + scrollTop - 8;
+                            // Scroll instantâneo (funciona em todos os browsers/Android)
+                            window.scrollTo(0, posicaoAlvo);
+                        });
+                    });
+                }, 800);
             }
         }
 

@@ -111,6 +111,15 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.4.1 — 28/02/2026 (Horário de Brasília – UTC−3)</h3>
+  <strong>Correção do scroll no Chrome Android (PWA e navegador)</strong>
+  <ul>
+    <li>O Chrome Android ignora <code>scrollTo({ behavior: 'smooth' })</code> quando a página ainda está renderizando conteúdo dinâmico. Substituído por scroll instantâneo (<code>window.scrollTo(0, pos)</code>) precedido de duplo <code>requestAnimationFrame</code>, que garante que o browser finalizou o layout antes de calcular a posição do elemento alvo. O timeout foi aumentado para 800 ms para aguardar a renderização completa dos cards mobile e do DataTable.</li>
+  </ul>
+  <p><strong>Arquivos modificados:</strong> <code>os.html</code> — scroll instantâneo com duplo rAF; <code>index.html</code> — <code>APP_VERSION</code> 2.4.1; <code>changelog.html</code>.</p>
+</div>
+
+<div class="section">
   <h3>v2.4.0 — 28/02/2026 (Horário de Brasília – UTC−3)</h3>
   <strong>Correção do scroll automático no mobile ao chegar via dashboard</strong>
   <ul>
