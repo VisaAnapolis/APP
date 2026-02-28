@@ -111,6 +111,20 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.4.3 — 28/02/2026 19:00 (Horário de Brasília – UTC−3)</h3>
+  <strong>Novo layout com barra lateral de navegação (sidebar)</strong>
+  <ul>
+    <li><strong>Barra lateral de navegação:</strong> o dashboard ganhou uma sidebar fixa com todos os módulos organizados em seções temáticas — Operacional, Relatórios, Escala, Referência, Distribuição e Sistema — substituindo o layout de lista central anterior.</li>
+    <li><strong>Responsivo mobile:</strong> no celular e tablet a sidebar recolhe automaticamente. O botão ☰ no topo abre o menu; ao tocar em qualquer item ou na área escura do overlay, o menu fecha sem interferir no conteúdo da página.</li>
+    <li><strong>Perfil na sidebar:</strong> nome, e-mail e perfil de acesso (Administrador, Fiscal ou Administrativo) são exibidos no rodapé da barra lateral com badge colorido por categoria, eliminando a barra de perfil verde do topo.</li>
+    <li><strong>Sincronização CVS:</strong> a data da última sincronização do banco CVS passa a ser exibida em destaque logo abaixo dos cards de OS, indicando a atualidade dos dados de regulados cadastrados.</li>
+    <li><strong>Conflito CSS corrigido:</strong> a classe <code>.nav-item</code> foi renomeada para <code>.visa-nav-item</code>, eliminando sobreposição com os estilos globais de <code>base.css</code>, <code>components.css</code> e <code>layouts.css</code>.</li>
+    <li><strong>Integridade do JS mantida:</strong> todo o JavaScript original — autenticação Firebase, Firestore, Service Worker, push notifications, controle de versão, cache de autenticação e carregamento dos CSVs de OS — foi preservado integralmente na migração de layout.</li>
+  </ul>
+  <p><strong>Arquivos modificados:</strong> <code>index.html</code> — novo layout sidebar, <code>APP_VERSION</code> 2.4.3; <code>changelog.html</code>.</p>
+</div>
+      
+<div class="section">
   <h3>v2.4.2 — 28/02/2026 (Horário de Brasília – UTC−3)</h3>
   <strong>Correção da ordenação por prazo nos cards mobile + scroll mais rápido</strong>
   <ul>
