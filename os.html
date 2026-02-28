@@ -1914,6 +1914,14 @@ function converterData(dataStr) {
             
             // Armazenar resultados filtrados para o modal
             window.resultadosFiltrados = resultados;
+
+            // Scroll até a tabela quando a busca veio do dashboard (card clicado)
+            if (window.__buscaViaDashboard) {
+                setTimeout(function() {
+                    const tabelaEl = document.getElementById('tabelaOS');
+                    if (tabelaEl) tabelaEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 400);
+            }
         }
 
 // Calcular data acrescida de dias úteis
@@ -2010,14 +2018,14 @@ function obterDataPrazo(os) {
             } else {
                 prazoHtml = prazoData || '-';
             }
-
             // Adicionar classe na linha se vencido/atenção
             if (statusPrazo === 'vencido') {
                 tr.classList.add('row-vencido');
             } else if (statusPrazo === 'atencao') {
                 tr.classList.add('row-atencao');
             }
-
+            // data-order com valor ISO (YYYY-MM-DD ou string vazia) para ordenação correta pelo DataTable
+            const prazoOrdem = (prazoData && prazoData !== '' && prazoData !== 'PENDENTE') ? prazoData : '9999-12-31';
             tr.innerHTML = `
                 <td>${os.numero}</td>
                 <td>${formatarDataBR(os.data_req)}</td>
@@ -2026,7 +2034,7 @@ function obterDataPrazo(os) {
                 <td>${os.razao_social || '-'}</td>
                 <td>${os.fantasia || '-'}</td>
                 <td>${badgeComplexidade}</td>
-                <td>${prazoHtml}</td>
+                <td data-order="${prazoOrdem}">${prazoHtml}</td>
                 <td>${os.motivo || '-'}</td>
                 <td>${iconAtendido}</td>
                 <td>${iconCancelado}</td>

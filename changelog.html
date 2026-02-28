@@ -111,6 +111,36 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.3.7 — 28/02/2026 (Horário de Brasília – UTC−3)</h3>
+  <strong>Correções nos cards interativos do dashboard</strong>
+  <ul>
+    <li><strong>Cards do dashboard — largura correta no desktop:</strong>
+      <ul>
+        <li>O <code>display: block</code> aplicado ao elemento <code>&lt;a class="stat-card"&gt;</code> sobrescrevia o <code>flex: 1</code> do container, impedindo os cards de se expandirem. Corrigido para <code>display: flex</code> com <code>flex-direction: column</code>.</li>
+        <li>O JS que exibe o painel de cards usava <code>style.display = 'block'</code> no container pai, impedindo o layout flex interno. Corrigido para <code>style.display = 'flex'</code>.</li>
+      </ul>
+    </li>
+    <li><strong>Ordenação por prazo — DataTable agora ordena corretamente:</strong>
+      <ul>
+        <li>A coluna de Prazo exibe HTML com ícones e texto (ex: <code>🔴 27/02/2026 (1d atrás)</code>), o que impedia o DataTable de ordenar como data. Adicionado atributo <code>data-order="YYYY-MM-DD"</code> em cada célula de prazo para que a ordenação seja feita pelo valor ISO.</li>
+        <li>OS sem prazo recebem <code>data-order="9999-12-31"</code> para aparecerem no final da lista.</li>
+      </ul>
+    </li>
+    <li><strong>Scroll automático até a tabela ao chegar via dashboard:</strong>
+      <ul>
+        <li>Após a busca automática disparada pelo clique no card, a página rola suavemente até a tabela de resultados, evitando que o usuário fique parado nos filtros.</li>
+      </ul>
+    </li>
+  </ul>
+  <p><strong>Arquivos modificados:</strong></p>
+  <ul>
+    <li><code>index.html</code> — <code>display: flex</code> no stat-card e no fiscalStats; <code>APP_VERSION</code> 2.3.7.</li>
+    <li><code>os.html</code> — <code>data-order</code> na célula de prazo; scroll até a tabela após busca via dashboard.</li>
+    <li><code>changelog.html</code> — Entrada v2.3.7.</li>
+  </ul>
+</div>
+
+<div class="section">
   <h3>v2.3.6 — 28/02/2026 (Horário de Brasília – UTC−3)</h3>
   <strong>Cards do Dashboard Interativos e melhoria de layout desktop</strong>
   <ul>
