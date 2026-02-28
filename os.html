@@ -1888,6 +1888,17 @@ function converterData(dataStr) {
             tbody.appendChild(fragment);
 
 // Renderizar cards mobile
+            // Quando vier do dashboard, ordenar por prazo crescente antes de gerar os cards
+            // (o DataTable ordena a tabela HTML, mas os cards mobile usam o array diretamente)
+            if (window.__buscaViaDashboard) {
+                resultados.sort(function(a, b) {
+                    const pa = obterDataPrazo(a) || '9999-12-31';
+                    const pb = obterDataPrazo(b) || '9999-12-31';
+                    if (pa < pb) return -1;
+                    if (pa > pb) return 1;
+                    return 0;
+                });
+            }
             const mobileCards = document.getElementById('mobileCards');
             if (mobileCards) {
                 let cardsHtml = '';
@@ -1940,7 +1951,7 @@ function converterData(dataStr) {
                             window.scrollTo(0, posicaoAlvo);
                         });
                     });
-                }, 800);
+                }, 300);
             }
         }
 

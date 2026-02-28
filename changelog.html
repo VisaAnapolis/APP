@@ -111,6 +111,16 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.4.2 — 28/02/2026 (Horário de Brasília – UTC−3)</h3>
+  <strong>Correção da ordenação por prazo nos cards mobile + scroll mais rápido</strong>
+  <ul>
+    <li><strong>Ordenação por prazo nos cards mobile:</strong> os cards mobile são gerados diretamente do array <code>resultados</code>, sem passar pelo DataTable. Quando a busca vem do dashboard, o array agora é ordenado por prazo crescente antes de gerar os cards, garantindo consistência com a tabela desktop.</li>
+    <li><strong>Scroll mais rápido:</strong> timeout reduzido de 800 ms para 300 ms, evitando que o usuário clique em algo antes de perceber que a tela já foi posicionada nos resultados.</li>
+  </ul>
+  <p><strong>Arquivos modificados:</strong> <code>os.html</code> — ordenação mobile e timeout; <code>index.html</code> — <code>APP_VERSION</code> 2.4.2; <code>changelog.html</code>.</p>
+</div>
+
+<div class="section">
   <h3>v2.4.1 — 28/02/2026 (Horário de Brasília – UTC−3)</h3>
   <strong>Correção do scroll no Chrome Android (PWA e navegador)</strong>
   <ul>
