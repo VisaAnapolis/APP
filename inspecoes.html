@@ -597,7 +597,7 @@ window.addEventListener('scroll', () => {
       </nav>
       <div class="sidebar__footer">
         <div class="sidebar__version">
-          <span class="version-badge">v2.4.3</span>
+          <span class="version-badge">v<span id="appVersion"></span></span>
           <span class="version-date">fev/2026</span>
         </div>
         <div id="userInfo" class="user-info-bar" style="padding:6px 0 8px;background:none;border:none;"></div>
@@ -1474,6 +1474,8 @@ window.addEventListener('scroll', () => {
             html += `
         </tbody>
     </table>
+  <script src="./js/version.js"></script>
+
 </body>
 </html>`;
 
@@ -1552,6 +1554,8 @@ window.addEventListener('scroll', () => {
       }
     };
   </script>
+
+  <script src="./js/version.js"></script>
 
 </body>
 </html>

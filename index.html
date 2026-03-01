@@ -1313,6 +1313,11 @@
     });
   </script>
 
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- Importa versão centralizada da aplicação                    -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <script src="./js/version.js"></script>
+
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import {
@@ -1340,7 +1345,7 @@
     const provider = new GoogleAuthProvider();
 
     // ===== CONTROLE DE VERSÃO E ATUALIZAÇÃO FORÇADA =====
-    const APP_VERSION = '2.4.3';
+    // APP_VERSION é importado do arquivo js/version.js
     const VERSION_KEY = 'visa_app_version';
     const savedVersion = localStorage.getItem(VERSION_KEY);
 
