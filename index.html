@@ -961,7 +961,22 @@
   .btn-logout-text { width:100%; padding:7px 10px; margin-top:6px; font-size:.8rem; background:none; border:1px solid #e2e8f0; border-radius:8px; cursor:pointer; color:#5b6b83; font-weight:600; text-align:center; transition:background .15s,color .15s; display:block; }
   .btn-logout-text:hover { background:#fee2e2; color:#dc2626; border-color:#fca5a5; }
 
-  </style>
+  
+    /* ===== LINKS RESTRITOS: invisíveis por padrão até JS liberar ===== */
+    #link-rmpf,
+    #link-inspecoes,
+    #link-indicadores,
+    #link-admin {
+      display: none !important;
+    }
+    /* JS adiciona esta classe para tornar o link visível */
+    .visa-nav-item.link-liberado {
+      display: flex !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      cursor: pointer !important;
+    }
+</style>
 
   <!-- Sistema de Design - VISA Anápolis -->
   <link rel="stylesheet" href="./css/base.css" />
@@ -1613,39 +1628,42 @@
       admin: document.getElementById('link-admin'),
       indicadores:  document.getElementById('link-indicadores') 
     };
-    function disableLink(a, reason){
+    function disableLink(a, reason) {
       if (!a) return;
+      a.classList.remove('link-liberado');
       a.classList.add('is-disabled');
       a.setAttribute('aria-disabled', 'true');
       if (reason) a.setAttribute('title', reason);
     }
-    function enableLink(a){
+    function enableLink(a) {
       if (!a) return;
+      a.classList.add('link-liberado');
       a.classList.remove('is-disabled');
       a.removeAttribute('aria-disabled');
       a.removeAttribute('title');
     }
-    function lockLinksUntilProfile(){
-      disableLink(LINKS.rmpf, 'Carregando perfil...');
-      disableLink(LINKS.inspecoes, 'Carregando perfil...');
-      disableLink(LINKS.admin, 'Carregando perfil...');
-      disableLink(LINKS.indicadores, 'Carregando perfil...'); 
+    function lockLinksUntilProfile() {
+      // CSS ja garante display:none - reforco JS
+      Object.values(LINKS).forEach(a => {
+        if (!a) return;
+        a.classList.remove('link-liberado');
+        a.classList.add('is-disabled');
+      });
     }
-    function applyLinkPermissions(grupo){
-      if (grupo === 'Fiscal' || grupo === 'Administrador'){
+    function applyLinkPermissions(grupo) {
+      if (grupo === 'Fiscal' || grupo === 'Administrador') {
         enableLink(LINKS.rmpf);
         enableLink(LINKS.inspecoes);
       } else {
-        disableLink(LINKS.rmpf, 'Acesso conforme perfil');
+        disableLink(LINKS.rmpf,      'Acesso conforme perfil');
         disableLink(LINKS.inspecoes, 'Acesso conforme perfil');
       }
-
-      if (grupo === 'Administrador'){
+      if (grupo === 'Administrador') {
         enableLink(LINKS.admin);
-        enableLink(LINKS.indicadores);           // ← adicionar
+        enableLink(LINKS.indicadores);
       } else {
-        disableLink(LINKS.admin, 'Exclusivo para Administrador');
-        disableLink(LINKS.indicadores,  'Exclusivo para Administrador');  // ← 
+        disableLink(LINKS.admin,       'Exclusivo para Administrador');
+        disableLink(LINKS.indicadores, 'Exclusivo para Administrador');
       }
     }
 
@@ -2720,3 +2738,5 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
 
   </body>
 </html>
+
+
