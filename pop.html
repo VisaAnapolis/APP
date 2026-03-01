@@ -599,7 +599,6 @@
 
             document.getElementById('pdfTitle').textContent = codigo;
             document.getElementById('pdfViewer').setAttribute('src', caminho);
-            document.getElementById('pdfDownloadLink').href = caminho;
             document.getElementById('pdfModal').classList.add('active');
             document.body.style.overflow = 'hidden';
             
@@ -678,7 +677,6 @@
             
             // Carrega o anexo
             document.getElementById('pdfViewer').setAttribute('src', caminhoAnexo);
-            document.getElementById('pdfDownloadLink').href = caminhoAnexo;
             
             // Oculta lista de anexos
             document.getElementById('anexosContainer').classList.remove('has-anexos');
@@ -698,7 +696,6 @@
                 
                 // Carrega o POP novamente
                 document.getElementById('pdfViewer').setAttribute('src', pdfAtual);
-                document.getElementById('pdfDownloadLink').href = pdfAtual;
                 
                 // Mostra lista de anexos novamente
                 const container = document.getElementById('anexosContainer');
