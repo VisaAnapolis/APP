@@ -1120,8 +1120,8 @@
         <main class="page-content">
 
           <div class="page-header">
-            <h1 class="page-title">Dashboard</h1>
-          <!--  <p class="page-subtitle" id="welcomeMsg">Carregando perfil...</p> -->
+            <h1 class="page-title">📊 Dashboard</h1>
+            <p class="page-subtitle" id="dashboardSubtitle"></p>
           </div>
 
           <!-- STAT CARDS OS (exibido apenas para Fiscal/Administrador pelo JS) -->
@@ -2448,6 +2448,20 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
         `<span class="user-name">${nome}</span>` +
         `<span class="user-email">${user.email}</span>` +
         badgeHtml;
+      
+      // Atualizar o subtítulo do Dashboard baseado no perfil
+      const dashboardSubtitle = document.getElementById('dashboardSubtitle');
+      if (dashboardSubtitle) {
+        if (grupo === 'Administrador') {
+          dashboardSubtitle.textContent = 'Painel das Ordens de Serviço da VISA';
+        } else if (grupo === 'Fiscal') {
+          dashboardSubtitle.textContent = 'Painel de Suas Ordens de Serviço';
+        } else if (grupo === 'Administrativo') {
+          dashboardSubtitle.textContent = '';
+        } else {
+          dashboardSubtitle.textContent = '';
+        }
+      }
     }
 
     // UX: se houver cache válido (e allowlist), mostra conteúdo já e trava links
