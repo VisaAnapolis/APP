@@ -24,9 +24,9 @@
         }
 
         .container {
-            max-width: 1100px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 0 16px;
+            padding: 0 20px;
             padding-bottom: 40px;
         }
 
@@ -65,19 +65,17 @@
         }
 
         .table-container {
-            background: var(--card, #ffffff);
-            border-radius: 16px;
-            padding: 18px;
-            box-shadow: var(--shadow2);
-            border: 1px solid var(--line, #e2e8f0);
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
             overflow-x: auto;
         }
 
         .table-container h3 {
-            margin: 0 0 16px 0;
-            color: var(--brand1);
-            padding-left: 10px;
-            border-left: 6px solid var(--brand1);
+            color: var(--primary);
+            font-size: 1.5em;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
         }
@@ -94,22 +92,22 @@
         }
 
         thead {
-            background: var(--brand1);
+            background: var(--primary);
             color: white;
             position: sticky;
             top: 0;
         }
 
         th {
-            padding: 12px 16px;
+            padding: 14px 12px;
             text-align: left;
             font-weight: 600;
             white-space: nowrap;
         }
 
         td {
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--line, #e2e8f0);
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
         }
 
         tbody tr {
@@ -129,7 +127,7 @@
         .codigo {
             font-family: 'Courier New', monospace;
             font-weight: 600;
-            color: var(--brand1);
+            color: var(--primary);
             white-space: nowrap;
         }
 
@@ -170,7 +168,7 @@
         }
 
         .modal-header {
-            background: var(--brand1);
+            background: var(--primary);
             color: white;
             padding: 16px 20px;
             padding-top: calc(16px + env(safe-area-inset-top, 0px));
@@ -227,7 +225,7 @@
 
         .anexo-link {
             padding: 6px 14px;
-            background: var(--brand1);
+            background: var(--primary);
             color: white;
             text-decoration: none;
             border-radius: 6px;
@@ -269,7 +267,7 @@
         }
 
         .btn-action {
-            background: var(--brand1);
+            background: var(--primary);
             color: white;
             border: none;
             padding: 12px 24px;
@@ -312,9 +310,6 @@
     </style>
     <link rel="stylesheet" href="./css/design-tokens.css">
     <link rel="stylesheet" href="./css/header-component.css">
-    <link rel="stylesheet" href="./css/base.css">
-    <link rel="stylesheet" href="./css/components.css">
-    <link rel="stylesheet" href="./css/layouts.css">
   <link rel="stylesheet" href="./css/sidebar.css">
 </head>
 <body class="with-sidebar">

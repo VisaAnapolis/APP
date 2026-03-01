@@ -6,9 +6,10 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Vigilância Sanitária Municipal – Aviso Institucional</title>
+  <title>Legislação Sanitária — Acessos Rápidos</title>
   <meta name="theme-color" content="#1a3a6b">
 
+  <!-- Sistema de Design - VISA Anápolis -->
   <link rel="stylesheet" href="./css/design-tokens.css">
   <link rel="stylesheet" href="./css/header-component.css">
   <link rel="stylesheet" href="./css/base.css">
@@ -17,11 +18,14 @@
   <link rel="stylesheet" href="./css/sidebar.css">
 
   <style>
+    /* ── CONTAINER DA PÁGINA ── */
     .container {
-      max-width: 1100px;
+      max-width: 900px;
       margin: 0 auto;
       padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
     }
+
+    /* ── CARDS ── */
     .card {
       background: var(--card, #ffffff);
       border-radius: 16px;
@@ -30,47 +34,64 @@
       border: 1px solid var(--line, #e2e8f0);
       box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     }
-    .card p {
-      text-align: justify;
-      text-justify: inter-word;
-      line-height: 1.6;
-      margin: 0 0 16px 0;
-    }
-    .card li {
-      text-align: justify;
-      text-justify: inter-word;
-      line-height: 1.6;
-      margin: 6px 0;
-    }
-    .card h1 {
+    .card__title {
       color: var(--brand1, #1a3a6b);
-      font-size: 1.4rem;
-      font-weight: 900;
-      margin: 0 0 20px 0;
-      padding: 0 0 12px 0;
+      font-size: 1.1em;
+      font-weight: 700;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
       border-bottom: 2px solid var(--brand1, #1a3a6b);
     }
-    .card h2 {
-      color: var(--brand1, #1a3a6b);
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin: 24px 0 12px 0;
-    }
-    .card ul {
-      margin: 8px 0 16px 0;
-      padding-left: 24px;
-    }
-    .footer-inst {
-      margin-top: 32px;
-      padding-top: 20px;
-      border-top: 1px solid var(--line, #e2e8f0);
-      text-align: center;
-      color: var(--muted, #64748b);
+    .card__subtitle {
       font-size: 0.9em;
-      line-height: 1.6;
+      color: var(--muted, #64748b);
+      margin-bottom: 12px;
     }
+
+    /* ── SEÇÕES ── */
+    .section-title {
+      color: var(--brand1, #1a3a6b);
+      font-size: 1.05em;
+      font-weight: 700;
+      margin: 0 0 12px 0;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, rgba(26,58,107,0.08), rgba(44,90,160,0.05));
+      border-left: 4px solid var(--brand1, #1a3a6b);
+      border-radius: 0 8px 8px 0;
+    }
+
+    /* ── LISTA DE LINKS ── */
+    .link-list { list-style: none; padding: 0; margin: 0 0 20px 0; }
+    .link-list li { margin: 0; border-bottom: 1px solid var(--line, #e2e8f0); }
+    .link-list li:last-child { border-bottom: none; }
+    .link-list a {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 12px;
+      text-decoration: none;
+      color: var(--text, #1a202c);
+      font-weight: 600; font-size: 0.95em;
+      transition: background 0.2s;
+      border-radius: 8px;
+    }
+    .link-list a:hover { background: rgba(26,58,107,0.05); }
+    .link-list a::before { content: "📜"; font-size: 1.1em; }
+    .link-list a::after { content: "↗"; margin-left: auto; font-size: 1em; color: var(--muted, #64748b); }
+    .link-list a[href^="normas"]::after { content: "›"; font-size: 1.4em; font-weight: 300; }
+
+    /* ── OBSERVAÇÃO ── */
+    .obs-text {
+      font-size: 0.9em; color: var(--muted, #64748b);
+      line-height: 1.5; padding: 12px 16px;
+      background: rgba(26,58,107,0.04);
+      border-radius: 8px;
+      border-left: 4px solid var(--brand1, #1a3a6b);
+      margin-top: 16px;
+    }
+
     @media (max-width: 768px) {
-      .card { padding: 18px 20px; }
+      .card { padding: 16px; border-radius: 14px; }
+      .link-list a { padding: 12px 10px; font-size: 0.9em; }
+      .section-title { font-size: 1em; padding: 10px 12px; }
     }
   </style>
 </head>
@@ -105,7 +126,7 @@
         <a class="visa-nav-item" href="veiculos.html"><span class="nav-icon">🚗</span> Veículos</a>
         <a class="visa-nav-item" href="ferias.html"><span class="nav-icon">🏖️</span> Férias</a>
         <div class="nav-section-label">Referência</div>
-        <a class="visa-nav-item" href="legislacao.html"><span class="nav-icon">📜</span> Legislação</a>
+        <a class="visa-nav-item active" href="legislacao.html"><span class="nav-icon">📜</span> Legislação</a>
         <a class="visa-nav-item" href="pop.html"><span class="nav-icon">🎯</span> POPs da VISA</a>
         <a class="visa-nav-item" href="check.html"><span class="nav-icon">✅</span> Check Lists</a>
         <div class="nav-section-label">Distribuição</div>
@@ -116,7 +137,7 @@
         <a class="visa-nav-item" href="admin.html"><span class="nav-icon">⚙️</span> Painel Admin</a>
         <a class="visa-nav-item" href="mailto:visa@anapolis.go.gov.br"><span class="nav-icon">💡</span> Sugestões</a>
         <a class="visa-nav-item" href="changelog.html"><span class="nav-icon">📌</span> Novidades da versão</a>
-        <a class="visa-nav-item active" href="readme.html"><span class="nav-icon">📄</span> Aviso Institucional</a>
+        <a class="visa-nav-item" href="readme.html"><span class="nav-icon">📄</span> Aviso Institucional</a>
       </nav>
       <div class="sidebar__footer">
         <div class="sidebar__version">
@@ -129,11 +150,13 @@
     </aside>
     <!-- ════ FIM SIDEBAR ════ -->
 
+    <!-- Overlay mobile -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
     <!-- ════════════ MAIN AREA ════════════ -->
     <div class="main-area">
 
+      <!-- TOPBAR (mobile only) -->
       <header class="topbar">
         <button class="btn-hamburger" onclick="toggleSidebar()" aria-label="Abrir menu">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -142,101 +165,90 @@
             <line x1="3" y1="18" x2="21" y2="18"/>
           </svg>
         </button>
-        <span class="topbar__title">Aviso Institucional</span>
+        <span class="topbar__title">Legislação Sanitária</span>
       </header>
 
+      <!-- CONTEÚDO -->
       <main class="page-content">
         <div class="page-header">
-          <h1 class="page-title">📄 Aviso Institucional</h1>
-          <p class="page-subtitle">Consulta Institucional de Estabelecimentos Regulados — Vigilância Sanitária Municipal</p>
+          <h1 class="page-title">📜 Legislação Sanitária</h1>
+          <p class="page-subtitle">Links oficiais para consulta. Uso institucional pelos servidores da Vigilância Sanitária Municipal.</p>
         </div>
 
         <div class="container">
-          <div class="card">
 
-            <h1>Vigilância Sanitária Municipal – Consulta Institucional de Estabelecimentos Regulados</h1>
-
-            <p>
-              Este ambiente hospeda uma aplicação web de natureza <strong>informativa e institucional</strong>,
-              disponibilizada por meio da plataforma GitHub Pages, destinada à
-              <strong>consulta interna por servidores da Vigilância Sanitária Municipal</strong>,
-              no exercício regular de suas atribuições legais e funcionais.
+          <!-- Card Introdução -->
+          <section class="card">
+            <div class="card__title">📚 Acessos Rápidos</div>
+            <p class="card__subtitle">
+              Links oficiais para consulta (abrem em nova aba). Uso institucional pelos
+              servidores da Vigilância Sanitária Municipal.
             </p>
-            <p>
-              A iniciativa integra ações de modernização administrativa, controle interno,
-              padronização de informações e apoio operacional, não substituindo sistemas oficiais
-              nem produzindo efeitos jurídicos, normativos ou decisórios.
-            </p>
+          </section>
 
-            <h2>I – Finalidade Administrativa</h2>
-            <p>
-              A aplicação tem por finalidade facilitar o acesso a informações administrativas
-              consolidadas necessárias às atividades de fiscalização sanitária, análise técnica
-              e acompanhamento de estabelecimentos regulados, observando os princípios da
-              legalidade, eficiência, economicidade e publicidade administrativa.
-            </p>
-
-            <h2>II – Enquadramento Institucional</h2>
-            <p>O projeto está vinculado às atividades da Vigilância Sanitária Municipal, órgão integrante da Diretoria de Vigilância em Saúde, observando:</p>
-            <ul>
-              <li>os princípios do art. 37 da Constituição Federal</li>
-              <li>as normas gerais de controle interno da administração pública</li>
-              <li>as orientações do Tribunal de Contas dos Municípios (TCM)</li>
-              <li>as boas práticas de governança pública</li>
+          <!-- Legislação Nacional -->
+          <section class="card">
+            <h2 class="section-title">🇧🇷 Legislação Nacional</h2>
+            <ul class="link-list">
+              <li>
+                <a href="https://www.planalto.gov.br/ccivil_03/leis/l8080.htm" target="_blank" rel="noopener">
+                  Lei nº 8.080/1990 (SUS)
+                </a>
+              </li>
+              <li>
+                <a href="https://www.planalto.gov.br/ccivil_03/leis/l6437.htm" target="_blank" rel="noopener">
+                  Lei nº 6.437/1977 (Infrações Sanitárias)
+                </a>
+              </li>
+              <li>
+                <a href="https://www.planalto.gov.br/ccivil_03/LEIS/L9782.htm" target="_blank" rel="noopener">
+                  Lei nº 9.782/1999 (SNVS / Anvisa)
+                </a>
+              </li>
             </ul>
+          </section>
 
-            <h2>III – Público-Alvo e Uso Restrito</h2>
-            <p>
-              A utilização da aplicação é restrita aos servidores da Vigilância Sanitária Municipal,
-              incluindo fiscais sanitários, chefias, equipes técnicas e servidores autorizados.
-            </p>
-
-            <h2>IV – Conteúdo Disponibilizado</h2>
-            <ul>
-              <li>Identificação cadastral de estabelecimentos regulados</li>
-              <li>Razão social e nome fantasia</li>
-              <li>Endereço declarado</li>
-              <li>Classificação de atividades econômicas (CNAE)</li>
-              <li>Situação administrativa e vigência de alvarás sanitários</li>
-              <li>Registros objetivos de inspeções (datas e identificadores)</li>
+          <!-- Legislação Estadual -->
+          <section class="card">
+            <h2 class="section-title">🏛️ Legislação Estadual — Goiás</h2>
+            <ul class="link-list">
+              <li>
+                <a href="https://legisla.casacivil.go.gov.br/pesquisa_legislacao/86552" target="_blank" rel="noopener">
+                  Lei nº 16.140/2007 (SUS no Estado de Goiás)
+                </a>
+              </li>
             </ul>
+          </section>
 
-            <h2>V – Natureza Jurídica das Informações</h2>
-            <p>
-              Os dados apresentados possuem caráter administrativo, informativo e auxiliar,
-              não constituindo certidão, não gerando direito subjetivo e não produzindo efeitos
-              jurídicos externos.
-            </p>
-
-            <h2>VI – Proteção de Dados</h2>
-            <p>
-              O ambiente observa integralmente a Lei nº 13.709/2018 – Lei Geral de Proteção de
-              Dados Pessoais (LGPD), assegurando que dados pessoais sensíveis ou informações
-              restritas não sejam expostos.
-            </p>
-
-            <h2>VII – Limitações Operacionais</h2>
-            <ul>
-              <li>Não permite inclusão ou edição de dados</li>
-              <li>Não opera em tempo real</li>
-              <li>Não substitui sistemas corporativos oficiais</li>
+          <!-- Legislação Municipal -->
+          <section class="card">
+            <h2 class="section-title">🏙️ Legislação Municipal — Anápolis</h2>
+            <ul class="link-list">
+              <li>
+                <a href="normas/lc377.html">
+                  LC nº 377/2018 (Código Sanitário Municipal)
+                </a>
+              </li>
             </ul>
+          </section>
 
-            <h2>VIII – Disposições Finais</h2>
-            <p>
-              Este projeto constitui ferramenta de apoio à gestão e fiscalização,
-              não configurando sistema oficial nem ato administrativo formal.
+          <!-- ANVISA -->
+          <section class="card">
+            <h2 class="section-title">🔬 ANVISA — Portal de Legislação</h2>
+            <ul class="link-list">
+              <li>
+                <a href="https://anvisalegis.datalegis.net/" target="_blank" rel="noopener">
+                  AnvisaLegis (RDCs, INs, Portarias e outros atos)
+                </a>
+              </li>
+            </ul>
+            <p class="obs-text">
+              <strong>💡 Dica:</strong> para uso em celular, recomenda-se "Adicionar à Tela de Início".
             </p>
+          </section>
 
-            <div class="footer-inst">
-              Vigilância Sanitária Municipal – Diretoria de Vigilância em Saúde<br>
-              Município de Anápolis – GO<br>
-              © 2025
-            </div>
-
-          </div>
         </div><!-- /.container -->
-      </main>
+      </main><!-- /.page-content -->
     </div><!-- /.main-area -->
   </div><!-- /.app-layout -->
 

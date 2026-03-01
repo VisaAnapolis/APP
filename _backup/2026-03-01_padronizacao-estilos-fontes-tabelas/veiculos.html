@@ -12,9 +12,6 @@
   <!-- Design System -->
   <link rel="stylesheet" href="./css/design-tokens.css">
   <link rel="stylesheet" href="./css/header-component.css">
-  <link rel="stylesheet" href="./css/base.css">
-  <link rel="stylesheet" href="./css/components.css">
-  <link rel="stylesheet" href="./css/layouts.css">
 
   <!-- jQuery e DataTables -->
   <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -31,22 +28,22 @@
 
     /* Header agora usa header-component.css */
 
-    .container{max-width:1100px;margin: 0 auto 40px;padding:0 16px;}
+    .container{max-width:1400px;margin: 0 auto 40px;padding:0 16px;}
 
     .card{
       background:var(--card);
       border-radius:16px;
-      padding:18px;
+      padding:24px;
       border:1px solid var(--line);
       box-shadow:var(--shadow2);
-      margin-bottom:16px;
+      margin-bottom:20px;
     }
 
     .card h3{
-      margin: 0 0 16px 0;
       color:var(--brand1);
-      padding-left:10px;
-      border-left:6px solid var(--brand1);
+      margin-bottom:16px;
+      border-bottom:2px solid var(--brand1);
+      padding-bottom:8px;
     }
 
     .filters{

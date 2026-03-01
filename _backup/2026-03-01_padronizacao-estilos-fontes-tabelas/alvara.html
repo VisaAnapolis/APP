@@ -73,18 +73,18 @@
     /* Extra: evita “scroll do fundo” e bugs de toque no iOS quando modal abre */
     body.modal-open { overflow: hidden; }
 
-    .container { max-width: 1100px; margin: 0 auto 30px; padding: 0 16px; }
+    .container { max-width: 1400px; margin: 0 auto 30px; padding: 0 16px; }
 
     .card {
-      background: var(--card, #ffffff);
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 16px;
-      box-shadow: var(--shadow2);
-      border: 1px solid var(--line, #e2e8f0);
+      background: var(--card-bg);
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      border: 1px solid var(--card-border);
     }
 
-    .card h3 { margin: 0 0 16px 0; color: var(--brand1); padding-left: 10px; border-left: 6px solid var(--brand1); }
+    .card h3 { color: var(--brand1); margin-bottom: 20px; font-size: 1.3em; }
 
     .filter-grid {
       display: grid;
@@ -414,9 +414,6 @@
 
   <link rel="stylesheet" href="./css/design-tokens.css">
   <link rel="stylesheet" href="./css/header-component.css">
-  <link rel="stylesheet" href="./css/base.css">
-  <link rel="stylesheet" href="./css/components.css">
-  <link rel="stylesheet" href="./css/layouts.css">
   <link rel="stylesheet" href="./css/sidebar.css">
 </head>
 
