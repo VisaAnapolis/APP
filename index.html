@@ -961,6 +961,70 @@
   .btn-logout-text { width:100%; padding:7px 10px; margin-top:6px; font-size:.8rem; background:none; border:1px solid #e2e8f0; border-radius:8px; cursor:pointer; color:#5b6b83; font-weight:600; text-align:center; transition:background .15s,color .15s; display:block; }
   .btn-logout-text:hover { background:#fee2e2; color:#dc2626; border-color:#fca5a5; }
 
+
+/* ===== DARK MODE FIXES - textos azul-escuro ===== */
+@media (prefers-color-scheme: dark) {
+
+  /* Títulos e rótulos que usavam azul-escuro (#1a3a6b) */
+  .loginCard h2,
+  .sidebarapp-name,
+  .topbartitle,
+  .page-title,
+  .stat-number,
+  .sidebaruser-name,
+  .novidades-lista strong,
+  .pdfThumbTitulo,
+  .pdfThumb--destaque .pdfThumbTitulo,
+  .user-info-bar .user-name,
+  .sidebarfooter .user-name,
+  .card h3,
+  .version-badge {
+    color: #90b8f8 !important;   /* azul claro legível no escuro */
+  }
+
+  /* Textos de corpo que usavam #1f2a3a */
+  .modalCard p,
+  .modalCard .small {
+    color: #cbd5e1 !important;
+  }
+
+  /* Azul médio (#2c5aa0) em links e sync-info */
+  .sync-cvs-info,
+  .footer a,
+  .msg-institucional a,
+  .pdfThumbBadge,
+  .visa-nav-item.active {
+    color: #7eb3fc !important;
+  }
+
+  /* Hover nos itens da nav */
+  .visa-nav-item:hover {
+    color: #90b8f8 !important;
+  }
+
+  /* Border-left dos cards (brand1) */
+  .card h3 {
+    border-left-color: #4d8af0 !important;
+  }
+
+  /* Stat number nos alertas de cor */
+  .stat-card.alert-red .stat-number { color: #f87171 !important; }
+  .stat-card.alert-yellow .stat-number { color: #fcd34d !important; }
+  .stat-card.alert-ok .stat-number { color: #4ade80 !important; }
+
+  /* Backgrounds de cards no dark mode */
+  .pdfThumbCard,
+  .modalCard {
+    background: #1e293b !important;
+    border-color: rgba(255,255,255,0.1) !important;
+  }
+  .pdfThumb--destaque {
+    background: linear-gradient(135deg, rgba(77,138,240,0.12), #1e293b) !important;
+  }
+}
+
+
+    
   </style>
 
   <!-- Sistema de Design - VISA Anápolis -->
