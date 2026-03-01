@@ -9,7 +9,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#1a3a6b">
     <title>POPs - Lista Mestra | DVS Anápolis</title>
-    <style>
+    
+    <link rel="stylesheet" href="./css/design-tokens.css">
+    <link rel="stylesheet" href="./css/header-component.css">
+    <link rel="stylesheet" href="./css/base.css">
+    <link rel="stylesheet" href="./css/components.css">
+    <link rel="stylesheet" href="./css/layouts.css">
+  <link rel="stylesheet" href="./css/sidebar.css">
+<style>
         * {
             margin: 0;
             padding: 0;
@@ -24,9 +31,9 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 16px;
             padding-bottom: 40px;
         }
 
@@ -65,17 +72,19 @@
         }
 
         .table-container {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            background: var(--card, #ffffff);
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: var(--shadow2);
+            border: 1px solid var(--line, #e2e8f0);
             overflow-x: auto;
         }
 
         .table-container h3 {
-            color: var(--primary);
-            font-size: 1.5em;
-            margin-bottom: 20px;
+            margin: 0 0 16px 0;
+            color: var(--brand1);
+            padding-left: 10px;
+            border-left: 6px solid var(--brand1);
             display: flex;
             align-items: center;
         }
@@ -92,22 +101,22 @@
         }
 
         thead {
-            background: var(--primary);
+            background: var(--brand1);
             color: white;
             position: sticky;
             top: 0;
         }
 
         th {
-            padding: 14px 12px;
+            padding: 12px 16px;
             text-align: left;
             font-weight: 600;
             white-space: nowrap;
         }
 
         td {
-            padding: 12px;
-            border-bottom: 1px solid #e2e8f0;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--line, #e2e8f0);
         }
 
         tbody tr {
@@ -127,7 +136,7 @@
         .codigo {
             font-family: 'Courier New', monospace;
             font-weight: 600;
-            color: var(--primary);
+            color: var(--brand1);
             white-space: nowrap;
         }
 
@@ -168,7 +177,7 @@
         }
 
         .modal-header {
-            background: var(--primary);
+            background: var(--brand1);
             color: white;
             padding: 16px 20px;
             padding-top: calc(16px + env(safe-area-inset-top, 0px));
@@ -225,7 +234,7 @@
 
         .anexo-link {
             padding: 6px 14px;
-            background: var(--primary);
+            background: var(--brand1);
             color: white;
             text-decoration: none;
             border-radius: 6px;
@@ -267,7 +276,7 @@
         }
 
         .btn-action {
-            background: var(--primary);
+            background: var(--brand1);
             color: white;
             border: none;
             padding: 12px 24px;
@@ -308,9 +317,6 @@
             }
         }
     </style>
-    <link rel="stylesheet" href="./css/design-tokens.css">
-    <link rel="stylesheet" href="./css/header-component.css">
-  <link rel="stylesheet" href="./css/sidebar.css">
 </head>
 <body class="with-sidebar">
   <div class="app-layout">
@@ -570,9 +576,7 @@
         </div>
         
         <div class="pdf-container">
-            <object id="pdfViewer" class="pdf-iframe" type="application/pdf">
-                <p>Seu navegador não suporta visualização de PDF. <a id="pdfDownloadLink" href="#">Clique aqui para baixar</a></p>
-            </object>
+            <iframe id="pdfViewer" class="pdf-iframe" src="" title="Visualizador de PDF"></iframe>
         </div>
         <div class="modal-footer">
             <button onclick="abrirEmNovaAba()" class="btn-action">📂 Abrir Externamente</button>
@@ -587,13 +591,14 @@
 
         // FUNÇÃO PRINCIPAL - ABRE O POP (SIMPLIFICADA)
         function abrirPOP(codigo) {
+            ocultarBotaoVoltar();
             codigoAtual = codigo;
             const caminho = `pop/${codigo}.pdf`;
             pdfAtual = caminho;
             pdfAnterior = ''; // Reseta ao abrir POP principal
 
             document.getElementById('pdfTitle').textContent = codigo;
-            document.getElementById('pdfViewer').setAttribute('data', caminho);
+            document.getElementById('pdfViewer').setAttribute('src', caminho);
             document.getElementById('pdfDownloadLink').href = caminho;
             document.getElementById('pdfModal').classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -672,7 +677,7 @@
             document.getElementById('pdfTitle').textContent = `${codigoAtual} - Anexo ${numeroAnexo}`;
             
             // Carrega o anexo
-            document.getElementById('pdfViewer').setAttribute('data', caminhoAnexo);
+            document.getElementById('pdfViewer').setAttribute('src', caminhoAnexo);
             document.getElementById('pdfDownloadLink').href = caminhoAnexo;
             
             // Oculta lista de anexos
@@ -692,7 +697,7 @@
                 document.getElementById('pdfTitle').textContent = codigoAtual;
                 
                 // Carrega o POP novamente
-                document.getElementById('pdfViewer').setAttribute('data', pdfAtual);
+                document.getElementById('pdfViewer').setAttribute('src', pdfAtual);
                 document.getElementById('pdfDownloadLink').href = pdfAtual;
                 
                 // Mostra lista de anexos novamente
@@ -722,8 +727,10 @@
         }
 
         function fecharPDF() {
+            ocultarBotaoVoltar();
+            pdfAnterior = '';
             document.getElementById('pdfModal').classList.remove('active');
-            document.getElementById('pdfViewer').setAttribute('data', '');
+            document.getElementById('pdfViewer').setAttribute('src', '');
             document.body.style.overflow = '';
             pdfAtual = '';
             codigoAtual = '';
