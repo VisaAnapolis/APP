@@ -9,7 +9,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Alvarás Emitidos - CVS Vigilância Sanitária</title>
 
-  <style>
+  
+
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/header-component.css">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/layouts.css">
+  <link rel="stylesheet" href="./css/sidebar.css">
+<style>
     :root {
       /* Variáveis específicas de alvara não definidas em design-tokens.css */
       --warning-text: #856404;
@@ -387,24 +395,11 @@
       #alvarasTable tbody td:first-child { background: var(--card-bg) !important; font-weight: bold; color: var(--brand1); }
       #alvarasTable tbody tr:hover td:first-child { background: #f5f8fa !important; }
     }
-  /* FIX: evita vazamento horizontal no mobile */
-  .main-area,
-  .page-content {
-    overflow-x: hidden;
-    max-width: 100vw;
-  }
-  .card {
-    overflow: hidden;
-  }
-
-  </style>
-
-  <link rel="stylesheet" href="./css/design-tokens.css">
-  <link rel="stylesheet" href="./css/header-component.css">
-  <link rel="stylesheet" href="./css/base.css">
-  <link rel="stylesheet" href="./css/components.css">
-  <link rel="stylesheet" href="./css/layouts.css">
-  <link rel="stylesheet" href="./css/sidebar.css">
+  
+  /* FIX responsivo: evita vazamento horizontal */
+  .main-area, .page-content { overflow-x: hidden; max-width: 100vw; }
+  .card { overflow: hidden; }
+</style>
 </head>
 
 <body class="with-sidebar">
