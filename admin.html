@@ -12,6 +12,7 @@
   <!-- CSS do sistema de design -->
   <link rel="stylesheet" href="./css/design-tokens.css" />
   <link rel="stylesheet" href="./css/header-component.css" />
+  <link rel="stylesheet" href="./css/sidebar.css" />
   <link rel="stylesheet" href="./css/base.css" />
   <link rel="stylesheet" href="./css/components.css" />
   <link rel="stylesheet" href="./css/layouts.css" />
@@ -394,12 +395,8 @@
 
     /* ===== DARK MODE (desktop + mobile) ===== */
     @media (prefers-color-scheme: dark) {
-      body{ background:#0b1220; color:#e5e7eb; }
-      header{ background:#0b2a52; }
-      .user-info-bar { background: none; border: none; padding: 0; }
       .user-info-bar .user-name{ color:#cfe6ff; }
       .user-info-bar .user-email{ color:#9fb4cc; }
-      .card{ background:#0f1b2e; border-color: rgba(255,255,255,.08); }
       .card h3{ color:#9ec5ff; border-left-color:#9ec5ff; }
       .users-table thead th{ background:#123a73; }
       .users-table tbody tr:hover{ background-color: rgba(158,197,255,0.08); }
@@ -408,12 +405,6 @@
       .badge.administrativo{ background: rgba(52,199,89,.16); color:#7bf0ad; }
       .badge.ativo{ background: rgba(52,199,89,.16); color:#7bf0ad; }
       .badge.inativo{ background: rgba(148,163,184,.16); color:#cbd5e1; }
-            .btn{ background:#0f1b2e; color:#e5e7eb; border-color: rgba(255,255,255,.10); }
-      .modal-card{ background:#0f1b2e; border-color: rgba(255,255,255,.10); }
-      .form-group input, .form-group select, .form-group textarea{
-        background:#0b1220; color:#e5e7eb; border-color: rgba(255,255,255,.12);
-      }
-      .card-dispositivo{ border-color: rgba(255,255,255,.12); }
       .card-nome{ color:#eaf2ff; }
     }
 
@@ -518,18 +509,14 @@
 @media (prefers-color-scheme: dark) {
   .btn-disp { border-color: rgba(158,197,255,.25); background: rgba(158,197,255,.10); color: #9ec5ff; }
   .btn-disp:hover { background: rgba(158,197,255,.20); }
-  .disp-modal-card { background: #0f1b2e; border-color: rgba(255,255,255,.10); }
   .disp-modal-item { border-color: rgba(255,255,255,.12); background: linear-gradient(135deg, rgba(44,90,160,.14), rgba(52,199,89,.08)); }
   .disp-modal-item .dm-header { color: #9ec5ff; }
   .disp-modal-item .dm-ver { background: rgba(158,197,255,.15); color: #9ec5ff; }
 }
 
 
-    
+
   </style>
-  <link rel="stylesheet" href="./css/design-tokens.css">
-  <link rel="stylesheet" href="./css/header-component.css">
-  <link rel="stylesheet" href="./css/sidebar.css">
 </head>
 
 <body class="with-sidebar">
