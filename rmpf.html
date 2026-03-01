@@ -426,7 +426,7 @@
   font-weight: 700;
   display: inline;
   margin-right: 10px;
-  color: #1a3a6b;
+  color: var(--text-primary, #1a3a6b);
   font-size: 0.8rem;
 }
 
@@ -434,14 +434,14 @@
   content: "•";
   margin-left: 10px;
   opacity: 0.5;
-  color: #64748b;
+  color: var(--text-secondary, #64748b);
 }
 
 .user-info-bar .user-email {
   font-weight: 400;
   opacity: 0.85;
   display: inline;
-  color: #5b6b83;
+  color: var(--text-secondary, #5b6b83);
   font-size: 0.75rem;
 }
 
@@ -467,7 +467,11 @@
   }
 }
 
-        
+@media (prefers-color-scheme: dark) {
+  .user-info-bar .user-name { color: var(--text-primary, #e8e6e3); }
+  .user-info-bar .user-email { color: var(--text-secondary, #a8a29e); }
+}
+
     </style>
 
     <!-- Bibliotecas de Exportação -->

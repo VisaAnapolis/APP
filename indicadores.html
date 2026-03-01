@@ -35,20 +35,20 @@
       font-weight: 700;
       display: inline;
       margin-right: 10px;
-      color: #1a3a6b;
+      color: var(--text-primary, #1a3a6b);
       font-size: 0.8rem;
     }
     .user-info-bar .user-name::after {
       content: "•";
       margin-left: 10px;
       opacity: 0.5;
-      color: #64748b;
+      color: var(--text-secondary, #64748b);
     }
     .user-info-bar .user-email {
       font-weight: 400;
       opacity: 0.85;
       display: inline;
-      color: #5b6b83;
+      color: var(--text-secondary, #5b6b83);
       font-size: 0.75rem;
     }
     @media (max-width: 640px) {
@@ -341,31 +341,31 @@
       let html =
         '<table style="width:100%;font-size:0.875rem;border-collapse:collapse;margin-bottom:8px;">' +
         '<tr style="border-bottom:1px solid rgba(0,0,0,0.05);"><td style="padding:8px 4px;">🔍 Inspeções</td>' +
-        '<td style="text-align:right;font-weight:600;color:#2c5aa0;">' + dados.totalInspecoes +
+        '<td style="text-align:right;font-weight:600;color:var(--primary, #2c5aa0);">' + dados.totalInspecoes +
         ' <small style="color:var(--muted);font-weight:normal;">• Média ' + dados.mediaPorFiscal + '/fiscal</small></td></tr>' +
         '<tr style="border-bottom:1px solid rgba(0,0,0,0.05);"><td style="padding:8px 4px;">📋 Autos</td>' +
-        '<td style="text-align:right;font-weight:600;color:#2c5aa0;">' + dados.autos +
+        '<td style="text-align:right;font-weight:600;color:var(--primary, #2c5aa0);">' + dados.autos +
         ' <small style="color:var(--muted);font-weight:normal;">• Taxa ' + dados.taxaAutos + '%</small></td></tr>' +
         '<tr><td style="padding:8px 4px;">👥 Fiscais Ativos</td>' +
-        '<td style="text-align:right;font-weight:600;color:#2c5aa0;">' + dados.totalFiscais + '</td></tr>' +
+        '<td style="text-align:right;font-weight:600;color:var(--primary, #2c5aa0);">' + dados.totalFiscais + '</td></tr>' +
         '</table>' +
         '<div style="border-top:1px solid rgba(0,0,0,0.08);margin:20px 0 16px 0;"></div>' +
         '<div>' +
-        '<h4 style="margin:0 0 12px 0;color:#2c5aa0;font-size:0.95rem;font-weight:600;">📝 Ordens de Serviço: <strong>' +
+        '<h4 style="margin:0 0 12px 0;color:var(--primary, #2c5aa0);font-size:0.95rem;font-weight:600;">📝 Ordens de Serviço: <strong>' +
         dados.osDetalhadas.total + '</strong> <small style="color:var(--muted);font-weight:normal;">Atendidas</small></h4>' +
         '<table style="width:100%;font-size:0.875rem;border-collapse:collapse;">' +
         '<tr style="border-bottom:1px solid rgba(0,0,0,0.05);"><td style="padding:8px 4px;">📄 Requerimento</td>' +
-        '<td style="text-align:right;font-weight:600;color:#2c5aa0;">' + dados.osDetalhadas.requerimentos + '</td></tr>' +
+        '<td style="text-align:right;font-weight:600;color:var(--primary, #2c5aa0);">' + dados.osDetalhadas.requerimentos + '</td></tr>' +
         '<tr style="border-bottom:1px solid rgba(0,0,0,0.05);"><td style="padding:8px 4px;">📮 Ofício</td>' +
-        '<td style="text-align:right;font-weight:600;color:#2c5aa0;">' + dados.osDetalhadas.oficios + '</td></tr>' +
+        '<td style="text-align:right;font-weight:600;color:var(--primary, #2c5aa0);">' + dados.osDetalhadas.oficios + '</td></tr>' +
         '<tr style="border-bottom:1px solid rgba(0,0,0,0.05);"><td style="padding:8px 4px;">🔔 Denúncia</td>' +
-        '<td style="text-align:right;font-weight:600;color:#2c5aa0;">' + dados.osDetalhadas.denuncias + '</td></tr>' +
+        '<td style="text-align:right;font-weight:600;color:var(--primary, #2c5aa0);">' + dados.osDetalhadas.denuncias + '</td></tr>' +
         '<tr><td style="padding:8px 4px;">📋 Protocolo</td>' +
-        '<td style="text-align:right;font-weight:600;color:#2c5aa0;">' + dados.osDetalhadas.protocolos + '</td></tr>' +
+        '<td style="text-align:right;font-weight:600;color:var(--primary, #2c5aa0);">' + dados.osDetalhadas.protocolos + '</td></tr>' +
         '</table></div>' +
         '<div style="border-top:1px solid rgba(0,0,0,0.08);margin:20px 0 16px 0;"></div>' +
         '<div>' +
-        '<h4 style="margin:0 0 12px 0;color:#2c5aa0;font-size:0.95rem;font-weight:600;">📄 Tipos de Documentos: <strong>' +
+        '<h4 style="margin:0 0 12px 0;color:var(--primary, #2c5aa0);font-size:0.95rem;font-weight:600;">📄 Tipos de Documentos: <strong>' +
         dados.totalInspecoes + '</strong> <small style="color:var(--muted);font-weight:normal;">Total</small></h4>' +
         '<table style="width:100%;font-size:0.875rem;border-collapse:collapse;">';
 
@@ -398,7 +398,7 @@
         var icone = getIconeDocumento(item[0]);
         var borda = (index < dados.topTipos.length - 1) ? 'border-bottom:1px solid rgba(0,0,0,0.05);' : '';
         html += '<tr style="' + borda + '"><td style="padding:8px 4px;">' + icone + ' ' + nome + '</td>' +
-                '<td style="text-align:right;font-weight:600;color:#2c5aa0;">' + item[1] + '</td></tr>';
+                '<td style="text-align:right;font-weight:600;color:var(--primary, #2c5aa0);">' + item[1] + '</td></tr>';
       });
 
       html += '</table></div>';
