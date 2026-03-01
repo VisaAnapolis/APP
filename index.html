@@ -961,7 +961,72 @@
   .btn-logout-text { width:100%; padding:7px 10px; margin-top:6px; font-size:.8rem; background:none; border:1px solid #e2e8f0; border-radius:8px; cursor:pointer; color:#5b6b83; font-weight:600; text-align:center; transition:background .15s,color .15s; display:block; }
   .btn-logout-text:hover { background:#fee2e2; color:#dc2626; border-color:#fca5a5; }
 
-   
+  /* ────────── DARK MODE ADJUSTMENTS ────────── */
+  @media (prefers-color-scheme: dark) {
+    .modalCard {
+      background: var(--card, #1e293b);
+      border-color: var(--border-primary, #475569);
+    }
+    .modalCard h3 { color: #ff6b6b; }
+    .modalCard p { color: var(--text-primary, #f1f5f9); }
+    .modalCard .small { color: var(--text-secondary, #cbd5e1); }
+
+    .pdfThumbCard {
+      background: var(--card, #1e293b);
+      border-color: var(--border-primary, #475569);
+    }
+    .pdfThumbTitulo { color: var(--brand1, #4a9eff); }
+    .pdfThumbBadge {
+      color: #4a9eff;
+      background: rgba(74, 158, 255, 0.15);
+    }
+    .pdfThumb--destaque {
+      border-color: var(--brand1, #4a9eff);
+      background: linear-gradient(135deg, rgba(74, 158, 255, 0.1), rgba(30, 41, 59, 1));
+    }
+
+    .user-info-bar {
+      background: rgba(74, 158, 255, 0.1);
+      border-color: rgba(74, 158, 255, 0.2);
+      color: #4a9eff;
+    }
+    .user-info-bar .user-name { color: var(--brand1, #4a9eff); }
+    .user-info-bar .user-name::after { color: var(--text-secondary, #cbd5e1); }
+    .user-info-bar .user-email { color: var(--text-secondary, #cbd5e1); }
+
+    .stat-card {
+      background: var(--card, #1e293b);
+      border-color: var(--border-primary, #475569);
+      border-left-color: var(--brand1, #4a9eff);
+    }
+    .stat-number { color: var(--brand1, #4a9eff); }
+    .stat-label { color: var(--text-secondary, #cbd5e1); }
+
+    .page-title { color: var(--brand1, #4a9eff); }
+
+    .fiscal-stats {
+      background: linear-gradient(135deg, rgba(74, 158, 255, 0.05), rgba(52, 199, 89, 0.03));
+      border-bottom-color: var(--border-primary, #475569);
+    }
+
+    .spinner {
+      border-color: rgba(255, 255, 255, 0.2);
+      border-top-color: var(--brand1, #4a9eff);
+    }
+
+    .sidebar__footer #userInfo .user-name { color: var(--brand1, #4a9eff); }
+    .sidebar__footer #userInfo .user-email { color: var(--text-secondary, #cbd5e1); }
+    .btn-logout-text {
+      border-color: var(--border-primary, #475569);
+      color: var(--text-secondary, #cbd5e1);
+    }
+    .btn-logout-text:hover {
+      background: rgba(255, 107, 107, 0.1);
+      color: #ff6b6b;
+      border-color: rgba(255, 107, 107, 0.3);
+    }
+  }
+
   </style>
 
   <!-- Sistema de Design - VISA Anápolis -->
