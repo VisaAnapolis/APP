@@ -141,8 +141,8 @@
       </nav>
       <div class="sidebar__footer">
         <div class="sidebar__version">
-          <span class="version-badge">v2.4.3</span>
-          <span class="version-date">fev/2026</span>
+          <span class="version-badge">v<span id="appVersion"></span></span>
+          <span class="version-date">mar/2026</span>
         </div>
         <div id="userInfo" class="user-info-bar" style="padding:6px 0 8px;background:none;border:none;"></div>
         <button class="btn-logout-text" onclick="sidebarLogout()">↩ Encerrar sessão</button>
@@ -178,6 +178,17 @@
 
         <h2 class="ch-title">CHANGELOG — VISA Anápolis</h2>
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
+
+<div class="section">
+  <h3>v2.4.4 — 01/03/2026 10:30 (Horário de Brasília – UTC−3)</h3>
+  <strong>Padronização de estilos, dark mode e layout em todas as páginas</strong>
+  <ul>
+    <li><strong>Padronização de dark mode:</strong> adicionadas variáveis CSS faltantes no <code>design-tokens.css</code> e removidos overrides redundantes, garantindo consistência visual no modo escuro em toda a aplicação.</li>
+    <li><strong>Padronização de estilos e fontes:</strong> aplicados estilos unificados, tipografia consistente e largura de tabelas padronizada em 17 páginas — admin, alvará, áreas, check lists, CNAE, férias, indicadores, inspeções, legislação, OS, plantão fiscal, POPs, leiame, RMPF, totalização, veículos e regulados (CVS).</li>
+    <li><strong>Dashboard refinado:</strong> título do dashboard agora exibe ícone e subtítulo dinâmico que varia conforme o perfil de acesso (Administrador, Fiscal ou Administrativo), melhorando a identificação visual e contextualização para cada usuário.</li>
+  </ul>
+  <p><strong>Arquivos modificados:</strong> <code>css/design-tokens.css</code> — variáveis dark mode; <code>index.html</code> — título dinâmico com ícone e subtítulo; 17 páginas do sistema — estilos e tabelas; <code>changelog.html</code> — entrada v2.4.4; <code>APP_VERSION</code> 2.4.4.</p>
+</div>
 
 <div class="section">
   <h3>v2.4.3 — 28/02/2026 19:00 (Horário de Brasília – UTC−3)</h3>
@@ -1301,6 +1312,8 @@
   </div><!-- /.app-layout -->
 
   <script src="./js/sidebar.js"></script>
+
+  <script src="./js/version.js"></script>
 
 </body>
 </html>
