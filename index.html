@@ -49,6 +49,7 @@
       background: var(--bg);
       color: var(--text);
       line-height: 1.6;
+      overflow-x: clip; /* preserva position:sticky sem criar scroll container */
     }
 
     /* --- TELA DE CARREGAMENTO (LOADING) --- */
@@ -715,7 +716,9 @@
     /* ── TOPBAR (MOBILE ONLY) ── */
     .topbar {
       display: none;
-      position: sticky; top: 0;
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
       z-index: 200;
       background: var(--card, #fff);
       border-bottom: 1px solid var(--line, #e2e8f0);
@@ -1014,8 +1017,8 @@
       border-top-color: var(--brand1, #4a9eff);
     }
 
-    .sidebar__footer #userInfo .user-name { color: var(--brand1, #4a9eff); }
-    .sidebar__footer #userInfo .user-email { color: var(--text-secondary, #cbd5e1); }
+    .sidebar__footer #userInfo .user-name { color: #e8e6e3; }
+    .sidebar__footer #userInfo .user-email { color: var(--text-secondary, #a8a29e); }
     .btn-logout-text {
       border-color: var(--border-primary, #475569);
       color: var(--text-secondary, #cbd5e1);
@@ -1032,11 +1035,16 @@
       border-bottom-color: var(--border-primary, rgba(168,162,158,0.2));
       box-shadow: 0 2px 8px rgba(0,0,0,0.35);
     }
+    .topbar__title { color: #e8e6e3; }
 
     /* ── Sidebar dark ── */
     .sidebar { background: var(--card-bg, #2a2a31); border-right-color: var(--border-primary, rgba(168,162,158,0.15)); }
     .sidebar__header { background: var(--card-bg, #2a2a31); }
     .sidebar__footer { background: var(--card-bg, #2a2a31); }
+    .sidebar__app-name { color: #e8e6e3; }
+    .page-title { color: #e8e6e3; }
+    .visa-nav-item { color: var(--text-primary, #e8e6e3); }
+    .visa-nav-item.active { color: #6b9ad4; border-left-color: #6b9ad4; }
 
     /* ── Cards e botão nav dark ── */
     .card { background: var(--card-bg, #2a2a31); border-color: var(--border-primary, rgba(168,162,158,0.12)); }

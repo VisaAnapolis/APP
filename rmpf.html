@@ -406,17 +406,10 @@
 
         /* Header fixo - efeito app nativo */
         header {
+            position: -webkit-sticky;
             position: sticky;
             top: 0;
             z-index: 100;
-            transform: translateY(0);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Transição suave ao scroll */
-        body.scrolled header {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
 /* User Info Bar - Padronizado */
@@ -1166,18 +1159,6 @@ function aplicarRestricaoFiscal(perfil) {
             a.download = `RPF-${fiscal.split(' ')[0]}-${hoje}.html`;
             a.click();
         }
-
-        // Scroll effect
-        let lastScroll = 0;
-        window.addEventListener('scroll', () => {
-            const currentScroll = window.pageYOffset;
-            if (currentScroll > lastScroll) {
-                // Scroll down
-            } else {
-                document.body.classList.add('scrolled');
-            }
-            lastScroll = currentScroll;
-        });
 
     </script>
 
