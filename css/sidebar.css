@@ -8,7 +8,7 @@
 body.with-sidebar {
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
+  overflow-x: clip; /* clip não cria scroll container, preserva position:sticky */
 }
 
 /* ── WRAPPER GLOBAL ── */
@@ -57,7 +57,7 @@ body.with-sidebar {
 .sidebar__app-name {
   font-weight: 700;
   font-size: 0.9rem;
-  color: #1a3a6b;
+  color: var(--text-primary, #1a3a6b);
   line-height: 1.2;
 }
 .sidebar__app-sub {
@@ -150,7 +150,7 @@ body.with-sidebar {
   display: block;
   font-size: 0.78rem;
   font-weight: 700;
-  color: #1a3a6b;
+  color: var(--text-primary, #1a3a6b);
   line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
@@ -184,7 +184,7 @@ body.with-sidebar {
 }
 .sidebar__user-texts { flex: 1; min-width: 0; }
 .sidebar__user-name {
-  font-weight: 700; font-size: 0.78rem; color: #1a3a6b;
+  font-weight: 700; font-size: 0.78rem; color: var(--text-primary, #1a3a6b);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;
 }
 .sidebar__user-email {
@@ -247,7 +247,7 @@ body.with-sidebar {
   height: 52px;
   align-items: center;
   gap: 12px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
 }
 .btn-hamburger {
   background: none; border: none;
@@ -262,7 +262,7 @@ body.with-sidebar {
   font-weight: 700;
   font-size: 0.95rem;
   flex: 1;
-  color: #1a3a6b;
+  color: var(--text-primary, #1a3a6b);
 }
 
 /* ── CONTEÚDO DA PÁGINA ── */
@@ -274,7 +274,7 @@ body.with-sidebar {
 .page-title {
   font-size: 1.6rem;
   font-weight: 700;
-  color: #1a3a6b;
+  color: var(--text-primary, #1a3a6b);
   margin: 0 0 4px;
 }
 .page-subtitle {
@@ -328,7 +328,8 @@ body.with-sidebar {
   .sidebar__user-name { color: #e8e6e3; }
   .topbar {
     background: var(--card-bg, #2a2a31);
-    border-bottom-color: var(--border-primary, rgba(168,162,158,0.15));
+    border-bottom-color: var(--border-primary, rgba(168,162,158,0.2));
+    box-shadow: 0 2px 8px rgba(0,0,0,0.35);
   }
   .topbar__title { color: #e8e6e3; }
   .page-title { color: #e8e6e3; }

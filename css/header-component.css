@@ -13,7 +13,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  position: relative;  /* Para posicionamento absoluto dos botões */
+  /* position:sticky já cria contexto de posicionamento para filhos absolutos */
 }
 
 .app-header__title {
