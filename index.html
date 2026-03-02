@@ -931,8 +931,8 @@
       .sidebar-overlay { z-index: 8999 !important; }
 
       .main-area  { margin-left: 0; }
-      .topbar     { display: flex; }
-      .page-content { padding: 16px 14px 32px; }
+      .topbar     { display: flex; z-index: 300; }
+      .page-content { padding: 16px 14px 32px; scroll-padding-top: 60px; }
       .page-title { font-size: 1.25rem; }
 
       /* Stat cards: 2 colunas no mobile */
@@ -1034,8 +1034,24 @@
       background: var(--card-bg, #2a2a31);
       border-bottom-color: var(--border-primary, rgba(168,162,158,0.2));
       box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+      -webkit-backdrop-filter: none; /* Previne bugs de renderização em iOS */
     }
     .topbar__title { color: #e8e6e3; }
+    .btn-hamburger { color: #e8e6e3; }
+    .btn-hamburger:hover { background: rgba(255,255,255,0.08); }
+
+    /* ─────────────────────────────────────
+       FIX iOS Safari — Forçar cores corretas em dark mode
+       iOS Safari tem bug com variáveis CSS em position:sticky
+       ───────────────────────────────────── */
+    @supports (-webkit-touch-callout: none) {
+      .topbar {
+        background: #2a2a31 !important;
+        border-bottom-color: rgba(168, 162, 158, 0.2);
+      }
+      .topbar__title { color: #e8e6e3 !important; }
+      .btn-hamburger { color: #e8e6e3 !important; }
+    }
 
     /* ── Sidebar dark ── */
     .sidebar { background: var(--card-bg, #2a2a31); border-right-color: var(--border-primary, rgba(168,162,158,0.15)); }
