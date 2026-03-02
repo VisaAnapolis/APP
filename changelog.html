@@ -180,6 +180,20 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.4.5 — 01/03/2026 22:47 (Horário de Brasília – UTC−3)</h3>
+  <strong>Correção de header em iOS e ajuste de layout em telas pequenas</strong>
+  <ul>
+    <li><strong>iOS — header com fundo azul corrigido:</strong> a classe <code>.topbar</code> em iOS estava renderizando com background azul em <code>components.css</code> (linha 361, valor hardcoded <code>rgba(44, 90, 160, 0.9)</code>). Corrigido para usar <code>var(--card-bg)</code> que respeita o modo light/dark automaticamente. Adicionado dark mode específico com <code>@media (prefers-color-scheme: dark)</code>.</li>
+    <li><strong>Fallback de variável CSS corrigido:</strong> o fallback de <code>var(--text-primary)</code> estava definido como <code>#1a3a6b</code> (azul) em vez de <code>#1a202c</code> (cinza escuro). Em iOS Safari com bug de renderização de variáveis CSS em position:sticky, o fallback azul aparecia visível. Corrigido em 6 páginas: <code>sidebar.css</code>, <code>index.html</code>, <code>indicadores.html</code>, <code>inspecoes.html</code>, <code>rmpf.html</code>, <code>total.html</code>.</li>
+    <li><strong>Header sobrepondo conteúdo em telas pequenas (index.html):</strong> o topbar estava sobrepondo o conteúdo ao fazer scroll no mobile. Causas: (1) <code>components.css</code> não definia height do <code>.topbar</code>, deixando-o com altura variável; (2) <code>.page-content</code> não tinha padding-top suficiente. Corrigido: adicionado <code>display: flex</code>, <code>min-height: 56px</code> ao <code>.topbar</code> em components.css; adicionado <code>padding-top: 72px !important</code> ao <code>.page-content</code> em mobile para deixar espaço do topbar (52px) + margem.</li>
+    <li><strong>Cascata CSS em index.html:</strong> <code>components.css</code> vinha <strong>depois</strong> do <code>&lt;style&gt;</code> inline no HTML, sobrescrevendo estilos. Utilizados <code>!important</code> para forçar padding-top e altura mínima do topbar em mobile.</li>
+    <li><strong>iOS dark mode padronizado:</strong> adicionado <code>@supports (-webkit-touch-callout: none)</code> com fallback <code>#2a2a31 !important</code> em sidebar.css e index.html para garantir que em iOS, quando a variável CSS falha, a cor fica correta (cinza escuro, não azul ou branco).</li>
+  </ul>
+  <p><strong>Afeta páginas:</strong> cvs, legislacao, check, changelog, readme, relatorio_plantao_fiscal, cnae, indicadores, inspecoes, rmpf, total e index (dashboard).</p>
+  <p><strong>Arquivos modificados:</strong> <code>css/sidebar.css</code> — fallback de cor, dark mode iOS, z-index e scroll-padding; <code>css/components.css</code> — background iOS, altura mínima do topbar, display flex; <code>index.html</code> — fallback de cor, padding-top com !important, height mínimo; <code>indicadores.html</code>, <code>inspecoes.html</code>, <code>rmpf.html</code>, <code>total.html</code> — fallback de cor corrigido; <code>APP_VERSION</code> 2.4.5.</p>
+</div>
+
+<div class="section">
   <h3>v2.4.4 — 01/03/2026 10:30 (Horário de Brasília – UTC−3)</h3>
   <strong>Padronização de estilos, dark mode e layout em todas as páginas</strong>
   <ul>
