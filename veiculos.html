@@ -157,6 +157,13 @@
       background: var(--card);
     }
 
+    /* Garante sticky do topbar em WebKit/iOS */
+    .topbar {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+    }
+
   </style>
   <link rel="stylesheet" href="./css/sidebar.css">
 </head>
