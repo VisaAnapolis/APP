@@ -5,6 +5,8 @@
    ================================================================ */
 
 .app-header {
+  /* Fallback opaco — garante que o header não seja transparente mesmo se variáveis CSS falharem */
+  background-color: var(--header-bg-start);
   background: linear-gradient(135deg, var(--header-bg-start), var(--header-bg-end));
   color: var(--header-text);
   padding: 28px 20px 26px;
@@ -13,6 +15,9 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  /* Força contexto de empilhamento opaco e evita problemas com position:sticky */
+  isolation: isolate;
+  opacity: 1;
   /* position:sticky já cria contexto de posicionamento para filhos absolutos */
 }
 
@@ -138,7 +143,10 @@
 /* iOS: Ajustar para safe areas (notch) */
 @supports (-webkit-touch-callout: none) {
   .app-header {
+    /* Estende o padding superior para incluir a safe area (notch) */
     padding-top: calc(28px + env(safe-area-inset-top, 0px));
+    /* Estende o background para cobrir a safe area, evitando fresta transparente */
+    margin-top: calc(-1 * env(safe-area-inset-top, 0px));
   }
 }
 
