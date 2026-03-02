@@ -328,6 +328,10 @@
   background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-500));
   color: var(--text-inverse);
   box-shadow: var(--shadow-md);
+  /* Garante que topbar tem altura fixa e não sobrepõe conteúdo */
+  display: flex;
+  align-items: center;
+  min-height: 56px;
 }
 
 .topbar-inner {
@@ -358,9 +362,17 @@
 
 /* iOS: Blur topbar */
 .platform-ios.has-backdrop-filter .topbar {
-  background: rgba(44, 90, 160, 0.9);
+  background: var(--card-bg, #ffffff);
   backdrop-filter: blur(var(--blur-lg));
   -webkit-backdrop-filter: blur(var(--blur-lg));
+}
+
+/* iOS dark mode topbar */
+@media (prefers-color-scheme: dark) {
+  .platform-ios.has-backdrop-filter .topbar {
+    background: var(--card-bg, #2a2a31);
+    color: var(--text-inverse, #ffffff);
+  }
 }
 
 /* iOS: Safe area top */
