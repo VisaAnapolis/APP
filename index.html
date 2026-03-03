@@ -1103,6 +1103,9 @@
             <span class="nav-icon">📊</span> Indicadores
           </a>
 
+          <a class="visa-nav-item" id="link-comply" href="comply.html">
+            <span class="nav-icon">🛡️</span> Indicadores de Compliance
+          </a>
           <div class="nav-section-label">Escala</div>
           <a class="visa-nav-item" href="plantao.html">
             <span class="nav-icon">📅</span> Plantão Fiscal
@@ -1260,6 +1263,14 @@
             <div class="card avisos">
               <h3>Novidades no Aplicativo</h3>
               <ul class="novidades-lista">
+
+                <li>
+                  <span class="ni-icon">🛡️</span>
+                  <div>
+                    <strong>Indicadores de Conformidade</strong>
+                    <small>Novo relatório que cruza requerimentos de alvará, fiscalizações realizadas e alvarás emitidos para apurar a taxa de conformidade sanitária por período.</small>
+                  </div>
+                </li>
 
                 <li>
                   <span class="ni-icon">📐</span>
@@ -1671,7 +1682,8 @@
       rmpf: document.getElementById('link-rmpf'),
       inspecoes: document.getElementById('link-inspecoes'),
       admin: document.getElementById('link-admin'),
-      indicadores:  document.getElementById('link-indicadores') 
+      indicadores: document.getElementById('link-indicadores'),
+      comply: document.getElementById('link-comply')
     };
     function disableLink(a, reason){
       if (!a) return;
@@ -1689,23 +1701,26 @@
       disableLink(LINKS.rmpf, 'Carregando perfil...');
       disableLink(LINKS.inspecoes, 'Carregando perfil...');
       disableLink(LINKS.admin, 'Carregando perfil...');
-      disableLink(LINKS.indicadores, 'Carregando perfil...'); 
+      disableLink(LINKS.indicadores, 'Carregando perfil...');
+      disableLink(LINKS.comply, 'Carregando perfil...');
     }
     function applyLinkPermissions(grupo){
       if (grupo === 'Fiscal' || grupo === 'Administrador'){
         enableLink(LINKS.rmpf);
         enableLink(LINKS.inspecoes);
+        enableLink(LINKS.comply);
       } else {
         disableLink(LINKS.rmpf, 'Acesso conforme perfil');
         disableLink(LINKS.inspecoes, 'Acesso conforme perfil');
+        disableLink(LINKS.comply, 'Acesso conforme perfil');
       }
 
       if (grupo === 'Administrador'){
         enableLink(LINKS.admin);
-        enableLink(LINKS.indicadores);           // ← adicionar
+        enableLink(LINKS.indicadores);
       } else {
         disableLink(LINKS.admin, 'Exclusivo para Administrador');
-        disableLink(LINKS.indicadores,  'Exclusivo para Administrador');  // ← 
+        disableLink(LINKS.indicadores, 'Exclusivo para Administrador');
       }
     }
 
