@@ -243,6 +243,8 @@ body.with-sidebar {
   position: sticky;
   top: 0;
   z-index: 200;
+  /* Fallback opaco explícito para garantir fundo não-transparente */
+  background-color: #ffffff;
   background: var(--card, #ffffff);
   border-bottom: 1px solid var(--line, #e2e8f0);
   padding: 0 16px;
@@ -250,6 +252,8 @@ body.with-sidebar {
   align-items: center;
   gap: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  /* Força contexto de empilhamento opaco */
+  isolation: isolate;
   /* Força renderização correta em iOS Safari */
   -webkit-backdrop-filter: none;
 }
@@ -336,6 +340,8 @@ body.with-sidebar {
   .sidebar__app-name { color: #e8e6e3; }
   .sidebar__user-name { color: #e8e6e3; }
   .topbar {
+    /* Fallback opaco para dark mode */
+    background-color: #2a2a31;
     background: var(--card-bg, #2a2a31);
     border-bottom-color: var(--border-primary, rgba(168,162,158,0.2));
     box-shadow: 0 2px 8px rgba(0,0,0,0.35);
@@ -353,9 +359,21 @@ body.with-sidebar {
    FIX iOS Safari — Forçar cores corretas do topbar em dark mode
    iOS Safari tem bug com variáveis CSS em position:sticky
    =================================================================== */
+/* iOS light mode — garantir fundo branco opaco */
+@supports (-webkit-touch-callout: none) {
+  @media (prefers-color-scheme: light) {
+    .topbar {
+      background-color: #ffffff !important;
+      background: #ffffff !important;
+    }
+  }
+}
+
+/* iOS dark mode — garantir fundo escuro opaco */
 @supports (-webkit-touch-callout: none) {
   @media (prefers-color-scheme: dark) {
     .topbar {
+      background-color: #2a2a31 !important;
       background: #2a2a31 !important;
       border-bottom-color: rgba(168, 162, 158, 0.2);
     }
