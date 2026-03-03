@@ -14,6 +14,12 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
   <style>
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -238,8 +244,9 @@
           <input type="date" id="dtFim"/>
         </label>
         <button class="btnPrimary" onclick="calcular()">▶ Calcular Indicadores</button>
-        <button class="btnPrimary" style="background:linear-gradient(135deg,#34c759,#1a7a38)"
-                onclick="exportarCSV()">⬇ Exportar CSV</button>
+        <button class="btnPrimary" id="btnPdf" style="background:linear-gradient(135deg,#34c759,#1a7a38)"
+        onclick="exportarPDF()">🖨️ Exportar PDF</button>
+
       </div>
     </div>
 
@@ -583,32 +590,300 @@ function renderGrafico(nReq, nFis, nAlv, nNc) {
 }
 
 // ════════════════════════════════════════════════
-// EXPORTAR CSV
+// EXPORTAR PDF
 // ════════════════════════════════════════════════
-function exportarCSV() {
-  const nReq = document.getElementById('t_req').textContent;
-  const nFis = document.getElementById('t_fis').textContent;
-  const nAlv = document.getElementById('t_alv').textContent;
-  const nNc  = document.getElementById('t_nc').textContent;
-  if (nReq === '—') { alert('Execute o cálculo antes de exportar.'); return; }
+async function exportarPDF() {
+  const tReq = document.getElementById('t_req').textContent;
+  if (tReq === '—') { alert('Execute o cálculo antes de exportar.'); return; }
 
+  const btnPdf = document.getElementById('btnPdf');
+  btnPdf.disabled = true;
+  btnPdf.textContent = '⏳ Gerando PDF...';
+
+  // Valores do período para o cabeçalho
   const dtIni = document.getElementById('dtIni').value;
   const dtFim = document.getElementById('dtFim').value;
-  const linhas = [
-    'Período Inicial;Período Final;Requerimentos;Fiscalizações;Alvarás Emitidos (Em Conformidade);Não Conforme',
-    `${dtIni};${dtFim};${nReq};${nFis};${nAlv};${nNc}`,
-    `;Percentuais;100%;${document.getElementById('pp_fis').textContent};${document.getElementById('pp_alv').textContent};${document.getElementById('pp_nc').textContent}`
-  ];
-  const blob = new Blob(['\uFEFF' + linhas.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `indicadores-conformidade-${dtIni}-${dtFim}.csv`;
-  a.click();
-}
+  const fmtData = v => { const [y,m,d] = v.split('-'); return `${d}/${m}/${y}`; };
 
-// ════════════════════════════════════════════════
-// START
-// ════════════════════════════════════════════════
+  // ── Monta div temporário para renderização ──────────────────────
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+  const PAGE_W  = 210;   // mm A4
+  const PAGE_H  = 297;
+  const MARGIN  = 14;
+  const CONTENT = PAGE_W - MARGIN * 2;
+  let cursorY   = MARGIN;
+
+  // ── Paleta de cores (RGB) ────────────────────────────────────────
+  const AZUL     = [26,  58, 107];
+  const CINZA    = [91, 107, 131];
+  const VERDE    = [52, 199,  89];
+  const LARANJA  = [255,149,   0];
+  const VERMELHO = [255, 59,  48];
+  const BGCARD   = [246, 248, 252];
+  const LINHA    = [220, 228, 238];
+
+  // ── HELPERS ─────────────────────────────────────────────────────
+  function addPageIfNeeded(needed = 18) {
+    if (cursorY + needed > PAGE_H - MARGIN) {
+      pdf.addPage();
+      cursorY = MARGIN;
+      addRodape();
+    }
+  }
+
+  function setFont(style = 'normal', size = 10, color = [31, 42, 58]) {
+    pdf.setFont('helvetica', style);
+    pdf.setFontSize(size);
+    pdf.setTextColor(...color);
+  }
+
+  function addRodape() {
+    const pg = pdf.internal.getCurrentPageInfo().pageNumber;
+    const tot = pdf.internal.getNumberOfPages();
+    pdf.setFont('helvetica','italic');
+    pdf.setFontSize(7.5);
+    pdf.setTextColor(...CINZA);
+    pdf.text(
+      `Vigilância Sanitária de Anápolis — Sistema CVS  |  Gerado em ${new Date().toLocaleDateString('pt-BR')}  |  Página ${pg} de ${tot}`,
+      PAGE_W / 2, PAGE_H - 6, { align: 'center' }
+    );
+    // linha separadora rodapé
+    pdf.setDrawColor(...LINHA);
+    pdf.setLineWidth(0.3);
+    pdf.line(MARGIN, PAGE_H - 9, PAGE_W - MARGIN, PAGE_H - 9);
+  }
+
+  function addSectionTitle(txt, icon = '') {
+    addPageIfNeeded(14);
+    pdf.setFillColor(...AZUL);
+    pdf.rect(MARGIN, cursorY, 4, 7, 'F');
+    setFont('bold', 10.5, AZUL);
+    pdf.text(`${icon} ${txt}`.trim(), MARGIN + 7, cursorY + 5.2);
+    cursorY += 11;
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // 1. CABEÇALHO ══════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
+
+  // Barra azul superior
+  pdf.setFillColor(...AZUL);
+  pdf.rect(0, 0, PAGE_W, 28, 'F');
+
+  // Brasão / sigla
+  setFont('bold', 18, [255,255,255]);
+  pdf.text('VISA', MARGIN, 17);
+
+  // Título
+  setFont('bold', 13, [255,255,255]);
+  pdf.text('Indicadores de Solicitações X Conformidade', MARGIN + 18, 12);
+
+  // Subtítulo
+  setFont('normal', 8.5, [180,200,230]);
+  pdf.text('Comparativo de alvarás solicitados e conformidade com a legislação sanitária', MARGIN + 18, 19);
+
+  // Linha divisória leve
+  setFont('normal', 8, [180,200,230]);
+  pdf.text('Vigilância Sanitária de Anápolis — Anápolis / GO', MARGIN + 18, 25.5);
+
+  cursorY = 36;
+
+  // ── Chip de período ─────────────────────────────────────────────
+  pdf.setFillColor(...BGCARD);
+  pdf.roundedRect(MARGIN, cursorY, CONTENT, 11, 3, 3, 'F');
+  pdf.setDrawColor(...LINHA);
+  pdf.setLineWidth(0.4);
+  pdf.roundedRect(MARGIN, cursorY, CONTENT, 11, 3, 3, 'S');
+  setFont('bold', 9, AZUL);
+  pdf.text('📅  Período analisado:', MARGIN + 5, cursorY + 7);
+  setFont('normal', 9, [31,42,58]);
+  pdf.text(`${fmtData(dtIni)} a ${fmtData(dtFim)}`, MARGIN + 52, cursorY + 7);
+  cursorY += 18;
+
+  // ════════════════════════════════════════════════════════════════
+  // 2. CARDS DE TOTAIS ════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
+  addSectionTitle('Totais do Período', '📈');
+
+  const cards = [
+    { label: 'Requerimentos',               id_n: 'n_req', id_p: null,    cor: AZUL     },
+    { label: 'Fiscalizações',               id_n: 'n_fis', id_p: 'p_fis', cor: LARANJA  },
+    { label: 'Alvarás Emitidos',            id_n: 'n_alv', id_p: 'p_alv', cor: VERDE    },
+    { label: 'Não Conforme',                id_n: 'n_nc',  id_p: 'p_nc',  cor: VERMELHO },
+  ];
+
+  const cardW = (CONTENT - 9) / 4;
+  const cardH = 28;
+  cards.forEach((c, i) => {
+    const x = MARGIN + i * (cardW + 3);
+    const y = cursorY;
+    // fundo
+    pdf.setFillColor(...BGCARD);
+    pdf.roundedRect(x, y, cardW, cardH, 4, 4, 'F');
+    // borda superior colorida
+    pdf.setFillColor(...c.cor);
+    pdf.roundedRect(x, y, cardW, 2.5, 1, 1, 'F');
+    // número
+    const num = document.getElementById(c.id_n).textContent;
+    setFont('bold', 14, c.cor);
+    pdf.text(num, x + cardW / 2, y + 13, { align: 'center' });
+    // label
+    setFont('normal', 7.5, CINZA);
+    // quebra label longa
+    const labLines = pdf.splitTextToSize(c.label, cardW - 4);
+    pdf.text(labLines, x + cardW / 2, y + 19, { align: 'center' });
+    // percentual
+    if (c.id_p) {
+      const pct = document.getElementById(c.id_p).textContent;
+      setFont('bold', 8, c.cor);
+      pdf.text(pct, x + cardW / 2, y + 26, { align: 'center' });
+    } else {
+      setFont('bold', 8, c.cor);
+      pdf.text('100% (base)', x + cardW / 2, y + 26, { align: 'center' });
+    }
+  });
+  cursorY += cardH + 12;
+
+  // ════════════════════════════════════════════════════════════════
+  // 3. TABELA ANALÍTICA ═══════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
+  addSectionTitle('Quadro Analítico', '📋');
+
+  const cols     = ['Linha', 'Requerimentos', 'Fiscalizações', 'Alvarás Emitidos\n(Em Conformidade)', 'Não Conforme'];
+  const colW     = [28, (CONTENT - 28) / 4, (CONTENT - 28) / 4, (CONTENT - 28) / 4, (CONTENT - 28) / 4];
+  const rowH     = 10;
+  let tx         = MARGIN;
+
+  // Cabeçalho tabela
+  pdf.setFillColor(...AZUL);
+  pdf.rect(MARGIN, cursorY, CONTENT, rowH, 'F');
+  tx = MARGIN;
+  cols.forEach((c, i) => {
+    setFont('bold', 7.5, [255,255,255]);
+    const lines = pdf.splitTextToSize(c, colW[i] - 2);
+    pdf.text(lines, tx + colW[i] / 2, cursorY + 6.5, { align: 'center' });
+    tx += colW[i];
+  });
+  cursorY += rowH;
+
+  // Linha totais
+  const totais = [
+    'Totais',
+    document.getElementById('t_req').textContent,
+    document.getElementById('t_fis').textContent,
+    document.getElementById('t_alv').textContent,
+    document.getElementById('t_nc').textContent,
+  ];
+  const totCores = [AZUL, AZUL, LARANJA, VERDE, VERMELHO];
+  pdf.setFillColor(255,255,255);
+  pdf.rect(MARGIN, cursorY, CONTENT, rowH, 'F');
+  pdf.setDrawColor(...LINHA);
+  pdf.setLineWidth(0.3);
+  pdf.rect(MARGIN, cursorY, CONTENT, rowH, 'S');
+  tx = MARGIN;
+  totais.forEach((v, i) => {
+    setFont(i === 0 ? 'bold' : 'bold', 9, totCores[i]);
+    pdf.text(v, tx + colW[i] / 2, cursorY + 6.5, { align: 'center' });
+    tx += colW[i];
+  });
+  cursorY += rowH;
+
+  // Linha percentuais
+  const pcts = [
+    'Percentuais',
+    '100%',
+    document.getElementById('pp_fis').textContent,
+    document.getElementById('pp_alv').textContent,
+    document.getElementById('pp_nc').textContent,
+  ];
+  pdf.setFillColor(...BGCARD);
+  pdf.rect(MARGIN, cursorY, CONTENT, rowH, 'F');
+  pdf.setDrawColor(...LINHA);
+  pdf.rect(MARGIN, cursorY, CONTENT, rowH, 'S');
+  tx = MARGIN;
+  pcts.forEach((v, i) => {
+    setFont('italic', 8.5, CINZA);
+    pdf.text(v, tx + colW[i] / 2, cursorY + 6.5, { align: 'center' });
+    tx += colW[i];
+  });
+  cursorY += rowH + 12;
+
+  // ════════════════════════════════════════════════════════════════
+  // 4. GRÁFICO ════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
+  addSectionTitle('Gráfico Comparativo', '📊');
+  addPageIfNeeded(90);
+
+  const canvas = document.getElementById('grafico');
+  const imgData = canvas.toDataURL('image/png', 1.0);
+  const chartH = 70;
+  const chartW = CONTENT;
+  pdf.addImage(imgData, 'PNG', MARGIN, cursorY, chartW, chartH);
+  cursorY += chartH + 12;
+
+  // ════════════════════════════════════════════════════════════════
+  // 5. METODOLOGIA ════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
+  addPageIfNeeded(60);
+  addSectionTitle('Metodologia', '📌');
+
+  const metod = [
+    { num: '①', titulo: 'Requerimentos (base 100%)',               cor: AZUL,     desc: 'Solicitações de Renovação ou Abertura, não canceladas, com data (Dt_Req) compreendida no período informado. Contribuintes únicos por código.' },
+    { num: '②', titulo: 'Fiscalizações',                           cor: LARANJA,  desc: 'Inspeções (DT_VISITA) realizadas no período, exclusivamente para os contribuintes (Codigo) presentes na coluna ①.' },
+    { num: '③', titulo: 'Alvarás Emitidos — Em Conformidade',      cor: VERDE,    desc: 'Alvarás com Dt_emite no período, vinculados a contribuintes de ①. Representa conformidade com a legislação sanitária.' },
+    { num: '④', titulo: 'Não Conforme',                            cor: VERMELHO, desc: 'Contribuintes presentes em ① e ② que NÃO tiveram emissão de alvará sanitário (ausentes de ③). Indica pendência regulatória.' },
+  ];
+
+  metod.forEach(m => {
+    addPageIfNeeded(18);
+    // Barra lateral colorida
+    pdf.setFillColor(...m.cor);
+    pdf.rect(MARGIN, cursorY, 3, 14, 'F');
+    // fundo card
+    pdf.setFillColor(...BGCARD);
+    pdf.rect(MARGIN + 3, cursorY, CONTENT - 3, 14, 'F');
+    // número
+    setFont('bold', 13, m.cor);
+    pdf.text(m.num, MARGIN + 8, cursorY + 9.5);
+    // título
+    setFont('bold', 8.5, [31,42,58]);
+    pdf.text(m.titulo, MARGIN + 18, cursorY + 6);
+    // descrição
+    setFont('normal', 7.5, CINZA);
+    const descLines = pdf.splitTextToSize(m.desc, CONTENT - 26);
+    pdf.text(descLines, MARGIN + 18, cursorY + 11);
+    cursorY += 18;
+  });
+
+  // Nota de rodapé da metodologia
+  addPageIfNeeded(12);
+  pdf.setFillColor(255, 243, 205);
+  pdf.roundedRect(MARGIN, cursorY, CONTENT, 10, 2, 2, 'F');
+  pdf.setDrawColor(255,200,0);
+  pdf.roundedRect(MARGIN, cursorY, CONTENT, 10, 2, 2, 'S');
+  setFont('italic', 7.5, [120, 80, 0]);
+  pdf.text(
+    '⚠  A totalização é por contribuinte único (Codigo). Um contribuinte com múltiplas inspeções ou alvarás é contado uma única vez por coluna.',
+    MARGIN + 4, cursorY + 6.5
+  );
+  cursorY += 16;
+
+  // ── Rodapé em todas as páginas ──────────────────────────────────
+  const totalPages = pdf.internal.getNumberOfPages();
+  for (let p = 1; p <= totalPages; p++) {
+    pdf.setPage(p);
+    addRodape();
+  }
+
+  // ── Salva ───────────────────────────────────────────────────────
+  const fmtArq = v => v.replace(/-/g,'');
+  pdf.save(`indicadores-conformidade-${fmtArq(dtIni)}-${fmtArq(dtFim)}.pdf`);
+
+  btnPdf.disabled = false;
+  btnPdf.textContent = '🖨️ Exportar PDF';
+}
 init();
 </script>
 </body>
