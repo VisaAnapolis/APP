@@ -286,6 +286,9 @@
                   <button class="btnPrimary" id="btnPdf"
                     style="background:linear-gradient(135deg,#34c759,#1a7a38)"
                     onclick="exportarPDF()">🖨️ Exportar PDF</button>
+                  <button class="btnPrimary" id="btnHtml"
+                    style="background:linear-gradient(135deg,#5856d6,#2d2b8a)"
+                    onclick="exportarHTML()">📄 Exportar HTML</button>
                 </div>
               </div>
 
@@ -655,11 +658,11 @@
     Y += rH;
 
     const totRow = ['Totais', document.getElementById('t_req').textContent, document.getElementById('t_fis').textContent, document.getElementById('t_alv').textContent, document.getElementById('t_nc').textContent];
-    pdf.setFillColor(255,255,255); pdf.setDrawColor(...LIN); pdf.rect(MG,Y,CW,rH,'FD');
+    pdf.setFillColor(255,255,255); pdf.rect(MG,Y,CW,rH,'F');
     tx=MG; totRow.forEach((v,i) => { sf('bold',8,tCores[i]); pdf.text(v, tx+colWs[i]/2, Y+5.2, {align:'center'}); tx+=colWs[i]; }); Y += rH;
 
     const pctRow = ['Percentuais','100%', document.getElementById('pp_fis').textContent, document.getElementById('pp_alv').textContent, document.getElementById('pp_nc').textContent];
-    pdf.setFillColor(...BGC); pdf.setDrawColor(...LIN); pdf.rect(MG,Y,CW,rH,'FD');
+    pdf.setFillColor(...BGC); pdf.rect(MG,Y,CW,rH,'F');
     tx=MG; pctRow.forEach((v,i) => { sf('italic',8,CINZA); pdf.text(v, tx+colWs[i]/2, Y+5.2, {align:'center'}); tx+=colWs[i]; }); Y += rH+7;
 
     sf('bold',8,AZUL); pdf.text('GRAFICO COMPARATIVO', MG, Y+3.5); Y += 7;
@@ -670,10 +673,10 @@
 
     sf('bold',8,AZUL); pdf.text('METODOLOGIA', MG, Y+3.5); Y += 7;
     const metod = [
-      { num:'1', cor:AZUL,  titulo:'Requerimentos (base 100%)',    desc:'Solicitacoes de Renovacao ou Abertura, nao canceladas, com Dt_Req no periodo.' },
-      { num:'2', cor:LAR,   titulo:'Fiscalizacoes',                 desc:'Inspecoes no periodo, somente para contribuintes (Codigo) presentes em 1.' },
-      { num:'3', cor:VERDE, titulo:'Alvaras Emitidos — Conformidade', desc:'Alvaras com Dt_emite no periodo, vinculados a contribuintes de 1.' },
-      { num:'4', cor:VERM,  titulo:'Nao Conforme',                  desc:'Presentes em 1 e 2, ausentes de 3. Indica pendencia regulatoria.' },
+      { num:'1', cor:AZUL,  titulo:'Requerimentos (base 100%)',        desc:'Solicitações de Renovação ou Abertura, não canceladas, com data no período informado.' },
+      { num:'2', cor:LAR,   titulo:'Fiscalizações',                   desc:'Inspeções realizadas no período, exclusivamente para contribuintes presentes em 1.' },
+      { num:'3', cor:VERDE, titulo:'Alvarás Emitidos (Em Conformidade)', desc:'Alvarás emitidos no período para contribuintes de 1. Indicador de conformidade sanitária.' },
+      { num:'4', cor:VERM,  titulo:'Não Conforme',                    desc:'Contribuintes que requereram 1 e foram fiscalizados 2 mas não tiveram alvará emitido 3.' },
     ];
     const mH=10, mW2=(CW-4)/2;
     metod.forEach((m,i) => {
@@ -690,7 +693,7 @@
     pdf.setFillColor(255,243,205); pdf.setDrawColor(200,160,0); pdf.setLineWidth(0.3);
     pdf.roundedRect(MG,Y,CW,7,2,2,'FD');
     sf('italic',6.8,[100,70,0]);
-    pdf.text('Totalizacao por contribuinte unico (Codigo). Multiplas inspecoes ou alvaras contam uma unica vez por coluna.', MG+3, Y+4.5);
+    pdf.text('A totalização é por contribuinte único (Codigo). Um contribuinte com múltiplas inspeções é contado uma única vez.', MG+3, Y+4.5);
     Y += 10;
 
     pdf.setDrawColor(...LIN); pdf.setLineWidth(0.3); pdf.line(MG,290,PW-MG,290);
@@ -702,6 +705,113 @@
 
     btnPdf.disabled = false;
     btnPdf.textContent = '🖨️ Exportar PDF';
+  };
+
+  window.exportarHTML = function exportarHTML() {
+    const resultado = document.getElementById('resultado');
+    if (!resultado || resultado.style.display === 'none') {
+      alert('Execute o cálculo antes de exportar.'); return;
+    }
+    const dtIni = document.getElementById('dtIni').value;
+    const dtFim = document.getElementById('dtFim').value;
+    const fmtData = v => { const [y,m,d] = v.split('-'); return `${d}/${m}/${y}`; };
+    const periodo = `${fmtData(dtIni)} a ${fmtData(dtFim)}`;
+
+    const canvas = document.getElementById('grafico');
+    const chartImg = canvas ? canvas.toDataURL('image/png', 1.0) : '';
+
+    const clone = resultado.cloneNode(true);
+    clone.style.display = '';
+    const canvasEl = clone.querySelector('canvas');
+    if (canvasEl && chartImg) {
+      const img = document.createElement('img');
+      img.src = chartImg;
+      img.style.cssText = 'width:100%;height:auto;display:block;border-radius:8px';
+      const wrapper = canvasEl.parentElement;
+      wrapper.style.cssText = 'max-width:700px;margin:0 auto';
+      wrapper.replaceChild(img, canvasEl);
+    }
+
+    const css = `*,*::before,*::after{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#f0f4f8;color:#1f2a3a;margin:0;padding:0;line-height:1.5}
+.print-header{background:#1a3a6b;color:#fff;padding:20px 28px;display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.print-header h1{margin:0;font-size:1.3rem}
+.print-header .periodo{font-size:.85rem;opacity:.8;margin-top:4px}
+.print-header .marca{font-size:2.2rem;font-weight:900;letter-spacing:-1px;color:#90b8ff}
+.container{max-width:960px;margin:0 auto;padding:0 20px 32px}
+.card{background:#fff;border-radius:12px;padding:22px;margin-bottom:18px;box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.card h3{margin:0 0 16px;font-size:1rem;color:#1a3a6b}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat-card{background:#f6f8fc;border-radius:10px;padding:18px 12px;text-align:center;border-top:3px solid #1a3a6b;display:flex;flex-direction:column;align-items:center}
+.stat-card.amarelo{border-top-color:#ff9500}
+.stat-card.verde{border-top-color:#34c759}
+.stat-card.vermelho{border-top-color:#ff3b30}
+.stat-number{display:block;font-size:2rem;font-weight:800;color:#1a3a6b;line-height:1.1}
+.stat-card.amarelo .stat-number{color:#ff9500}
+.stat-card.verde .stat-number{color:#34c759}
+.stat-card.vermelho .stat-number{color:#ff3b30}
+.stat-label{display:block;font-size:.78rem;color:#5b6b83;margin:6px 0 8px;text-align:center}
+.stat-pct{display:inline-block;font-size:.82rem;font-weight:700;background:#1a3a6b22;color:#1a3a6b;border-radius:20px;padding:2px 10px}
+.stat-card.amarelo .stat-pct{background:#ff950022;color:#c87000}
+.stat-card.verde .stat-pct{background:#34c75922;color:#1a7a38}
+.stat-card.vermelho .stat-pct{background:#ff3b3022;color:#c0392b}
+.tabela-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th{background:#1a3a6b;color:#fff;padding:9px 12px;font-weight:600;text-align:center}
+td{padding:9px 12px;text-align:center;border-bottom:1px solid #e8edf4}
+tr:last-child td{border-bottom:none}
+.badge-pct{display:inline-block;padding:3px 10px;border-radius:20px;font-weight:700;font-size:.85rem}
+.badge-blue{background:#1a3a6b22;color:#1a3a6b}
+.badge-orange{background:#ff950022;color:#c87000}
+.badge-green{background:#34c75922;color:#1a7a38}
+.badge-red{background:#ff3b3022;color:#c0392b}
+.row-pct td{color:#5b6b83;font-style:italic;font-size:.85rem;background:#f9fafc}
+.legenda-lista{display:flex;flex-direction:column;gap:10px}
+.leg-item{display:flex;align-items:flex-start;gap:12px;background:#f6f8fc;border-radius:8px;padding:12px;border-left:3px solid #1a3a6b}
+.leg-item.amarelo{border-left-color:#ff9500}
+.leg-item.verde{border-left-color:#34c759}
+.leg-item.vermelho{border-left-color:#ff3b30}
+.leg-num{width:32px;height:32px;min-width:32px;border-radius:50%;background:#1a3a6b;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem}
+.leg-item.amarelo .leg-num{background:#ff9500}
+.leg-item.verde .leg-num{background:#34c759}
+.leg-item.vermelho .leg-num{background:#ff3b30}
+.leg-txt{display:flex;flex-direction:column;gap:3px}
+.leg-txt strong{font-size:.9rem;color:#1f2a3a}
+.leg-txt small{font-size:.8rem;color:#5b6b83}
+.rodape{text-align:center;margin-top:24px;padding:16px;font-size:.75rem;color:#8899aa;border-top:1px solid #e0e8f0}
+@media(max-width:600px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+@media print{body{background:#fff}th,.leg-num,.print-header{-webkit-print-color-adjust:exact;print-color-adjust:exact}.card{box-shadow:none;border:1px solid #e0e8f0}}`;
+
+    const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Indicadores de Conformidade — ${periodo}</title>
+<style>${css}</style>
+</head>
+<body>
+<div class="print-header">
+  <div>
+    <div style="font-size:.75rem;opacity:.7;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Vigilância Sanitária de Anápolis — GO</div>
+    <h1>🛡️ Indicadores de Conformidade</h1>
+    <div class="periodo">Período: ${periodo}</div>
+  </div>
+  <div class="marca">VISA</div>
+</div>
+<div class="container">
+${clone.innerHTML}
+<div class="rodape">Vigilância Sanitária de Anápolis &nbsp;|&nbsp; Sistema CVS &nbsp;|&nbsp; Gerado em ${new Date().toLocaleDateString('pt-BR')}</div>
+</div>
+</body>
+</html>`;
+
+    const blob = new Blob([html], {type: 'text/html;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const fmtArq = v => v.replace(/-/g,'');
+    a.href = url;
+    a.download = `indicadores-conformidade-${fmtArq(dtIni)}-${fmtArq(dtFim)}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
   </script>
 
