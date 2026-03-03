@@ -1,0 +1,64 @@
+# ============================================================
+# reset-optin-sem-token.yml  —  GitHub Actions Workflow
+#
+# Remove o campo notificationOptIn de usuários que têm
+# optIn=true mas não possuem nenhum token FCM válido.
+# Efeito: o modal de opt-in reaparece para eles na próxima
+# abertura do app, dando nova chance de registrar o token.
+#
+# Dispara: apenas manualmente pelo painel do GitHub Actions.
+# Opção:   dry_run=true apenas lista os afetados, sem gravar.
+# ============================================================
+
+name: Reset optIn sem token FCM
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry-run? (true = só lista, não grava nada)'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+jobs:
+  reset-optin:
+    name: Reset optIn sem token FCM
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: '.github/scripts/package.json'
+
+      - name: Instalar dependências
+        working-directory: .github/scripts
+        run: npm ci
+
+      - name: Criar Service Account
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > .github/scripts/service-account.json
+
+      - name: Executar script
+        working-directory: .github/scripts
+        env:
+          FIREBASE_SERVICE_ACCOUNT_PATH: service-account.json
+        run: |
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            node reset-optin-sem-token.js --dry-run
+          else
+            node reset-optin-sem-token.js
+          fi
+
+      - name: Remover Service Account
+        if: always()
+        run: rm -f .github/scripts/service-account.json
