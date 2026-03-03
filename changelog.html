@@ -181,15 +181,17 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
-  <h3>v2.4.6 — 03/03/2026 (Horário de Brasília – UTC−3)</h3>
-  <strong>Nova página: Indicadores de Conformidade</strong>
+  <h3>v2.4.6 — 03/03/2026 19:50 (Horário de Brasília – UTC−3)</h3>
+  <strong>Nova página: Indicadores de Conformidade + Correções do sistema de notificações</strong>
   <ul>
-    <li><strong>Indicadores de Conformidade (comply.html):</strong> novo relatório analítico que cruza três fontes de dados — requerimentos de alvará (<code>requerimento.csv</code>), fiscalizações realizadas (<code>inspecoes.csv</code>) e alvarás emitidos (<code>alvara.csv</code>) — para apurar a taxa de conformidade sanitária em qualquer período selecionado. Exibe cards de totais, quadro analítico com percentuais e gráfico comparativo. Inclui exportação em PDF com cabeçalho institucional, tabela e gráfico incorporado. Acessível a usuários do grupo Fiscal e Administrador.</li>
+    <li><strong>Indicadores de Conformidade (comply.html):</strong> novo relatório analítico que cruza três fontes de dados — requerimentos de alvará (<code>requerimento.csv</code>), fiscalizações realizadas (<code>inspecoes.csv</code>) e alvarás emitidos (<code>alvara.csv</code>) — para apurar a taxa de conformidade sanitária em qualquer período selecionado. Exibe cards de totais, quadro analítico com percentuais e gráfico comparativo. Inclui exportação em PDF com cabeçalho institucional, tabela e gráfico incorporado, e novo botão "Exportar HTML" para gerar arquivo autossuficiente. Acessível a usuários do grupo Fiscal e Administrador.</li>
+    <li><strong>PDF — acentuação e layout:</strong> textos da metodologia no PDF agora são idênticos ao HTML (com acentuação correta); removida linha abaixo da linha "Totais" na tabela analítica.</li>
     <li><strong>Link na sidebar (22 páginas):</strong> o item <em>🛡️ Indicadores de Compliance</em> foi adicionado na seção <strong>Relatórios</strong> do menu lateral em todas as páginas do sistema.</li>
     <li><strong>Controle de acesso no dashboard:</strong> o link comply foi adicionado ao sistema de permissões do <code>index.html</code> — habilitado para Fiscal e Administrador, bloqueado para demais perfis.</li>
     <li><strong>Novidade no dashboard:</strong> entrada <em>Indicadores de Conformidade</em> adicionada ao card de novidades na tela inicial.</li>
+    <li><strong>Bug corrigido — tokens FCM não eram gravados no Firestore:</strong> a função de registro de token em <code>js/push-notifications.js</code> não estava salvando corretamente o array de <code>fcmTokens</code> na coleção <code>usuarios</code>. Corrigido: (1) validação melhorada da resposta de registro; (2) sincronização corrigida com <code>updateDoc</code> para Firestore; (3) tratamento de duplicação de tokens aprimorado. O script <code>.github/scripts/notify-os.js</code> também foi revisado para garantir leitura correta dos tokens antes de enviar notificações multicast.</li>
   </ul>
-  <p><strong>Arquivos modificados:</strong> <code>comply.html</code> — reescrito com layout padrão (sidebar, topbar, guard1.js); 22 páginas HTML — link na sidebar; <code>index.html</code> — novidade e permissões; <code>changelog.html</code> — esta entrada; <code>APP_VERSION</code> 2.4.6.</p>
+  <p><strong>Arquivos modificados:</strong> <code>comply.html</code> — reescrito com layout padrão, exportar HTML, textos com acentuação corrigida; 22 páginas HTML — link na sidebar; <code>index.html</code> — novidade e permissões; <code>js/push-notifications.js</code> — correção do registro de token FCM; <code>.github/scripts/notify-os.js</code> — validação de tokens; <code>changelog.html</code> — esta entrada; <code>APP_VERSION</code> 2.4.6.</p>
 </div>
 
 <div class="section">
