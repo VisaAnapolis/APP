@@ -10,6 +10,10 @@
 
   <link rel="stylesheet" href="./css/design-tokens.css" />
   <link rel="stylesheet" href="./css/header-component.css" />
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <link rel="stylesheet" href="./css/layouts.css" />
+  <link rel="stylesheet" href="./css/sidebar.css" />
 
   <meta property="og:title" content="Vigilância Sanitária de Anápolis" />
   <meta property="og:description" content="Aplicativo interno da Vigilância Sanitária" />
@@ -713,36 +717,6 @@
       min-height: 100vh;
     }
 
-    /* ── TOPBAR (MOBILE ONLY) ── */
-    .topbar {
-      display: none;
-      position: -webkit-sticky;
-      position: sticky;
-      top: 0;
-      z-index: 200;
-      /* Fallback opaco explícito para garantir que o fundo não seja transparente */
-      background-color: #ffffff;
-      background: var(--card, #fff);
-      border-bottom: 1px solid var(--line, #e2e8f0);
-      padding: 0 16px;
-      height: 52px;
-      align-items: center;
-      gap: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-      /* Força contexto de empilhamento opaco */
-      isolation: isolate;
-    }
-    .btn-hamburger {
-      background: none; border: none;
-      cursor: pointer; padding: 6px;
-      border-radius: 8px;
-      color: var(--text, #1a1a2e);
-      display: flex; align-items: center; justify-content: center;
-      transition: background 0.15s;
-    }
-    .btn-hamburger:hover { background: rgba(0,0,0,0.06); }
-    .topbar__title { font-weight: 700; font-size: 0.95rem; flex: 1; color: var(--text-primary, #1a202c); }
-
     /* ── CONTEÚDO ── */
     .page-content {
       flex: 1;
@@ -935,7 +909,6 @@
       .sidebar-overlay { z-index: 8999 !important; }
 
       .main-area  { margin-left: 0; }
-      .topbar     { display: flex; z-index: 300; min-height: 52px !important; }
       .page-content { padding: 16px 14px 32px !important; padding-top: 72px !important; scroll-padding-top: 60px; }
       .page-title { font-size: 1.25rem; }
 
@@ -1031,60 +1004,6 @@
       background: rgba(255, 107, 107, 0.1);
       color: #ff6b6b;
       border-color: rgba(255, 107, 107, 0.3);
-    }
-
-    /* ── Topbar dark: fundo sólido com sombra mais pronunciada ── */
-    .topbar {
-      /* Fallback opaco para dark mode */
-      background-color: #2a2a31;
-      background: var(--card-bg, #2a2a31);
-      border-bottom-color: var(--border-primary, rgba(168,162,158,0.2));
-      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
-      -webkit-backdrop-filter: none; /* Previne bugs de renderização em iOS */
-    }
-    .topbar__title { color: #e8e6e3; }
-    .btn-hamburger { color: #e8e6e3; }
-    .btn-hamburger:hover { background: rgba(255,255,255,0.08); }
-
-    /* ─────────────────────────────────────
-       FIX iOS Safari — Forçar cores corretas em dark mode
-       iOS Safari tem bug com variáveis CSS em position:sticky
-       ───────────────────────────────────── */
-    /* iOS light mode — garantir fundo branco opaco */
-    @supports (-webkit-touch-callout: none) {
-      @media (prefers-color-scheme: light) {
-        .topbar {
-          background-color: #ffffff !important;
-          background: #ffffff !important;
-        }
-      }
-    }
-
-    /* iOS dark mode — garantir fundo escuro opaco */
-    @supports (-webkit-touch-callout: none) {
-      @media (prefers-color-scheme: dark) {
-        .topbar {
-          background-color: #2a2a31 !important;
-          background: #2a2a31 !important;
-          border-bottom-color: rgba(168, 162, 158, 0.2);
-        }
-      }
-    }
-
-    /* iOS light mode fallback (sem media query para maior compatibilidade) */
-    @supports (-webkit-touch-callout: none) {
-      .topbar {
-        background-color: #ffffff !important;
-      }
-    }
-
-    /* Dark mode padrão (já coberto pelas media queries acima, mas redundância garante) */
-    @media (prefers-color-scheme: dark) {
-      @supports (-webkit-touch-callout: none) {
-        .topbar {
-          background-color: #2a2a31 !important;
-        }
-      }
     }
 
     /* ── Sidebar dark ── */
