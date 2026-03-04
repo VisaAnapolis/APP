@@ -2,89 +2,36 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Consulta de Protocolos - VISA Anápolis</title>
   <link rel="icon" href="icons/favicon.ico">
+
+  <!-- Design System CSS (ordem obrigatória) -->
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/layouts.css">
+  <link rel="stylesheet" href="./css/sidebar.css">
+
+  <!-- PapaParse para ler CSV -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
   <style>
-    :root {
-      --primary: #1565c0;
-      --primary-dark: #0d47a1;
-      --accent: #e53935;
-      --bg: #f5f7fa;
-      --card: #ffffff;
-      --border: #dde3ec;
-      --text: #1a1a2e;
-      --text-muted: #6b7280;
-      --success: #2e7d32;
-      --row-hover: #eef2ff;
-      --shadow: 0 2px 12px rgba(21,101,192,0.09);
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    /* ── HEADER ── */
-    header {
-      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
-      color: #fff;
-      padding: 0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-    }
-    .header-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .header-logo {
-      width: 44px; height: 44px;
-      background: rgba(255,255,255,0.18);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px;
-      flex-shrink: 0;
-    }
-    .header-title h1 { font-size: 1.18rem; font-weight: 700; letter-spacing: .3px; }
-    .header-title p  { font-size: 0.78rem; opacity: .82; margin-top: 1px; }
-    .header-back {
-      margin-left: auto;
-      color: #fff;
-      text-decoration: none;
-      background: rgba(255,255,255,0.15);
-      border-radius: 6px;
-      padding: 6px 14px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      border: 1px solid rgba(255,255,255,0.3);
-      transition: background .2s;
-      white-space: nowrap;
-    }
-    .header-back:hover { background: rgba(255,255,255,0.28); }
-
-    /* ── MAIN ── */
-    main {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 24px 16px 48px;
-    }
-
-    /* ── SEARCH CARD ── */
+    /* ── Estilos específicos da página Protocolo ── */
     .search-card {
-      background: var(--card);
+      background: var(--card, #ffffff);
       border-radius: 12px;
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow2, 0 2px 12px rgba(21,101,192,0.09));
+      border: 1px solid var(--line, #dde3ec);
       padding: 24px;
       margin-bottom: 28px;
     }
     .search-card h2 {
       font-size: 1rem;
-      color: var(--primary);
+      color: var(--brand1, #1565c0);
       margin-bottom: 16px;
       display: flex;
       align-items: center;
@@ -103,7 +50,7 @@
       display: block;
       font-size: 0.78rem;
       font-weight: 600;
-      color: var(--text-muted);
+      color: var(--muted, #6b7280);
       margin-bottom: 5px;
       text-transform: uppercase;
       letter-spacing: .4px;
@@ -111,19 +58,20 @@
     .form-group input {
       width: 100%;
       padding: 10px 13px;
-      border: 1.5px solid var(--border);
+      border: 1.5px solid var(--line, #dde3ec);
       border-radius: 7px;
       font-size: 0.92rem;
       outline: none;
       transition: border-color .2s;
-      background: #fafbfc;
+      background: var(--input-bg, #fafbfc);
+      color: var(--text, #1a1a2e);
     }
     .form-group input:focus {
-      border-color: var(--primary);
-      background: #fff;
+      border-color: var(--brand1, #1565c0);
+      background: var(--card, #fff);
     }
-    .btn-search {
-      background: var(--primary);
+    .btn-buscar {
+      background: var(--brand1, #1565c0);
       color: #fff;
       border: none;
       border-radius: 7px;
@@ -138,11 +86,11 @@
       white-space: nowrap;
       height: 40px;
     }
-    .btn-search:hover { background: var(--primary-dark); }
-    .btn-clear {
-      background: #f3f4f6;
-      color: var(--text-muted);
-      border: 1.5px solid var(--border);
+    .btn-buscar:hover { background: var(--brand2, #0d47a1); }
+    .btn-limpar {
+      background: var(--bg, #f3f4f6);
+      color: var(--muted, #6b7280);
+      border: 1.5px solid var(--line, #dde3ec);
       border-radius: 7px;
       padding: 10px 14px;
       font-size: 0.86rem;
@@ -150,20 +98,20 @@
       margin-top: 8px;
       transition: background .2s;
     }
-    .btn-clear:hover { background: #e5e7eb; }
+    .btn-limpar:hover { background: var(--line, #e5e7eb); }
 
-    /* ── STATUS / LOADING ── */
+    /* STATUS / LOADING */
     #status {
       text-align: center;
       padding: 18px;
-      color: var(--text-muted);
+      color: var(--muted, #6b7280);
       font-size: 0.9rem;
     }
     .spinner {
       display: inline-block;
       width: 22px; height: 22px;
       border: 3px solid #c7d2fe;
-      border-top-color: var(--primary);
+      border-top-color: var(--brand1, #1565c0);
       border-radius: 50%;
       animation: spin .7s linear infinite;
       vertical-align: middle;
@@ -171,23 +119,24 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── RESULTADO REGULADO ── */
+    /* RESULTADO REGULADO */
     .regulado-card {
-      background: var(--card);
+      background: var(--card, #ffffff);
       border-radius: 12px;
-      box-shadow: var(--shadow);
-      border-left: 5px solid var(--primary);
+      box-shadow: var(--shadow2, 0 2px 12px rgba(21,101,192,0.09));
+      border: 1px solid var(--line, #dde3ec);
+      border-left: 5px solid var(--brand1, #1565c0);
       padding: 20px 24px;
       margin-bottom: 22px;
     }
     .regulado-card h3 {
       font-size: 1.08rem;
-      color: var(--primary-dark);
+      color: var(--brand1, #1565c0);
       margin-bottom: 6px;
     }
     .regulado-card .fantasia {
       font-size: 0.9rem;
-      color: var(--text-muted);
+      color: var(--muted, #6b7280);
       margin-bottom: 10px;
     }
     .regulado-meta {
@@ -200,20 +149,20 @@
       display: flex;
       align-items: center;
       gap: 5px;
-      color: var(--text);
+      color: var(--text, #1a1a2e);
     }
     .regulado-meta .label {
       font-weight: 600;
-      color: var(--text-muted);
+      color: var(--muted, #6b7280);
       font-size: 0.78rem;
       text-transform: uppercase;
     }
 
-    /* ── TABLE PROTOCOLOS ── */
+    /* TABLE PROTOCOLOS */
     .section-title {
       font-size: 0.88rem;
       font-weight: 700;
-      color: var(--primary);
+      color: var(--brand1, #1565c0);
       text-transform: uppercase;
       letter-spacing: .5px;
       margin: 18px 0 10px;
@@ -224,14 +173,14 @@
     .table-wrap {
       overflow-x: auto;
       border-radius: 8px;
-      border: 1px solid var(--border);
+      border: 1px solid var(--line, #dde3ec);
     }
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: 0.875rem;
     }
-    thead tr { background: var(--primary); color: #fff; }
+    thead tr { background: var(--brand1, #1565c0); color: #fff; }
     thead th {
       padding: 10px 14px;
       text-align: left;
@@ -242,30 +191,28 @@
       white-space: nowrap;
     }
     tbody tr {
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--line, #dde3ec);
       transition: background .15s;
     }
     tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: var(--row-hover); }
+    tbody tr:hover { background: rgba(44,90,160,0.05); }
     tbody td { padding: 10px 14px; vertical-align: middle; }
     .badge-assunto {
       background: #e8f0fe;
-      color: var(--primary-dark);
+      color: var(--brand1, #1565c0);
       border-radius: 4px;
       padding: 2px 8px;
       font-size: 0.75rem;
       font-weight: 600;
     }
-
-    /* clicável */
     tr.prot-row { cursor: pointer; }
     tr.prot-row td:first-child {
-      color: var(--primary);
+      color: var(--brand1, #1565c0);
       font-weight: 700;
     }
     tr.prot-row:hover td:first-child { text-decoration: underline; }
 
-    /* ── MODAL TRAMITAÇÕES ── */
+    /* MODAL TRAMITAÇÕES */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -278,7 +225,7 @@
     }
     .modal-overlay.open { display: flex; }
     .modal {
-      background: var(--card);
+      background: var(--card, #ffffff);
       border-radius: 14px;
       box-shadow: 0 8px 40px rgba(0,0,0,0.22);
       width: 100%;
@@ -293,7 +240,7 @@
       to   { opacity: 1; transform: translateY(0); }
     }
     .modal-header {
-      background: var(--primary);
+      background: var(--brand1, #1565c0);
       color: #fff;
       padding: 16px 20px;
       border-radius: 14px 14px 0 0;
@@ -331,7 +278,7 @@
       position: absolute;
       left: 10px; top: 6px; bottom: 6px;
       width: 2px;
-      background: var(--border);
+      background: var(--line, #dde3ec);
     }
     .tram-item {
       position: relative;
@@ -343,94 +290,156 @@
       left: -22px; top: 6px;
       width: 10px; height: 10px;
       border-radius: 50%;
-      background: var(--primary);
+      background: var(--brand1, #1565c0);
       border: 2px solid #fff;
-      box-shadow: 0 0 0 2px var(--primary);
+      box-shadow: 0 0 0 2px var(--brand1, #1565c0);
     }
-    .tram-item:last-child::before { background: var(--success); box-shadow: 0 0 0 2px var(--success); }
+    .tram-item:last-child::before { background: #2e7d32; box-shadow: 0 0 0 2px #2e7d32; }
     .tram-date {
       font-size: 0.75rem;
-      color: var(--text-muted);
+      color: var(--muted, #6b7280);
       font-weight: 600;
       margin-bottom: 2px;
     }
     .tram-destino {
       font-size: 0.9rem;
       font-weight: 600;
-      color: var(--text);
+      color: var(--text, #1a1a2e);
     }
-    .tram-empty { color: var(--text-muted); font-size: 0.88rem; text-align: center; padding: 24px; }
+    .tram-empty { color: var(--muted, #6b7280); font-size: 0.88rem; text-align: center; padding: 24px; }
 
-    /* ── NO RESULTS ── */
+    /* NO RESULTS */
     .no-results {
       text-align: center;
       padding: 40px 20px;
-      color: var(--text-muted);
+      color: var(--muted, #6b7280);
     }
     .no-results .icon { font-size: 2.4rem; margin-bottom: 10px; }
     .no-results p { font-size: 0.9rem; }
-
-    /* ── FOOTER ── */
-    footer {
-      text-align: center;
-      padding: 18px;
-      font-size: 0.76rem;
-      color: var(--text-muted);
-    }
   </style>
 </head>
-<body>
+<body class="with-sidebar">
+<div class="app-layout">
 
-<header>
-  <div class="header-inner">
-    <div class="header-logo">📋</div>
-    <div class="header-title">
-      <h1>Consulta de Protocolos</h1>
-      <p>Vigilância Sanitária — Anápolis/GO</p>
-    </div>
-    <a href="index.html" class="header-back">← Início</a>
-  </div>
-</header>
-
-<main>
-
-  <!-- CARD DE PESQUISA -->
-  <div class="search-card">
-    <h2>🔍 Pesquisar</h2>
-    <div class="search-grid">
-      <div class="form-group">
-        <label>Nº do Protocolo</label>
-        <input type="text" id="inp-protocolo" placeholder="Ex: 20240123" maxlength="20"
-               oninput="handleInput(this)" onkeydown="handleEnter(event)">
-      </div>
-      <div class="form-group">
-        <label>Razão Social</label>
-        <input type="text" id="inp-razao" placeholder="Nome da empresa ou pessoa" 
-               oninput="handleInput(this)" onkeydown="handleEnter(event)">
-      </div>
-      <div class="form-group">
-        <label>Nome de Fantasia</label>
-        <input type="text" id="inp-fantasia" placeholder="Nome fantasia" 
-               oninput="handleInput(this)" onkeydown="handleEnter(event)">
+  <!-- ════════════ SIDEBAR ════════════ -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Menu principal">
+    <div class="sidebar__header">
+      <div class="sidebar__logo" style="background:none;">
+        <img src="icons/visa.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;" alt="VISA">
       </div>
       <div>
-        <button class="btn-search" onclick="pesquisar()">
-          <span>🔍</span> Pesquisar
-        </button>
+        <div class="sidebar__app-name">Vigilância Sanitária</div>
+        <div class="sidebar__app-sub">Anápolis – GO</div>
       </div>
     </div>
-    <div style="margin-top:10px">
-      <button class="btn-clear" onclick="limpar()">✕ Limpar</button>
+    <nav class="sidebar__nav">
+      <a class="visa-nav-item" href="index.html"><span class="nav-icon">🗂️</span> Dashboard</a>
+      <div class="nav-section-label">Operacional</div>
+      <a class="visa-nav-item" href="os.html"><span class="nav-icon">📋</span> OS</a>
+      <a class="visa-nav-item" href="alvara.html"><span class="nav-icon">🏦</span> Alvarás</a>
+      <a class="visa-nav-item" href="cvs.html"><span class="nav-icon">🏪</span> Regulados</a>
+      <a class="visa-nav-item active" href="protocolo.html"><span class="nav-icon">🔍</span> Protocolos</a>
+      <div class="nav-section-label">Relatórios</div>
+      <a class="visa-nav-item" href="rmpf.html"><span class="nav-icon">📚</span> RMPF</a>
+      <a class="visa-nav-item" href="inspecoes.html"><span class="nav-icon">👁️</span> Inspeções</a>
+      <a class="visa-nav-item" href="relatorio_plantao_fiscal.html"><span class="nav-icon">📈</span> Ocorrências</a>
+      <a class="visa-nav-item" href="indicadores.html"><span class="nav-icon">📊</span> Indicadores</a>
+      <a class="visa-nav-item" href="comply.html"><span class="nav-icon">🛡️</span> Compliance</a>
+      <div class="nav-section-label">Escala</div>
+      <a class="visa-nav-item" href="plantao.html"><span class="nav-icon">📅</span> Plantão Fiscal</a>
+      <a class="visa-nav-item" href="veiculos.html"><span class="nav-icon">🚗</span> Veículos</a>
+      <a class="visa-nav-item" href="ferias.html"><span class="nav-icon">🏖️</span> Férias</a>
+      <div class="nav-section-label">Referência</div>
+      <a class="visa-nav-item" href="legislacao.html"><span class="nav-icon">📜</span> Legislação</a>
+      <a class="visa-nav-item" href="pop.html"><span class="nav-icon">🎯</span> POPs da VISA</a>
+      <a class="visa-nav-item" href="check.html"><span class="nav-icon">✅</span> Check Lists</a>
+      <div class="nav-section-label">Distribuição</div>
+      <a class="visa-nav-item" href="areas.html"><span class="nav-icon">🧩</span> Áreas</a>
+      <a class="visa-nav-item" href="cnae.html"><span class="nav-icon">👥</span> CNAEs</a>
+      <a class="visa-nav-item" href="total.html"><span class="nav-icon">🧮</span> Totalização</a>
+      <div class="nav-section-label">Sistema</div>
+      <a class="visa-nav-item" href="admin.html"><span class="nav-icon">⚙️</span> Painel Admin</a>
+      <a class="visa-nav-item" href="mailto:visa@anapolis.go.gov.br"><span class="nav-icon">💡</span> Sugestões</a>
+      <a class="visa-nav-item" href="changelog.html"><span class="nav-icon">📌</span> Novidades da versão</a>
+      <a class="visa-nav-item" href="readme.html"><span class="nav-icon">📄</span> Aviso Institucional</a>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="sidebar__version">
+        <span class="version-badge">v<span id="appVersion"></span></span>
+        <span class="version-date">mar/2026</span>
+      </div>
+      <div id="userInfo" class="user-info-bar" style="padding:6px 0 8px;background:none;border:none;"></div>
+      <button class="btn-logout-text" onclick="sidebarLogout()">↩ Encerrar sessão</button>
     </div>
-  </div>
+  </aside>
+  <!-- ════ FIM SIDEBAR ════ -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-  <!-- STATUS / LOADING -->
-  <div id="status"></div>
+  <!-- ════════════ MAIN AREA ════════════ -->
+  <div class="main-area">
 
-  <!-- RESULTADOS -->
-  <div id="resultados"></div>
+    <!-- TOPBAR (mobile only) -->
+    <header class="topbar">
+      <button class="btn-hamburger" onclick="toggleSidebar()" aria-label="Abrir menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="3" y1="6"  x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <span class="topbar__title">Consulta de Protocolos</span>
+    </header>
 
-</main>
+    <main class="page-content">
+      <div class="page-header">
+        <h1 class="page-title">🔍 Consulta de Protocolos</h1>
+        <p class="page-subtitle">Pesquise protocolos por número, razão social ou nome fantasia e acompanhe o histórico de tramitações.</p>
+      </div>
+
+      <!-- CARD DE PESQUISA -->
+      <div class="search-card">
+        <h2>🔍 Pesquisar</h2>
+        <div class="search-grid">
+          <div class="form-group">
+            <label>Nº do Protocolo</label>
+            <input type="text" id="inp-protocolo" placeholder="Ex: 20240123" maxlength="20"
+                   oninput="handleInput(this)" onkeydown="handleEnter(event)">
+          </div>
+          <div class="form-group">
+            <label>Razão Social</label>
+            <input type="text" id="inp-razao" placeholder="Nome da empresa ou pessoa"
+                   oninput="handleInput(this)" onkeydown="handleEnter(event)">
+          </div>
+          <div class="form-group">
+            <label>Nome de Fantasia</label>
+            <input type="text" id="inp-fantasia" placeholder="Nome fantasia"
+                   oninput="handleInput(this)" onkeydown="handleEnter(event)">
+          </div>
+          <div>
+            <button class="btn-buscar" onclick="pesquisar()">
+              <span>🔍</span> Pesquisar
+            </button>
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <button class="btn-limpar" onclick="limpar()">✕ Limpar</button>
+        </div>
+      </div>
+
+      <!-- STATUS / LOADING -->
+      <div id="status"></div>
+
+      <!-- RESULTADOS -->
+      <div id="resultados"></div>
+
+    </main><!-- /.page-content -->
+
+    <footer class="footer">
+      Vigilância Sanitária – Diretoria de Vigilância em Saúde · Município de Anápolis – GO · © 2025-2026
+    </footer>
+
+  </div><!-- /.main-area -->
+</div><!-- /.app-layout -->
 
 <!-- MODAL TRAMITAÇÕES -->
 <div class="modal-overlay" id="modal" onclick="fecharModal(event)">
@@ -448,10 +457,12 @@
   </div>
 </div>
 
-<footer>VISA Anápolis — Sistema CVS &copy; 2025</footer>
-
-<!-- PapaParse para ler CSV -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script type="module">
+  import { protectPage } from "./js/guard.js";
+  protectPage();
+</script>
+<script src="./js/sidebar.js"></script>
+<script src="./js/platform-detector.js"></script>
 
 <script>
 // ── DADOS em memória (carregados 1x via GitHub raw) ──────────────────────────
@@ -461,7 +472,6 @@ let _regulados  = null;
 let _bairros    = null;
 let _protocolos = null;
 let _tramitacoes = null;
-let _loading    = false;
 
 function csvURL(file) {
   return DATA_BASE + file + '?v=' + Date.now();
@@ -522,13 +532,11 @@ function formatarDoc(reg) {
 }
 
 function formatarData(s) {
-  // dd.mm.yyyy → dd/mm/yyyy
   return (s||'').replace(/\./g, '/');
 }
 
 function formatarHora(s) {
   if (!s) return '';
-  // "5:03:56 PM" → "17:03"
   const m = s.match(/(\d+):(\d+)(?::\d+)?\s*(AM|PM)?/i);
   if (!m) return s;
   let h = parseInt(m[1]), min = m[2], per = (m[3]||'').toUpperCase();
@@ -550,9 +558,7 @@ function enderecoCompleto(reg) {
 }
 
 // ── PESQUISA ───────────────────────────────────────────────────────────────
-function handleInput(el) {
-  // ao digitar em qualquer campo, limpa os outros se foco especial
-}
+function handleInput(el) {}
 
 function handleEnter(e) {
   if (e.key === 'Enter') pesquisar();
@@ -573,7 +579,6 @@ async function pesquisar() {
 
   document.getElementById('resultados').innerHTML = '';
 
-  // === MODO: busca por número de protocolo ===
   if (vprot) {
     const prot = _protocolos.find(p => (p.Protocolo||'').trim() === vprot);
     if (!prot) {
@@ -588,7 +593,6 @@ async function pesquisar() {
     return;
   }
 
-  // === MODO: busca por razão social ou fantasia ===
   const regs = _regulados.filter(r => {
     const rNorm = norm(r.RAZAO);
     const fNorm = norm(r.FANTASIA);
@@ -614,7 +618,7 @@ async function pesquisar() {
   document.getElementById('resultados').appendChild(frag);
   if (regs.length > 30) {
     const info = document.createElement('p');
-    info.style = 'text-align:center;color:var(--text-muted);font-size:.82rem;margin-top:8px';
+    info.style = 'text-align:center;color:var(--muted,#6b7280);font-size:.82rem;margin-top:8px';
     info.textContent = 'Exibindo os primeiros 30 resultados. Refine a pesquisa para mais precisão.';
     document.getElementById('resultados').appendChild(info);
   }
@@ -625,7 +629,7 @@ function renderizarResultado(reg, prots, retornar = false) {
   wrapper.className = 'regulado-card';
 
   if (!reg) {
-    wrapper.innerHTML = '<p style="color:var(--text-muted)">Regulado não encontrado para este protocolo.</p>';
+    wrapper.innerHTML = '<p style="color:var(--muted,#6b7280)">Regulado não encontrado para este protocolo.</p>';
     if (retornar) return wrapper;
     document.getElementById('resultados').appendChild(wrapper);
     return;
@@ -654,18 +658,16 @@ function renderizarResultado(reg, prots, retornar = false) {
           </tr>
         </thead>
         <tbody id="tbody-${(reg.CODIGO||'').trim()}">
-          ${prots.length === 0 ? '<tr><td colspan="5" style="color:var(--text-muted);text-align:center;padding:16px">Nenhum protocolo encontrado.</td></tr>' : ''}
+          ${prots.length === 0 ? '<tr><td colspan="5" style="color:var(--muted,#6b7280);text-align:center;padding:16px">Nenhum protocolo encontrado.</td></tr>' : ''}
         </tbody>
       </table>
     </div>
   `;
 
-  // Adiciona linhas de protocolo
   const tbody = wrapper.querySelector('tbody');
   prots
     .slice()
     .sort((a, b) => {
-      // ordena por data descrescente
       const da = parseDateBR(a.Data);
       const db = parseDateBR(b.Data);
       return db - da;
@@ -694,7 +696,6 @@ function renderizarResultado(reg, prots, retornar = false) {
 }
 
 function parseDateBR(s) {
-  // dd.mm.yyyy
   if (!s) return 0;
   const [d,m,y] = (s).split('.');
   return new Date(`${y}-${m}-${d}`).getTime() || 0;
@@ -711,9 +712,6 @@ function abrirModal(prot) {
     .filter(t => (t.PROTOCOLO||'').trim() === numProt)
     .slice()
     .sort((a, b) => {
-      const da = parseDateBR(a.DATA) + ' ' + (a.HORA||'');
-      const db = parseDateBR(b.DATA) + ' ' + (b.HORA||'');
-      // ordena por data+hora crescente
       const ta = new Date(parseDateBR(a.DATA)).getTime() + horaMs(a.HORA);
       const tb = new Date(parseDateBR(b.DATA)).getTime() + horaMs(b.HORA);
       return ta - tb;
@@ -782,7 +780,6 @@ function limpar() {
 
 // ── PRÉ-CARREGAR DADOS AO ABRIR A PÁGINA (background) ─────────────────────
 window.addEventListener('DOMContentLoaded', () => {
-  // pré-carrega silenciosamente
   setTimeout(() => carregarDados().catch(() => {}), 600);
 });
 </script>

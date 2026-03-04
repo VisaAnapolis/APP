@@ -111,11 +111,12 @@
         </div>
       </div>
       <nav class="sidebar__nav">
-        <a class="visa-nav-item" href="index.html"><span class="nav-icon">📊</span> Dashboard</a>
+        <a class="visa-nav-item" href="index.html"><span class="nav-icon">🗂️</span> Dashboard</a>
         <div class="nav-section-label">Operacional</div>
         <a class="visa-nav-item" href="os.html"><span class="nav-icon">📋</span> OS</a>
         <a class="visa-nav-item" href="alvara.html"><span class="nav-icon">🏦</span> Alvarás</a>
         <a class="visa-nav-item" href="cvs.html"><span class="nav-icon">🏪</span> Regulados</a>
+        <a class="visa-nav-item" href="protocolo.html"><span class="nav-icon">🔍</span> Protocolos</a>
         <div class="nav-section-label">Relatórios</div>
         <a class="visa-nav-item" href="rmpf.html"><span class="nav-icon">📚</span> RMPF</a>
         <a class="visa-nav-item" href="inspecoes.html"><span class="nav-icon">👁️</span> Inspeções</a>
@@ -179,6 +180,19 @@
 
         <h2 class="ch-title">CHANGELOG — VISA Anápolis</h2>
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
+
+<div class="section">
+  <h3>v2.4.7 — 04/03/2026 (Horário de Brasília – UTC−3)</h3>
+  <strong>Integração da Consulta de Protocolos ao app + correção de ícones duplicados na sidebar</strong>
+  <ul>
+    <li><strong>Nova página integrada — Protocolos (protocolo.html):</strong> a página de consulta de protocolos, antes standalone (sem sidebar, sem autenticação), foi totalmente reestruturada com o layout padrão do app — sidebar de navegação, topbar mobile com hamburger, CSS via design tokens (<code>design-tokens.css</code>, <code>base.css</code>, <code>components.css</code>, <code>layouts.css</code>, <code>sidebar.css</code>), proteção de acesso via <code>guard.js</code> e scripts <code>sidebar.js</code> e <code>platform-detector.js</code>. Toda a lógica de negócio original foi preservada: busca por número de protocolo, razão social ou nome fantasia; modal de tramitações em linha do tempo; carregamento lazy dos CSVs via PapaParse.</li>
+    <li><strong>Link na sidebar (24 páginas):</strong> o item <em>🔍 Protocolos</em> foi adicionado na seção <strong>Operacional</strong> do menu lateral — após Regulados — em todas as páginas do sistema.</li>
+    <li><strong>Novidade no dashboard:</strong> entrada <em>Consulta de Protocolos</em> adicionada como primeiro item do card de novidades na tela inicial.</li>
+    <li><strong>Correção — ícone duplicado do Dashboard (📊 → 🗂️):</strong> o ícone 📊 estava atribuído simultaneamente ao Dashboard e à página Indicadores, gerando ambiguidade visual. O Dashboard passou a usar 🗂️ em todas as páginas do sistema.</li>
+    <li><strong>Correção — ícone duplicado de Protocolos (📋 → 🔍):</strong> a página <code>protocolo.html</code> usava o ícone 📋, já atribuído a OS. O novo ícone 🔍 reflete a natureza de consulta/pesquisa da página e é único na sidebar.</li>
+  </ul>
+  <p><strong>Arquivos modificados:</strong> <code>protocolo.html</code> — reestruturado com layout padrão, sidebar, guard e design tokens; <code>index.html</code> — link Protocolos na sidebar, ícone Dashboard 🗂️, novidade adicionada; <code>includes/sidebar-nav.html</code> — template atualizado; 22 páginas HTML — link Protocolos e ícone Dashboard corrigidos; <code>changelog.html</code> — esta entrada. <em>APP_VERSION não alterada — aguardando aprovação manual.</em></p>
+</div>
 
 <div class="section">
   <h3>v2.4.6 — 03/03/2026 18:37 (Horário de Brasília – UTC−3)</h3>
