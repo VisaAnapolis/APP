@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consulta de Protocolos - VISA Anápolis</title>
+  <link rel="icon" href="icons/favicon.ico">
+  <style>
+    :root {
+      --primary: #1565c0;
+      --primary-dark: #0d47a1;
+      --accent: #e53935;
+      --bg: #f5f7fa;
+      --card: #ffffff;
+      --border: #dde3ec;
+      --text: #1a1a2e;
+      --text-muted: #6b7280;
+      --success: #2e7d32;
+      --row-hover: #eef2ff;
+      --shadow: 0 2px 12px rgba(21,101,192,0.09);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: #fff;
+      padding: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    }
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .header-logo {
+      width: 44px; height: 44px;
+      background: rgba(255,255,255,0.18);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .header-title h1 { font-size: 1.18rem; font-weight: 700; letter-spacing: .3px; }
+    .header-title p  { font-size: 0.78rem; opacity: .82; margin-top: 1px; }
+    .header-back {
+      margin-left: auto;
+      color: #fff;
+      text-decoration: none;
+      background: rgba(255,255,255,0.15);
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.3);
+      transition: background .2s;
+      white-space: nowrap;
+    }
+    .header-back:hover { background: rgba(255,255,255,0.28); }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 16px 48px;
+    }
+
+    /* ── SEARCH CARD ── */
+    .search-card {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+      margin-bottom: 28px;
+    }
+    .search-card h2 {
+      font-size: 1rem;
+      color: var(--primary);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .search-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 12px;
+      align-items: end;
+    }
+    @media (max-width: 768px) {
+      .search-grid { grid-template-columns: 1fr; }
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 10px 13px;
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      font-size: 0.92rem;
+      outline: none;
+      transition: border-color .2s;
+      background: #fafbfc;
+    }
+    .form-group input:focus {
+      border-color: var(--primary);
+      background: #fff;
+    }
+    .btn-search {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 10px 22px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: background .2s;
+      white-space: nowrap;
+      height: 40px;
+    }
+    .btn-search:hover { background: var(--primary-dark); }
+    .btn-clear {
+      background: #f3f4f6;
+      color: var(--text-muted);
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      padding: 10px 14px;
+      font-size: 0.86rem;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background .2s;
+    }
+    .btn-clear:hover { background: #e5e7eb; }
+
+    /* ── STATUS / LOADING ── */
+    #status {
+      text-align: center;
+      padding: 18px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .spinner {
+      display: inline-block;
+      width: 22px; height: 22px;
+      border: 3px solid #c7d2fe;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── RESULTADO REGULADO ── */
+    .regulado-card {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      border-left: 5px solid var(--primary);
+      padding: 20px 24px;
+      margin-bottom: 22px;
+    }
+    .regulado-card h3 {
+      font-size: 1.08rem;
+      color: var(--primary-dark);
+      margin-bottom: 6px;
+    }
+    .regulado-card .fantasia {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .regulado-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      font-size: 0.85rem;
+    }
+    .regulado-meta span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--text);
+    }
+    .regulado-meta .label {
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+    }
+
+    /* ── TABLE PROTOCOLOS ── */
+    .section-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin: 18px 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    thead tr { background: var(--primary); color: #fff; }
+    thead th {
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      white-space: nowrap;
+    }
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--row-hover); }
+    tbody td { padding: 10px 14px; vertical-align: middle; }
+    .badge-assunto {
+      background: #e8f0fe;
+      color: var(--primary-dark);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* clicável */
+    tr.prot-row { cursor: pointer; }
+    tr.prot-row td:first-child {
+      color: var(--primary);
+      font-weight: 700;
+    }
+    tr.prot-row:hover td:first-child { text-decoration: underline; }
+
+    /* ── MODAL TRAMITAÇÕES ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.48);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--card);
+      border-radius: 14px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.22);
+      width: 100%;
+      max-width: 680px;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      animation: fadeUp .22s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .modal-header {
+      background: var(--primary);
+      color: #fff;
+      padding: 16px 20px;
+      border-radius: 14px 14px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .modal-header h3 { font-size: 0.97rem; font-weight: 700; }
+    .modal-header .modal-sub { font-size: 0.78rem; opacity: .85; margin-top: 2px; }
+    .btn-close {
+      background: rgba(255,255,255,0.18);
+      border: none;
+      color: #fff;
+      font-size: 1.2rem;
+      border-radius: 50%;
+      width: 32px; height: 32px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+      flex-shrink: 0;
+    }
+    .btn-close:hover { background: rgba(255,255,255,0.34); }
+    .modal-body {
+      overflow-y: auto;
+      padding: 18px 20px;
+      flex: 1;
+    }
+    .tram-timeline {
+      position: relative;
+      padding-left: 28px;
+    }
+    .tram-timeline::before {
+      content: '';
+      position: absolute;
+      left: 10px; top: 6px; bottom: 6px;
+      width: 2px;
+      background: var(--border);
+    }
+    .tram-item {
+      position: relative;
+      margin-bottom: 16px;
+    }
+    .tram-item::before {
+      content: '';
+      position: absolute;
+      left: -22px; top: 6px;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 2px var(--primary);
+    }
+    .tram-item:last-child::before { background: var(--success); box-shadow: 0 0 0 2px var(--success); }
+    .tram-date {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .tram-destino {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .tram-empty { color: var(--text-muted); font-size: 0.88rem; text-align: center; padding: 24px; }
+
+    /* ── NO RESULTS ── */
+    .no-results {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+    .no-results .icon { font-size: 2.4rem; margin-bottom: 10px; }
+    .no-results p { font-size: 0.9rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 18px;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-logo">📋</div>
+    <div class="header-title">
+      <h1>Consulta de Protocolos</h1>
+      <p>Vigilância Sanitária — Anápolis/GO</p>
+    </div>
+    <a href="index.html" class="header-back">← Início</a>
+  </div>
+</header>
+
+<main>
+
+  <!-- CARD DE PESQUISA -->
+  <div class="search-card">
+    <h2>🔍 Pesquisar</h2>
+    <div class="search-grid">
+      <div class="form-group">
+        <label>Nº do Protocolo</label>
+        <input type="text" id="inp-protocolo" placeholder="Ex: 20240123" maxlength="20"
+               oninput="handleInput(this)" onkeydown="handleEnter(event)">
+      </div>
+      <div class="form-group">
+        <label>Razão Social</label>
+        <input type="text" id="inp-razao" placeholder="Nome da empresa ou pessoa" 
+               oninput="handleInput(this)" onkeydown="handleEnter(event)">
+      </div>
+      <div class="form-group">
+        <label>Nome de Fantasia</label>
+        <input type="text" id="inp-fantasia" placeholder="Nome fantasia" 
+               oninput="handleInput(this)" onkeydown="handleEnter(event)">
+      </div>
+      <div>
+        <button class="btn-search" onclick="pesquisar()">
+          <span>🔍</span> Pesquisar
+        </button>
+      </div>
+    </div>
+    <div style="margin-top:10px">
+      <button class="btn-clear" onclick="limpar()">✕ Limpar</button>
+    </div>
+  </div>
+
+  <!-- STATUS / LOADING -->
+  <div id="status"></div>
+
+  <!-- RESULTADOS -->
+  <div id="resultados"></div>
+
+</main>
+
+<!-- MODAL TRAMITAÇÕES -->
+<div class="modal-overlay" id="modal" onclick="fecharModal(event)">
+  <div class="modal" id="modal-box">
+    <div class="modal-header">
+      <div>
+        <h3 id="modal-title">Tramitações</h3>
+        <div class="modal-sub" id="modal-sub"></div>
+      </div>
+      <button class="btn-close" onclick="fecharModal(null, true)">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="modal-content"></div>
+    </div>
+  </div>
+</div>
+
+<footer>VISA Anápolis — Sistema CVS &copy; 2025</footer>
+
+<!-- PapaParse para ler CSV -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+<script>
+// ── DADOS em memória (carregados 1x via GitHub raw) ──────────────────────────
+const DATA_BASE = 'https://raw.githubusercontent.com/garrado/VISA/main/data/';
+
+let _regulados  = null;
+let _bairros    = null;
+let _protocolos = null;
+let _tramitacoes = null;
+let _loading    = false;
+
+function csvURL(file) {
+  return DATA_BASE + file + '?v=' + Date.now();
+}
+
+async function loadCSV(url) {
+  return new Promise((resolve, reject) => {
+    Papa.parse(url, {
+      download: true,
+      header: true,
+      delimiter: ';',
+      skipEmptyLines: true,
+      complete: r => resolve(r.data),
+      error: e => reject(e)
+    });
+  });
+}
+
+async function carregarDados() {
+  if (_regulados) return true;
+  mostrarStatus('<span class="spinner"></span> Carregando base de dados…');
+  try {
+    [_regulados, _bairros, _protocolos, _tramitacoes] = await Promise.all([
+      loadCSV(csvURL('regulados.csv')),
+      loadCSV(csvURL('bairros.csv')),
+      loadCSV(csvURL('protocolo.csv')),
+      loadCSV(csvURL('tramitacao.csv'))
+    ]);
+    mostrarStatus('');
+    return true;
+  } catch(e) {
+    mostrarStatus('❌ Erro ao carregar os dados. Verifique a conexão.');
+    console.error(e);
+    return false;
+  }
+}
+
+// ── HELPERS ────────────────────────────────────────────────────────────────
+function norm(s) {
+  return (s || '').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().trim();
+}
+
+function bairroNome(cdbai) {
+  if (!_bairros || !cdbai) return '';
+  const b = _bairros.find(b => (b.CODIGO||'').toString().trim() === (cdbai||'').toString().trim());
+  return b ? (b.NOME||'').trim() : '';
+}
+
+function formatarDoc(reg) {
+  const cgc = (reg.CGC||'').trim();
+  const cpf = (reg.CPF||'').trim();
+  const tipo = (reg.PESSOA||'').trim();
+  if (tipo === 'CNPJ' && cgc) return { tipo: 'CNPJ', val: cgc };
+  if (tipo === 'CPF'  && cpf) return { tipo: 'CPF',  val: cpf };
+  if (cgc) return { tipo: 'CNPJ', val: cgc };
+  if (cpf) return { tipo: 'CPF',  val: cpf };
+  return { tipo: '—', val: '—' };
+}
+
+function formatarData(s) {
+  // dd.mm.yyyy → dd/mm/yyyy
+  return (s||'').replace(/\./g, '/');
+}
+
+function formatarHora(s) {
+  if (!s) return '';
+  // "5:03:56 PM" → "17:03"
+  const m = s.match(/(\d+):(\d+)(?::\d+)?\s*(AM|PM)?/i);
+  if (!m) return s;
+  let h = parseInt(m[1]), min = m[2], per = (m[3]||'').toUpperCase();
+  if (per === 'PM' && h < 12) h += 12;
+  if (per === 'AM' && h === 12) h = 0;
+  return String(h).padStart(2,'0') + ':' + min;
+}
+
+function enderecoCompleto(reg) {
+  const logr = (reg.LOGRADOURO||'').trim();
+  const comp  = (reg.COMPLEMENT||'').trim();
+  const bairro= bairroNome(reg.CDBAI) || (reg.BAIRRO||'').trim();
+  const cep   = (reg.CEP||'').trim();
+  let end = logr;
+  if (comp) end += ', ' + comp;
+  if (bairro) end += ' — ' + bairro;
+  if (cep)    end += ' — CEP ' + cep;
+  return end || '(endereço não informado)';
+}
+
+// ── PESQUISA ───────────────────────────────────────────────────────────────
+function handleInput(el) {
+  // ao digitar em qualquer campo, limpa os outros se foco especial
+}
+
+function handleEnter(e) {
+  if (e.key === 'Enter') pesquisar();
+}
+
+async function pesquisar() {
+  const vprot    = document.getElementById('inp-protocolo').value.trim();
+  const vrazao   = norm(document.getElementById('inp-razao').value);
+  const vfantasia= norm(document.getElementById('inp-fantasia').value);
+
+  if (!vprot && !vrazao && !vfantasia) {
+    mostrarStatus('⚠️ Informe ao menos um critério de pesquisa.');
+    return;
+  }
+
+  const ok = await carregarDados();
+  if (!ok) return;
+
+  document.getElementById('resultados').innerHTML = '';
+
+  // === MODO: busca por número de protocolo ===
+  if (vprot) {
+    const prot = _protocolos.find(p => (p.Protocolo||'').trim() === vprot);
+    if (!prot) {
+      mostrarStatus('');
+      mostrarSemResultados('Protocolo "' + vprot + '" não encontrado.');
+      return;
+    }
+    const cod = (prot.Codigo||'').trim();
+    const reg = _regulados.find(r => (r.CODIGO||'').trim() === cod);
+    renderizarResultado(reg, [prot]);
+    mostrarStatus('');
+    return;
+  }
+
+  // === MODO: busca por razão social ou fantasia ===
+  const regs = _regulados.filter(r => {
+    const rNorm = norm(r.RAZAO);
+    const fNorm = norm(r.FANTASIA);
+    if (vrazao    && rNorm.includes(vrazao))    return true;
+    if (vfantasia && fNorm.includes(vfantasia)) return true;
+    return false;
+  });
+
+  if (regs.length === 0) {
+    mostrarStatus('');
+    mostrarSemResultados('Nenhum regulado encontrado com o critério informado.');
+    return;
+  }
+
+  mostrarStatus('');
+  const frag = document.createDocumentFragment();
+  regs.slice(0, 30).forEach(reg => {
+    const cod = (reg.CODIGO||'').trim();
+    const prots = _protocolos.filter(p => (p.Codigo||'').trim() === cod);
+    const el = renderizarResultado(reg, prots, true);
+    if (el) frag.appendChild(el);
+  });
+  document.getElementById('resultados').appendChild(frag);
+  if (regs.length > 30) {
+    const info = document.createElement('p');
+    info.style = 'text-align:center;color:var(--text-muted);font-size:.82rem;margin-top:8px';
+    info.textContent = 'Exibindo os primeiros 30 resultados. Refine a pesquisa para mais precisão.';
+    document.getElementById('resultados').appendChild(info);
+  }
+}
+
+function renderizarResultado(reg, prots, retornar = false) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'regulado-card';
+
+  if (!reg) {
+    wrapper.innerHTML = '<p style="color:var(--text-muted)">Regulado não encontrado para este protocolo.</p>';
+    if (retornar) return wrapper;
+    document.getElementById('resultados').appendChild(wrapper);
+    return;
+  }
+
+  const doc = formatarDoc(reg);
+  const end = enderecoCompleto(reg);
+
+  wrapper.innerHTML = `
+    <h3>${(reg.RAZAO||'').trim() || '(sem razão social)'}</h3>
+    <div class="fantasia">${(reg.FANTASIA||'').trim() ? '🏪 ' + reg.FANTASIA.trim() : ''}</div>
+    <div class="regulado-meta">
+      <span><span class="label">${doc.tipo}:</span> ${doc.val}</span>
+      <span><span class="label">Endereço:</span> ${end}</span>
+    </div>
+    <div class="section-title">📄 Protocolos (${prots.length})</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Protocolo</th>
+            <th>Data</th>
+            <th>Assunto</th>
+            <th>Complemento</th>
+            <th>Tramitações</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-${(reg.CODIGO||'').trim()}">
+          ${prots.length === 0 ? '<tr><td colspan="5" style="color:var(--text-muted);text-align:center;padding:16px">Nenhum protocolo encontrado.</td></tr>' : ''}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  // Adiciona linhas de protocolo
+  const tbody = wrapper.querySelector('tbody');
+  prots
+    .slice()
+    .sort((a, b) => {
+      // ordena por data descrescente
+      const da = parseDateBR(a.Data);
+      const db = parseDateBR(b.Data);
+      return db - da;
+    })
+    .forEach(p => {
+      const tr = document.createElement('tr');
+      tr.className = 'prot-row';
+      const numTram = _tramitacoes
+        ? _tramitacoes.filter(t => (t.PROTOCOLO||'').trim() === (p.Protocolo||'').trim()).length
+        : 0;
+      tr.innerHTML = `
+        <td>${(p.Protocolo||'').trim()}</td>
+        <td style="white-space:nowrap">${formatarData(p.Data)}</td>
+        <td><span class="badge-assunto">${(p.Assunto||'').trim()}</span></td>
+        <td>${(p.Complemento||'').trim()}</td>
+        <td style="text-align:center">
+          <span style="background:#dcfce7;color:#166534;border-radius:12px;padding:2px 10px;font-size:.78rem;font-weight:700">${numTram}</span>
+        </td>
+      `;
+      tr.addEventListener('click', () => abrirModal(p));
+      tbody.appendChild(tr);
+    });
+
+  if (retornar) return wrapper;
+  document.getElementById('resultados').appendChild(wrapper);
+}
+
+function parseDateBR(s) {
+  // dd.mm.yyyy
+  if (!s) return 0;
+  const [d,m,y] = (s).split('.');
+  return new Date(`${y}-${m}-${d}`).getTime() || 0;
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────────
+function abrirModal(prot) {
+  const numProt = (prot.Protocolo||'').trim();
+  document.getElementById('modal-title').textContent = 'Protocolo ' + numProt;
+  document.getElementById('modal-sub').textContent =
+    (prot.Assunto||'') + (prot.Complemento ? ' — ' + prot.Complemento : '');
+
+  const trams = (_tramitacoes || [])
+    .filter(t => (t.PROTOCOLO||'').trim() === numProt)
+    .slice()
+    .sort((a, b) => {
+      const da = parseDateBR(a.DATA) + ' ' + (a.HORA||'');
+      const db = parseDateBR(b.DATA) + ' ' + (b.HORA||'');
+      // ordena por data+hora crescente
+      const ta = new Date(parseDateBR(a.DATA)).getTime() + horaMs(a.HORA);
+      const tb = new Date(parseDateBR(b.DATA)).getTime() + horaMs(b.HORA);
+      return ta - tb;
+    });
+
+  const mc = document.getElementById('modal-content');
+  if (trams.length === 0) {
+    mc.innerHTML = '<div class="tram-empty">Nenhuma tramitação registrada para este protocolo.</div>';
+  } else {
+    mc.innerHTML = '<div class="tram-timeline">' +
+      trams.map(t => `
+        <div class="tram-item">
+          <div class="tram-date">${formatarData(t.DATA)} &nbsp; ${formatarHora(t.HORA)}</div>
+          <div class="tram-destino">📍 ${(t.DESTINO||'').trim()}</div>
+        </div>
+      `).join('') +
+      '</div>';
+  }
+
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function horaMs(h) {
+  if (!h) return 0;
+  const m = h.match(/(\d+):(\d+)(?::\d+)?\s*(AM|PM)?/i);
+  if (!m) return 0;
+  let hh = parseInt(m[1]), mm = parseInt(m[2]), per = (m[3]||'').toUpperCase();
+  if (per === 'PM' && hh < 12) hh += 12;
+  if (per === 'AM' && hh === 12) hh = 0;
+  return (hh * 60 + mm) * 60000;
+}
+
+function fecharModal(e, force = false) {
+  if (force || (e && e.target === document.getElementById('modal'))) {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') fecharModal(null, true);
+});
+
+// ── UI HELPERS ─────────────────────────────────────────────────────────────
+function mostrarStatus(html) {
+  document.getElementById('status').innerHTML = html;
+}
+
+function mostrarSemResultados(msg) {
+  document.getElementById('resultados').innerHTML = `
+    <div class="no-results">
+      <div class="icon">🔎</div>
+      <p>${msg}</p>
+    </div>
+  `;
+}
+
+function limpar() {
+  document.getElementById('inp-protocolo').value = '';
+  document.getElementById('inp-razao').value = '';
+  document.getElementById('inp-fantasia').value = '';
+  document.getElementById('status').innerHTML = '';
+  document.getElementById('resultados').innerHTML = '';
+}
+
+// ── PRÉ-CARREGAR DADOS AO ABRIR A PÁGINA (background) ─────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  // pré-carrega silenciosamente
+  setTimeout(() => carregarDados().catch(() => {}), 600);
+});
+</script>
+
+</body>
+</html>
