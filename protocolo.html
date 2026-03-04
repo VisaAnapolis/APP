@@ -11,6 +11,7 @@
 
   <!-- Design System CSS (ordem obrigatória) -->
   <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/header-component.css">
   <link rel="stylesheet" href="./css/base.css">
   <link rel="stylesheet" href="./css/components.css">
   <link rel="stylesheet" href="./css/layouts.css">
@@ -172,13 +173,22 @@
     }
     .table-wrap {
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
       border-radius: 8px;
       border: 1px solid var(--line, #dde3ec);
+      /* garante que o wrapper não ultrapasse o container em mobile */
+      max-width: 100%;
     }
     table {
       width: 100%;
+      min-width: 560px; /* força scroll horizontal antes de comprimir demais */
       border-collapse: collapse;
       font-size: 0.875rem;
+    }
+    @media (max-width: 768px) {
+      table { font-size: 0.82rem; }
+      thead th { padding: 9px 10px; }
+      tbody td { padding: 9px 10px; }
     }
     thead tr { background: var(--brand1, #1565c0); color: #fff; }
     thead th {
@@ -223,17 +233,29 @@
       justify-content: center;
       padding: 16px;
     }
+    /* Desktop: descola o overlay da sidebar para o modal ficar centrado na área de conteúdo */
+    @media (min-width: 769px) {
+      .modal-overlay { left: 240px; }
+    }
     .modal-overlay.open { display: flex; }
     .modal {
       background: var(--card, #ffffff);
       border-radius: 14px;
       box-shadow: 0 8px 40px rgba(0,0,0,0.22);
       width: 100%;
-      max-width: 680px;
-      max-height: 88vh;
+      max-width: 640px;
+      max-height: min(88vh, 88dvh);
       display: flex;
       flex-direction: column;
       animation: fadeUp .22s ease;
+    }
+    /* Mobile: garante que o modal cabe na tela com padding do overlay */
+    @media (max-width: 768px) {
+      .modal-overlay { padding: 10px; }
+      .modal {
+        max-height: min(82vh, 82dvh);
+        border-radius: 12px;
+      }
     }
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(24px); }
@@ -242,22 +264,25 @@
     .modal-header {
       background: var(--brand1, #1565c0);
       color: #fff;
-      padding: 16px 20px;
+      padding: 14px 18px;
       border-radius: 14px 14px 0 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-shrink: 0;
     }
-    .modal-header h3 { font-size: 0.97rem; font-weight: 700; }
-    .modal-header .modal-sub { font-size: 0.78rem; opacity: .85; margin-top: 2px; }
+    @media (max-width: 768px) {
+      .modal-header { border-radius: 12px 12px 0 0; padding: 12px 14px; }
+    }
+    .modal-header h3 { font-size: 1rem; font-weight: 700; }
+    .modal-header .modal-sub { font-size: 0.85rem; opacity: .85; margin-top: 2px; }
     .btn-close {
       background: rgba(255,255,255,0.18);
       border: none;
       color: #fff;
       font-size: 1.2rem;
       border-radius: 50%;
-      width: 32px; height: 32px;
+      width: 36px; height: 36px;
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       transition: background .2s;
@@ -266,8 +291,12 @@
     .btn-close:hover { background: rgba(255,255,255,0.34); }
     .modal-body {
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       padding: 18px 20px;
       flex: 1;
+    }
+    @media (max-width: 768px) {
+      .modal-body { padding: 14px 16px; }
     }
     .tram-timeline {
       position: relative;
@@ -296,17 +325,17 @@
     }
     .tram-item:last-child::before { background: #2e7d32; box-shadow: 0 0 0 2px #2e7d32; }
     .tram-date {
-      font-size: 0.75rem;
+      font-size: 0.82rem;
       color: var(--muted, #6b7280);
       font-weight: 600;
       margin-bottom: 2px;
     }
     .tram-destino {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-weight: 600;
       color: var(--text, #1a1a2e);
     }
-    .tram-empty { color: var(--muted, #6b7280); font-size: 0.88rem; text-align: center; padding: 24px; }
+    .tram-empty { color: var(--muted, #6b7280); font-size: 0.92rem; text-align: center; padding: 24px; }
 
     /* NO RESULTS */
     .no-results {
@@ -459,7 +488,16 @@
 
 <script type="module">
   import { protectPage } from "./js/guard.js";
-  protectPage();
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
+    authDomain:        "visam-3a30b.firebaseapp.com",
+    projectId:         "visam-3a30b",
+    messagingSenderId: "308899251430",
+    appId:             "1:308899251430:web:0053cdbd0bed7f0de76727"
+  };
+
+  protectPage({ firebaseConfig });
 </script>
 <script src="./js/sidebar.js"></script>
 <script src="./js/platform-detector.js"></script>
