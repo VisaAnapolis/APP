@@ -221,173 +221,169 @@
     }
     tr.prot-row:hover td:first-child { text-decoration: underline; }
 
-    /* MODAL TRAMITAÇÕES */
-   /* ══════════════════════════════════════════════════
-     MODAL TRAMITAÇÕES — CSS definitivo
-     Regra única por seletor, sem duplicatas.
-     O overlay cobre inset:0 mas NÃO tem padding-left
-     para compensar sidebar — a sidebar fica por baixo.
-  ══════════════════════════════════════════════════ */
+    /* ══════════════════════════════════════════════════
+       MODAL TRAMITAÇÕES — Namespace próprio (tram-modal-*)
+       Evita conflito com .modal / .modal-header / .modal-body
+       definidos em components.css
+    ══════════════════════════════════════════════════ */
 
-  /* Overlay: cobre tudo, centraliza o modal */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.52);
-    z-index: 9999;
-    align-items: center;
-    justify-content: center;
-    /* padding uniforme + respeita notch/home-bar */
-    padding: 20px;
-    padding-top:    max(20px, env(safe-area-inset-top));
-    padding-bottom: max(20px, env(safe-area-inset-bottom));
-    box-sizing: border-box;
-  }
-  .modal-overlay.open { display: flex; }
+    /* Overlay: cobre tudo, centraliza o modal */
+    .tram-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.52);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      padding-top:    max(16px, env(safe-area-inset-top));
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      box-sizing: border-box;
+    }
+    .tram-modal-overlay.open { display: flex; }
 
-  /* Caixa do modal */
-  .modal {
-    position: relative;
-    background: var(--card, #ffffff);
-    border-radius: 14px;
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.28);
-    /* largura: máximo 600px, nunca >90% da viewport */
-    width: 90vw;
-    max-width: 600px;
-    /* altura: cresce com o conteúdo, limitada pela tela */
-    max-height: 85vh;
-    display: flex;
-    flex-direction: column;
-    animation: fadeUp .22s ease;
-    /* garante que não estica verticalmente */
-    overflow: hidden;
-    align-self: center;
-  }
+    /* Caixa do modal — largura se adapta ao conteúdo */
+    .tram-modal-box {
+      position: relative;
+      background: var(--card, #ffffff);
+      border-radius: 14px;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.28);
+      width: min(540px, calc(100vw - 32px));
+      max-height: calc(100vh - 32px);
+      max-height: calc(100dvh - 32px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: tramFadeUp .22s ease;
+      box-sizing: border-box;
+    }
 
- @media (max-width: 540px) {
-  .modal-overlay {
-    padding: 10px;
-    align-items: center;
-    justify-content: center;
-  }
-  .modal {
-    width: 92vw;
-    max-width: 92vw;
-    max-height: 85vh;
-    overflow: hidden;
-  }
-}
+    @keyframes tramFadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
 
+    /* Cabeçalho — texto quebra linha em vez de vazar */
+    .tram-modal-header {
+      background: var(--brand1, #1565c0);
+      color: #fff;
+      padding: 14px 18px;
+      border-radius: 14px 14px 0 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-shrink: 0;
+      gap: 12px;
+    }
+    .tram-modal-header-text {
+      min-width: 0;
+      flex: 1;
+    }
+    .tram-modal-header-text h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin: 0;
+      /* permite quebra — evita overflow em telas estreitas */
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+    .tram-modal-header-text .tram-modal-sub {
+      font-size: 0.82rem;
+      opacity: .85;
+      margin-top: 3px;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+    /* Botão fechar */
+    .tram-modal-close {
+      background: rgba(255, 255, 255, 0.18);
+      border: none;
+      color: #fff;
+      font-size: 1.2rem;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      min-width: 36px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s;
+      flex-shrink: 0;
+      margin-top: -2px;
+    }
+    .tram-modal-close:hover { background: rgba(255, 255, 255, 0.34); }
 
-  /* Cabeçalho */
-  .modal-header {
-    background: var(--brand1, #1565c0);
-    color: #fff;
-    padding: 14px 18px;
-    border-radius: 14px 14px 0 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
-    gap: 10px;
-  }
-  .modal-header-text { min-width: 0; flex: 1; overflow: hidden; }
-  .modal-header h3 {
-    font-size: 1rem;
-    font-weight: 700;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .modal-header .modal-sub {
-    font-size: 0.82rem;
-    opacity: .85;
-    margin-top: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+    /* Corpo com scroll */
+    .tram-modal-body {
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 18px 20px;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
 
-  /* Botão fechar */
-  .btn-close {
-    background: rgba(255, 255, 255, 0.18);
-    border: none;
-    color: #fff;
-    font-size: 1.2rem;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background .2s;
-    flex-shrink: 0;
-  }
-  .btn-close:hover { background: rgba(255, 255, 255, 0.34); }
+    /* Mobile ≤ 540px — modal mais compacto */
+    @media (max-width: 540px) {
+      .tram-modal-overlay { padding: 10px; }
+      .tram-modal-box {
+        width: calc(100vw - 20px);
+        max-height: calc(100vh - 20px);
+        max-height: calc(100dvh - 20px);
+      }
+      .tram-modal-header { padding: 12px 14px; }
+      .tram-modal-body { padding: 14px 16px; }
+    }
 
-  /* Corpo com scroll */
-  .modal-body {
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 18px 20px;
-    flex: 1;
-    min-height: 0; /* importante para o flex+overflow funcionar */
-  }
-
-  /* Timeline */
-  .tram-timeline {
-    position: relative;
-    padding-left: 28px;
-  }
-  .tram-timeline::before {
-    content: '';
-    position: absolute;
-    left: 10px; top: 6px; bottom: 6px;
-    width: 2px;
-    background: var(--line, #dde3ec);
-  }
-  .tram-item {
-    position: relative;
-    margin-bottom: 16px;
-  }
-  .tram-item::before {
-    content: '';
-    position: absolute;
-    left: -22px; top: 6px;
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--brand1, #1565c0);
-    border: 2px solid #fff;
-    box-shadow: 0 0 0 2px var(--brand1, #1565c0);
-  }
-  .tram-item:last-child::before {
-    background: #2e7d32;
-    box-shadow: 0 0 0 2px #2e7d32;
-  }
-  .tram-date {
-    font-size: 0.82rem;
-    color: var(--muted, #6b7280);
-    font-weight: 600;
-    margin-bottom: 2px;
-  }
-  .tram-destino {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--text, #1a1a2e);
-  }
-  .tram-empty {
-    color: var(--muted, #6b7280);
-    font-size: 0.92rem;
-    text-align: center;
-    padding: 24px;
-  }
+    /* Timeline */
+    .tram-timeline {
+      position: relative;
+      padding-left: 28px;
+    }
+    .tram-timeline::before {
+      content: '';
+      position: absolute;
+      left: 10px; top: 6px; bottom: 6px;
+      width: 2px;
+      background: var(--line, #dde3ec);
+    }
+    .tram-item {
+      position: relative;
+      margin-bottom: 16px;
+    }
+    .tram-item::before {
+      content: '';
+      position: absolute;
+      left: -22px; top: 6px;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--brand1, #1565c0);
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 2px var(--brand1, #1565c0);
+    }
+    .tram-item:last-child::before {
+      background: #2e7d32;
+      box-shadow: 0 0 0 2px #2e7d32;
+    }
+    .tram-date {
+      font-size: 0.82rem;
+      color: var(--muted, #6b7280);
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .tram-destino {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text, #1a1a2e);
+    }
+    .tram-empty {
+      color: var(--muted, #6b7280);
+      font-size: 0.92rem;
+      text-align: center;
+      padding: 24px;
+    }
 
   /* Sem resultados */
   .no-results {
@@ -523,17 +519,17 @@
   </div><!-- /.main-area -->
 </div><!-- /.app-layout -->
 
-<!-- MODAL TRAMITAÇÕES -->
-<div class="modal-overlay" id="modal" onclick="fecharModal(event)">
-  <div class="modal" id="modal-box">
-    <div class="modal-header">
-      <div class="modal-header-text">
+<!-- MODAL TRAMITAÇÕES (namespace tram-modal-* para evitar conflito com components.css) -->
+<div class="tram-modal-overlay" id="modal" onclick="fecharModal(event)">
+  <div class="tram-modal-box" id="modal-box">
+    <div class="tram-modal-header">
+      <div class="tram-modal-header-text">
         <h3 id="modal-title">Tramitações</h3>
-        <div class="modal-sub" id="modal-sub"></div>
+        <div class="tram-modal-sub" id="modal-sub"></div>
       </div>
-      <button class="btn-close" onclick="fecharModal(null, true)">✕</button>
+      <button class="tram-modal-close" onclick="fecharModal(null, true)">✕</button>
     </div>
-    <div class="modal-body">
+    <div class="tram-modal-body">
       <div id="modal-content"></div>
     </div>
   </div>
@@ -795,8 +791,10 @@ function parseDateBR(s) {
 function abrirModal(prot) {
   const numProt = (prot.Protocolo||'').trim();
   document.getElementById('modal-title').textContent = 'Protocolo ' + numProt;
+  const assunto = (prot.Assunto||'').trim();
+  const compl   = (prot.Complemento||'').trim();
   document.getElementById('modal-sub').textContent =
-    (prot.Assunto||'') + (prot.Complemento ? ' — ' + prot.Complemento : '');
+    assunto + (compl ? ' — ' + compl : '');
 
   const trams = (_tramitacoes || [])
     .filter(t => (t.PROTOCOLO||'').trim() === numProt)
