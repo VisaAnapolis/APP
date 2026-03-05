@@ -7,7 +7,7 @@
 // antigas do app, especialmente em PWAs no iOS e Android.
 // ============================================================
 
-const CACHE_NAME = 'visa-v2.2.9';
+const CACHE_NAME = 'visa-v2.4.9';
 
 // Assume controle imediatamente, sem aguardar abas serem fechadas
 self.addEventListener('install', () => self.skipWaiting());
