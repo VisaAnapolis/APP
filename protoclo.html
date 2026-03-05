@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Consulta de Protocolos - CVS Vigilância Sanitária</title>
+
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/header-component.css">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/layouts.css">
+  <link rel="stylesheet" href="./css/sidebar.css">
+
+  <style>
+    /* ─── Dark mode overrides ─── */
+    @media (prefers-color-scheme: dark) {
+      .filter-group input {
+        background: var(--surface-variant) !important;
+        color: var(--text-primary) !important;
+        border-color: var(--border-primary) !important;
+      }
+      .btn-secondary { background: #48484a !important; color: #fff !important; }
+      .btn-secondary:hover { background: #636366 !important; }
+      .regulado-header { background: rgba(255,255,255,0.03); }
+      .tram-inline-content { background: rgba(255,255,255,0.04); }
+      .aviso-max { background: rgba(237,137,54,0.12); border-color: rgba(237,137,54,0.3); }
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+
+    body.modal-open { overflow: hidden; }
+
+    .container { max-width: 1100px; margin: 0 auto 30px; padding: 0 16px; }
+
+    /* ─── Card base ─── */
+    .card {
+      background: var(--card, #ffffff);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow2);
+      border: 1px solid var(--line, #e2e8f0);
+      overflow: hidden;
+    }
+
+    .card h3 {
+      margin: 0 0 16px;
+      color: var(--brand1);
+      padding-left: 10px;
+      border-left: 6px solid var(--brand1);
+    }
+
+    /* ─── Busca ─── */
+    .filter-group { display: flex; flex-direction: column; }
+
+    .filter-group label {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      font-size: 0.9em;
+    }
+
+    .filter-group input {
+      padding: 12px 16px;
+      border: 1px solid #ccd6e0;
+      border-radius: 8px;
+      font-size: 1em;
+      transition: all 0.2s;
+      width: 100%;
+      background: var(--card, #fff);
+      color: var(--text-primary);
+    }
+
+    .filter-group input:focus {
+      outline: none;
+      border-color: var(--brand1);
+      box-shadow: 0 0 0 3px rgba(26, 58, 107, 0.1);
+    }
+
+    .btn-container { display: flex; gap: 12px; margin-top: 16px; }
+
+    .btn {
+      padding: 11px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary { background: var(--brand1); color: white; }
+    .btn-primary:hover { background: #2c5aa0; }
+    .btn-secondary { background: #6c757d; color: white; }
+    .btn-secondary:hover { background: #5a6268; }
+
+    /* ─── Barra de status ─── */
+    .cache-info {
+      display: flex;
+      align-items: center;
+      padding: 10px 14px;
+      background: rgba(26, 58, 107, 0.05);
+      border-radius: 8px;
+      font-size: 0.88em;
+      margin-bottom: 16px;
+    }
+
+    .cache-info span { color: var(--brand1); font-weight: 600; }
+
+    /* ─── Estados ─── */
+    .loading { text-align: center; padding: 40px; color: var(--brand1); font-size: 1.1em; }
+    .no-results { text-align: center; padding: 40px; color: var(--text-secondary); font-size: 1em; }
+
+    .aviso-max {
+      background: rgba(237, 137, 54, 0.08);
+      border: 1px solid rgba(237, 137, 54, 0.35);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.88em;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    /* ─── Card de resultado ─── */
+    .resultado-card { padding: 0; }
+
+    .regulado-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line, #e2e8f0);
+      background: rgba(26, 58, 107, 0.03);
+    }
+
+    .regulado-info { flex: 1; min-width: 0; }
+
+    .regulado-razao {
+      font-size: 1.05em;
+      font-weight: 700;
+      color: var(--brand1);
+      margin: 0 0 4px;
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    .regulado-fantasia {
+      font-size: 0.88em;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      font-style: italic;
+    }
+
+    .regulado-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 20px;
+      font-size: 0.84em;
+      color: var(--text-secondary);
+    }
+
+    .meta-item strong { color: var(--text-primary); font-weight: 600; }
+
+    .badge-count {
+      flex-shrink: 0;
+      background: rgba(26, 58, 107, 0.1);
+      color: var(--brand1);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.8em;
+      font-weight: 700;
+      white-space: nowrap;
+      align-self: flex-start;
+    }
+
+    /* ─── Tabelas ─── */
+    .table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--card, #fff);
+      table-layout: fixed;
+    }
+
+    thead { background: var(--brand1); color: white; }
+
+    th {
+      padding: 12px 14px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.88em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line, #eee);
+      font-size: 0.9em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Tabela de protocolos — larguras de colunas */
+    .protocolos-table { min-width: 480px; }
+    .protocolos-table th:nth-child(1),
+    .protocolos-table td:nth-child(1) { width: 110px; }
+    .protocolos-table th:nth-child(2),
+    .protocolos-table td:nth-child(2) { width: 120px; }
+    .protocolos-table th:nth-child(3),
+    .protocolos-table td:nth-child(3) {
+      width: auto;
+      white-space: normal;
+      word-break: break-word;
+      overflow: visible;
+    }
+    .protocolos-table th:nth-child(4),
+    .protocolos-table td:nth-child(4) { width: 44px; text-align: center; }
+
+    .protocolo-row { cursor: pointer; transition: background 0.15s; }
+    .protocolo-row:hover  { background: var(--surface-variant); }
+    .protocolo-row.active { background: rgba(26, 58, 107, 0.08); }
+    .protocolo-destaque   { background: rgba(0, 188, 212, 0.07); }
+    .protocolo-destaque.active { background: rgba(26, 58, 107, 0.1); }
+
+    .th-action { width: 44px; }
+    .td-action { text-align: center; }
+
+    .chevron {
+      font-size: 0.8em;
+      color: var(--text-secondary);
+      display: inline-block;
+      user-select: none;
+    }
+
+    /* ─── Accordion tramitações (mobile) ─── */
+    .tram-inline-row { display: none; }
+    .tram-inline-row.open { display: table-row; }
+
+    .tram-inline-content {
+      padding: 12px 8px;
+      background: var(--surface-variant, #f7f8fa);
+    }
+
+    .tram-info-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    /* Tabela de tramitações — larguras de colunas */
+    .tram-table { min-width: 360px; }
+    .tram-table thead { background: rgba(26, 58, 107, 0.75); }
+    .tram-table th:nth-child(1),
+    .tram-table td:nth-child(1) { width: 105px; }
+    .tram-table th:nth-child(2),
+    .tram-table td:nth-child(2) { width: 65px; }
+    .tram-table th:nth-child(3),
+    .tram-table td:nth-child(3) {
+      width: auto;
+      white-space: normal;
+      word-break: break-word;
+      overflow: visible;
+    }
+
+    .no-tram { padding: 16px; color: var(--text-secondary); font-size: 0.9em; }
+
+    /* ─── Modal (desktop) ─── */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      overflow-y: auto;
+      animation: fadeIn 0.25s;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal-content {
+      background: var(--card, #fff);
+      margin: 50px auto;
+      width: 90%;
+      max-width: 720px;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-height: 85vh;
+      overflow: hidden;
+      animation: slideIn 0.25s;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(-40px); opacity: 0; }
+      to   { transform: translateY(0);     opacity: 1; }
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, var(--brand1), var(--brand2));
+      color: white;
+      padding: 22px 24px;
+      position: relative;
+    }
+
+    .modal-header h2 { margin: 0; font-size: 1.3em; }
+
+    .close {
+      position: absolute;
+      right: 18px; top: 16px;
+      color: white;
+      font-size: 2em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s;
+      -webkit-tap-highlight-color: transparent;
+      line-height: 1;
+    }
+
+    .close:hover { transform: rotate(90deg) scale(1.2); }
+
+    .modal-body {
+      padding: 20px 24px;
+      max-height: calc(85vh - 160px);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* ─── Responsivo ─── */
+    @media (max-width: 767px) {
+      .container { padding: 0 12px; }
+      .card { border-radius: 8px; }
+      .btn-container { flex-direction: column; }
+      .btn { width: 100%; }
+      .regulado-header { flex-direction: column; gap: 8px; }
+      .badge-count { align-self: flex-start; }
+      .regulado-meta { flex-direction: column; gap: 4px; }
+    }
+  </style>
+</head>
+
+<body class="with-sidebar">
+  <div class="app-layout">
+
+    <!-- ════════════ SIDEBAR ════════════ -->
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Menu principal">
+      <div class="sidebar__header">
+        <div class="sidebar__logo" style="background:none;">
+          <img src="icons/visa.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;" alt="VISA">
+        </div>
+        <div>
+          <div class="sidebar__app-name">Vigilância Sanitária</div>
+          <div class="sidebar__app-sub">Anápolis – GO</div>
+        </div>
+      </div>
+      <nav class="sidebar__nav">
+        <a class="visa-nav-item" href="index.html"><span class="nav-icon">🗂️</span> Dashboard</a>
+        <div class="nav-section-label">Operacional</div>
+        <a class="visa-nav-item" href="os.html"><span class="nav-icon">📋</span> OS</a>
+        <a class="visa-nav-item" href="alvara.html"><span class="nav-icon">🏦</span> Alvarás</a>
+        <a class="visa-nav-item" href="cvs.html"><span class="nav-icon">🏪</span> Regulados</a>
+        <a class="visa-nav-item active" href="protocolo.html"><span class="nav-icon">🔍</span> Protocolos</a>
+        <div class="nav-section-label">Relatórios</div>
+        <a class="visa-nav-item" href="rmpf.html"><span class="nav-icon">📚</span> RMPF</a>
+        <a class="visa-nav-item" href="inspecoes.html"><span class="nav-icon">👁️</span> Inspeções</a>
+        <a class="visa-nav-item" href="relatorio_plantao_fiscal.html"><span class="nav-icon">📈</span> Ocorrências</a>
+        <a class="visa-nav-item" href="indicadores.html"><span class="nav-icon">📊</span> Indicadores</a>
+        <a class="visa-nav-item" href="comply.html"><span class="nav-icon">🛡️</span> Compliance</a>
+        <div class="nav-section-label">Escala</div>
+        <a class="visa-nav-item" href="plantao.html"><span class="nav-icon">📅</span> Plantão Fiscal</a>
+        <a class="visa-nav-item" href="veiculos.html"><span class="nav-icon">🚗</span> Veículos</a>
+        <a class="visa-nav-item" href="ferias.html"><span class="nav-icon">🏖️</span> Férias</a>
+        <div class="nav-section-label">Referência</div>
+        <a class="visa-nav-item" href="legislacao.html"><span class="nav-icon">📜</span> Legislação</a>
+        <a class="visa-nav-item" href="pop.html"><span class="nav-icon">🎯</span> POPs da VISA</a>
+        <a class="visa-nav-item" href="check.html"><span class="nav-icon">✅</span> Check Lists</a>
+        <div class="nav-section-label">Distribuição</div>
+        <a class="visa-nav-item" href="areas.html"><span class="nav-icon">🧩</span> Áreas</a>
+        <a class="visa-nav-item" href="cnae.html"><span class="nav-icon">👥</span> CNAEs</a>
+        <a class="visa-nav-item" href="total.html"><span class="nav-icon">🧮</span> Totalização</a>
+        <div class="nav-section-label">Sistema</div>
+        <a class="visa-nav-item" href="admin.html"><span class="nav-icon">⚙️</span> Painel Admin</a>
+        <a class="visa-nav-item" href="mailto:visa@anapolis.go.gov.br"><span class="nav-icon">💡</span> Sugestões</a>
+        <a class="visa-nav-item" href="changelog.html"><span class="nav-icon">📌</span> Novidades da versão</a>
+        <a class="visa-nav-item" href="readme.html"><span class="nav-icon">📄</span> Aviso Institucional</a>
+      </nav>
+      <div class="sidebar__footer">
+        <div class="sidebar__version">
+          <span class="version-badge">v<span id="appVersion"></span></span>
+          <span class="version-date">mar/2026</span>
+        </div>
+      </div>
+    </aside>
+    <!-- ════ FIM SIDEBAR ════ -->
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- ════════════ MAIN AREA ════════════ -->
+    <div class="main-area">
+
+      <!-- TOPBAR (mobile) -->
+      <header class="topbar">
+        <button class="btn-hamburger" onclick="toggleSidebar()" aria-label="Abrir menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="3" y1="6"  x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <span class="topbar__title">Consulta de Protocolos</span>
+      </header>
+
+      <main class="page-content">
+        <div class="page-header">
+          <h1 class="page-title">🔍 Consulta de Protocolos</h1>
+          <p class="page-subtitle">Pesquisa protocolos por número, razão social ou nome de fantasia e acompanhamento de tramitações</p>
+        </div>
+
+        <div class="container">
+
+          <!-- Busca -->
+          <div class="card">
+            <h3>Pesquisar</h3>
+            <div class="filter-group">
+              <label for="campoBusca">Nº do protocolo, razão social ou nome de fantasia:</label>
+              <input type="search" id="campoBusca"
+                     placeholder="Ex: 20220015  ou  FARMÁCIA CENTRAL"
+                     autocomplete="off" autocorrect="off" spellcheck="false">
+            </div>
+            <div class="btn-container">
+              <button class="btn btn-primary" onclick="executarBusca()">🔍 Buscar</button>
+              <button class="btn btn-secondary" onclick="limparBusca()">🔄 Limpar</button>
+            </div>
+          </div>
+
+          <!-- Barra de status -->
+          <div class="cache-info">
+            <span>💾 <span id="statusMsg">Carregando dados...</span></span>
+          </div>
+
+          <!-- Carregando -->
+          <div id="loadingState" class="loading">Carregando dados, aguarde...</div>
+
+          <!-- Estado inicial -->
+          <div id="initialState" class="no-results" style="display:none;">
+            Digite pelo menos 3 caracteres para pesquisar.
+          </div>
+
+          <!-- Resultados -->
+          <div id="resultsArea"></div>
+
+          <!-- Sem resultados -->
+          <div id="noResults" class="no-results" style="display:none;">
+            Nenhum resultado encontrado.
+          </div>
+
+        </div><!-- /.container -->
+      </main><!-- /.page-content -->
+    </div><!-- /.main-area -->
+  </div><!-- /.app-layout -->
+
+  <!-- Modal de tramitações (desktop) -->
+  <div id="tramModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Tramitações</h2>
+        <span class="close" onclick="fecharModal()">&times;</span>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+  'use strict';
+
+  /* ════════════════════════════════════════
+     Estado global
+  ════════════════════════════════════════ */
+  let dadosProtocolo  = [];
+  let dadosRegulados  = [];
+  let dadosTramitacao = [];
+  let dadosBairros    = [];
+
+  const mapReguladosByCodigo    = new Map(); // codigo → regulado
+  const mapProtocolosByRegulado = new Map(); // codigo → protocolo[]
+  const mapTramitacoesByNumero  = new Map(); // num_protocolo → tramitacao[]
+  const mapBairrosByCodigo      = new Map(); // codigo → bairro
+
+  const LIMITE_RESULTADOS = 50;
+
+  /* ════════════════════════════════════════
+     Utilitários
+  ════════════════════════════════════════ */
+  function limparCodigo(v) {
+    if (!v) return '';
+    return v.toString().replace(/\u00A0/g, '').replace(/\s/g, '').trim();
+  }
+
+  function normalizar(str) {
+    if (!str) return '';
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  }
+
+  function apenasDigitos(s) {
+    return s ? s.toString().replace(/\D/g, '') : '';
+  }
+
+  function escHtml(str) {
+    return String(str ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function formatarData(v) {
+    if (!v) return '-';
+    return v.trim().replace(/\./g, '/');
+  }
+
+  function formatarHora(hora) {
+    if (!hora) return '';
+    const m = hora.match(/(\d+):(\d+)(?::\d+)?\s*(AM|PM)?/i);
+    if (!m) return hora;
+    let h = parseInt(m[1]);
+    const min = m[2];
+    const ap = (m[3] || '').toUpperCase();
+    if (ap === 'PM' && h !== 12) h += 12;
+    if (ap === 'AM' && h === 12) h = 0;
+    return `${String(h).padStart(2, '0')}:${min}`;
+  }
+
+  function parseDateTime(data, hora) {
+    if (!data) return new Date(0);
+    const p = data.trim().split('.');
+    if (p.length !== 3) return new Date(0);
+    let h = 0, min = 0, sec = 0;
+    if (hora) {
+      const m = hora.match(/(\d+):(\d+):(\d+)\s*(AM|PM)?/i);
+      if (m) {
+        h = parseInt(m[1]); min = parseInt(m[2]); sec = parseInt(m[3]);
+        const ap = (m[4] || '').toUpperCase();
+        if (ap === 'PM' && h !== 12) h += 12;
+        if (ap === 'AM' && h === 12) h = 0;
+      }
+    }
+    return new Date(parseInt(p[2]), parseInt(p[1]) - 1, parseInt(p[0]), h, min, sec);
+  }
+
+  function formatarDocumento(reg) {
+    if (!reg) return '-';
+    const cgcD = apenasDigitos(reg.cgc || '');
+    if (cgcD.length === 14) return cgcD.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+    if (cgcD.length === 11) return cgcD.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    const cpfD = apenasDigitos(reg.cpf || '');
+    if (cpfD.length === 11) return cpfD.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    if (cpfD.length > 0) return reg.cpf || '-';
+    return reg.cgc || '-';
+  }
+
+  function formatarEndereco(reg) {
+    const partes = [];
+    if (reg.logradouro) partes.push(reg.logradouro.trim());
+    if (reg.complement)  partes.push(reg.complement.trim());
+    const bairro = mapBairrosByCodigo.get(limparCodigo(reg.cdbai));
+    if (bairro && bairro.nome) partes.push(bairro.nome.trim());
+    if (reg.cep) partes.push(`CEP ${reg.cep.trim()}`);
+    return partes.filter(Boolean).join(', ') || '-';
+  }
+
+  /* ════════════════════════════════════════
+     Leitor de CSV (semicolon, quoted fields)
+  ════════════════════════════════════════ */
+  async function carregarCSV(arquivo) {
+    try {
+      const resp  = await fetch(arquivo);
+      const texto = await resp.text();
+      const linhas = texto.split('\n');
+
+      const cabecalho = linhas[0].split(';').map(c =>
+        c.replace(/"/g, '').replace(/\uFEFF/g, '').trim().toLowerCase()
+      );
+
+      const dados = [];
+      for (let i = 1; i < linhas.length; i++) {
+        const linha = linhas[i];
+        if (!linha.trim()) continue;
+
+        const valores = [];
+        let emAspas = false, atual = '';
+        for (const ch of linha) {
+          if (ch === '"') { emAspas = !emAspas; }
+          else if (ch === ';' && !emAspas) { valores.push(atual.trim()); atual = ''; }
+          else { atual += ch; }
+        }
+        valores.push(atual.trim());
+
+        const obj = {};
+        cabecalho.forEach((campo, idx) => {
+          let val = valores[idx] ? valores[idx].replace(/"/g, '').trim() : '';
+          if (campo === 'codigo' || campo === 'cdbai') val = limparCodigo(val);
+          obj[campo] = val;
+        });
+        dados.push(obj);
+      }
+      return dados;
+    } catch (e) {
+      console.error(`Erro ao carregar ${arquivo}:`, e);
+      return [];
+    }
+  }
+
+  /* ════════════════════════════════════════
+     Inicialização
+  ════════════════════════════════════════ */
+  async function inicializar() {
+    const loadingEl = document.getElementById('loadingState');
+    const statusMsg = document.getElementById('statusMsg');
+    const initialEl = document.getElementById('initialState');
+
+    [dadosRegulados, dadosProtocolo, dadosTramitacao, dadosBairros] = await Promise.all([
+      carregarCSV('data/regulados.csv'),
+      carregarCSV('data/protocolo.csv'),
+      carregarCSV('data/tramitacao.csv'),
+      carregarCSV('data/bairros.csv'),
+    ]);
+
+    // Índice: regulados por código
+    for (const r of dadosRegulados) {
+      const cod = r.codigo;
+      if (cod && !mapReguladosByCodigo.has(cod)) mapReguladosByCodigo.set(cod, r);
+    }
+
+    // Índice: protocolos por código do regulado (ordenado por data desc)
+    for (const p of dadosProtocolo) {
+      const cod = p.codigo;
+      if (!cod) continue;
+      if (!mapProtocolosByRegulado.has(cod)) mapProtocolosByRegulado.set(cod, []);
+      mapProtocolosByRegulado.get(cod).push(p);
+    }
+    for (const [, arr] of mapProtocolosByRegulado) {
+      arr.sort((a, b) => parseDateTime(b.data) - parseDateTime(a.data));
+    }
+
+    // Índice: tramitações por número de protocolo (cronológico asc)
+    for (const t of dadosTramitacao) {
+      const num = (t.protocolo || '').trim();
+      if (!num) continue;
+      if (!mapTramitacoesByNumero.has(num)) mapTramitacoesByNumero.set(num, []);
+      mapTramitacoesByNumero.get(num).push(t);
+    }
+    for (const [, arr] of mapTramitacoesByNumero) {
+      arr.sort((a, b) => parseDateTime(a.data, a.hora) - parseDateTime(b.data, b.hora));
+    }
+
+    // Índice: bairros por código
+    for (const b of dadosBairros) {
+      const cod = b.codigo;
+      if (cod) mapBairrosByCodigo.set(cod, b);
+    }
+
+    loadingEl.style.display = 'none';
+    initialEl.style.display = 'block';
+    statusMsg.textContent   =
+      `${dadosProtocolo.length.toLocaleString('pt-BR')} protocolos · ` +
+      `${dadosRegulados.length.toLocaleString('pt-BR')} regulados carregados`;
+
+    document.getElementById('campoBusca').addEventListener('keydown', e => {
+      if (e.key === 'Enter') executarBusca();
+    });
+  }
+
+  /* ════════════════════════════════════════
+     Busca
+  ════════════════════════════════════════ */
+  function executarBusca() {
+    const query = document.getElementById('campoBusca').value.trim();
+
+    document.getElementById('initialState').style.display = 'none';
+    document.getElementById('noResults').style.display    = 'none';
+    document.getElementById('resultsArea').innerHTML      = '';
+
+    if (query.length < 3) {
+      document.getElementById('initialState').style.display = 'block';
+      return;
+    }
+
+    const resultados = /^\d{4,}$/.test(query)
+      ? buscarPorNumero(query)
+      : buscarPorTexto(query);
+
+    if (resultados.length === 0) {
+      document.getElementById('noResults').style.display = 'block';
+      return;
+    }
+
+    renderizarResultados(resultados);
+  }
+
+  function limparBusca() {
+    document.getElementById('campoBusca').value           = '';
+    document.getElementById('resultsArea').innerHTML      = '';
+    document.getElementById('noResults').style.display   = 'none';
+    document.getElementById('initialState').style.display = 'block';
+    fecharModal();
+  }
+
+  function buscarPorNumero(numero) {
+    const codigosVistos = new Set();
+    const resultados    = [];
+
+    for (const p of dadosProtocolo) {
+      if (!(p.protocolo || '').includes(numero)) continue;
+      const cod = p.codigo;
+      if (!cod || codigosVistos.has(cod)) continue;
+      const regulado = mapReguladosByCodigo.get(cod);
+      if (!regulado) continue;
+      codigosVistos.add(cod);
+      resultados.push({
+        regulado,
+        protocolos: mapProtocolosByRegulado.get(cod) || [],
+        termoNumero: numero,
+      });
+      if (resultados.length >= LIMITE_RESULTADOS) break;
+    }
+
+    return resultados;
+  }
+
+  function buscarPorTexto(texto) {
+    const normalizado   = normalizar(texto);
+    const resultados    = [];
+    const codigosVistos = new Set();
+
+    for (const regulado of dadosRegulados) {
+      const cod = regulado.codigo;
+      if (!cod || codigosVistos.has(cod)) continue;
+
+      const razaoOk    = normalizar(regulado.razao    || '').includes(normalizado);
+      const fantasiaOk = normalizar(regulado.fantasia || '').includes(normalizado);
+      if (!razaoOk && !fantasiaOk) continue;
+
+      const protocolos = mapProtocolosByRegulado.get(cod) || [];
+      if (protocolos.length === 0) continue;
+
+      codigosVistos.add(cod);
+      resultados.push({ regulado, protocolos });
+      if (resultados.length >= LIMITE_RESULTADOS) break;
+    }
+
+    return resultados;
+  }
+
+  /* ════════════════════════════════════════
+     Renderização
+  ════════════════════════════════════════ */
+  function renderizarResultados(resultados) {
+    const area     = document.getElementById('resultsArea');
+    const fragment = document.createDocumentFragment();
+
+    if (resultados.length >= LIMITE_RESULTADOS) {
+      const av = document.createElement('div');
+      av.className   = 'aviso-max';
+      av.textContent =
+        `Mostrando os primeiros ${LIMITE_RESULTADOS} resultados. ` +
+        'Refine a busca para maior precisão.';
+      fragment.appendChild(av);
+    }
+
+    for (const item of resultados) {
+      fragment.appendChild(criarCardRegulado(item));
+    }
+
+    area.appendChild(fragment);
+  }
+
+  function criarCardRegulado({ regulado, protocolos, termoNumero }) {
+    const card     = document.createElement('div');
+    card.className = 'card resultado-card';
+
+    const doc      = formatarDocumento(regulado);
+    const endereco = formatarEndereco(regulado);
+    const razao    = regulado.razao    || '-';
+    const fantasia = regulado.fantasia || '';
+
+    card.innerHTML = `
+      <div class="regulado-header">
+        <div class="regulado-info">
+          <h3 class="regulado-razao">${escHtml(razao)}</h3>
+          ${fantasia ? `<div class="regulado-fantasia">${escHtml(fantasia)}</div>` : ''}
+          <div class="regulado-meta">
+            <span class="meta-item"><strong>CNPJ/CPF:</strong> ${escHtml(doc)}</span>
+            <span class="meta-item"><strong>Endereço:</strong> ${escHtml(endereco)}</span>
+          </div>
+        </div>
+        <span class="badge-count">${protocolos.length} protocolo${protocolos.length !== 1 ? 's' : ''}</span>
+      </div>
+      <div class="table-wrapper">
+        <table class="protocolos-table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Número</th>
+              <th>Assunto</th>
+              <th class="th-action"></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${protocolos.map(p => {
+              const num      = (p.protocolo || '').trim();
+              const destaque = (termoNumero && num.includes(termoNumero)) ? ' protocolo-destaque' : '';
+              return `
+                <tr class="protocolo-row${destaque}" data-protocolo="${escHtml(num)}">
+                  <td>${formatarData(p.data)}</td>
+                  <td><strong>${escHtml(num || '-')}</strong></td>
+                  <td>${escHtml(p.assunto || '-')}</td>
+                  <td class="td-action"><span class="chevron">▼</span></td>
+                </tr>
+                <tr class="tram-inline-row" id="tram-${escHtml(num)}">
+                  <td colspan="4">
+                    <div class="tram-inline-content"></div>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    card.querySelectorAll('.protocolo-row').forEach(row =>
+      row.addEventListener('click', () => toggleTramitacoes(row))
+    );
+
+    return card;
+  }
+
+  /* ════════════════════════════════════════
+     Tramitações
+  ════════════════════════════════════════ */
+  function toggleTramitacoes(row) {
+    const numero = row.dataset.protocolo;
+    if (!numero) return;
+
+    if (window.matchMedia('(max-width: 767px)').matches) {
+      toggleAccordion(row, numero);
+    } else {
+      abrirModal(numero);
+    }
+  }
+
+  function toggleAccordion(row, numero) {
+    const inlineRow = document.getElementById(`tram-${numero}`);
+    if (!inlineRow) return;
+
+    const content = inlineRow.querySelector('.tram-inline-content');
+    const chevron = row.querySelector('.chevron');
+    const isOpen  = inlineRow.classList.contains('open');
+
+    // Fechar outros accordions abertos
+    document.querySelectorAll('.tram-inline-row.open').forEach(r => {
+      if (r === inlineRow) return;
+      r.classList.remove('open');
+      const c = r.querySelector('.tram-inline-content');
+      if (c) c.innerHTML = '';
+      const prev = r.previousElementSibling;
+      if (prev) {
+        prev.classList.remove('active');
+        const ch = prev.querySelector('.chevron');
+        if (ch) ch.textContent = '▼';
+      }
+    });
+
+    if (isOpen) {
+      inlineRow.classList.remove('open');
+      content.innerHTML = '';
+      row.classList.remove('active');
+      if (chevron) chevron.textContent = '▼';
+    } else {
+      const tramitacoes = mapTramitacoesByNumero.get(numero) || [];
+      content.innerHTML = renderizarTabelaTramitacoes(tramitacoes, numero);
+      inlineRow.classList.add('open');
+      row.classList.add('active');
+      if (chevron) chevron.textContent = '▲';
+      setTimeout(() => inlineRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+    }
+  }
+
+  function abrirModal(numero) {
+    const tramitacoes = mapTramitacoesByNumero.get(numero) || [];
+    document.getElementById('modalTitle').textContent  = `Tramitações — Protocolo ${numero}`;
+    document.getElementById('modalBody').innerHTML     = renderizarTabelaTramitacoes(tramitacoes, numero);
+    document.getElementById('tramModal').style.display = 'block';
+    document.body.classList.add('modal-open');
+  }
+
+  function fecharModal() {
+    document.getElementById('tramModal').style.display = 'none';
+    document.body.classList.remove('modal-open');
+  }
+
+  function renderizarTabelaTramitacoes(tramitacoes, numero) {
+    if (tramitacoes.length === 0) {
+      return `<p class="no-tram">Nenhuma tramitação registrada para o protocolo ${escHtml(numero)}.</p>`;
+    }
+
+    return `
+      <div class="tram-info-header">
+        <span class="badge-count">
+          ${tramitacoes.length} tramitaç${tramitacoes.length !== 1 ? 'ões' : 'ão'}
+        </span>
+      </div>
+      <div class="table-wrapper">
+        <table class="tram-table">
+          <thead>
+            <tr><th>Data</th><th>Hora</th><th>Destino</th></tr>
+          </thead>
+          <tbody>
+            ${tramitacoes.map(t => `
+              <tr>
+                <td>${formatarData(t.data)}</td>
+                <td>${formatarHora(t.hora)}</td>
+                <td>${escHtml(t.destino || '-')}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  /* ════════════════════════════════════════
+     Eventos do modal
+  ════════════════════════════════════════ */
+  (function setupModal() {
+    const modal   = document.getElementById('tramModal');
+    const content = modal.querySelector('.modal-content');
+
+    modal.addEventListener('click',
+      e => { if (e.target === modal) fecharModal(); }, { passive: true });
+    modal.addEventListener('touchstart',
+      e => { if (e.target === modal) fecharModal(); }, { passive: true });
+    content.addEventListener('click',      e => e.stopPropagation());
+    content.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
+    document.addEventListener('keydown',   e => { if (e.key === 'Escape') fecharModal(); });
+  })();
+
+  window.addEventListener('DOMContentLoaded', inicializar);
+  </script>
+
+  <script src="./js/sidebar.js"></script>
+  <script src="./js/version.js"></script>
+
+</body>
+</html>
