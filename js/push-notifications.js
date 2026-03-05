@@ -62,12 +62,15 @@ export async function obterTokenFCMSilencioso(firebaseApp) {
 /**
  * Inicializa o Firebase Messaging e registra o token FCM do usuário.
  *
- * @param {object} firebaseApp  - Instância já inicializada do Firebase App
- * @param {string} userEmail    - E-mail do usuário autenticado (chave do doc no Firestore)
+ * @param {object} firebaseApp      - Instância já inicializada do Firebase App
+ * @param {string} userEmail        - E-mail do usuário autenticado (chave do doc no Firestore)
  * @param {boolean|null} userOptedIn - true = aceitou, false = recusou, null = silencioso
+ * @param {string|null} chaveDispositivo - Chave do dispositivo atual (ex: "windows11_chrome_1920_1080").
+ *   Quando fornecida, o token antigo deste dispositivo é removido do array (trata rotação de token)
+ *   e dispositivos[chave].fcmToken é atualizado atomicamente.
  * @returns {Promise<string|null>} Token FCM ou null em caso de falha/negação
  */
-export async function initPushNotifications(firebaseApp, userEmail, userOptedIn) {
+export async function initPushNotifications(firebaseApp, userEmail, userOptedIn, chaveDispositivo = null) {
   try {
     // Verifica suporte do navegador
     if (!('Notification' in window)) {
@@ -89,7 +92,7 @@ export async function initPushNotifications(firebaseApp, userEmail, userOptedIn)
     // Importa módulos Firebase dinamicamente (mesma versão do projeto)
     const { getMessaging, getToken, onMessage } =
       await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js');
-    const { getFirestore, doc, setDoc } =
+    const { getFirestore, doc, setDoc, updateDoc } =
       await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
 
     // Resolve o path do SW dinamicamente (funciona em qualquer subpath/domínio)
@@ -134,11 +137,10 @@ export async function initPushNotifications(firebaseApp, userEmail, userOptedIn)
     const emailKey = (userEmail || '').toLowerCase().trim();
 
     if (emailKey) {
-      const updateData = {
-        // arrayUnion via setDoc+merge não é suportado diretamente;
-        // usamos getDoc + spread manual para garantir deduplicação
-        fcmTokens: await _mergeToken(db, emailKey, token)
-      };
+      // Remove token antigo do dispositivo (rotação) e retorna array limpo
+      const novosFcm = await _mergeToken(db, emailKey, token, chaveDispositivo);
+
+      const updateData = { fcmTokens: novosFcm };
 
       // Só grava notificationOptIn se foi explicitamente true/false (modal)
       if (userOptedIn === true || userOptedIn === false) {
@@ -146,7 +148,18 @@ export async function initPushNotifications(firebaseApp, userEmail, userOptedIn)
       }
 
       await setDoc(doc(db, 'usuarios', emailKey), updateData, { merge: true });
-      console.log('[Push] Token salvo no Firestore para:', emailKey);
+
+      // Vincula token ao dispositivo atomicamente (evita chamada separada em index.html)
+      if (chaveDispositivo) {
+        try {
+          await updateDoc(doc(db, 'usuarios', emailKey), {
+            [`dispositivos.${chaveDispositivo}.fcmToken`]: token
+          });
+        } catch (_) { /* documento pode não existir ainda — ignorado */ }
+      }
+
+      console.log('[Push] Token salvo no Firestore para:', emailKey,
+        chaveDispositivo ? '| dispositivo: ' + chaveDispositivo : '');
     }
 
     // Listener para mensagens com app em foreground (aba ativa)
@@ -165,16 +178,27 @@ export async function initPushNotifications(firebaseApp, userEmail, userOptedIn)
 
 /**
  * Lê os tokens existentes do Firestore e retorna o array atualizado (sem duplicatas).
- * Substitui arrayUnion, que não funciona com setDoc+merge de forma confiável
- * quando o documento pode não existir ainda.
+ * Quando chaveDispositivo é fornecida, remove o token antigo desse dispositivo antes
+ * de adicionar o novo — trata corretamente a rotação de token do FCM.
  */
-async function _mergeToken(db, emailKey, novoToken) {
+async function _mergeToken(db, emailKey, novoToken, chaveDispositivo = null) {
   try {
     const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
     const snap = await getDoc(doc(db, 'usuarios', emailKey));
-    const tokensExistentes = snap.exists() ? (snap.data().fcmTokens || []) : [];
-    if (tokensExistentes.includes(novoToken)) return tokensExistentes;
-    return [...tokensExistentes, novoToken];
+    const data = snap.exists() ? snap.data() : {};
+    let tokens = data.fcmTokens || [];
+
+    // Remove token antigo deste dispositivo (rotação): evita acúmulo de tokens obsoletos
+    if (chaveDispositivo) {
+      const tokenAntigo = data.dispositivos?.[chaveDispositivo]?.fcmToken || null;
+      if (tokenAntigo && tokenAntigo !== novoToken) {
+        tokens = tokens.filter(t => t !== tokenAntigo);
+        console.log('[Push] Token antigo do dispositivo removido:', tokenAntigo.substring(0, 20) + '...');
+      }
+    }
+
+    if (tokens.includes(novoToken)) return tokens;
+    return [...tokens, novoToken];
   } catch (_) {
     return [novoToken];
   }
