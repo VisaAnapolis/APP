@@ -182,6 +182,18 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.4.9 — 05/03/2026 01:20 (Horário de Brasília – UTC−3)</h3>
+  <strong>Vinculação imediata de token FCM ao dispositivo + limpeza de tokens órfãos</strong>
+  <ul>
+    <li><strong>Vinculação imediata após opt-in:</strong> quando o usuário aceita notificações, a função <code>initPushNotifications()</code> retorna o token e agora ele é <strong>imediatamente salvo</strong> em <code>dispositivos[chave].fcmToken</code> via nova função <code>_vincularTokenAoDispositivo()</code>. Antes o vínculo só era feito na próxima carga de página via <code>obterTokenFCMSilencioso()</code>, que falha em iOS PWA — resultando em dispositivos com <em>❌ Sem token</em> permanentemente. Este fix elimina o problema para todos os logins futuros.</li>
+    <li><strong>Exibição do token no modal do admin:</strong> no painel administrativo, modal <em>Dispositivos</em> agora exibe o início do token (24 caracteres truncados) abaixo de <em>✅ Ativo</em>, permitindo que o admin confirme visualmente se o vínculo foi feito com sucesso. Ex: <code>cDw3ZEphIDG6-bFB19U2ZB…</code></li>
+    <li><strong>Limpeza de tokens órfãos no clean.html:</strong> nova operação <em>② Associar tokens órfãos a dispositivos</em> identifica tokens que existem em <code>fcmTokens</code> mas não estão vinculados a nenhum dispositivo, e distribui 1 token por dispositivo sem token, ordenado por <code>ultimoAcesso</code> (mais recente primeiro). Tokens excedentes são descartados. Inclui modo dry-run para revisão antes de aplicar.</li>
+    <li><strong>Invalidação de cache alinhada:</strong> service worker cache bumped de <code>visa-v2.2.9</code> para <code>visa-v2.4.9</code>, garantindo sincronismo com versão do app.</li>
+  </ul>
+  <p><strong>Arquivos modificados:</strong> <code>index.html</code> — nova função <code>_vincularTokenAoDispositivo()</code>, chamada após cada <code>initPushNotifications()</code> (3 call sites); <code>admin.html</code> — exibição de token truncado no modal dispositivos; <code>clean.html</code> — nova operação ② de associação de tokens órfãos com dry-run; <code>service-worker.js</code> — CACHE_NAME visa-v2.4.9; <code>js/version.js</code> — APP_VERSION 2.4.9; <code>changelog.html</code> — esta entrada.</p>
+</div>
+
+<div class="section">
   <h3>v2.4.8 — 05/03/2026 0:30 (Horário de Brasília – UTC−3)</h3>
   <strong>Vinculação de tokens FCM aos dispositivos + exibição de status push no painel admin</strong>
   <ul>
