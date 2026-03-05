@@ -168,6 +168,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // Marca item ativo automaticamente
+  // Marca item ativo e rola sidebar até ele (desktop: sidebar sempre visível)
   markActiveNavItem();
+  var sEl = document.getElementById('sidebar');
+  var itemAtivo = sEl && sEl.querySelector('.visa-nav-item.active');
+  if (sEl && itemAtivo) itemAtivo.scrollIntoView({ block: 'center' });
 });
