@@ -2612,12 +2612,12 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
 
           // Gera chave única para este dispositivo (SO + navegador + resolução)
           try {
-            const dadosDispositivo = coletarDadosDispositivo();
-            const chaveDispositivo = [
-              (dadosDispositivo.sistemaOperacional || 'desconhecido').toLowerCase().replace(/[^a-z0-9]/g, ''),
-              (dadosDispositivo.navegador || 'desconhecido').toLowerCase().replace(/[^a-z0-9]/g, ''),
-              (dadosDispositivo.resolucao || '0x0').replace('x', '_')
-            ].join('_');
+   const chaveDispositivo = [
+  (dadosDispositivo.sistemaOperacional || 'desconhecido').toLowerCase().replace(/[^a-z0-9]/g, ''),
+  (dadosDispositivo.navegador          || 'desconhecido').toLowerCase().replace(/[^a-z0-9]/g, ''),
+  (dadosDispositivo.fabricante         || 'desconhecido').toLowerCase().replace(/[^a-z0-9]/g, ''),
+  (dadosDispositivo.modelo             || 'desconhecido').toLowerCase().replace(/[^a-z0-9]/g, '')
+].join('_');
 
             const registroDispositivo = {
               appVersionLast: (typeof APP_VERSION !== 'undefined' ? APP_VERSION : ''),
