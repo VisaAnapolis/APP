@@ -700,16 +700,27 @@ async function pesquisar() {
     return;
   }
 
+  const regsComProtocolo = regs.filter(reg => {
+    const cod = (reg.CODIGO||'').trim();
+    return _protocolos.some(p => (p.Codigo||'').trim() === cod);
+  });
+
+  if (regsComProtocolo.length === 0) {
+    mostrarStatus('');
+    mostrarSemResultados('Nenhum regulado encontrado com protocolos para o critério informado.');
+    return;
+  }
+
   mostrarStatus('');
   const frag = document.createDocumentFragment();
-  regs.slice(0, 30).forEach(reg => {
+  regsComProtocolo.slice(0, 30).forEach(reg => {
     const cod = (reg.CODIGO||'').trim();
     const prots = _protocolos.filter(p => (p.Codigo||'').trim() === cod);
     const el = renderizarResultado(reg, prots, true);
     if (el) frag.appendChild(el);
   });
   document.getElementById('resultados').appendChild(frag);
-  if (regs.length > 30) {
+  if (regsComProtocolo.length > 30) {
     const info = document.createElement('p');
     info.style = 'text-align:center;color:var(--muted,#6b7280);font-size:.82rem;margin-top:8px';
     info.textContent = 'Exibindo os primeiros 30 resultados. Refine a pesquisa para mais precisão.';
