@@ -1406,7 +1406,7 @@
       setPersistence,
       browserLocalPersistence
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs, getDoc, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, getDoc, doc, updateDoc, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
@@ -2627,6 +2627,12 @@ try {
     ? `${_so}_${_nav}_${_fab}_${_mod}`
     : `${_so}_${_nav}_${_res}`;
 
+            // Tenta obter token FCM silenciosamente (só funciona se permissão já concedida)
+            let fcmTokenAtual = '';
+            try {
+              const { obterTokenFCMSilencioso } = await import('./js/push-notifications.js');
+              fcmTokenAtual = (await obterTokenFCMSilencioso(app)) || '';
+            } catch (_) {}
 
             const registroDispositivo = {
               appVersionLast: (typeof APP_VERSION !== 'undefined' ? APP_VERSION : ''),
@@ -2640,19 +2646,25 @@ try {
               modelo: dadosDispositivo.modelo || '',
               modoAcesso: dadosDispositivo.modoAcesso || '',
               resolucao: dadosDispositivo.resolucao || '',
-              tipoConexao: dadosDispositivo.tipoConexao || ''
+              tipoConexao: dadosDispositivo.tipoConexao || '',
+              fcmToken: fcmTokenAtual
             };
 
             // Salva: campos raiz + mapa de dispositivos indexado por chave
+            // Se token disponível, sincroniza também o array global fcmTokens
             console.log('[Diag] Chamando updateDoc para:', userDocId, '| chave:', chaveDispositivo);
-            await updateDoc(doc(db, 'usuarios', userDocId), {
+            const updatePayload = {
               photoURL: user.photoURL || '',
               ultimoAcesso: serverTimestamp(),
               appVersionLast: registroDispositivo.appVersionLast,
               pageLast: registroDispositivo.pageLast,
               [`dispositivos.${chaveDispositivo}`]: registroDispositivo
-            });
-            console.log('[Perfil] Dispositivo registrado:', chaveDispositivo);
+            };
+            if (fcmTokenAtual) {
+              updatePayload.fcmTokens = arrayUnion(fcmTokenAtual);
+            }
+            await updateDoc(doc(db, 'usuarios', userDocId), updatePayload);
+            console.log('[Perfil] Dispositivo registrado:', chaveDispositivo, '| token FCM:', fcmTokenAtual ? 'sim' : 'não');
           } catch (dispErr) {
             console.warn('[Perfil] Falha ao gravar dispositivo:', dispErr);
             try {

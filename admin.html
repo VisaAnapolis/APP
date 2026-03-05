@@ -1484,6 +1484,7 @@ function renderizarUsuarios(usuarios){
           const icon = /iOS|iPhone|iPad/i.test(so) ? '📱'
                      : /Android/i.test(so) ? '📱'
                      : '💻';
+          const temToken = d.fcmToken && d.fcmToken.length > 10;
           html += `<div class="disp-modal-item">
             <div class="dm-header">${icon} ${so || chave}</div>
             ${nav ? `<div class="dm-row"><span class="k">🌐</span>${nav}</div>` : ''}
@@ -1491,6 +1492,9 @@ function renderizarUsuarios(usuarios){
             <div class="dm-row"><span class="k">🔑</span>${modo}</div>
             ${ver ? `<div class="dm-row"><span class="k">🧩</span><span class="dm-ver">v${ver}</span>${pag ? ` &nbsp;<span style="color:var(--muted);font-size:.8rem;">${pag}</span>` : ''}</div>` : ''}
             ${dt ? `<div class="dm-row"><span class="k">🕒</span>${dt}</div>` : ''}
+            <div class="dm-row"><span class="k">Push</span>${temToken
+              ? '<span style="color:#4ade80;font-weight:700">✅ Ativo</span>'
+              : '<span style="color:#f87171;font-weight:700">❌ Sem token</span>'}</div>
           </div>`;
         });
 
