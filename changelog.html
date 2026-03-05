@@ -182,6 +182,18 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.4.8 — 05/03/2026 14:30 (Horário de Brasília – UTC−3)</h3>
+  <strong>Vinculação de tokens FCM aos dispositivos + exibição de status push no painel admin</strong>
+  <ul>
+    <li><strong>Token FCM acoplado ao dispositivo:</strong> cada registro de dispositivo no Firestore agora carrega o campo <code>fcmToken</code> com o token específico daquele aparelho. Implementado via nova função <code>obterTokenFCMSilencioso(firebaseApp)</code> exportada de <code>js/push-notifications.js</code>, que captura o token silenciosamente (sem solicitar permissão ao usuário) se a permissão já foi concedida. O token é incluído no <code>registroDispositivo</code> antes de gravar no Firestore.</li>
+    <li><strong>Array global de tokens sem duplicatas:</strong> a atualização do array <code>fcmTokens</code> na coleção <code>usuarios</code> agora usa <code>arrayUnion</code> (Firestore) para evitar duplicação automática. Garante que o mesmo token nunca aparece duas vezes no array global, mesmo após múltiplos logins do mesmo dispositivo.</li>
+    <li><strong>Status push visual no painel admin:</strong> no modal <em>Dispositivos</em> do painel administrativo (<code>admin.html</code>), cada card de dispositivo agora exibe o status de push com ícone e cor: <em>✅ Ativo</em> (verde) se o dispositivo tem token válido, ou <em>❌ Sem token</em> (vermelho) caso contrário. Facilita diagnóstico rápido de qual dispositivo tem notificações habilitadas.</li>
+    <li><strong>Invalidação de cache nos dispositivos:</strong> service worker cache bumped de <code>visa-v2.2.8</code> para <code>visa-v2.2.9</code>, garantindo que todos os dispositivos descartam o cache antigo e baixam a nova versão de <code>index.html</code>, <code>admin.html</code> e <code>js/push-notifications.js</code> na próxima visita (mesmo offline, após cache ser revalidado).</li>
+  </ul>
+  <p><strong>Arquivos modificados:</strong> <code>js/push-notifications.js</code> — nova função <code>obterTokenFCMSilencioso()</code>; <code>index.html</code> — import <code>arrayUnion</code>, captura token antes de <code>registroDispositivo</code>, adiciona <code>fcmToken</code> ao registro, usa <code>arrayUnion</code> no <code>updateDoc</code>; <code>admin.html</code> — exibição de status push por dispositivo; <code>service-worker.js</code> — cache version v2.2.9; <code>js/version.js</code> — APP_VERSION 2.4.8; <code>changelog.html</code> — esta entrada.</p>
+</div>
+
+<div class="section">
   <h3>v2.4.7 — 04/03/2026 20:06 (Horário de Brasília – UTC−3)</h3>
   <strong>Integração da Consulta de Protocolos ao app + correção de ícones duplicados na sidebar</strong>
   <ul>
