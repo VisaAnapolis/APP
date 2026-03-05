@@ -262,30 +262,21 @@
     flex-direction: column;
     animation: fadeUp .22s ease;
     /* garante que não estica verticalmente */
+    overflow: hidden;
     align-self: center;
   }
 
-  /* Android */
-@media (max-width: 540px) and (min-width: 415px) {
+ @media (max-width: 540px) {
   .modal-overlay {
-    padding: 12px;
-    justify-content: flex-start;
-    padding-left: 8px;
+    padding: 10px;
+    align-items: center;
+    justify-content: center;
   }
   .modal {
-    width: 75vw;
-    max-width: 75vw;
-    max-height: 80vh;
-  }
-}
-
-/* iOS — iPhone */
-@media (max-width: 414px) {
-  .modal-overlay { padding: 12px; }
-  .modal {
-    width: 75vw;
-    max-width: 75vw;
-    max-height: 80vh;
+    width: 92vw;
+    max-width: 92vw;
+    max-height: 85vh;
+    overflow: hidden;
   }
 }
 
