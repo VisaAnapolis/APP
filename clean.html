@@ -102,7 +102,7 @@ window.executar = async function(commit) {
     // Os tokens NÃO ficam dentro de cada objeto de dispositivo,
     // por isso usamos quantidade de dispositivos mantidos como limite.
     const tokensDedupe = [...new Set(tokens)];
-    const novosFcm = tokensDedupe.slice(0, Math.max(chavesManter.length, 1));
+    const novosFcm = tokensDedupe.slice(0, chavesManter.length);
 
     const houveAlteracao = chavesRemover.length > 0 || novosFcm.length < tokens.length;
     if (!houveAlteracao) continue;
