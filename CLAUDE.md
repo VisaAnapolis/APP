@@ -385,6 +385,25 @@ Ambas as operações têm modo **simulação** (dry-run) e modo de **execução 
 
 ---
 
+## Padrão de Pull Requests
+
+**Título do PR:** descrever o que está sendo feito em linguagem clara, não o nome técnico do arquivo.
+- Bom: `fix: sidebar rola até item ativo ao abrir no mobile`
+- Ruim: `update sidebar.js`
+
+**Descrição do PR:** listar obrigatoriamente os arquivos alterados.
+
+Exemplo:
+```
+## O que foi feito
+Sidebar agora rola automaticamente até o item ativo quando aberta no mobile.
+
+## Arquivos alterados
+- `js/sidebar.js` — adicionado scrollIntoView ao abrir o menu
+```
+
+---
+
 ## Development Workflow
 
 Since this is a static site with no build step:
