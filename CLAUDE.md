@@ -228,6 +228,33 @@ When these files are pushed, `notify-os.yml` runs automatically.
 
 ---
 
+## Sidebar — Gerenciamento de Links de Navegação
+
+> **IMPORTANTE**: Sempre que uma página for **adicionada**, **renomeada** ou **removida** do projeto, os links do sidebar em **todas** as páginas devem ser atualizados. Existe um template HTML e scripts Python para isso.
+
+### Arquivos do sistema de sidebar
+
+| Arquivo | Função |
+|---------|--------|
+| `includes/sidebar-nav.html` | Template de referência do bloco `<aside>` do sidebar. **Edite este arquivo primeiro** ao alterar links. |
+| `scripts/apply_sidebar.py` | Aplica o layout sidebar (com topbar e page-header) em páginas **sem autenticação**. |
+| `scripts/apply_sidebar_auth.py` | Aplica o layout sidebar em páginas **com autenticação** (guard.js/guard1.js). |
+| `scripts/build_sidebar_pages.py` | Gera/atualiza o bloco do sidebar em páginas existentes. |
+
+### Como atualizar o sidebar ao adicionar/renomear/remover uma página
+
+1. **Edite `includes/sidebar-nav.html`** — adicione, renomeie ou remova o link `<a class="visa-nav-item">` correspondente.
+2. **Edite o `SIDEBAR_BLOCK` / lista `items`** nos scripts `apply_sidebar.py` e `build_sidebar_pages.py` com a mesma alteração.
+3. **Adicione/remova a entrada** no dicionário `PAGE_ACTIVE` (em `build_sidebar_pages.py`) e `PAGES` (nos scripts apply).
+4. **Execute o script** para propagar as mudanças em todas as páginas:
+   ```bash
+   python3 scripts/apply_sidebar.py        # páginas sem auth
+   python3 scripts/apply_sidebar_auth.py   # páginas com auth
+   ```
+5. Verifique se o `<aside>` foi atualizado corretamente em todas as páginas HTML.
+
+---
+
 ## Development Workflow
 
 Since this is a static site with no build step:
