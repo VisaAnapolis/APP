@@ -2714,23 +2714,26 @@ try {
           const userDocSnap = await gGet(userDocRef);
           const userData = userDocSnap.exists() ? userDocSnap.data() : {};
 
-          // Vincula o token FCM retornado ao campo fcmToken do dispositivo atual no Firestore.
-          // Chamado após initPushNotifications para garantir que o vínculo seja feito
-          // mesmo quando o dispositivo foi registrado antes da permissão ser concedida.
+          // Calcula a chave do dispositivo atual (mesma lógica de calcChave em clean.html).
+          function _chaveDispositivoAtual() {
+            const d = coletarDadosDispositivo();
+            const _n = s => (s || 'desconhecido').toLowerCase().replace(/[^a-z0-9]/g, '');
+            const fab = _n(d.fabricante), mod = _n(d.modelo);
+            return (fab !== 'desconhecido' || mod !== 'desconhecido')
+              ? `${_n(d.sistemaOperacional)}_${_n(d.navegador)}_${fab}_${mod}`
+              : `${_n(d.sistemaOperacional)}_${_n(d.navegador)}_${(d.resolucao||'').replace('x','_').replace(/[^a-z0-9_]/g,'')}`;
+          }
+
+          // Mantida apenas como fallback de compatibilidade (não mais chamada no fluxo normal).
           async function _vincularTokenAoDispositivo(dbInst, emailK, token) {
             try {
               const { updateDoc: _upd, doc: _doc } =
                 await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-              const d = coletarDadosDispositivo();
-              const _n = s => (s || 'desconhecido').toLowerCase().replace(/[^a-z0-9]/g, '');
-              const fab = _n(d.fabricante), mod = _n(d.modelo);
-              const chave = (fab !== 'desconhecido' || mod !== 'desconhecido')
-                ? `${_n(d.sistemaOperacional)}_${_n(d.navegador)}_${fab}_${mod}`
-                : `${_n(d.sistemaOperacional)}_${_n(d.navegador)}_${(d.resolucao||'').replace('x','_').replace(/[^a-z0-9_]/g,'')}`;
+              const chave = _chaveDispositivoAtual();
               await _upd(_doc(dbInst, 'usuarios', emailK), {
                 [`dispositivos.${chave}.fcmToken`]: token
               });
-              console.log('[Push] Token vinculado ao dispositivo:', chave);
+              console.log('[Push] Token vinculado ao dispositivo (fallback):', chave);
             } catch (e) {
               console.warn('[Push] Falha ao vincular token ao dispositivo:', e.message);
             }
@@ -2753,8 +2756,7 @@ try {
               // 'granted' ou 'default' → tenta renovar silenciosamente
               try {
                 const { initPushNotifications } = await import("./js/push-notifications.js");
-                const tkn = await initPushNotifications(app, user.email, null);
-                if (tkn) await _vincularTokenAoDispositivo(db2, emailKey, tkn);
+                const tkn = await initPushNotifications(app, user.email, null, _chaveDispositivoAtual());
                 console.log("[Push] Token renovado silenciosamente.");
               } catch (e) { console.warn("[Push] Erro ao renovar token:", e.message); }
             }
@@ -2779,8 +2781,7 @@ try {
               try {
                 await gSet(userDocRef, { notificationOptIn: true }, { merge: true });
                 const { initPushNotifications } = await import("./js/push-notifications.js");
-                const tkn = await initPushNotifications(app, user.email, true);
-                if (tkn) await _vincularTokenAoDispositivo(db2, emailKey, tkn);
+                await initPushNotifications(app, user.email, true, _chaveDispositivoAtual());
                 console.log("[Push] Notificações ativadas pelo usuário.");
               } catch (e) { console.warn("[Push] Erro ao ativar:", e.message); }
             };
@@ -2834,8 +2835,7 @@ try {
             const { setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
             await setDoc(userDocRef, { notificationOptIn: true }, { merge: true });
             const { initPushNotifications } = await import("./js/push-notifications.js");
-            const tkn = await initPushNotifications(firebaseApp, email, true);
-            if (tkn) await _vincularTokenAoDispositivo(db2, (email||'').toLowerCase().trim(), tkn);
+            await initPushNotifications(firebaseApp, email, true, _chaveDispositivoAtual());
             console.log("[Push] Notificações reativadas pelo usuário.");
           } catch (e) { console.warn("[Push] Erro ao reativar:", e.message); }
         };
