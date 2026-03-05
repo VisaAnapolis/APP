@@ -270,6 +270,67 @@ When these files are pushed, `notify-os.yml` runs automatically.
 
 ---
 
+## Próximo Passo — Sidebar Colapsável (PENDENTE)
+
+> **CONTEXTO**: Existe um plano detalhado em `docs/PROJETO_EXCELENCIA_UNIFICADO.md`. Leia-o antes de iniciar qualquer trabalho nessa área.
+
+O próximo grande trabalho é implementar **seções colapsáveis (accordion)** na sidebar e propagar o layout padronizado para todas as páginas ainda sem sidebar. O plano está completo e pronto para execução.
+
+### Estado atual (05/03/2026)
+
+| Item | Estado |
+|------|--------|
+| Template `includes/sidebar-nav.html` | Pronto — 22 links, 6 seções, estrutura plana |
+| `css/sidebar.css` | Pronto — responsivo, dark mode, sem accordion ainda |
+| `js/sidebar.js` | Pronto — toggle mobile, mark active, **sem collapse ainda** |
+| Páginas com auth (`os.html`, `cvs.html`, etc.) | Layout sidebar aplicado via `apply_sidebar_auth.py` |
+| Páginas sem auth (`alvara.html`, `plantao.html`, etc.) | Layout sidebar aplicado via `apply_sidebar.py` |
+| Seções colapsáveis | **NÃO IMPLEMENTADO** |
+| Propagação final para todas as páginas | **NÃO CONCLUÍDO** |
+
+### O que fazer quando retomar
+
+**FASE 1 — Implementar o colapsável (3 arquivos, nessa ordem):**
+
+1. **`includes/sidebar-nav.html`** — Envolver cada grupo de links em:
+   ```html
+   <div class="nav-section" data-section="operacional">
+     <button class="nav-section-header" aria-expanded="false">
+       <span>Operacional</span>
+       <svg class="nav-section-chevron" ...>...</svg>
+     </button>
+     <div class="nav-section-items">
+       <div class="nav-section-items-inner">
+         <a class="visa-nav-item" href="os.html">...</a>
+       </div>
+     </div>
+   </div>
+   ```
+   Dashboard (`index.html`) fica **fora** das seções, sempre visível.
+
+2. **`css/sidebar.css`** — Adicionar ao final o CSS de collapse usando `grid-template-rows: 0fr → 1fr` (técnica sem `max-height` hack). Ver código completo no plano.
+
+3. **`js/sidebar.js`** — Adicionar `initCollapsibleSections()`: toggle `.open`, persistência via `localStorage` (`visa_sidebar_sections`), seção ativa sempre aberta. Ver código completo no plano.
+
+4. **Testar em `index.html`** antes de propagar.
+
+**FASE 2 — Propagar para todas as páginas:**
+- Atualizar `SIDEBAR_BLOCK` nos scripts Python com a nova estrutura colapsável
+- Executar `python3 scripts/apply_sidebar.py` e `python3 scripts/apply_sidebar_auth.py`
+- Ajustes manuais em páginas complexas (`os.html`, `admin.html`, `cvs.html`)
+
+**FASE 3 — Validar** com `scripts/validate_pages.py` (criar) + teste manual.
+
+**FASE 4 — Bump** service worker para `visa-v2.5.0`, atualizar changelog.
+
+### Decisões arquiteturais já tomadas (não reverter)
+
+- **NÃO** usar `component-loader.js` (fetch dinâmico) — site estático, FOUC, desnecessário
+- **NÃO** unificar `guard.js` + `guard1.js` agora — escopo separado, risco alto
+- **NÃO** usar hover para expandir — click é mais previsível em mobile
+
+---
+
 ## Histórico de Versões Recentes
 
 | Versão | O que mudou |
@@ -321,6 +382,25 @@ Ambas as operações têm modo **simulação** (dry-run) e modo de **execução 
    python3 scripts/apply_sidebar_auth.py   # páginas com auth
    ```
 5. Verifique se o `<aside>` foi atualizado corretamente em todas as páginas HTML.
+
+---
+
+## Padrão de Pull Requests
+
+**Título do PR:** descrever o que está sendo feito em linguagem clara, não o nome técnico do arquivo.
+- Bom: `fix: sidebar rola até item ativo ao abrir no mobile`
+- Ruim: `update sidebar.js`
+
+**Descrição do PR:** listar obrigatoriamente os arquivos alterados.
+
+Exemplo:
+```
+## O que foi feito
+Sidebar agora rola automaticamente até o item ativo quando aberta no mobile.
+
+## Arquivos alterados
+- `js/sidebar.js` — adicionado scrollIntoView ao abrir o menu
+```
 
 ---
 
