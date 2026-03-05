@@ -48,6 +48,12 @@ VISA/
 │   ├── index_regulados.json # Index for regulated entities
 │   ├── his/                # Historical JSON data by fiscal code
 │   └── os_snapshot.json    # Snapshot state for notification deduplication
+├── includes/
+│   └── sidebar-nav.html    # Template de referência do bloco <aside> (não carregado dinamicamente)
+├── scripts/
+│   ├── apply_sidebar.py    # Aplica layout sidebar em páginas SEM autenticação
+│   ├── apply_sidebar_auth.py # Aplica layout sidebar em páginas COM autenticação
+│   └── build_sidebar_pages.py # Gera/atualiza bloco sidebar nas páginas existentes
 ├── icons/                  # PWA icons (192x192, 512x512)
 ├── docs/                   # PDF/image documentation
 ├── check-list-*/           # PDF-based inspection checklists with assets
@@ -72,7 +78,9 @@ VISA/
 |------|---------|
 | `index.html` | Main dashboard |
 | `os.html` | Orders of Service (OS) — core feature |
-| `admin.html` | Admin panel |
+| `protocolo.html` | Protocol consultation — search by protocol number, name or CNPJ (CSV via PapaParse) |
+| `admin.html` | Admin panel — user management, device listing, FCM token status |
+| `clean.html` | Maintenance tool — device deduplication and orphaned FCM token recovery |
 | `plantao.html` | Shift management |
 | `inspecoes.html` | Inspections |
 | `ferias.html` | Vacation scheduling |
@@ -129,14 +137,39 @@ VISA/
 ## Firestore Data Model
 
 ```
-usuarios/{email}          ← Document ID is the user's email (lowercase)
-  nome: string            ← Display name
-  email: string           ← Same as document ID
-  ativo: boolean          ← Whether user is active
-  grupo: string           ← Permission group ("Fiscal", "Admin", etc.)
-  fcmTokens: string[]     ← Array of FCM device tokens
-  notificationOptIn: bool ← Optional; whether user opted into notifications
+usuarios/{email}                    ← Document ID is the user's email (lowercase)
+  nome: string                      ← Display name
+  email: string                     ← Same as document ID
+  ativo: boolean                    ← Whether user is active
+  grupo: string                     ← Permission group ("Fiscal", "Admin", etc.)
+  fcmTokens: string[]               ← Array of FCM tokens (one per authorized device)
+  notificationOptIn: bool           ← Optional; whether user opted into notifications
+  dispositivos: {                   ← Map of registered devices (key = chaveDispositivo)
+    "<SO>_<Navegador>_<Fab>_<Mod>": {   ← Composite key (preferred format)
+      sistemaOperacional: string
+      navegador: string
+      fabricante: string
+      modelo: string
+      resolucao: string
+      ultimoAcesso: string          ← ISO timestamp of last login
+      fcmToken: string|null         ← FCM token bound to this device (null if not opted in)
+    },
+    "<SO>_<Navegador>_<Resolucao>": { ... }  ← Fallback format for legacy/unknown devices
+  }
 ```
+
+### Chave do Dispositivo (`chaveDispositivo`)
+
+A chave é gerada em `index.html` pela função `_chaveDispositivoAtual()` usando dados do `platform-detector.js`:
+
+```
+Formato preferido : norm(SO) + "_" + norm(Navegador) + "_" + norm(Fabricante) + "_" + norm(Modelo)
+Formato fallback  : norm(SO) + "_" + norm(Navegador) + "_" + norm(Resolução)
+```
+
+`norm(s)` = lowercase + remove caracteres especiais. Exemplo: `"windows11_chrome_1920x1080"`.
+
+**Token FCM é vinculado ao dispositivo atomicamente**: quando o usuário faz opt-in, `push-notifications.js` atualiza `fcmTokens[]` E `dispositivos.<chave>.fcmToken` na mesma operação.
 
 No ORM is used — all Firestore access is via the Firebase SDK directly.
 
@@ -174,9 +207,18 @@ All pages should import these in order: `design-tokens.css` → `base.css` → `
 
 Notifications are sent via **Firebase Cloud Messaging (FCM)**:
 
-- **Client side** (`js/push-notifications.js`): Requests permission, registers FCM token, stores token array in Firestore `usuarios` collection, handles foreground notifications (toast).
+- **Client side** (`js/push-notifications.js`): Requests permission, registers FCM token, stores token in `fcmTokens[]` AND in `dispositivos.<chave>.fcmToken`, handles foreground notifications (toast).
 - **Service Worker** (`firebase-messaging-sw.js`): Handles background notifications when app is not in focus.
 - **Server side** (`.github/scripts/notify-os.js`): Admin SDK script run by GitHub Actions to send multicast notifications.
+
+### Assinatura de `initPushNotifications`
+
+```javascript
+initPushNotifications(firebaseApp, userEmail, userOptedIn, chaveDispositivo = null)
+```
+
+- `chaveDispositivo`: chave composta do dispositivo atual (gerada no `index.html`). Quando fornecida, o token antigo desse dispositivo é removido do array antes de inserir o novo (trata rotação de tokens).
+- Também exporta `obterTokenFCMSilencioso(firebaseApp)` — obtém token sem pedir permissão, usado para registro inicial sem prompt.
 
 **Notification trigger stages** (based on OS deadline):
 | Stage | Days Remaining | Cron Schedule |
@@ -205,7 +247,7 @@ Deduplication is handled by `data/os_snapshot.json`, which is committed to the r
 
 ## Service Worker & PWA
 
-- **Cache name**: `visa-v2.2.8` (bump this when deploying breaking UI changes)
+- **Cache name**: `visa-v2.4.9` (bump this when deploying breaking UI changes)
 - **Strategy**: Network First — always tries the network, falls back to cache if offline
 - **PWA manifest** (`manifest.webmanifest`):
   - `start_url`: `/VISA/`
@@ -225,6 +267,33 @@ CSV files in `data/` are the source of truth for OS (Orders of Service) records.
 - `cvs_sync.txt` (sync marker)
 
 When these files are pushed, `notify-os.yml` runs automatically.
+
+---
+
+## Histórico de Versões Recentes
+
+| Versão | O que mudou |
+|--------|------------|
+| **v2.4.9** | Vinculação atômica de token FCM ao dispositivo eliminando tokens órfãos por rotação; correção de ocultar regulados sem protocolo na busca |
+| **v2.4.8** | Token FCM vinculado ao dispositivo (`dispositivos.<chave>.fcmToken`); status push exibido no admin; `clean.html` atualizado para nova lógica |
+| **v2.4.7** | Integração de `protocolo.html` ao app com sidebar padrão; atualização de ícones de navegação |
+| **v2.4.6** | Padronização completa do sidebar em todas as páginas autenticadas via `apply_sidebar_auth.py` |
+| **v2.4.5** | Criação de `clean.html` — ferramenta de manutenção de dispositivos e tokens FCM órfãos |
+
+---
+
+## Ferramenta de Manutenção (`clean.html`)
+
+Página administrativa (`clean.html`) para operações de limpeza do banco de dados de dispositivos.
+
+**Acesso**: requer autenticação como Admin.
+
+**Operações disponíveis:**
+
+1. **Migração de chaves de dispositivos** — reagrupa registros pelo novo formato composto (`SO_Navegador_Fabricante_Modelo`), remove duplicatas mantendo o mais recente.
+2. **Associação de tokens órfãos** — localiza tokens em `fcmTokens[]` que não estão vinculados a nenhum dispositivo e os associa ao dispositivo de `ultimoAcesso` mais recente.
+
+Ambas as operações têm modo **simulação** (dry-run) e modo de **execução real**, com log em tempo real na tela.
 
 ---
 
