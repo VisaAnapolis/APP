@@ -2,156 +2,176 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Limpeza de Dispositivos Duplicados</title>
+  <title>Limpeza Dispositivos + Tokens FCM</title>
   <style>
     body { font-family: monospace; background: #0f172a; color: #e2e8f0; padding: 24px; }
     h2   { color: #60a5fa; }
-    pre  { background: #1e293b; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: .82rem; line-height: 1.6; }
-    .ok  { color: #4ade80; }
-    .warn{ color: #fbbf24; }
-    .err { color: #f87171; }
+    pre  { background: #1e293b; padding: 16px; border-radius: 8px; overflow-x: auto;
+           font-size: .82rem; line-height: 1.6; white-space: pre-wrap; }
+    .ok  { color: #4ade80; } .warn { color: #fbbf24; } .err { color: #f87171; }
     button { background: #2563eb; color: #fff; border: none; padding: 10px 24px;
              border-radius: 8px; font-size: 1rem; cursor: pointer; margin: 8px 4px; }
     button.danger { background: #dc2626; }
-    #log { margin-top: 16px; }
   </style>
 </head>
 <body>
-<h2>🧹 Limpeza de Dispositivos Duplicados — VISA</h2>
-<p>Agrupa dispositivos pelo critério <strong>SO + Navegador + Fabricante + Modelo</strong>
-   (sem resolução), mantém o mais recente de cada grupo e remove os demais.</p>
+<h2>🧹 Limpeza Dispositivos + Tokens FCM — VISA</h2>
+<p>Agrupa dispositivos por <strong>SO + Navegador + Fabricante + Modelo</strong>,
+   mantém o mais recente e descarta os tokens dos dispositivos removidos.</p>
 <button onclick="executar(false)">🔍 Simular (dry-run)</button>
 <button class="danger" onclick="executar(true)">⚠️ Executar de verdade</button>
-<pre id="log">Aguardando...</pre>
+<pre id="log">Aguardando login...</pre>
 
 <script type="module">
-import { initializeApp }        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { initializeApp }      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, collection, getDocs, doc, updateDoc }
-                                from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+                              from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-const firebaseConfig = {
-  apiKey:            "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
-  authDomain:        "visam-3a30b.firebaseapp.com",
-  projectId:         "visam-3a30b",
+const app = initializeApp({
+  apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
+  authDomain: "visam-3a30b.firebaseapp.com",
+  projectId: "visam-3a30b",
   messagingSenderId: "308899251430",
-  appId:             "1:308899251430:web:0053cdbd0bed7f0de76727"
-};
-
-const app  = initializeApp(firebaseConfig);
+  appId: "1:308899251430:web:0053cdbd0bed7f0de76727"
+});
 const auth = getAuth(app);
 const db   = getFirestore(app);
 const log  = document.getElementById('log');
 
-function print(msg, cls='') {
+const print = (msg, cls='') =>
   log.innerHTML += `<span class="${cls}">${msg}</span>\n`;
-}
 
-// Gera chave NOVA (sem resolução)
-function novaChave(d) {
-  const norm = s => (s || 'desconhecido')
-    .trim().toLowerCase().replace(/[\s.\-\/]+/g, '').replace(/[^a-z0-9]/g, '');
-  return `${norm(d.sistemaOperacional)}${norm(d.navegador)}${norm(d.fabricante)}${norm(d.modelo)}`;
-}
+// Normaliza campo para usar na chave
+const norm = s => (s || 'desconhecido')
+  .toLowerCase().replace(/[^a-z0-9]/g, '');
 
-// Compara dois timestamps Firestore/ISO/Date — retorna o mais recente
-function maisRecente(a, b) {
-  const ts = x => {
-    if (!x) return 0;
-    if (x.seconds) return x.seconds * 1000;
-    return new Date(x).getTime() || 0;
-  };
-  return ts(a.ultimoAcesso) >= ts(b.ultimoAcesso) ? a : b;
-}
+// Chave nova: SO + Navegador + Fabricante + Modelo (SEM resolução)
+const novaChave = d =>
+  norm(d.sistemaOperacional) + norm(d.navegador) +
+  norm(d.fabricante) + norm(d.modelo);
+
+// Retorna timestamp numérico de qualquer formato Firestore/ISO
+const toMs = x => {
+  if (!x) return 0;
+  if (x.seconds) return x.seconds * 1000;
+  const t = new Date(x).getTime();
+  return isFinite(t) ? t : 0;
+};
 
 window.executar = async function(commit) {
   log.innerHTML = '';
-  print(commit ? '⚠️  MODO REAL — alterações serão gravadas no Firestore'  : '🔍 MODO SIMULAÇÃO — nenhuma alteração será feita', commit ? 'warn' : 'ok');
+  print(commit
+    ? '⚠️  MODO REAL — gravando no Firestore'
+    : '🔍 MODO SIMULAÇÃO — nenhuma alteração', commit ? 'warn' : 'ok');
   print('');
 
   const snap = await getDocs(collection(db, 'usuarios'));
-  let totalUsuarios = 0, totalDuplicatas = 0, totalTokensRemovidos = 0;
+  let totUsuarios = 0, totDispRemovidos = 0, totTokenAntes = 0, totTokenDepois = 0;
 
   for (const docSnap of snap.docs) {
-    const data = docSnap.data();
-    const email = docSnap.id;
-    const dispositivos = data.dispositivos;
+    const data   = docSnap.data();
+    const email  = docSnap.id;
+    const disps  = data.dispositivos;
+    const tokens = Array.isArray(data.fcmTokens) ? [...data.fcmTokens] : [];
 
-    if (!dispositivos || typeof dispositivos !== 'object') continue;
-    const chaves = Object.keys(dispositivos);
-    if (chaves.length <= 1) continue;
+    if (!disps || typeof disps !== 'object') continue;
+    const chaves = Object.keys(disps);
+    if (chaves.length <= 1 && tokens.length <= 1) continue;
 
-    // Agrupa por nova chave (SO+nav+fab+modelo)
+    // ── 1. Agrupa dispositivos por nova chave ──────────────────────────
     const grupos = {};
-    for (const chave of chaves) {
-      const d = dispositivos[chave];
-      const nk = novaChave(d);
+    for (const k of chaves) {
+      const nk = novaChave(disps[k]);
       if (!grupos[nk]) grupos[nk] = [];
-      grupos[nk].push({ chaveOriginal: chave, ...d });
+      grupos[nk].push(k);
     }
 
-    // Detecta grupos com mais de 1 entrada = duplicatas
-    const novosMapa = {};
-    const chavesRemover = [];
+    const chavesRemover = [];   // chaves antigas a excluir
+    const chavesManter  = [];   // chaves que ficam
 
-    for (const [nk, lista] of Object.entries(grupos)) {
-      // Mantém o mais recente
-      const melhor = lista.reduce((acc, cur) => maisRecente(acc, cur));
-      novosMapa[melhor.chaveOriginal] = dispositivos[melhor.chaveOriginal];
-
-      if (lista.length > 1) {
-        const removidos = lista.filter(d => d.chaveOriginal !== melhor.chaveOriginal);
-        chavesRemover.push(...removidos.map(d => d.chaveOriginal));
-        print(`  👤 ${email}`, 'warn');
-        print(`     Grupo "${nk}": ${lista.length} entradas → mantém "${melhor.chaveOriginal}"`);
-        removidos.forEach(r => print(`     ❌ remove "${r.chaveOriginal}" (v${r.appVersionLast || '?'} — ${r.ultimoAcesso || 'sem data'})`, 'err'));
+    for (const lista of Object.values(grupos)) {
+      if (lista.length === 1) {
+        chavesManter.push(lista[0]);
+        continue;
       }
+      // Ordena: mais recente primeiro
+      lista.sort((a, b) => toMs(disps[b].ultimoAcesso) - toMs(disps[a].ultimoAcesso));
+      chavesManter.push(lista[0]);           // mantém o mais recente
+      chavesRemover.push(...lista.slice(1)); // remove os demais
     }
 
     if (chavesRemover.length === 0) continue;
 
-    totalUsuarios++;
-    totalDuplicatas += chavesRemover.length;
+    // ── 2. Identifica tokens vinculados aos dispositivos REMOVIDOS ─────
+    // Cada entrada de dispositivo tem campo "fcmToken" (singular)?
+    // Ou o token estava no array global? Vamos descobrir:
+    const tokensRemover = new Set();
 
-    // Remove também FCM tokens duplicados (mantém unique)
-    let novosFcm = data.fcmTokens || [];
-    const antesTokens = novosFcm.length;
-    novosFcm = [...new Set(novosFcm)];
-    const tokensRem = antesTokens - novosFcm.length;
-    if (tokensRem > 0) {
-      totalTokensRemovidos += tokensRem;
-      print(`     🔑 FCM tokens: ${antesTokens} → ${novosFcm.length} (${tokensRem} duplicados removidos)`, 'warn');
+    for (const chave of chavesRemover) {
+      const d = disps[chave];
+      // Caso o dispositivo guarde o próprio token no campo
+      if (d.fcmToken) tokensRemover.add(d.fcmToken);
     }
 
+    // ── 3. Tokens órfãos: todos tokens NÃO associados a dispositivos mantidos
+    // Constrói set de tokens dos dispositivos que ficam
+    const tokensAtivos = new Set();
+    for (const chave of chavesManter) {
+      const d = disps[chave];
+      if (d.fcmToken) tokensAtivos.add(d.fcmToken);
+    }
+
+    // Tokens que não pertencem a nenhum dispositivo ativo = órfãos
+    // ATENÇÃO: só remove órfãos se houver tokens ativos para não deixar o usuário sem push
+    const novosFcm = tokensAtivos.size > 0
+      ? tokens.filter(t => tokensAtivos.has(t))
+      : [...new Set(tokens)]; // fallback: só deduplica se não houver vínculo
+
+    totUsuarios++;
+    totDispRemovidos += chavesRemover.length;
+    totTokenAntes    += tokens.length;
+    totTokenDepois   += novosFcm.length;
+
+    // Log detalhado
+    print(`\n  👤 ${email} (${data.nome || ''})`, 'warn');
+    print(`     Dispositivos: ${chaves.length} → ${chavesManter.length} (remove ${chavesRemover.length})`);
+    chavesRemover.forEach(k => {
+      const d = disps[k];
+      print(`       ❌ "${k}"  v${d.appVersionLast||'?'}  ${d.ultimoAcesso||''}`, 'err');
+    });
+    if (tokens.length !== novosFcm.length)
+      print(`     Tokens FCM: ${tokens.length} → ${novosFcm.length}`, 'warn');
+
     if (commit) {
-      // Reconstrói dispositivos sem as chaves duplicadas
+      // Reconstrói mapa sem as chaves removidas
       const dispLimpo = {};
-      for (const [k, v] of Object.entries(dispositivos)) {
-        if (!chavesRemover.includes(k)) dispLimpo[k] = v;
-      }
+      for (const k of chavesManter) dispLimpo[k] = disps[k];
+
       await updateDoc(doc(db, 'usuarios', email), {
         dispositivos: dispLimpo,
         fcmTokens: novosFcm
       });
-      print(`     ✅ Salvo no Firestore`, 'ok');
+      print(`     ✅ Salvo`, 'ok');
     }
   }
 
-  print('');
-  print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  print(`Usuários afetados:     ${totalUsuarios}`, totalUsuarios > 0 ? 'warn' : 'ok');
-  print(`Dispositivos removidos: ${totalDuplicatas}`, totalDuplicatas > 0 ? 'err' : 'ok');
-  print(`Tokens FCM removidos:   ${totalTokensRemovidos}`, totalTokensRemovidos > 0 ? 'warn' : 'ok');
-  if (!commit && totalDuplicatas > 0)
-    print('\n▶ Revise acima e clique "Executar de verdade" para aplicar.', 'warn');
+  print('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  print(`Usuários afetados:      ${totUsuarios}`,       totUsuarios  > 0 ? 'warn' : 'ok');
+  print(`Dispositivos removidos: ${totDispRemovidos}`,  totDispRemovidos > 0 ? 'err'  : 'ok');
+  print(`Tokens FCM: ${totTokenAntes} → ${totTokenDepois} (−${totTokenAntes - totTokenDepois})`,
+    totTokenAntes > totTokenDepois ? 'warn' : 'ok');
+
+  if (!commit && totDispRemovidos > 0)
+    print('\n▶ Revise e clique "Executar de verdade" para aplicar.', 'warn');
   else if (commit)
     print('\n✅ Limpeza concluída!', 'ok');
 };
 
-// Verifica login
-onAuthStateChanged(auth, user => {
-  if (!user) { log.innerHTML = '<span class="err">Você precisa estar logado como Administrador.</span>'; }
-  else { print(`Logado como: ${user.email}`, 'ok'); }
+onAuthStateChanged(auth, u => {
+  log.innerHTML = u
+    ? `<span class="ok">Logado: ${u.email}</span>\n`
+    : `<span class="err">Faça login no app primeiro.</span>`;
 });
 </script>
 </body>
