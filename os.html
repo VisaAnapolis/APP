@@ -810,9 +810,14 @@
                     <span style="color: #64748b;">💾 Cache: </span>
                     <span id="cacheStatus" style="font-weight: 600; color: var(--brand1);">Nenhum dado carregado</span>
                 </div>
-                <button onclick="forcarAtualizacao()" style="padding: 8px 16px; background: #34C759; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9em;">
-                    🔄 Forçar Atualização
-                </button>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button id="btnExportar" onclick="exportarXLS()" style="display:none; padding: 8px 16px; background: #1d6f42; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9em; align-items: center; gap: 6px;">
+                        📊 Exportar XLS
+                    </button>
+                    <button onclick="forcarAtualizacao()" style="padding: 8px 16px; background: #34C759; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9em;">
+                        🔄 Forçar Atualização
+                    </button>
+                </div>
             </div>
 
             <div id="loading" class="loading" style="display: none;">
@@ -1035,6 +1040,7 @@
         let indiceCnae = null;
         
         let dataTable = null;
+        let osAtual = []; // resultados da última busca (para exportação)
         
         // Normalizar texto (remover acentos)
         function normalizarTexto(texto) {
@@ -1360,6 +1366,8 @@ function buscarUltimaTramitacao(numeroProtocolo) {
                 })
                 .then(resultados => {
                     console.log(`📊 ${resultados.length} OS encontradas`);
+                    osAtual = resultados;
+                    document.getElementById('btnExportar').style.display = resultados.length > 0 ? 'inline-flex' : 'none';
                     mostrarResultados(resultados);
                 })
                 .catch(error => {
@@ -1920,6 +1928,67 @@ function converterData(dataStr) {
             });
         }
         
+        // ==================== EXPORTAÇÃO XLS ====================
+
+        function exportarXLS() {
+            if (!osAtual || osAtual.length === 0) return;
+
+            const esc = v => String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+            const colunas = [
+                'Número OS','Data Req.','Tipo','Fiscal',
+                'Razão Social','Nome Fantasia','Complexidade',
+                'Prazo','Motivo/Assunto','Atendido','Cancelado'
+            ];
+
+            const cabecalho = colunas.map(c =>
+                `<Cell ss:StyleID="cab"><Data ss:Type="String">${esc(c)}</Data></Cell>`
+            ).join('');
+
+            const linhas = osAtual.map(os => {
+                const prazo = os.prazo && os.prazo !== '9999-12-31' ? os.prazo : 'PENDENTE';
+                const campos = [
+                    os.numero, os.data_req, os.tipo, os.fiscal,
+                    os.razao_social, os.fantasia, os.complexidade,
+                    prazo, os.motivo, os.atendida, os.cancelado
+                ];
+                const celulas = campos.map(v =>
+                    `<Cell><Data ss:Type="String">${esc(v)}</Data></Cell>`
+                ).join('');
+                return `<Row>${celulas}</Row>`;
+            }).join('\n');
+
+            const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+          xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+  <Styles>
+    <Style ss:ID="cab">
+      <Font ss:Bold="1"/>
+      <Interior ss:Color="#003366" ss:Pattern="Solid"/>
+      <Font ss:Bold="1" ss:Color="#FFFFFF"/>
+    </Style>
+  </Styles>
+  <Worksheet ss:Name="Ordens de Serviço">
+    <Table>
+      <Row>${cabecalho}</Row>
+      ${linhas}
+    </Table>
+  </Worksheet>
+</Workbook>`;
+
+            const blob = new Blob([xml], { type: 'application/vnd.ms-excel;charset=utf-8' });
+            const url  = URL.createObjectURL(blob);
+            const a    = document.createElement('a');
+            const data = new Date().toISOString().slice(0,10);
+            a.href     = url;
+            a.download = `OS_${data}.xls`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
         // ==================== EXIBIÇÃO DE RESULTADOS ====================
         
         function mostrarResultados(resultados) {
