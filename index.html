@@ -2610,14 +2610,23 @@ aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
 
         if (perfil && userDocId) {
 
-          // Gera chave única para este dispositivo (SO + navegador + resolução)
-          try {
-   const chaveDispositivo = [
-  (dadosDispositivo.sistemaOperacional || 'desconhecido').toLowerCase().replace(/[^a-z0-9]/g, ''),
-  (dadosDispositivo.navegador          || 'desconhecido').toLowerCase().replace(/[^a-z0-9]/g, ''),
-  (dadosDispositivo.fabricante         || 'desconhecido').toLowerCase().replace(/[^a-z0-9]/g, ''),
-  (dadosDispositivo.modelo             || 'desconhecido').toLowerCase().replace(/[^a-z0-9]/g, '')
-].join('_');
+ // Gera chave única para este dispositivo
+try {
+  const dadosDispositivo = coletarDadosDispositivo();
+
+  const _norm = s => (s || 'desconhecido').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const _so   = _norm(dadosDispositivo.sistemaOperacional);
+  const _nav  = _norm(dadosDispositivo.navegador);
+  const _fab  = _norm(dadosDispositivo.fabricante);
+  const _mod  = _norm(dadosDispositivo.modelo);
+  const _res  = (dadosDispositivo.resolucao || '').replace('x', '_').replace(/[^a-z0-9_]/g, '');
+
+  // Se tem fabricante ou modelo real → usa eles (sem resolução)
+  // Senão → usa resolução como fallback (compatível com registros antigos)
+  const chaveDispositivo = (_fab !== 'desconhecido' || _mod !== 'desconhecido')
+    ? `${_so}_${_nav}_${_fab}_${_mod}`
+    : `${_so}_${_nav}_${_res}`;
+
 
             const registroDispositivo = {
               appVersionLast: (typeof APP_VERSION !== 'undefined' ? APP_VERSION : ''),
