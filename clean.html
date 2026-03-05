@@ -6,21 +6,35 @@
   <style>
     body { font-family: monospace; background: #0f172a; color: #e2e8f0; padding: 24px; }
     h2   { color: #60a5fa; }
+    h3   { color: #94a3b8; font-size: .95rem; margin: 20px 0 4px; border-top: 1px solid #1e293b; padding-top: 16px; }
     p    { color: #94a3b8; }
     pre  { background: #1e293b; padding: 16px; border-radius: 8px; overflow-x: auto;
            font-size: .82rem; line-height: 1.6; white-space: pre-wrap; }
     .ok  { color: #4ade80; } .warn { color: #fbbf24; } .err { color: #f87171; }
     button { background: #2563eb; color: #fff; border: none; padding: 10px 24px;
              border-radius: 8px; font-size: 1rem; cursor: pointer; margin: 8px 4px; }
-    button.danger { background: #dc2626; }
+    button.danger  { background: #dc2626; }
+    button.warning { background: #b45309; }
   </style>
 </head>
 <body>
-<h2>🔧 Migração + Limpeza Dispositivos — VISA</h2>
-<p>Mesma lógica do <code>index.html</code>: usa <strong>SO + Navegador + Fabricante + Modelo</strong>
-   quando disponíveis, senão mantém <strong>SO + Navegador + Resolução</strong> (compatibilidade).</p>
+<h2>🔧 Manutenção de Dispositivos + FCM — VISA</h2>
+
+<h3>① Migração de chaves + limpeza de duplicatas</h3>
+<p>Reagrupa dispositivos pela nova chave (SO + Navegador + Fabricante/Modelo ou Resolução)
+   e remove duplicatas, mantendo o registro mais recente.</p>
 <button onclick="executar(false)">🔍 Simular (dry-run)</button>
 <button class="danger" onclick="executar(true)">⚠️ Executar de verdade</button>
+
+<h3>② Associar tokens órfãos a dispositivos</h3>
+<p>Tokens que existem em <code>fcmTokens</code> mas não estão vinculados a nenhum
+   <code>dispositivos[x].fcmToken</code>.<br>
+   Estratégia: ordena dispositivos por <strong>ultimoAcesso</strong> e distribui os tokens
+   do mais recente para o mais antigo. Para usuários com mais tokens que dispositivos,
+   os excedentes são descartados.</p>
+<button onclick="associar(false)">🔍 Simular associação</button>
+<button class="warning" onclick="associar(true)">🔗 Associar de verdade</button>
+
 <pre id="log">Aguardando login...</pre>
 
 <script type="module">
@@ -67,6 +81,9 @@ const toMs = x => {
   return isFinite(t) ? t : 0;
 };
 
+// ══════════════════════════════════════════════════════════════════════
+// ① Migração de chaves
+// ══════════════════════════════════════════════════════════════════════
 window.executar = async function(commit) {
   log.innerHTML = '';
   print(commit
@@ -173,6 +190,108 @@ window.executar = async function(commit) {
     print('\n✅ Migração concluída!', 'ok');
   else
     print('\n✅ Nenhum usuário precisa de migração.', 'ok');
+};
+
+// ══════════════════════════════════════════════════════════════════════
+// ② Associar tokens órfãos a dispositivos
+//
+// Estratégia:
+//   - Coleta tokens já vinculados a dispositivos (d.fcmToken)
+//   - Identifica órfãos: tokens em fcmTokens mas sem dispositivo vinculado
+//   - Ordena dispositivos sem token por ultimoAcesso (mais recente primeiro)
+//   - Distribui 1 token por dispositivo sem token, na mesma ordem
+//   - Tokens excedentes (mais tokens que dispositivos sem token) são descartados
+//   - Grava dispositivos.chave.fcmToken E mantém fcmTokens sincronizado
+// ══════════════════════════════════════════════════════════════════════
+window.associar = async function(commit) {
+  log.innerHTML = '';
+  print(commit
+    ? '⚠️  MODO REAL — associando tokens no Firestore'
+    : '🔍 MODO SIMULAÇÃO — nenhuma alteração', commit ? 'warn' : 'ok');
+  print('');
+
+  const snap = await getDocs(collection(db, 'usuarios'));
+  let totUsuarios = 0, totAssociados = 0, totDescartados = 0;
+
+  for (const docSnap of snap.docs) {
+    const data   = docSnap.data();
+    const email  = docSnap.id;
+    const disps  = data.dispositivos;
+    const tokens = Array.isArray(data.fcmTokens) ? [...new Set(data.fcmTokens)] : [];
+
+    if (!disps || typeof disps !== 'object') continue;
+    if (tokens.length === 0) continue;
+
+    // Tokens já vinculados a dispositivos
+    const tokensVinculados = new Set(
+      Object.values(disps).map(d => d.fcmToken).filter(t => t && t.length > 10)
+    );
+
+    // Tokens órfãos (no array global, mas sem dispositivo vinculado)
+    const orfaos = tokens.filter(t => !tokensVinculados.has(t));
+    if (orfaos.length === 0) continue; // nada a fazer
+
+    // Dispositivos que ainda não têm fcmToken (candidatos a receber um token)
+    const dispsSemToken = Object.entries(disps)
+      .filter(([, d]) => !d.fcmToken || d.fcmToken.length <= 10)
+      .sort((a, b) => toMs(b[1].ultimoAcesso) - toMs(a[1].ultimoAcesso)); // mais recente primeiro
+
+    if (dispsSemToken.length === 0) continue; // todos já têm token
+
+    totUsuarios++;
+
+    // Distribui 1 órfão por dispositivo sem token
+    const atualizacoes = {}; // chave → token
+    const pares = Math.min(orfaos.length, dispsSemToken.length);
+    for (let i = 0; i < pares; i++) {
+      atualizacoes[dispsSemToken[i][0]] = orfaos[i];
+    }
+    const descartados = Math.max(0, orfaos.length - dispsSemToken.length);
+
+    totAssociados  += pares;
+    totDescartados += descartados;
+
+    // ── Log ──────────────────────────────────────────────────────────
+    print(`\n  👤 ${email} (${data.nome || ''})`, 'warn');
+    print(`     Órfãos: ${orfaos.length} | Dispositivos sem token: ${dispsSemToken.length}`);
+    for (const [chave, token] of Object.entries(atualizacoes)) {
+      const d = disps[chave];
+      const so = [d.sistemaOperacional, d.versaoSO].filter(Boolean).join(' ');
+      const nav = d.navegador || '';
+      print(`     🔗 "${chave}" (${so} / ${nav}) ← ${token.substring(0, 20)}…`, 'ok');
+    }
+    if (descartados > 0)
+      print(`     🗑️  ${descartados} token(s) excedente(s) descartado(s)`, 'err');
+
+    if (commit) {
+      // Monta payload: atualiza fcmToken de cada dispositivo e reconstrói fcmTokens global
+      const payload = {};
+      for (const [chave, token] of Object.entries(atualizacoes)) {
+        payload[`dispositivos.${chave}.fcmToken`] = token;
+      }
+      // Reconstrói fcmTokens: tokens vinculados (existentes + novos), sem órfãos excedentes
+      const todosVinculados = [
+        ...tokensVinculados,
+        ...Object.values(atualizacoes)
+      ];
+      payload.fcmTokens = [...new Set(todosVinculados)];
+
+      await updateDoc(doc(db, 'usuarios', email), payload);
+      print(`     ✅ Salvo`, 'ok');
+    }
+  }
+
+  print('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  print(`Usuários afetados:      ${totUsuarios}`,   totUsuarios   > 0 ? 'warn' : 'ok');
+  print(`Vínculos criados:       ${totAssociados}`, totAssociados > 0 ? 'ok'   : 'ok');
+  print(`Tokens descartados:     ${totDescartados}`,totDescartados > 0 ? 'err'  : 'ok');
+
+  if (!commit && totUsuarios > 0)
+    print('\n▶ Revise e clique "Associar de verdade" para aplicar.', 'warn');
+  else if (commit && totUsuarios > 0)
+    print('\n✅ Associação concluída!', 'ok');
+  else
+    print('\n✅ Nenhum usuário tem tokens órfãos para associar.', 'ok');
 };
 
 onAuthStateChanged(auth, u => {
