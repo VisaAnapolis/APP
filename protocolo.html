@@ -265,15 +265,30 @@
     align-self: center;
   }
 
-  /* Mobile ≤ 540px (Android e iOS) */
-  @media (max-width: 540px) {
-    .modal-overlay { padding: 12px; }
-    .modal {
-      width: 94vw;
-      max-width: 94vw;
-      max-height: 80vh;
-    }
+  /* Android */
+@media (max-width: 540px) and (min-width: 415px) {
+  .modal-overlay {
+    padding: 12px;
+    justify-content: flex-start;
+    padding-left: 8px;
   }
+  .modal {
+    width: 75vw;
+    max-width: 75vw;
+    max-height: 80vh;
+  }
+}
+
+/* iOS — iPhone */
+@media (max-width: 414px) {
+  .modal-overlay { padding: 12px; }
+  .modal {
+    width: 75vw;
+    max-width: 75vw;
+    max-height: 80vh;
+  }
+}
+
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
