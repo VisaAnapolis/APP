@@ -29,6 +29,37 @@ function _resolverScopeSW() {
 }
 
 /**
+ * Obtém o token FCM silenciosamente, sem solicitar permissão nem gravar no Firestore.
+ * Retorna o token se a permissão já foi concedida e o SW está ativo; null caso contrário.
+ * Usado pelo registro de dispositivo no index.html para vincular o token ao dispositivo.
+ *
+ * @param {object} firebaseApp - Instância já inicializada do Firebase App
+ * @returns {Promise<string|null>} Token FCM ou null
+ */
+export async function obterTokenFCMSilencioso(firebaseApp) {
+  try {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return null;
+    if (!('serviceWorker' in navigator)) return null;
+
+    const { swPath, scope } = _resolverScopeSW();
+    const swReg = await navigator.serviceWorker.getRegistration(scope);
+    if (!swReg) return null;
+
+    const { getMessaging, getToken } =
+      await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js');
+
+    const messaging = getMessaging(firebaseApp);
+    const token = await getToken(messaging, {
+      vapidKey:                  VAPID_KEY,
+      serviceWorkerRegistration: swReg
+    });
+    return token || null;
+  } catch (_) {
+    return null;
+  }
+}
+
+/**
  * Inicializa o Firebase Messaging e registra o token FCM do usuário.
  *
  * @param {object} firebaseApp  - Instância já inicializada do Firebase App
