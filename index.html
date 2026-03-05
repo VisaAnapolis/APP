@@ -2755,10 +2755,10 @@ try {
             }
 
           } else if (optIn === false) {
-            // ── Já recusou: exibe banner a cada 3 dias (localStorage com timestamp) ──
+            // ── Já recusou: exibe banner a cada 1 dia (localStorage com timestamp) ──
             const ultimaMs   = parseInt(localStorage.getItem('visa_reativar_ts') || '0', 10);
             const diasPassados = (Date.now() - ultimaMs) / 86400000;
-            if (diasPassados >= 3) {
+            if (diasPassados >= 1) {
               localStorage.setItem('visa_reativar_ts', Date.now().toString());
               console.log("[Push] Usuário havia recusado. Exibindo banner de reativação.");
               _exibirBannerReativacao(db2, userDocRef, app, user.email);
@@ -2792,25 +2792,32 @@ try {
         }
       })();
 
-      // Banner para usuários que recusaram anteriormente (exibido a cada 3 dias)
+      // Banner para usuários que recusaram anteriormente (exibido a cada 1 dia)
       function _exibirBannerReativacao(db2, userDocRef, firebaseApp, email) {
         const banner = document.createElement('div');
         banner.id = 'visa-reativar-notif';
         banner.style.cssText = `
           position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
           background: #1a3a6b; color: #fff; border-radius: 14px;
-          padding: 14px 20px; font-size: 0.88rem; z-index: 9998;
+          padding: 20px 28px; font-size: 0.88rem; z-index: 9998;
           display: flex; gap: 14px; align-items: center;
           box-shadow: 0 6px 24px rgba(0,0,0,0.28); max-width: 92vw;
+          animation: visaBannerPulse 3s ease-in-out infinite;
         `;
         banner.innerHTML = `
+          <style>
+            @keyframes visaBannerPulse {
+              0%, 100% { opacity: 1; }
+              50% { opacity: 0.8; }
+            }
+          </style>
           <div style="display:flex;flex-direction:column;gap:4px;flex:1;">
-            <strong style="font-size:0.92rem;">🔔 Ativar alertas de prazo?</strong>
+            <strong style="font-size:0.92rem;">📢 Ativar alertas de prazo?</strong>
             <span style="opacity:0.88;font-size:0.82rem;">Receba avisos automáticos antes do vencimento das suas OSs.</span>
           </div>
           <button id="btnReativarNotif" style="
             background:#fff; color:#1a3a6b; border:none; border-radius:8px;
-            padding:8px 14px; font-weight:700; cursor:pointer; font-size:0.86rem;
+            padding:10px 18px; font-weight:700; cursor:pointer; font-size:0.95rem;
             white-space:nowrap; flex-shrink:0;
           ">Ativar agora</button>
           <button id="btnFecharReativar" style="
@@ -2819,9 +2826,12 @@ try {
           ">✕</button>
         `;
         document.body.appendChild(banner);
-        setTimeout(() => { if (banner.parentNode) banner.remove(); }, 25000);
+        setTimeout(() => { if (banner.parentNode) banner.remove(); }, 60000);
 
-        document.getElementById('btnFecharReativar').onclick = () => banner.remove();
+        document.getElementById('btnFecharReativar').onclick = () => {
+          localStorage.setItem('visa_reativar_ts', Date.now().toString());
+          banner.remove();
+        };
         document.getElementById('btnReativarNotif').onclick = async () => {
           banner.remove();
           try {
