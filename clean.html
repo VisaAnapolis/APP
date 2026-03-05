@@ -17,7 +17,7 @@
 <body>
 <h2>🧹 Limpeza Dispositivos + Tokens FCM — VISA</h2>
 <p>Agrupa dispositivos por <strong>SO + Navegador + Fabricante + Modelo</strong>,
-   mantém o mais recente e descarta os tokens dos dispositivos removidos.</p>
+   mantém o mais recente e descarta os tokens excedentes.</p>
 <button onclick="executar(false)">🔍 Simular (dry-run)</button>
 <button class="danger" onclick="executar(true)">⚠️ Executar de verdade</button>
 <pre id="log">Aguardando login...</pre>
@@ -42,16 +42,12 @@ const log  = document.getElementById('log');
 const print = (msg, cls='') =>
   log.innerHTML += `<span class="${cls}">${msg}</span>\n`;
 
-// Normaliza campo para usar na chave
-const norm = s => (s || 'desconhecido')
-  .toLowerCase().replace(/[^a-z0-9]/g, '');
+const norm = s => (s || 'desconhecido').toLowerCase().replace(/[^a-z0-9]/g, '');
 
-// Chave nova: SO + Navegador + Fabricante + Modelo (SEM resolução)
 const novaChave = d =>
   norm(d.sistemaOperacional) + norm(d.navegador) +
   norm(d.fabricante) + norm(d.modelo);
 
-// Retorna timestamp numérico de qualquer formato Firestore/ISO
 const toMs = x => {
   if (!x) return 0;
   if (x.seconds) return x.seconds * 1000;
@@ -77,9 +73,11 @@ window.executar = async function(commit) {
 
     if (!disps || typeof disps !== 'object') continue;
     const chaves = Object.keys(disps);
+
+    // Nada a fazer se já está limpo
     if (chaves.length <= 1 && tokens.length <= 1) continue;
 
-    // ── 1. Agrupa dispositivos por nova chave ──────────────────────────
+    // ── 1. Agrupa dispositivos por nova chave (sem resolução) ──────────
     const grupos = {};
     for (const k of chaves) {
       const nk = novaChave(disps[k]);
@@ -87,64 +85,44 @@ window.executar = async function(commit) {
       grupos[nk].push(k);
     }
 
-    const chavesRemover = [];   // chaves antigas a excluir
-    const chavesManter  = [];   // chaves que ficam
+    const chavesRemover = [];
+    const chavesManter  = [];
 
     for (const lista of Object.values(grupos)) {
       if (lista.length === 1) {
         chavesManter.push(lista[0]);
         continue;
       }
-      // Ordena: mais recente primeiro
       lista.sort((a, b) => toMs(disps[b].ultimoAcesso) - toMs(disps[a].ultimoAcesso));
-      chavesManter.push(lista[0]);           // mantém o mais recente
-      chavesRemover.push(...lista.slice(1)); // remove os demais
+      chavesManter.push(lista[0]);
+      chavesRemover.push(...lista.slice(1));
     }
 
-    if (chavesRemover.length === 0) continue;
+    // ── 2. Tokens: mantém 1 por dispositivo ativo (deduplica + trunca) ─
+    // Os tokens NÃO ficam dentro de cada objeto de dispositivo,
+    // por isso usamos quantidade de dispositivos mantidos como limite.
+    const tokensDedupe = [...new Set(tokens)];
+    const novosFcm = tokensDedupe.slice(0, Math.max(chavesManter.length, 1));
 
-    // ── 2. Identifica tokens vinculados aos dispositivos REMOVIDOS ─────
-    // Cada entrada de dispositivo tem campo "fcmToken" (singular)?
-    // Ou o token estava no array global? Vamos descobrir:
-    const tokensRemover = new Set();
-
-    for (const chave of chavesRemover) {
-      const d = disps[chave];
-      // Caso o dispositivo guarde o próprio token no campo
-      if (d.fcmToken) tokensRemover.add(d.fcmToken);
-    }
-
-    // ── 3. Tokens órfãos: todos tokens NÃO associados a dispositivos mantidos
-    // Constrói set de tokens dos dispositivos que ficam
-    const tokensAtivos = new Set();
-    for (const chave of chavesManter) {
-      const d = disps[chave];
-      if (d.fcmToken) tokensAtivos.add(d.fcmToken);
-    }
-
-    // Tokens que não pertencem a nenhum dispositivo ativo = órfãos
-    // ATENÇÃO: só remove órfãos se houver tokens ativos para não deixar o usuário sem push
-    const novosFcm = tokensAtivos.size > 0
-      ? tokens.filter(t => tokensAtivos.has(t))
-      : [...new Set(tokens)]; // fallback: só deduplica se não houver vínculo
+    const houveAlteracao = chavesRemover.length > 0 || novosFcm.length < tokens.length;
+    if (!houveAlteracao) continue;
 
     totUsuarios++;
     totDispRemovidos += chavesRemover.length;
     totTokenAntes    += tokens.length;
     totTokenDepois   += novosFcm.length;
 
-    // Log detalhado
+    // ── Log ────────────────────────────────────────────────────────────
     print(`\n  👤 ${email} (${data.nome || ''})`, 'warn');
     print(`     Dispositivos: ${chaves.length} → ${chavesManter.length} (remove ${chavesRemover.length})`);
     chavesRemover.forEach(k => {
       const d = disps[k];
-      print(`       ❌ "${k}"  v${d.appVersionLast||'?'}  ${d.ultimoAcesso||''}`, 'err');
+      print(`       ❌ "${k}"  v${d.appVersionLast||'?'}  última: ${toMs(d.ultimoAcesso) ? new Date(toMs(d.ultimoAcesso)).toLocaleString('pt-BR') : '-'}`, 'err');
     });
     if (tokens.length !== novosFcm.length)
       print(`     Tokens FCM: ${tokens.length} → ${novosFcm.length}`, 'warn');
 
     if (commit) {
-      // Reconstrói mapa sem as chaves removidas
       const dispLimpo = {};
       for (const k of chavesManter) dispLimpo[k] = disps[k];
 
@@ -157,15 +135,17 @@ window.executar = async function(commit) {
   }
 
   print('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  print(`Usuários afetados:      ${totUsuarios}`,       totUsuarios  > 0 ? 'warn' : 'ok');
-  print(`Dispositivos removidos: ${totDispRemovidos}`,  totDispRemovidos > 0 ? 'err'  : 'ok');
+  print(`Usuários afetados:      ${totUsuarios}`,      totUsuarios      > 0 ? 'warn' : 'ok');
+  print(`Dispositivos removidos: ${totDispRemovidos}`, totDispRemovidos > 0 ? 'err'  : 'ok');
   print(`Tokens FCM: ${totTokenAntes} → ${totTokenDepois} (−${totTokenAntes - totTokenDepois})`,
     totTokenAntes > totTokenDepois ? 'warn' : 'ok');
 
   if (!commit && totDispRemovidos > 0)
     print('\n▶ Revise e clique "Executar de verdade" para aplicar.', 'warn');
-  else if (commit)
+  else if (commit && totUsuarios > 0)
     print('\n✅ Limpeza concluída!', 'ok');
+  else if (totUsuarios === 0)
+    print('\n✅ Nenhum usuário precisa de limpeza.', 'ok');
 };
 
 onAuthStateChanged(auth, u => {
