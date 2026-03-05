@@ -19,6 +19,12 @@ function toggleSidebar() {
   document.body.style.overflow  = open ? 'hidden' : '';
   document.body.style.position  = open ? 'fixed'  : '';
   document.body.style.width     = open ? '100%'   : '';
+
+  // Ao abrir, rola até o item ativo para o usuário não perder a posição
+  if (open) {
+    var ativo = s.querySelector('.visa-nav-item.active');
+    if (ativo) ativo.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
 }
 
 function closeSidebar() {
