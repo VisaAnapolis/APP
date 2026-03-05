@@ -111,9 +111,14 @@ window.executar = async function(commit) {
       dispFinal[nk] = melhor.reg;
     }
 
-    // ── 3. Tokens: 1 por dispositivo final (deduplica + trunca) ───────
+    // ── 3. Tokens: reconstrói a partir do fcmToken de cada dispositivo ─
+    //    Tokens órfãos (sem dispositivo correspondente) são mantidos como
+    //    fallback enquanto nem todos os dispositivos fizeram login na v2.4.8+
     const tokensDedupe = [...new Set(tokens)];
-    const novosFcm     = tokensDedupe.slice(0, Object.keys(dispFinal).length);
+    const tokensDeDisps = Object.values(dispFinal)
+      .map(d => d.fcmToken).filter(t => t && t.length > 10);
+    const tokensOrfaos = tokensDedupe.filter(t => !tokensDeDisps.includes(t));
+    const novosFcm = [...new Set([...tokensDeDisps, ...tokensOrfaos])];
 
     const houveAlteracao =
       migrou ||
@@ -144,7 +149,7 @@ window.executar = async function(commit) {
     }
 
     if (tokens.length !== novosFcm.length)
-      print(`     Tokens FCM: ${tokens.length} → ${novosFcm.length}`, 'warn');
+      print(`     Tokens FCM: ${tokens.length} → ${novosFcm.length} (${tokensDeDisps.length} de dispositivos + ${tokensOrfaos.length} órfãos)`, 'warn');
 
     if (commit) {
       await updateDoc(doc(db, 'usuarios', email), {
