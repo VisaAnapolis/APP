@@ -444,8 +444,9 @@ async function enviarNotificacaoFiscal(tokens, numero, tipo, motivo, diasParaPra
 }
 
 // ── Remove tokens inválidos do Firestore ─────────────────────
+// Atualiza fcmTokens[] E zera dispositivos[chave].fcmToken para
+// manter consistência entre o array de envio e o mapa de dispositivos.
 async function removerTokensInvalidos(tokensInvalidos) {
-  const { FieldValue } = admin.firestore;
   try {
     const snap = await db.collection('usuarios').get();
     const batch = db.batch();
@@ -456,7 +457,17 @@ async function removerTokensInvalidos(tokensInvalidos) {
       const tokens = data.fcmTokens || [];
       const tokensFiltrados = tokens.filter(t => !tokensInvalidos.includes(t));
       if (tokensFiltrados.length !== tokens.length) {
-        batch.update(docSnap.ref, { fcmTokens: tokensFiltrados });
+        const update = { fcmTokens: tokensFiltrados };
+
+        // Zera fcmToken em cada dispositivo que usava um dos tokens inválidos
+        const dispositivos = data.dispositivos || {};
+        for (const chave of Object.keys(dispositivos)) {
+          if (tokensInvalidos.includes(dispositivos[chave]?.fcmToken)) {
+            update[`dispositivos.${chave}.fcmToken`] = null;
+          }
+        }
+
+        batch.update(docSnap.ref, update);
         alteracoes++;
       }
     });
