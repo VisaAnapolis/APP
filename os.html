@@ -26,6 +26,9 @@
     <!-- PapaParse para ler CSV -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
+    <!-- SheetJS para exportação XLSX real -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
         <style>
         /* RESET */
         * {
@@ -812,7 +815,7 @@
                 </div>
                 <div style="display: flex; gap: 8px; align-items: center;">
                     <button id="btnExportar" onclick="exportarXLS()" style="display:none; padding: 8px 16px; background: #1d6f42; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9em; align-items: center; gap: 6px;">
-                        📊 Exportar XLS
+                        📊 Exportar XLSX
                     </button>
                     <button onclick="forcarAtualizacao()" style="padding: 8px 16px; background: #34C759; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9em;">
                         🔄 Forçar Atualização
@@ -1928,12 +1931,10 @@ function converterData(dataStr) {
             });
         }
         
-        // ==================== EXPORTAÇÃO XLS ====================
+        // ==================== EXPORTAÇÃO XLSX ====================
 
         function exportarXLS() {
             if (!osAtual || osAtual.length === 0) return;
-
-            const esc = v => String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
             const colunas = [
                 'Número OS','Data Req.','Tipo','Fiscal',
@@ -1941,51 +1942,48 @@ function converterData(dataStr) {
                 'Prazo','Motivo/Assunto','Atendido','Cancelado'
             ];
 
-            const cabecalho = colunas.map(c =>
-                `<Cell ss:StyleID="cab"><Data ss:Type="String">${esc(c)}</Data></Cell>`
-            ).join('');
-
-            const linhas = osAtual.map(os => {
+            const dados = osAtual.map(os => {
                 const prazo = os.prazo && os.prazo !== '9999-12-31' ? os.prazo : 'PENDENTE';
-                const campos = [
-                    os.numero, os.data_req, os.tipo, os.fiscal,
-                    os.razao_social, os.fantasia, os.complexidade,
-                    prazo, os.motivo, os.atendida, os.cancelado
+                return [
+                    String(os.numero ?? ''),
+                    String(os.data_req ?? ''),
+                    String(os.tipo ?? ''),
+                    String(os.fiscal ?? ''),
+                    String(os.razao_social ?? ''),
+                    String(os.fantasia ?? ''),
+                    String(os.complexidade ?? ''),
+                    prazo,
+                    String(os.motivo ?? ''),
+                    String(os.atendida ?? ''),
+                    String(os.cancelado ?? '')
                 ];
-                const celulas = campos.map(v =>
-                    `<Cell><Data ss:Type="String">${esc(v)}</Data></Cell>`
-                ).join('');
-                return `<Row>${celulas}</Row>`;
-            }).join('\n');
+            });
 
-            const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<?mso-application progid="Excel.Sheet"?>
-<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
-          xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
-  <Styles>
-    <Style ss:ID="cab">
-      <Font ss:Bold="1" ss:Color="#FFFFFF"/>
-      <Interior ss:Color="#003366" ss:Pattern="Solid"/>
-    </Style>
-  </Styles>
-  <Worksheet ss:Name="Ordens de Serviço">
-    <Table>
-      <Row>${cabecalho}</Row>
-      ${linhas}
-    </Table>
-  </Worksheet>
-</Workbook>`;
+            const ws = XLSX.utils.aoa_to_sheet([colunas, ...dados]);
 
-            const blob = new Blob([xml], { type: 'application/vnd.ms-excel;charset=utf-8' });
-            const url  = URL.createObjectURL(blob);
-            const a    = document.createElement('a');
-            const data = new Date().toISOString().slice(0,10);
-            a.href     = url;
-            a.download = `OS_${data}.xls`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            // Estilo do cabeçalho
+            const estiloCab = {
+                font: { bold: true, color: { rgb: 'FFFFFF' } },
+                fill: { fgColor: { rgb: '003366' } }
+            };
+            colunas.forEach((_, i) => {
+                const cel = XLSX.utils.encode_cell({ r: 0, c: i });
+                if (!ws[cel]) return;
+                ws[cel].s = estiloCab;
+            });
+
+            // Largura das colunas
+            ws['!cols'] = [
+                { wch: 12 }, { wch: 12 }, { wch: 14 }, { wch: 20 },
+                { wch: 35 }, { wch: 25 }, { wch: 14 },
+                { wch: 12 }, { wch: 40 }, { wch: 10 }, { wch: 10 }
+            ];
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Ordens de Serviço');
+
+            const data = new Date().toISOString().slice(0, 10);
+            XLSX.writeFile(wb, `OS_${data}.xlsx`);
         }
 
         // ==================== EXIBIÇÃO DE RESULTADOS ====================
