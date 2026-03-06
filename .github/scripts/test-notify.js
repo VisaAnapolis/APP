@@ -103,15 +103,28 @@ async function enviarNotificacaoTeste() {
     console.log(`  ❌ Falhas: ${totalFalha}`);
 
     // Remove tokens inválidos do Firestore
+    // Atualiza fcmTokens[] E zera dispositivos[chave].fcmToken para
+    // manter consistência entre o array de envio e o mapa de dispositivos.
     if (tokensInvalidos.length > 0) {
       console.log(`\n🧹 Removendo ${tokensInvalidos.length} token(s) inválido(s)...`);
       const batch = db.batch();
       let alteracoes = 0;
       snap.forEach(doc => {
-        const tokens = doc.data().fcmTokens || [];
+        const data = doc.data();
+        const tokens = data.fcmTokens || [];
         const filtrados = tokens.filter(t => !tokensInvalidos.includes(t));
         if (filtrados.length !== tokens.length) {
-          batch.update(doc.ref, { fcmTokens: filtrados });
+          const update = { fcmTokens: filtrados };
+
+          // Zera fcmToken em cada dispositivo que usava um dos tokens inválidos
+          const dispositivos = data.dispositivos || {};
+          for (const chave of Object.keys(dispositivos)) {
+            if (tokensInvalidos.includes(dispositivos[chave]?.fcmToken)) {
+              update[`dispositivos.${chave}.fcmToken`] = null;
+            }
+          }
+
+          batch.update(doc.ref, update);
           alteracoes++;
         }
       });
