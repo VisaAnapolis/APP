@@ -2704,6 +2704,17 @@ try {
       // O modal só é exibido se o usuário NUNCA decidiu (optIn === undefined/null).
       // Quem já aceitou → renova token silenciosamente.
       // Quem já recusou → não incomoda, mas oferece reativação via link discreto.
+      // Calcula a chave do dispositivo atual — definida aqui para ser acessível
+      // tanto dentro do IIFE quanto nos banners definidos fora dele.
+      function _chaveDispositivoAtual() {
+        const d = coletarDadosDispositivo();
+        const _n = s => (s || 'desconhecido').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const fab = _n(d.fabricante), mod = _n(d.modelo);
+        return (fab !== 'desconhecido' || mod !== 'desconhecido')
+          ? `${_n(d.sistemaOperacional)}_${_n(d.navegador)}_${fab}_${mod}`
+          : `${_n(d.sistemaOperacional)}_${_n(d.navegador)}_${(d.resolucao||'').replace('x','_').replace(/[^a-z0-9_]/g,'')}`;
+      }
+
       (async () => {
         try {
           const { getFirestore: gFS, doc: gDoc, getDoc: gGet, setDoc: gSet } =
@@ -2713,16 +2724,6 @@ try {
           const userDocRef = gDoc(db2, "usuarios", emailKey);
           const userDocSnap = await gGet(userDocRef);
           const userData = userDocSnap.exists() ? userDocSnap.data() : {};
-
-          // Calcula a chave do dispositivo atual (mesma lógica de calcChave em clean.html).
-          function _chaveDispositivoAtual() {
-            const d = coletarDadosDispositivo();
-            const _n = s => (s || 'desconhecido').toLowerCase().replace(/[^a-z0-9]/g, '');
-            const fab = _n(d.fabricante), mod = _n(d.modelo);
-            return (fab !== 'desconhecido' || mod !== 'desconhecido')
-              ? `${_n(d.sistemaOperacional)}_${_n(d.navegador)}_${fab}_${mod}`
-              : `${_n(d.sistemaOperacional)}_${_n(d.navegador)}_${(d.resolucao||'').replace('x','_').replace(/[^a-z0-9_]/g,'')}`;
-          }
 
           // Mantida apenas como fallback de compatibilidade (não mais chamada no fluxo normal).
           async function _vincularTokenAoDispositivo(dbInst, emailK, token) {
@@ -2752,13 +2753,23 @@ try {
               // o modal apareça novamente na próxima sessão.
               console.warn("[Push] Permissão bloqueada no navegador. Exibindo orientação.");
               _exibirBannerPermissaoBloqueada(db2, userDocRef);
-            } else {
-              // 'granted' ou 'default' → tenta renovar silenciosamente
+            } else if (permBrowser === 'granted') {
+              // Permissão já concedida → renova token silenciosamente (sem diálogo ao usuário)
               try {
                 const { initPushNotifications } = await import("./js/push-notifications.js");
-                const tkn = await initPushNotifications(app, user.email, null, _chaveDispositivoAtual());
+                await initPushNotifications(app, user.email, null, _chaveDispositivoAtual());
                 console.log("[Push] Token renovado silenciosamente.");
               } catch (e) { console.warn("[Push] Erro ao renovar token:", e.message); }
+            } else {
+              // 'default' → permissão foi resetada (ex: limpeza de dados do navegador).
+              // Não pedir automaticamente pois requer gesto do usuário (iOS/Safari).
+              // Redefine o optIn para que o modal apareça no próximo carregamento.
+              console.warn("[Push] optIn=true mas permissão não concedida. Redefinindo para exibir modal.");
+              try {
+                const { setDoc: _sDoc, deleteField: _dF } =
+                  await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+                await _sDoc(userDocRef, { notificationOptIn: _dF() }, { merge: true });
+              } catch (e) { console.warn("[Push] Erro ao redefinir optIn:", e.message); }
             }
 
           } else if (optIn === false) {
