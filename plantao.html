@@ -1612,48 +1612,57 @@ function _montarPDF(mesKey, mesTitulo, diasComPlantao, brasaoData, dataEmissao) 
   doc.text('ORDEM DE SERVIÇO – PLANTÃO FISCAL Nº 20260005', 105, y + 4, { align: 'center' });
   y += 12;
 
-  // ── Texto de convocação ────────────────────────────────────────
+  // ── Texto de convocação (justificado) ──────────────────────────
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
   doc.setTextColor(30, 30, 30);
 
-  const texto = [
-    `A Gerência de Vigilância Sanitária, no uso de suas atribuições legais e regulamentares,`,
-    `CONVOCA os Fiscais Sanitários abaixo relacionados para cumprimento do Plantão Fiscal`,
-    `referente ao mês de ${mesTitulo}.`,
-    ``,
-    `O plantão será realizado durante o horário regular de expediente, visando atender ao`,
-    `contribuinte na sede da repartição, bem como eventuais demandas externas que se façam`,
-    `necessárias.`,
-  ];
   const lineH = 5.5;
-  for (const linha of texto) {
-    if (linha === '') { y += 2; continue; }
-    doc.text(linha, margemL, y);
-    y += lineH;
+  const paragrafos = [
+    `A Gerência de Vigilância Sanitária, no uso de suas atribuições legais e regulamentares, CONVOCA os Fiscais Sanitários abaixo relacionados para cumprimento do Plantão Fiscal referente ao mês de ${mesTitulo}.`,
+    `O plantão será realizado durante o horário regular de expediente, visando atender ao contribuinte na sede da repartição, bem como eventuais demandas externas que se façam necessárias.`,
+  ];
+  for (const para of paragrafos) {
+    doc.text(para, margemL, y, { align: 'justify', maxWidth: largura });
+    const linhas = doc.splitTextToSize(para, largura);
+    y += linhas.length * lineH + 2;
   }
-  y += 4;
+  y += 2;
 
-  // ── Tabela ─────────────────────────────────────────────────────
-  // mat30/vesp30 já chegam com safeName + sufixo " (Mat)"/" (Vesp)" — remover turno para o PDF
-  const stripTurno = s => s ? s.replace(/\s*\((Mat|Vesp|Int|Dia Todo)\)/gi, '').trim() : '';
-  const tableRows = diasComPlantao.map(r => {
+  // ── Tabela em duas colunas ─────────────────────────────────────
+  // Período (Mat/Vesp) indicado na frente do nome para fiscais de 30h
+  const formatarFiscais = r => {
     const nomes = [];
-    if (r.mat30)  nomes.push(stripTurno(r.mat30));
-    if (r.vesp30) nomes.push(stripTurno(r.vesp30));
-    if (r.f40 && r.f40.length) r.f40.forEach(n => nomes.push(n)); // f40 já tem safeName, sem sufixo
-    return [isoToBR(r.iso), r.dow, nomes.join('\n')];
+    if (r.mat30)  nomes.push(`(Mat) ${r.mat30.replace(/\s*\((Mat|Vesp|Int|Dia Todo)\)/gi, '').trim()}`);
+    if (r.vesp30) nomes.push(`(Vesp) ${r.vesp30.replace(/\s*\((Mat|Vesp|Int|Dia Todo)\)/gi, '').trim()}`);
+    if (r.f40 && r.f40.length) r.f40.forEach(n => nomes.push(n));
+    return nomes.join('\n');
+  };
+
+  const metade = Math.ceil(diasComPlantao.length / 2);
+  const ladoEsq = diasComPlantao.slice(0, metade);
+  const ladoDir = diasComPlantao.slice(metade);
+
+  const tableRows = ladoEsq.map((r, i) => {
+    const r2 = ladoDir[i];
+    return [
+      isoToBR(r.iso), r.dow, formatarFiscais(r),
+      r2 ? isoToBR(r2.iso) : '', r2 ? r2.dow : '', r2 ? formatarFiscais(r2) : '',
+    ];
   });
+
+  // Larguras: Data:22 + Dia:12 + Fiscais:51 = 85 × 2 = 170mm
+  const colFiscais = (largura - 22 * 2 - 12 * 2) / 2; // 51mm cada lado
 
   doc.autoTable({
     startY: y,
-    head: [['Data', 'Dia', 'Fiscal(es) de Plantão']],
+    head: [['Data', 'Dia', 'Fiscal(es) de Plantão', 'Data', 'Dia', 'Fiscal(es) de Plantão']],
     body: tableRows,
     margin: { left: margemL, right: margemR },
     tableWidth: largura,
     styles: {
-      fontSize: 9,
-      cellPadding: { top: 2.5, bottom: 2.5, left: 3, right: 3 },
+      fontSize: 8.5,
+      cellPadding: { top: 2, bottom: 2, left: 2.5, right: 2.5 },
       valign: 'middle',
       lineColor: [180, 180, 200],
       lineWidth: 0.2,
@@ -1663,15 +1672,19 @@ function _montarPDF(mesKey, mesTitulo, diasComPlantao, brasaoData, dataEmissao) 
       fillColor: [10, 40, 100],
       textColor: 255,
       fontStyle: 'bold',
-      fontSize: 9,
+      fontSize: 8.5,
+      halign: 'center',
     },
     columnStyles: {
-      0: { cellWidth: 28, halign: 'center' },
-      1: { cellWidth: 14, halign: 'center' },
-      2: { cellWidth: largura - 42 },
+      0: { cellWidth: 22, halign: 'center' },
+      1: { cellWidth: 12, halign: 'center' },
+      2: { cellWidth: colFiscais },
+      3: { cellWidth: 22, halign: 'center' },
+      4: { cellWidth: 12, halign: 'center' },
+      5: { cellWidth: colFiscais },
     },
     alternateRowStyles: { fillColor: [240, 244, 252] },
-    didDrawPage: () => { /* nada — cabeçalho só na primeira página */ },
+    didDrawPage: () => {},
   });
 
   y = doc.lastAutoTable.finalY + 14;
