@@ -1635,12 +1635,14 @@ function _montarPDF(mesKey, mesTitulo, diasComPlantao, brasaoData, dataEmissao) 
   y += 4;
 
   // ── Tabela ─────────────────────────────────────────────────────
+  // mat30/vesp30 já chegam com safeName + sufixo " (Mat)"/" (Vesp)" — remover turno para o PDF
+  const stripTurno = s => s ? s.replace(/\s*\((Mat|Vesp|Int|Dia Todo)\)/gi, '').trim() : '';
   const tableRows = diasComPlantao.map(r => {
     const nomes = [];
-    if (r.mat30) nomes.push(safeName(r.mat30));
-    if (r.vesp30) nomes.push(safeName(r.vesp30));
-    if (r.f40 && r.f40.length) r.f40.forEach(n => nomes.push(safeName(n)));
-    return [isoToBR(r.date), r.dow, nomes.join('\n')];
+    if (r.mat30)  nomes.push(stripTurno(r.mat30));
+    if (r.vesp30) nomes.push(stripTurno(r.vesp30));
+    if (r.f40 && r.f40.length) r.f40.forEach(n => nomes.push(n)); // f40 já tem safeName, sem sufixo
+    return [isoToBR(r.iso), r.dow, nomes.join('\n')];
   });
 
   doc.autoTable({
