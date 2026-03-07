@@ -1687,14 +1687,14 @@ function _montarPDF(mesKey, mesTitulo, diasComPlantao, brasaoData, dataEmissao) 
     didDrawPage: () => {},
   });
 
-  y = doc.lastAutoTable.finalY + 14;
+  y = doc.lastAutoTable.finalY + 8;
 
   // ── Rodapé ─────────────────────────────────────────────────────
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
   doc.setTextColor(50, 50, 50);
   doc.text(dataEmissao, margemL, y);
-  y += 18;
+  y += 14;
 
   // Linha de assinatura
   doc.setDrawColor(80, 80, 80);
@@ -1707,6 +1707,8 @@ function _montarPDF(mesKey, mesTitulo, diasComPlantao, brasaoData, dataEmissao) 
   doc.text('Césio Malaquias', margemL, y);
   y += 5;
   doc.setFont('helvetica', 'normal');
+  doc.text('Supervisor de Vigilância Sanitária', margemL, y);
+  y += 4.5;
   doc.text('Gerente de Vigilância Sanitária', margemL, y);
   y += 4.5;
   doc.text('Diretoria de Vigilância em Saúde', margemL, y);
