@@ -1708,10 +1708,6 @@ function _montarPDF(mesKey, mesTitulo, diasComPlantao, brasaoData, dataEmissao) 
   y += 5;
   doc.setFont('helvetica', 'normal');
   doc.text('Supervisor de Vigilância Sanitária', margemL, y);
-  y += 4.5;
-  doc.text('Diretoria de Vigilância em Saúde', margemL, y);
-  y += 4.5;
-  doc.text('Prefeitura Municipal de Anápolis', margemL, y);
 
   // Número de página
   const totalPags = doc.internal.getNumberOfPages();
