@@ -26,6 +26,10 @@
     <!-- PapaParse para ler CSV -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
+    <!-- jsPDF para exportar Ordem de Serviço -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
         <style>
         /* RESET */
         * {
@@ -756,6 +760,29 @@
       .results-card { padding: 14px 10px; }
     }
 
+    /* Botão Gerar OS */
+    .btn-os {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+      background: linear-gradient(135deg, #1a6b3a, #28a35a);
+      color: #fff;
+      white-space: nowrap;
+    }
+    .btn-os:hover:not(.btn-os--disabled) {
+      filter: brightness(1.1);
+    }
+    .btn-os--disabled {
+      background: var(--line, #d0d0d0);
+      color: var(--muted, #888);
+      cursor: not-allowed;
+      opacity: 0.65;
+    }
+
 </style>
   <link rel="stylesheet" href="./css/sidebar.css">
 </head>
@@ -863,6 +890,10 @@
 
                 <div class="filter-group" style="align-self: end;">
                     <button class="btn-search" id="btnBuscar">🔎 Buscar</button>
+                </div>
+
+                <div class="filter-group" style="align-self: end;">
+                    <button class="btn-os" id="btnGerarOS" onclick="gerarOrdemDeServico()" title="Gerar Ordem de Serviço (somente Administradores)">📄 Gerar Ordem de Serviço</button>
                 </div>
             </div>
 
@@ -1478,11 +1509,214 @@ function init(){
 }
 
 
+/* =========================
+   Gerar Ordem de Serviço PDF
+========================= */
+
+function _atualizarBotaoOS() {
+  const btn = document.getElementById('btnGerarOS');
+  if (!btn) return;
+  const isAdmin = !!(window.perfilGlobal && window.perfilGlobal.grupo === 'Administrador');
+  if (isAdmin) {
+    btn.classList.remove('btn-os--disabled');
+    btn.title = 'Gerar Ordem de Serviço de Plantão Fiscal';
+  } else {
+    btn.classList.add('btn-os--disabled');
+    btn.title = 'Acesso restrito a Administradores';
+  }
+}
+
+function gerarOrdemDeServico() {
+  const isAdmin = !!(window.perfilGlobal && window.perfilGlobal.grupo === 'Administrador');
+  if (!isAdmin) {
+    alert('Acesso restrito. Apenas Administradores podem gerar a Ordem de Serviço.');
+    return;
+  }
+
+  const mesKey = document.getElementById('mesRef').value;
+  if (!mesKey) {
+    alert('Selecione o mês/ano antes de gerar a Ordem de Serviço.');
+    return;
+  }
+
+  // Filtra apenas dias com plantão
+  const allRows = buildMonthRows(mesKey);
+  const diasComPlantao = allRows.filter(r => r.mat30 || r.vesp30 || (r.f40 && r.f40.length > 0));
+  if (!diasComPlantao.length) {
+    alert('Nenhum plantão encontrado para o mês selecionado.');
+    return;
+  }
+
+  const mesTitulo = mesTituloPT(mesKey).toUpperCase(); // ex: MARÇO/2026
+
+  // Data de emissão por extenso
+  const hoje = new Date();
+  const mesesExt = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  const dataEmissao = `Anápolis (GO), ${hoje.getDate()} de ${mesesExt[hoje.getMonth()]} de ${hoje.getFullYear()}.`;
+
+  // Carrega imagem do brasão e gera PDF após
+  const img = new Image();
+  img.src = './icons/brasao-anapolis.png';
+  img.onload = function() {
+    const canvas = document.createElement('canvas');
+    canvas.width  = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    canvas.getContext('2d').drawImage(img, 0, 0);
+    const brasaoData = canvas.toDataURL('image/png');
+    _montarPDF(mesKey, mesTitulo, diasComPlantao, brasaoData, dataEmissao);
+  };
+  img.onerror = function() {
+    // Gera sem brasão se falhar
+    _montarPDF(mesKey, mesTitulo, diasComPlantao, null, dataEmissao);
+  };
+}
+
+function _montarPDF(mesKey, mesTitulo, diasComPlantao, brasaoData, dataEmissao) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+  const margemL = 20;
+  const margemR = 20;
+  const largura = 210 - margemL - margemR; // 170mm
+  let y = 18;
+
+  // ── Cabeçalho ──────────────────────────────────────────────────
+  if (brasaoData) {
+    doc.addImage(brasaoData, 'PNG', margemL, y - 2, 22, 22);
+  }
+
+  const cx = margemL + (brasaoData ? 28 : 0); // início do texto ao lado do brasão
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(10, 40, 100);
+  doc.text('PREFEITURA MUNICIPAL DE ANÁPOLIS', 105, y + 2, { align: 'center' });
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(40, 40, 40);
+  doc.text('Secretaria Municipal de Saúde', 105, y + 8, { align: 'center' });
+  doc.text('Diretoria de Vigilância em Saúde', 105, y + 13, { align: 'center' });
+
+  y += 22;
+
+  // Linha separadora
+  doc.setDrawColor(10, 40, 100);
+  doc.setLineWidth(0.6);
+  doc.line(margemL, y, 210 - margemR, y);
+  y += 5;
+
+  // ── Título do documento ────────────────────────────────────────
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.setTextColor(10, 40, 100);
+  doc.text('ORDEM DE SERVIÇO – PLANTÃO FISCAL Nº 20260005', 105, y + 4, { align: 'center' });
+  y += 12;
+
+  // ── Texto de convocação ────────────────────────────────────────
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(30, 30, 30);
+
+  const texto = [
+    `A Gerência de Vigilância Sanitária, no uso de suas atribuições legais e regulamentares,`,
+    `CONVOCA os Fiscais Sanitários abaixo relacionados para cumprimento do Plantão Fiscal`,
+    `referente ao mês de ${mesTitulo}.`,
+    ``,
+    `O plantão será realizado durante o horário regular de expediente, visando atender ao`,
+    `contribuinte na sede da repartição, bem como eventuais demandas externas que se façam`,
+    `necessárias.`,
+  ];
+  const lineH = 5.5;
+  for (const linha of texto) {
+    if (linha === '') { y += 2; continue; }
+    doc.text(linha, margemL, y);
+    y += lineH;
+  }
+  y += 4;
+
+  // ── Tabela ─────────────────────────────────────────────────────
+  const tableRows = diasComPlantao.map(r => {
+    const nomes = [];
+    if (r.mat30) nomes.push(safeName(r.mat30));
+    if (r.vesp30) nomes.push(safeName(r.vesp30));
+    if (r.f40 && r.f40.length) r.f40.forEach(n => nomes.push(safeName(n)));
+    return [isoToBR(r.date), r.dow, nomes.join('\n')];
+  });
+
+  doc.autoTable({
+    startY: y,
+    head: [['Data', 'Dia', 'Fiscal(es) de Plantão']],
+    body: tableRows,
+    margin: { left: margemL, right: margemR },
+    tableWidth: largura,
+    styles: {
+      fontSize: 9,
+      cellPadding: { top: 2.5, bottom: 2.5, left: 3, right: 3 },
+      valign: 'middle',
+      lineColor: [180, 180, 200],
+      lineWidth: 0.2,
+      textColor: [30, 30, 30],
+    },
+    headStyles: {
+      fillColor: [10, 40, 100],
+      textColor: 255,
+      fontStyle: 'bold',
+      fontSize: 9,
+    },
+    columnStyles: {
+      0: { cellWidth: 28, halign: 'center' },
+      1: { cellWidth: 14, halign: 'center' },
+      2: { cellWidth: largura - 42 },
+    },
+    alternateRowStyles: { fillColor: [240, 244, 252] },
+    didDrawPage: () => { /* nada — cabeçalho só na primeira página */ },
+  });
+
+  y = doc.lastAutoTable.finalY + 14;
+
+  // ── Rodapé ─────────────────────────────────────────────────────
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(50, 50, 50);
+  doc.text(dataEmissao, margemL, y);
+  y += 18;
+
+  // Linha de assinatura
+  doc.setDrawColor(80, 80, 80);
+  doc.setLineWidth(0.3);
+  doc.line(margemL, y, margemL + 80, y);
+  y += 4;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.text('Césio Malaquias', margemL, y);
+  y += 5;
+  doc.setFont('helvetica', 'normal');
+  doc.text('Gerente de Vigilância Sanitária', margemL, y);
+  y += 4.5;
+  doc.text('Diretoria de Vigilância em Saúde', margemL, y);
+  y += 4.5;
+  doc.text('Prefeitura Municipal de Anápolis', margemL, y);
+
+  // Número de página
+  const totalPags = doc.internal.getNumberOfPages();
+  for (let p = 1; p <= totalPags; p++) {
+    doc.setPage(p);
+    doc.setFontSize(7);
+    doc.setTextColor(150);
+    doc.text(`Página ${p} de ${totalPags}`, 210 - margemR, 290, { align: 'right' });
+  }
+
+  const nomeArq = `OS_Plantao_Fiscal_${mesKey}.pdf`;
+  doc.save(nomeArq);
+}
+
 // =============================
 // Boot
 // =============================
 document.addEventListener('DOMContentLoaded', () => {
   init();
+  _atualizarBotaoOS(); // estado inicial: desabilitado até auth confirmar
 });
 
 </script>
@@ -1494,6 +1728,48 @@ document.addEventListener('DOMContentLoaded', () => {
   <script src="./js/sidebar.js"></script>
 
   <script src="./js/version.js"></script>
+
+  <!-- Autenticação: carrega perfil para habilitar botão de OS (somente Administrador) -->
+  <script type="module">
+    const firebaseConfig = {
+      apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
+      authDomain: "visam-3a30b.firebaseapp.com",
+      projectId: "visam-3a30b",
+      messagingSenderId: "308899251430",
+      appId: "1:308899251430:web:0053cdbd0bed7f0de76727"
+    };
+
+    import { protectPage } from './js/guard1.js';
+
+    protectPage(firebaseConfig, (user, auth, perfil) => {
+      window.perfilGlobal = perfil || null;
+
+      // Mostra usuário na sidebar
+      const userInfo = document.getElementById('userInfo');
+      if (userInfo && perfil) {
+        userInfo.innerHTML = `
+          <span class="user-name">${perfil.nome || user.displayName || ''}</span>
+          <span class="user-email">${user.email}</span>
+        `;
+      }
+
+      // Atualiza estado do botão agora que o perfil foi carregado
+      if (typeof _atualizarBotaoOS === 'function') _atualizarBotaoOS();
+
+      // Expõe logout para a sidebar
+      window.logout = async () => {
+        const { getAuth, signOut } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+        await signOut(getAuth());
+        location.href = 'index.html';
+      };
+    });
+  </script>
+
+  <script>
+    window.sidebarLogout = function() {
+      if (typeof window.logout === 'function') window.logout();
+    };
+  </script>
 
 </body>
 </html>
