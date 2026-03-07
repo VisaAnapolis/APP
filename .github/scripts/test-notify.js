@@ -53,7 +53,14 @@ async function enviarNotificacaoTeste() {
       return;
     }
 
-    console.log(`📱 ${totalTokens} token(s) em ${tokensPorUsuario.length} usuário(s). Enviando...`);
+    console.log(`📱 ${totalTokens} token(s) em ${tokensPorUsuario.length} usuário(s). Enviando...\n`);
+
+    // Mostra detalhe por usuário
+    tokensPorUsuario.forEach(u => {
+      console.log(`  👤 ${u.email} — ${u.tokens.length} token(s)`);
+    });
+
+    console.log('');
 
     // Usa apenas campo "data" — o Service Worker (firebase-messaging-sw.js)
     // é responsável por exibir a notificação, evitando mensagem genérica do Android.
