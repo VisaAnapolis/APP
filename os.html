@@ -2538,8 +2538,7 @@ function obterDataPrazo(os) {
     </script>
 
 <script type="module">
-  import { protectPage }           from "./guard.js";
-  import { initPushNotifications } from "./js/push-notifications.js";
+  import { protectPage } from "./guard.js";
 
   const firebaseConfig = {
     apiKey:            "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
@@ -2551,13 +2550,7 @@ function obterDataPrazo(os) {
 
   protectPage({
     firebaseConfig,
-    onAuthorized: ({ user, app }) => {
-      if (window.Notification && Notification.permission === 'granted') {
-        initPushNotifications(app, user.email).catch(err => {
-          console.warn('[Push] Não foi possível inicializar notificações:', err.message);
-        });
-      }
-    }
+    onAuthorized: () => {}
   });
 </script>
 

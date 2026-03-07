@@ -23,8 +23,8 @@
 <h3>① Migração de chaves + limpeza de duplicatas</h3>
 <p>Reagrupa dispositivos pela nova chave (SO + Navegador + Fabricante/Modelo ou Resolução)
    e remove duplicatas, mantendo o registro mais recente.</p>
-<button onclick="executar(false)">🔍 Simular (dry-run)</button>
-<button class="danger" onclick="executar(true)">⚠️ Executar de verdade</button>
+<button id="btn-sim1"   disabled onclick="executar(false)">🔍 Simular (dry-run)</button>
+<button id="btn-exec1" disabled class="danger" onclick="executar(true)">⚠️ Executar de verdade</button>
 
 <h3>② Associar tokens órfãos a dispositivos</h3>
 <p>Tokens que existem em <code>fcmTokens</code> mas não estão vinculados a nenhum
@@ -32,15 +32,15 @@
    Estratégia: ordena dispositivos por <strong>ultimoAcesso</strong> e distribui os tokens
    do mais recente para o mais antigo. Para usuários com mais tokens que dispositivos,
    os excedentes são descartados.</p>
-<button onclick="associar(false)">🔍 Simular associação</button>
-<button class="warning" onclick="associar(true)">🔗 Associar de verdade</button>
+<button id="btn-sim2"   disabled onclick="associar(false)">🔍 Simular associação</button>
+<button id="btn-exec2"  disabled class="warning" onclick="associar(true)">🔗 Associar de verdade</button>
 
 <pre id="log">Aguardando login...</pre>
 
 <script type="module">
 import { initializeApp }      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, collection, getDocs, doc, updateDoc }
+import { getFirestore, collection, getDocs, doc, getDoc, updateDoc }
                               from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const app = initializeApp({
@@ -56,6 +56,14 @@ const log  = document.getElementById('log');
 
 const print = (msg, cls='') =>
   log.innerHTML += `<span class="${cls}">${msg}</span>\n`;
+
+let _adminConfirmado = false;
+
+function _habilitarBotoes(habilitar) {
+  ['btn-sim1','btn-exec1','btn-sim2','btn-exec2'].forEach(id => {
+    document.getElementById(id).disabled = !habilitar;
+  });
+}
 
 // ── Mesma lógica do index.html ─────────────────────────────────────────
 const norm = s => (s || 'desconhecido').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -85,6 +93,7 @@ const toMs = x => {
 // ① Migração de chaves
 // ══════════════════════════════════════════════════════════════════════
 window.executar = async function(commit) {
+  if (!_adminConfirmado) return;
   log.innerHTML = '';
   print(commit
     ? '⚠️  MODO REAL — gravando no Firestore'
@@ -204,6 +213,7 @@ window.executar = async function(commit) {
 //   - Grava dispositivos.chave.fcmToken E mantém fcmTokens sincronizado
 // ══════════════════════════════════════════════════════════════════════
 window.associar = async function(commit) {
+  if (!_adminConfirmado) return;
   log.innerHTML = '';
   print(commit
     ? '⚠️  MODO REAL — associando tokens no Firestore'
@@ -294,10 +304,21 @@ window.associar = async function(commit) {
     print('\n✅ Nenhum usuário tem tokens órfãos para associar.', 'ok');
 };
 
-onAuthStateChanged(auth, u => {
-  log.innerHTML = u
-    ? `<span class="ok">Logado: ${u.email}</span>\n`
-    : `<span class="err">Faça login no app primeiro.</span>`;
+onAuthStateChanged(auth, async u => {
+  _adminConfirmado = false;
+  _habilitarBotoes(false);
+  if (!u) {
+    log.innerHTML = `<span class="err">Faça login no app primeiro (index.html).</span>`;
+    return;
+  }
+  const perfil = await getDoc(doc(db, 'usuarios', u.email.toLowerCase()));
+  if (!perfil.exists() || perfil.data().grupo !== 'Administrador') {
+    log.innerHTML = `<span class="err">Acesso negado. Somente Administradores podem usar esta ferramenta.</span>`;
+    return;
+  }
+  _adminConfirmado = true;
+  _habilitarBotoes(true);
+  log.innerHTML = `<span class="ok">Logado como Administrador: ${u.email}</span>\n`;
 });
 </script>
 </body>
