@@ -142,6 +142,24 @@ function formatarDataBR(isoStr) {
   return `${d}/${m}/${y}`;
 }
 
+/**
+ * Normaliza qualquer formato de data para exibição DD/MM/YYYY.
+ * Aceita: DD/MM/YYYY, DD.MM.YYYY (BR) ou YYYY-MM-DD (ISO).
+ */
+function normalizarPrazoExibicao(prazo) {
+  if (!prazo || prazo.trim() === '') return '—';
+  // Já está em formato BR com barras: DD/MM/YYYY
+  if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(prazo.trim())) return prazo.trim();
+  // Formato BR com pontos: DD.MM.YYYY → DD/MM/YYYY
+  if (/^\d{1,2}\.\d{1,2}\.\d{4}$/.test(prazo.trim())) return prazo.trim().replace(/\./g, '/');
+  // Formato ISO: YYYY-MM-DD → DD/MM/YYYY
+  if (/^\d{4}-\d{2}-\d{2}$/.test(prazo.trim())) return formatarDataBR(prazo.trim());
+  // Fallback: tenta converter via converterData
+  const d = converterData(prazo);
+  if (d) return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+  return prazo; // retorna como veio se não reconhecer
+}
+
 function converterHora12para24(horaStr) {
   if (!horaStr || !horaStr.trim()) return '00:00:00';
   let s = horaStr.trim().toUpperCase().replace(/\./g, ':');
@@ -375,7 +393,9 @@ function htmlCardOS(os, numero, dias) {
   const cnaeTexto   = os.cnaeCode ? `${os.cnaeCode}${os.cnaeDesc ? ' – ' + os.cnaeDesc : ''}` : '';
   const mapsQuery   = [endCompleto, os.bairro, 'Anápolis GO'].filter(Boolean).join(', ');
   const mapsLink    = mapsQuery ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(mapsQuery)}&travelmode=driving` : '';
-  const prazoFmt    = os.prazo ? (os.prazo.includes('/') ? os.prazo : formatarDataBR(os.prazo)) : '—';
+
+  // Normaliza prazo para exibição: aceita DD/MM/YYYY, DD.MM.YYYY ou YYYY-MM-DD
+  const prazoFmt = normalizarPrazoExibicao(os.prazo);
 
   let notaTipo = '';
   if (os.tipo === 'Protocolo') {
@@ -477,11 +497,10 @@ async function main() {
   });
 
   // 1. Carrega tabelas auxiliares
-  const idxReg  = carregarCSVIndexado('regulados.csv', 'CODIGO') || carregarCSVIndexado('regulados.csv', 'Codigo');
-  const idxBai  = carregarCSVIndexado('bairros.csv',   'CODIGO') || carregarCSVIndexado('bairros.csv',   'Codigo');
+  const idxReg     = carregarCSVIndexado('regulados.csv', 'CODIGO');
+  const idxBai     = carregarCSVIndexado('bairros.csv',   'CODIGO');
   const idxCnaeRaw = carregarCSVIndexado('cnae.csv', 'Subclasse');
-  // Tenta também variações de nome de coluna
-  const idxCnae = Object.keys(idxCnaeRaw).length ? idxCnaeRaw : carregarCSVIndexado('cnae.csv', 'SUBCLASSE');
+  const idxCnae    = Object.keys(idxCnaeRaw).length ? idxCnaeRaw : carregarCSVIndexado('cnae.csv', 'SUBCLASSE');
 
   // 2. Lê OSs enriquecidas
   const osAtuais = lerTodasOSs(idxReg, idxBai, idxCnae);
@@ -498,9 +517,7 @@ async function main() {
   const emailsPorFiscal = await buscarEmailsPorFiscal();
   const novoSnapshot    = { ...snapshot };
   const alertas = { VENCE_HOJE: 0, PRAZO_5D: 0, RECUPERACAO: 0, AMANHA: 0 };
-
-  // Agrupa alertas por fiscal para e-mail consolidado
-  const alertasPorFiscal = {};  // { "NOME": [ { os, numero, dias, flagKey, gatilho }, ... ] }
+  const alertasPorFiscal = {};
 
   for (const [numero, os] of Object.entries(osAtuais)) {
     const anterior = snapshot[numero] || {};
@@ -511,10 +528,10 @@ async function main() {
     const fiscalKey = os.fiscal.toUpperCase().trim();
 
     let gatilho = '', flagKey = '';
-    if      (dias === 0 && !anterior.email_notif_hoje)                                           { gatilho = 'VENCE_HOJE';  flagKey = 'email_notif_hoje'; }
-    else if (dias === 1 && !anterior.email_notif_amanha)                                         { gatilho = 'AMANHA';      flagKey = 'email_notif_amanha'; }
+    if      (dias === 0 && !anterior.email_notif_hoje)                                                { gatilho = 'VENCE_HOJE';  flagKey = 'email_notif_hoje'; }
+    else if (dias === 1 && !anterior.email_notif_amanha)                                              { gatilho = 'AMANHA';      flagKey = 'email_notif_amanha'; }
     else if (dias >= 2 && dias <= 4 && !anterior.email_notif_5d && !anterior.email_notif_recuperacao) { gatilho = 'RECUPERACAO'; flagKey = 'email_notif_recuperacao'; }
-    else if (dias === 5 && !anterior.email_notif_5d)                                             { gatilho = 'PRAZO_5D';    flagKey = 'email_notif_5d'; }
+    else if (dias === 5 && !anterior.email_notif_5d)                                                  { gatilho = 'PRAZO_5D';    flagKey = 'email_notif_5d'; }
 
     if (!gatilho) continue;
     alertas[gatilho]++;
@@ -549,7 +566,6 @@ async function main() {
         subject: assunto,
         html
       });
-      // Marca flags no snapshot
       listaOS.forEach(a => { novoSnapshot[a.numero][a.flagKey] = true; });
       totalEnviados++;
       console.log(`✅ ${listaOS.map(a=>a.gatilho).join('/')} OS ${listaOS.map(a=>a.numero).join(',')} → ${emailFiscal}`);
