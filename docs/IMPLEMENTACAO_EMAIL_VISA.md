@@ -22,7 +22,8 @@ para controle de duplicidade sem conflito com as flags FCM.
 |---|---|
 | Arquivo workflow | `.github/workflows/notify-os.yml` |
 | Script principal | `.github/scripts/notify-os.js` |
-| CSVs monitorados | `requerimento.csv`, `oficio.csv`, `denuncia.csv`, `protocolo.csv`, `tramitacao.csv` |
+| CSVs que disparam o workflow (push) | `requerimento.csv`, `oficio.csv`, `denuncia.csv`, `protocolo.csv`, `cvs_sync.txt` |
+| CSVs lidos pelo script (sem trigger) | `tramitacao.csv` |
 | Delimitador CSV | `;` com suporte a BOM UTF-8 e aspas duplas |
 | Prazo Protocolo | 15 dias úteis a partir do último encaminhamento em `tramitacao.csv` |
 | Gatilhos de prazo | `0d` (hoje), `1d` (amanhã), `2-4d` (recuperação), `5d` |
@@ -179,7 +180,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: '.github/scripts/package.json'
+          cache-dependency-path: '.github/scripts/package-lock.json'
 
       - name: Instalar dependências
         working-directory: .github/scripts
@@ -229,9 +230,10 @@ jobs:
 //   7. Atualiza flags email_notif_* no snapshot (independentes do FCM)
 // ============================================================
 
-const fs    = require('fs');
-const path  = require('path');
-const admin = require('firebase-admin');
+const fs         = require('fs');
+const path       = require('path');
+const admin      = require('firebase-admin');
+const nodemailer = require('nodemailer');
 
 // ── Inicialização Firebase ────────────────────────────────────
 const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH
@@ -483,12 +485,8 @@ async function buscarEmailsPorFiscal() {
 }
 
 // ── Envia e-mail HTML via SMTP Gmail ─────────────────────────
-async function enviarEmail(para, fiscal, numero, tipo, motivo, dias, prazoStr) {
-  const nodemailer  = require('nodemailer');
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com', port: 465, secure: true,
-    auth: { user: SMTP_USER, pass: SMTP_PASS }
-  });
+// transporter é criado uma vez em main() e reutilizado em todas as chamadas
+async function enviarEmail(transporter, para, fiscal, numero, tipo, motivo, dias, prazoStr) {
 
   const cor      = dias === 0 ? '#c0392b' : dias === 1 ? '#e67e22' : '#2980b9';
   const urgencia = dias === 0 ? '🔴 VENCE HOJE' : dias === 1 ? '🟡 VENCE AMANHÃ' : `🔵 ${dias} DIAS`;
@@ -550,6 +548,12 @@ async function main() {
     process.exit(1);
   }
 
+  // Transporter criado uma vez e reutilizado em todos os envios
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com', port: 465, secure: true,
+    auth: { user: SMTP_USER, pass: SMTP_PASS }
+  });
+
   const osAtuais = lerTodasOSs();
   console.log(`📊 Total de OSs nos CSVs: ${Object.keys(osAtuais).length}`);
 
@@ -581,7 +585,7 @@ async function main() {
     const tentar = async (gatilho, flagKey) => {
       alertas[gatilho]++;
       try {
-        await enviarEmail(emailFiscal, os.fiscal, numero, os.tipo, os.motivo, dias, os.prazo);
+        await enviarEmail(transporter, emailFiscal, os.fiscal, numero, os.tipo, os.motivo, dias, os.prazo);
         novoSnapshot[numero][flagKey] = true;
         totalEnviados++;
         console.log(`✅ ${gatilho} OS ${numero} → ${emailFiscal}`);
