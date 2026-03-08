@@ -1,0 +1,72 @@
+# ============================================================
+# notify-email-os.yml  —  GitHub Actions Workflow
+# Detecta OSs com prazo vencendo e envia notificações por E-MAIL
+# usando SMTP do Gmail (App Password).
+#
+# Dispara:
+#   - Automaticamente 3x ao dia nos dias úteis (cron):
+#       8:30, 12:30 e 16:30 (Horário de Brasília, UTC-3)
+#   - Manualmente pelo painel do GitHub Actions
+#
+# NÃO interfere no workflow FCM (notify-os.yml).
+# Usa o mesmo os_snapshot.json mas com flags independentes
+# (email_notif_*) para controle de duplicidade sem conflito.
+# ============================================================
+
+name: 📧 Notificar OSs por E-mail
+
+on:
+  schedule:
+    - cron: '30 11 * * 1-5'   # 08:30 BRT (dias úteis)
+    - cron: '30 15 * * 1-5'   # 12:30 BRT (dias úteis)
+    - cron: '30 19 * * 1-5'   # 16:30 BRT (dias úteis)
+
+  workflow_dispatch:
+
+jobs:
+  notify-email:
+    name: Detectar e Notificar OSs por E-mail
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: '.github/scripts/package-lock.json'
+
+      - name: Instalar dependências
+        working-directory: .github/scripts
+        run: npm ci
+
+      - name: Criar Service Account
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > .github/scripts/service-account.json
+
+      - name: Executar notificador de e-mail
+        working-directory: .github/scripts
+        env:
+          SMTP_USER:                    ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD:                ${{ secrets.SMTP_PASSWORD }}
+          FIREBASE_SERVICE_ACCOUNT_PATH: service-account.json
+        run: node notify-email-os.js
+
+      - name: Remover Service Account
+        if: always()
+        run: rm -f .github/scripts/service-account.json
+
+      - name: Salvar snapshot atualizado
+        run: |
+          git config user.name  "VISA Bot"
+          git config user.email "visa-bot@anapolis.go.gov.br"
+          git add data/os_snapshot.json || true
+          git diff --staged --quiet || git commit -m "Auto-update OS snapshot (email) [skip ci]"
+          git push || true
