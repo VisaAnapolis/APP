@@ -92,14 +92,14 @@ async function enviarEmailTeste() {
   for (const dest of destinatarios) {
     try {
       await transporter.sendMail({
-        from:    `"DVS Anápolis" <${SMTP_USER}>`,
+        from:    `"Gerência de Vigilância Sanitária" <${SMTP_USER}>`,
         to:      dest.email,
         subject: `🔔 E-mail de Teste — Sistema VISA | ${dataHora}`,
         html: `
 <html><body style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto">
   <div style="background:#004aad;padding:14px 20px;border-radius:6px 6px 0 0">
     <h2 style="color:#fff;margin:0;font-size:18px">
-      🔔 Notificação de Teste — DVS Anápolis/GO
+      🔔 Notificação de Teste — Gerência de Vigilância Sanitária
     </h2>
   </div>
   <div style="border:1px solid #ddd;border-top:none;padding:24px;border-radius:0 0 6px 6px">
@@ -116,7 +116,7 @@ async function enviarEmailTeste() {
     está configurado corretamente e funcionando.</p>
     <hr style="border:none;border-top:1px solid #eee;margin:20px 0">
     <p style="color:#999;font-size:12px;margin:0">
-      Mensagem automática — sistema VISA · DVS Anápolis/GO<br>
+      Mensagem automática — sistema VISA · Gerência de Vigilância Sanitária<br>
       Não responda este e-mail.
     </p>
   </div>
