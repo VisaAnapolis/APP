@@ -273,14 +273,14 @@ async function enviarEmail(transporter, para, fiscal, numero, tipo, motivo, dias
   const urgencia = dias === 0 ? '🔴 VENCE HOJE' : dias === 1 ? '🟡 VENCE AMANHÃ' : `🔵 ${dias} DIAS`;
 
   await transporter.sendMail({
-    from:    `"DVS Anápolis" <${SMTP_USER}>`,
+    from:    `"Gerência de Vigilância Sanitária" <${SMTP_USER}>`,
     to:      para,
     subject: `${urgencia} — OS ${numero} (${tipo}) | VISA Anápolis`,
     html: `
 <html><body style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto">
   <div style="background:${cor};padding:14px 20px;border-radius:6px 6px 0 0">
     <h2 style="color:#fff;margin:0;font-size:18px">
-      ⚠️ Alerta de Prazo — DVS Anápolis/GO
+      ⚠️ Alerta de Prazo — Gerência de Vigilância Sanitária
     </h2>
   </div>
   <div style="border:1px solid #ddd;border-top:none;padding:24px;border-radius:0 0 6px 6px">
@@ -311,7 +311,7 @@ async function enviarEmail(transporter, para, fiscal, numero, tipo, motivo, dias
     <p>Acesse o <strong>sistema CVS</strong> e providencie a regularização.</p>
     <hr style="border:none;border-top:1px solid #eee;margin:20px 0">
     <p style="color:#999;font-size:12px;margin:0">
-      Mensagem automática — sistema VISA · DVS Anápolis/GO<br>
+      Mensagem automática — sistema VISA · Gerência de Vigilância Sanitária<br>
       Não responda este e-mail.
     </p>
   </div>
