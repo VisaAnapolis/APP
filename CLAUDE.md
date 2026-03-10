@@ -34,13 +34,16 @@ VISA/
 │   ├── components.css      # Reusable UI components (cards, buttons, badges)
 │   ├── layouts.css         # Grid/flex layout patterns, responsive breakpoints
 │   ├── regulados.css       # Styles for regulated entities page
-│   └── sidebar.css         # Sidebar navigation styles
+│   ├── sidebar.css         # Sidebar navigation styles (incl. .visa-nav-item.is-disabled)
+│   └── header-component.css # Header component styles (changelog.html, comply.html)
 ├── js/
 │   ├── guard.js            # Auth guard: email whitelist + session management
-│   ├── guard1.js           # Alternate auth guard (used by some pages)
+│   ├── guard1.js           # Auth guard com controle por grupo (bloqueia Administrativo)
+│   ├── busca-global.js     # Busca unificada (ES6 module) — 7 fontes: OS, protocolos, alvarás, etc.
 │   ├── platform-detector.js # Device/OS/feature detection → applies CSS classes
 │   ├── push-notifications.js # FCM token registration and foreground notifications
-│   ├── sidebar.js          # Sidebar component loader and interaction
+│   ├── sidebar.js          # Sidebar: toggle, active mark, permissões por grupo
+│   ├── version.js          # APP_VERSION e APP_DATE (usado para exibir versão na UI)
 │   ├── cvs1.js             # CVS/regulated entities data processing
 │   └── regulados1.js       # Regulated entities display logic
 ├── data/
@@ -60,7 +63,7 @@ VISA/
 ├── mts/                    # MTS regulatory documents
 ├── normas/                 # Regulatory norms/standards
 ├── _backup/                # Version backup files (not deployed)
-├── *.html                  # 40+ application pages (see Pages section below)
+├── *.html                  # ~25 páginas da aplicação (ver seção Pages abaixo)
 ├── service-worker.js       # PWA service worker (Network First cache strategy)
 ├── firebase-messaging-sw.js # FCM background message handler
 ├── manifest.webmanifest    # PWA manifest (icons, theme, start URL)
@@ -74,19 +77,31 @@ VISA/
 
 ## Key Application Pages
 
-| File | Purpose |
-|------|---------|
-| `index.html` | Main dashboard |
-| `os.html` | Orders of Service (OS) — core feature |
-| `protocolo.html` | Protocol consultation — search by protocol number, name or CNPJ (CSV via PapaParse) |
-| `admin.html` | Admin panel — user management, device listing, FCM token status |
-| `clean.html` | Maintenance tool — device deduplication and orphaned FCM token recovery |
-| `plantao.html` | Shift management |
-| `inspecoes.html` | Inspections |
-| `ferias.html` | Vacation scheduling |
-| `alvara.html` | Permits/licenses |
-| `cvs.html` | Regulated entities (CVS) |
-| `changelog.html` | Public version history |
+| File | Purpose | Acesso |
+|------|---------|--------|
+| `index.html` | Dashboard principal — busca global unificada, cards de OS por fiscal | Todos |
+| `os.html` | Ordens de Serviço — core feature | guard1 |
+| `protocolo.html` | Consulta de protocolos por número, nome ou CNPJ | guard1 |
+| `alvara.html` | Alvarás sanitários | Todos |
+| `cvs.html` | Entidades reguladas (CVS) | guard1 |
+| `rmpf.html` | Relatório mensal por fiscal | Fiscal + Admin |
+| `inspecoes.html` | Inspeções sanitárias | Fiscal + Admin |
+| `relatorio_plantao_fiscal.html` | Ocorrências de plantão | guard1 |
+| `indicadores.html` | Indicadores de desempenho | Apenas Admin |
+| `comply.html` | Compliance sanitário — taxas de conformidade, export PDF/HTML | Fiscal + Admin |
+| `plantao.html` | Escala de plantão fiscal | Público |
+| `veiculos.html` | Controle de veículos | guard1 |
+| `ferias.html` | Escala de férias | guard1 |
+| `areas.html` | Distribuição por áreas | guard1 |
+| `cnae.html` | CNAEs por equipe | Todos |
+| `total.html` | Totalização | Todos |
+| `admin.html` | Painel admin — usuários, dispositivos, tokens FCM | Apenas Admin |
+| `clean.html` | Manutenção — deduplicação de dispositivos e tokens FCM órfãos | Apenas Admin |
+| `changelog.html` | Histórico público de versões | Público |
+| `legislacao.html` | Legislação sanitária | Público |
+| `pop.html` | POPs da VISA | Público |
+| `check.html` | Checklists de inspeção | Público |
+| `readme.html` | Aviso institucional | Público |
 
 ---
 
@@ -131,6 +146,30 @@ VISA/
 - Pages that require auth must include `guard.js` or `guard1.js`.
 
 **Important**: Adding a new authorized user requires editing the `AUTHORIZED_EMAILS` Set in `js/guard.js`.
+
+### Diferença entre `guard.js` e `guard1.js`
+
+| | `guard.js` | `guard1.js` |
+|-|-----------|------------|
+| Whitelist de e-mails | ✅ | ✅ |
+| Busca perfil no Firestore | ❌ | ✅ |
+| Bloqueia usuários inativos | ❌ | ✅ |
+| Bloqueia grupo `Administrativo` | ❌ | ✅ |
+| `window.perfilGlobal` | não seta | seta com `{ nome, email, grupo, ativo }` |
+| Callback | `onAuthorized({ user, auth, app })` | `onAuthorized(user, auth, perfil)` |
+
+**Regra geral**: use `guard1.js` em páginas com conteúdo restrito por grupo. Use `guard.js` apenas em páginas que precisam de auth mas não têm restrição de perfil.
+
+### Permissões de links no sidebar (`sidebar.js`)
+
+O `sidebar.js` bloqueia visualmente links restritos **imediatamente** no `DOMContentLoaded` e libera/mantém bloqueados após buscar o perfil no Firestore. Funciona em **todas as páginas** sem precisar de IDs nos links — usa `querySelector` por `href`.
+
+| Links | Grupos com acesso |
+|-------|------------------|
+| `rmpf.html`, `inspecoes.html`, `comply.html` | Fiscal, Administrador |
+| `admin.html`, `indicadores.html` | Apenas Administrador |
+
+CSS da classe de bloqueio: `.visa-nav-item.is-disabled` em `css/sidebar.css`.
 
 ---
 
@@ -247,7 +286,7 @@ Deduplication is handled by `data/os_snapshot.json`, which is committed to the r
 
 ## Service Worker & PWA
 
-- **Cache name**: `visa-v2.4.9` (bump this when deploying breaking UI changes)
+- **Cache name**: `visa-v2.4.9` em `service-worker.js` (⚠️ APP_VERSION em `js/version.js` está em v2.5.0 — bump o service worker quando fizer deploy de mudanças significativas de UI)
 - **Strategy**: Network First — always tries the network, falls back to cache if offline
 - **PWA manifest** (`manifest.webmanifest`):
   - `start_url`: `/VISA/`
@@ -276,13 +315,13 @@ When these files are pushed, `notify-os.yml` runs automatically.
 
 O próximo grande trabalho é implementar **seções colapsáveis (accordion)** na sidebar e propagar o layout padronizado para todas as páginas ainda sem sidebar. O plano está completo e pronto para execução.
 
-### Estado atual (05/03/2026)
+### Estado atual (10/03/2026)
 
 | Item | Estado |
 |------|--------|
-| Template `includes/sidebar-nav.html` | Pronto — 22 links, 6 seções, estrutura plana |
-| `css/sidebar.css` | Pronto — responsivo, dark mode, sem accordion ainda |
-| `js/sidebar.js` | Pronto — toggle mobile, mark active, **sem collapse ainda** |
+| Template `includes/sidebar-nav.html` | Pronto — 23 links (incl. comply.html), 6 seções, estrutura plana |
+| `css/sidebar.css` | Pronto — responsivo, dark mode, `.is-disabled` implementado, sem accordion ainda |
+| `js/sidebar.js` | Pronto — toggle mobile, mark active, **permissões por grupo implementadas**, sem collapse ainda |
 | Páginas com auth (`os.html`, `cvs.html`, etc.) | Layout sidebar aplicado via `apply_sidebar_auth.py` |
 | Páginas sem auth (`alvara.html`, `plantao.html`, etc.) | Layout sidebar aplicado via `apply_sidebar.py` |
 | Seções colapsáveis | **NÃO IMPLEMENTADO** |
@@ -335,11 +374,37 @@ O próximo grande trabalho é implementar **seções colapsáveis (accordion)** 
 
 | Versão | O que mudou |
 |--------|------------|
+| **v2.5.0** | Busca global unificada no dashboard (`js/busca-global.js`) — 7 fontes de dados, lazy load, cache em memória, normalização de CNPJ; CNPJ/CPF exibido nos resultados; links do sidebar desabilitados por perfil imediatamente ao carregar (`sidebar.js`) |
 | **v2.4.9** | Vinculação atômica de token FCM ao dispositivo eliminando tokens órfãos por rotação; correção de ocultar regulados sem protocolo na busca |
-| **v2.4.8** | Token FCM vinculado ao dispositivo (`dispositivos.<chave>.fcmToken`); status push exibido no admin; `clean.html` atualizado para nova lógica |
+| **v2.4.8** | Token FCM vinculado ao dispositivo (`dispositivos.<chave>.fcmToken`); status push exibido no admin; `clean.html` atualizado para nova lógica; adição de `comply.html` (Compliance) |
 | **v2.4.7** | Integração de `protocolo.html` ao app com sidebar padrão; atualização de ícones de navegação |
 | **v2.4.6** | Padronização completa do sidebar em todas as páginas autenticadas via `apply_sidebar_auth.py` |
 | **v2.4.5** | Criação de `clean.html` — ferramenta de manutenção de dispositivos e tokens FCM órfãos |
+
+---
+
+## Busca Global Unificada (`js/busca-global.js`)
+
+Módulo ES6 carregado dinamicamente por `index.html` que centraliza a busca em 7 fontes de dados.
+
+**Fontes buscadas em paralelo:**
+- `data/index_regulados.json` — entidades reguladas (CNPJ/CPF, razão, fantasia)
+- `data/denuncia.csv` — denúncias
+- `data/oficio.csv` — ofícios
+- `data/requerimento.csv` — requerimentos
+- `data/tramitacao.csv` — tramitação (JOIN com protocolos)
+- `data/protocolo.csv` — protocolos
+- `data/alvara.csv` (via `data/index_regulados.json`) — alvarás
+
+**Comportamento:**
+- **Lazy load** na primeira busca; resultado mantido em memória (`_cacheBusca`)
+- **Busca por botão** (Enter ou clique) — não busca ao digitar
+- Máximo **5 resultados por categoria**, com link "Ver todos" quando há mais
+- Exibe **CNPJ/CPF** do regulado no subtítulo de protocolos e alvarás
+- Normalização de texto: remove acentos, pontuação e zeros à esquerda de CNPJ
+- Funções exportadas: `limparCacheBusca()` (chamada no logout)
+
+**Arquivo de referência:** `docs/BUSCA_GLOBAL_UNIFICADA.md`
 
 ---
 
