@@ -42,7 +42,7 @@ def make_sidebar(active_key):
 
     return f'''    <!-- ════════════ SIDEBAR ════════════ -->
     <aside class="sidebar" id="sidebar" role="navigation" aria-label="Menu principal">
-      <div class="sidebar__header">
+      <a class="sidebar__header" href="index.html">
         <div class="sidebar__logo" style="background:none;">
           <img src="icons/visa.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;" alt="VISA">
         </div>
@@ -50,7 +50,7 @@ def make_sidebar(active_key):
           <div class="sidebar__app-name">Vigilância Sanitária</div>
           <div class="sidebar__app-sub">Anápolis – GO</div>
         </div>
-      </div>
+      </a>
       <nav class="sidebar__nav">{nav_html}
       </nav>
       <div class="sidebar__footer">
