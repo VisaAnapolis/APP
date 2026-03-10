@@ -1,6 +1,6 @@
 /**
  * BUSCA-GLOBAL.JS — Pesquisa Global Unificada
- * VISA Anápolis — v1.0.0
+ * VISA Anápolis — v1.1.0
  *
  * Módulo ES6 que implementa busca unificada no Dashboard.
  * Consulta: regulados (JSON), protocolos, denúncias, requerimentos,
@@ -93,10 +93,17 @@ async function _carregarTudo() {
     !String(a.Cancela || '').trim()
   );
 
-  // ── MAPA DE REGULADOS (para JOIN) ──
+  // ── MAPA DE REGULADOS (para JOIN por código) ──
   const mapaRegulados = new Map();
   for (const r of regulados) {
     mapaRegulados.set(String(r.codigo).trim(), r);
+  }
+
+  // ── MAPA DE REGULADOS POR DOCUMENTO/CNPJ (para JOIN com OS) ──
+  const mapaReguladosPorDoc = new Map();
+  for (const r of regulados) {
+    const docNorm = norm(r.documento);
+    if (docNorm) mapaReguladosPorDoc.set(docNorm, r);
   }
 
   // Enriquecer alvara.csv com dados de regulados via Codigo (FK)
@@ -116,6 +123,55 @@ async function _carregarTudo() {
     a._autoridade_n = norm(a.Autoridade);
   }
 
+  // ── ENRIQUECER OFÍCIOS com dados de regulados via CNPJ ──
+  for (const o of oficios) {
+    const reg = mapaReguladosPorDoc.get(norm(o.Cnpj));
+    if (reg) {
+      o._fantasia_n  = norm(reg.fantasia);
+      o._razao_n     = norm(reg.razao);
+      o._documento_n = norm(reg.documento);
+    } else {
+      // Fallback: usa o campo Regulado do próprio CSV
+      o._fantasia_n  = norm(o.Regulado);
+      o._razao_n     = '';
+      o._documento_n = norm(o.Cnpj);
+    }
+  }
+
+  // ── ENRIQUECER DENÚNCIAS com dados de regulados via CNPJ ──
+  for (const d of denuncias) {
+    const reg = mapaReguladosPorDoc.get(norm(d.Cnpj));
+    if (reg) {
+      d._fantasia_n  = norm(reg.fantasia);
+      d._razao_n     = norm(reg.razao);
+      d._documento_n = norm(reg.documento);
+    } else {
+      // Fallback: usa o campo Reclamado do próprio CSV
+      d._fantasia_n  = norm(d.Reclamado);
+      d._razao_n     = '';
+      d._documento_n = norm(d.Cnpj);
+    }
+  }
+
+  // ── ENRIQUECER REQUERIMENTOS com nome normalizado do requerente ──
+  for (const r of requerimentos) {
+    r._requerente_n = norm(r.Requerente);
+  }
+
+  // ── ENRIQUECER PROTOCOLOS com dados de regulados via Codigo (FK) ──
+  for (const p of protocolos) {
+    const reg = mapaRegulados.get(String(p.Codigo || '').trim());
+    if (reg) {
+      p._fantasia_n  = norm(reg.fantasia);
+      p._razao_n     = norm(reg.razao);
+      p._documento_n = norm(reg.documento);
+    } else {
+      p._fantasia_n  = '';
+      p._razao_n     = '';
+      p._documento_n = '';
+    }
+  }
+
   // ── MAPA DE ÚLTIMA TRAMITAÇÃO POR PROTOCOLO ──
   const mapaTramitacao = new Map();
   for (const t of tramitacoes) {
@@ -131,7 +187,7 @@ async function _carregarTudo() {
 
   return { regulados, protocolos, tramitacoes, denuncias,
            requerimentos, oficios, alvaras: alvarasAtivos,
-           mapaRegulados, mapaTramitacao };
+           mapaRegulados, mapaReguladosPorDoc, mapaTramitacao };
 }
 
 /**
@@ -228,7 +284,12 @@ function executarBuscaComContagem(dados, termoNorm) {
 
   // ── Protocolos (todos — histórico completo + JOIN tramitação e regulados) ──
   buscar(dados.protocolos, 'protocolos',
-    p => match(p.Protocolo, termoNorm) || match(p.Protocolante, termoNorm) || match(p.Assunto, termoNorm),
+    p => (p._fantasia_n && p._fantasia_n.includes(termoNorm)) ||
+         (p._razao_n && p._razao_n.includes(termoNorm)) ||
+         (p._documento_n && p._documento_n.includes(termoNorm)) ||
+         match(p.Protocolo, termoNorm) ||
+         match(p.Protocolante, termoNorm) ||
+         match(p.Assunto, termoNorm),
     p => {
       const tram = dados.mapaTramitacao.get((p.Protocolo || '').trim());
       const reg = dados.mapaRegulados.get(String(p.Codigo || '').trim());
@@ -243,18 +304,25 @@ function executarBuscaComContagem(dados, termoNorm) {
 
   // ── Denúncias (só ativas) ──
   buscar(dados.denuncias, 'denuncias',
-    d => match(d.Denuncia, termoNorm) || match(d.Reclamado, termoNorm) ||
-         match(d.Logradouro, termoNorm) || match(d.Cnpj, termoNorm)
+    d => (d._fantasia_n && d._fantasia_n.includes(termoNorm)) ||
+         (d._razao_n && d._razao_n.includes(termoNorm)) ||
+         (d._documento_n && d._documento_n.includes(termoNorm)) ||
+         match(d.Denuncia, termoNorm) ||
+         match(d.Logradouro, termoNorm)
   );
 
   // ── Ofícios (só ativos) ──
   buscar(dados.oficios, 'oficios',
-    o => match(o.Oficio, termoNorm) || match(o.Regulado, termoNorm) || match(o.Cnpj, termoNorm)
+    o => (o._fantasia_n && o._fantasia_n.includes(termoNorm)) ||
+         (o._razao_n && o._razao_n.includes(termoNorm)) ||
+         (o._documento_n && o._documento_n.includes(termoNorm)) ||
+         match(o.Oficio, termoNorm)
   );
 
   // ── Requerimentos (só ativos) ──
   buscar(dados.requerimentos, 'requerimentos',
-    r => match(r.OS, termoNorm) || match(r.Requerente, termoNorm)
+    r => (r._requerente_n && r._requerente_n.includes(termoNorm)) ||
+         match(r.OS, termoNorm)
   );
 
   // ── Alvarás (JOIN regulados — usa campos pre-normalizados) ──
