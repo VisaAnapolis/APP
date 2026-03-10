@@ -226,12 +226,18 @@ function executarBuscaComContagem(dados, termoNorm) {
     r => match(r.fantasia, termoNorm) || match(r.razao, termoNorm) || match(r.documento, termoNorm)
   );
 
-  // ── Protocolos (todos — histórico completo + JOIN tramitação) ──
+  // ── Protocolos (todos — histórico completo + JOIN tramitação e regulados) ──
   buscar(dados.protocolos, 'protocolos',
     p => match(p.Protocolo, termoNorm) || match(p.Protocolante, termoNorm) || match(p.Assunto, termoNorm),
     p => {
       const tram = dados.mapaTramitacao.get((p.Protocolo || '').trim());
-      return { ...p, _tramitacao: tram || null };
+      const reg = dados.mapaRegulados.get(String(p.Codigo || '').trim());
+      return {
+        ...p,
+        _tramitacao: tram || null,
+        _razao: reg ? reg.razao : '',
+        _fantasia: reg ? reg.fantasia : ''
+      };
     }
   );
 
@@ -340,10 +346,11 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
       const id = itemId();
       const tram = p._tramitacao;
       const tramInfo = tram ? `→ ${_esc(tram.DESTINO)} · ${_esc(tram.DATA)}` : '';
+      const razaoSocial = p._razao || p._fantasia || p.Protocolante;
       html += `<a id="${id}" class="busca-item" href="protocolo.html?q=${q}" role="option">
         <span class="busca-item-icon" aria-hidden="true">📋</span>
         <div>
-          <span class="busca-item-nome">${_esc(p.Protocolo)} · ${_esc(p.Protocolante)}</span>
+          <span class="busca-item-nome">${_esc(p.Protocolo)} · ${_esc(razaoSocial)}</span>
           <span class="busca-item-sub">${_esc(p.Assunto)}${tramInfo ? ' ' + tramInfo : ''}</span>
         </div>
         <span class="busca-item-badge badge-aberto" aria-label="Protocolo">Protocolo</span>
