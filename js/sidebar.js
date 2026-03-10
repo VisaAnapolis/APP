@@ -81,6 +81,45 @@ function sidebarSetUserAnon() {
   el.innerHTML = '<span class="user-name" style="color:#94a3b8;font-style:italic">Não autenticado</span>';
 }
 
+/* ── Permissões de links por perfil ─────────────────────────────────────── */
+// Links restritos por grupo (identificados pelo href, sem precisar de IDs)
+var _RESTR_FISCAL_ADMIN = ['rmpf.html', 'inspecoes.html', 'comply.html'];
+var _RESTR_APENAS_ADMIN  = ['admin.html', 'indicadores.html'];
+
+function _sidebarLink(href) {
+  return document.querySelector('.sidebar .visa-nav-item[href="' + href + '"]');
+}
+function _disableSidebarLink(href, motivo) {
+  var a = _sidebarLink(href);
+  if (!a) return;
+  a.classList.add('is-disabled');
+  a.setAttribute('aria-disabled', 'true');
+  if (motivo) a.setAttribute('title', motivo);
+}
+function _enableSidebarLink(href) {
+  var a = _sidebarLink(href);
+  if (!a) return;
+  a.classList.remove('is-disabled');
+  a.removeAttribute('aria-disabled');
+  a.removeAttribute('title');
+}
+function _bloquearLinksAtePerfil() {
+  _RESTR_FISCAL_ADMIN.forEach(function(h) { _disableSidebarLink(h, 'Carregando perfil...'); });
+  _RESTR_APENAS_ADMIN.forEach(function(h) { _disableSidebarLink(h, 'Carregando perfil...'); });
+}
+function sidebarAplicarPermissoes(grupo) {
+  if (grupo === 'Fiscal' || grupo === 'Administrador') {
+    _RESTR_FISCAL_ADMIN.forEach(function(h) { _enableSidebarLink(h); });
+  } else {
+    _RESTR_FISCAL_ADMIN.forEach(function(h) { _disableSidebarLink(h, 'Acesso conforme perfil'); });
+  }
+  if (grupo === 'Administrador') {
+    _RESTR_APENAS_ADMIN.forEach(function(h) { _enableSidebarLink(h); });
+  } else {
+    _RESTR_APENAS_ADMIN.forEach(function(h) { _disableSidebarLink(h, 'Exclusivo para Administrador'); });
+  }
+}
+
 /* ── Logout ─────────────────────────────────────────────────────────────── */
 window.sidebarLogout = function() {
   if (window.__sidebarAuth) {
@@ -147,10 +186,12 @@ window.sidebarLogout = function() {
           var nome  = (perfil && perfil.nome)  || user.displayName || 'Usuário';
           var grupo = (perfil && perfil.grupo) || '';
           sidebarSetUser(nome, user.email, grupo);
+          sidebarAplicarPermissoes(grupo);
         })
         .catch(function() {
-          // Firestore falhou — usa só os dados do Auth
+          // Firestore falhou — usa só os dados do Auth; libera todos os links
           sidebarSetUser(user.displayName || 'Usuário', user.email, '');
+          sidebarAplicarPermissoes('');
         });
     });
   }).catch(function(err) {
@@ -161,6 +202,9 @@ window.sidebarLogout = function() {
 
 /* ── DOMContentLoaded ───────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', function () {
+  // Bloqueia links restritos imediatamente enquanto o perfil não carrega
+  _bloquearLinksAtePerfil();
+
   // Fecha sidebar ao clicar em item (mobile)
   document.querySelectorAll('.sidebar .visa-nav-item').forEach(function(el) {
     el.addEventListener('click', function () {
