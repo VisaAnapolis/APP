@@ -182,6 +182,20 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.5.0 — 10/03/2026 12:46 (Horário de Brasília – UTC−3)</h3>
+  <strong>✨ Busca Inteligente Unificada — pesquise regulados, OS, protocolos e mais em um único lugar</strong>
+  <ul>
+    <li><strong>Busca Global no Dashboard:</strong> novo campo de busca centralizado no Dashboard (<code>index.html</code>) que pesquisa simultaneamente em <strong>7 fontes de dados</strong> — Regulados (CNPJ, razão social, nome fantasia), Ordens de Serviço, Protocolos, Denúncias, Requerimentos, Ofícios e Alvarás. Não precisa mais pular entre páginas para encontrar informações: digite o termo, CNPJ ou número e veja os resultados categorizados instantaneamente.</li>
+    <li><strong>Motor de busca inteligente (<code>js/busca-global.js</code>):</strong> módulo dedicado que carrega e indexa os CSVs sob demanda, com normalização de texto (acentos, pontuação, CNPJ com/sem formatação), matching por substring e agrupamento por categoria. Utiliza JOIN otimizado entre fontes para enriquecer resultados de alvarás com dados de regulados em passe único.</li>
+    <li><strong>Interface com botão de ação:</strong> a busca é disparada por botão (não por digitação), evitando requisições desnecessárias. Resultados aparecem em painel flutuante com badges coloridos por categoria, contagem de resultados, e links diretos para as páginas de detalhe.</li>
+    <li><strong>Correção de normalização:</strong> a função <code>norm()</code> foi corrigida para tratar corretamente buscas por CNPJ sem formatação (ex: <code>12345678000190</code>), que antes falhavam silenciosamente por remoção excessiva de caracteres.</li>
+    <li><strong>Subtítulo dinâmico atualizado:</strong> o subtítulo do Dashboard foi atualizado para refletir o escopo ampliado da página com a busca global.</li>
+    <li><strong>Plantão público:</strong> a página <code>plantao.html</code> teve o guard de autenticação removido, tornando-a acessível sem login conforme necessidade operacional.</li>
+  </ul>
+  <p><strong>Arquivos modificados:</strong> <code>index.html</code> — campo de busca global, integração com <code>busca-global.js</code>, subtítulo atualizado; <code>js/busca-global.js</code> — novo módulo de busca unificada (carregamento de CSVs, indexação, matching, JOIN de alvarás); <code>js/regulados1.js</code> — ajuste na função <code>norm()</code>; <code>plantao.html</code> — remoção do guard de autenticação; <code>protocolo.html</code> — ajustes de integração; <code>alvara.html</code> — ajustes de integração; <code>docs/BUSCA_GLOBAL_UNIFICADA.md</code> — documentação do projeto; <code>changelog.html</code> — esta entrada.</p>
+</div>
+
+<div class="section">
   <h3>v2.4.9 — 05/03/2026 01:20 (Horário de Brasília – UTC−3)</h3>
   <strong>Vinculação imediata de token FCM ao dispositivo + limpeza de tokens órfãos</strong>
   <ul>
