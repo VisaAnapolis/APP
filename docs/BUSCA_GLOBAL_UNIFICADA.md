@@ -1,10 +1,28 @@
 # Especificação Técnica — Pesquisa Global Unificada
 ## VISA Anápolis · APP garrado/VISA
 
-**Versão:** 1.0  
-**Data:** 09/03/2026  
-**Autor:** Cláudio Nascimento Silva  
-**Status:** Proposta para implementação
+**Versão:** 2.0
+**Data:** 10/03/2026
+**Autor original:** Cláudio Nascimento Silva
+**Revisão técnica:** Claude (Opus 4.6) — validação contra codebase real
+**Status:** Proposta revisada para implementação
+
+---
+
+## Changelog v1.0 → v2.0
+
+| # | Problema na v1.0 | Correção na v2.0 |
+|---|---|---|
+| 1 | Nomes de campos fictícios na seção 4.2 (`NomeFantasia`, `RazaoSocial`, `CNPJ`, `NumReq`, `NumDenuncia`, `NumOficio`, `Endereco`) não existem nos CSVs reais | Mapeamento corrigido com nomes reais dos campos de cada arquivo |
+| 2 | `index_regulados.json` referenciado com campo `Endereco` — campo inexistente (JSON só tem `codigo`, `razao`, `fantasia`, `documento`) | Removido `Endereco` da lista de campos pesquisáveis em Regulados |
+| 3 | `alvlib.csv` listado como pesquisável por `NomeFantasia`, `RazaoSocial`, `CNPJ` — nenhum desses campos existe nesse CSV | Estratégia de JOIN: busca via `Controle` (FK) cruzando com `index_regulados.json` |
+| 4 | URLs de navegação (`cvs.html?q=`, `protocolo.html?num=`, `alvara.html?q=`) pressupõem query params que **não existem** nessas páginas | Seção 7 reescrita: links reais (somente `os.html?tipo=` funciona hoje); demais páginas precisam de adaptação prévia ou estratégia alternativa |
+| 5 | `parseCSV()` não especifica `delimiter: ';'` — todos os CSVs usam ponto-e-vírgula | Corrigido no código de cache e na função `parseCSV()` |
+| 6 | Race condition na flag `_carregando`: segundo chamador recebe `null` silenciosamente | Substituído por Promise compartilhada (`_promiseCarregamento`) |
+| 7 | `Date.now()` como cache-buster força re-download a cada nova aba | Substituído por cache-buster baseado em data (granularidade diária) |
+| 8 | Faltava `@keyframes spin` no CSS (referenciado mas não definido) | Adicionado |
+| 9 | Badge colors hardcoded sem variantes dark mode | Adicionadas variantes dark mode para badges |
+| 10 | Contagem de registros não mencionada (impacta performance) | Adicionada: 17.908 regulados, 2.370 protocolos, 13.194 requerimentos, 2.984 denúncias, 6.225 ofícios, 38.895 alvlib |
 
 ---
 
@@ -26,31 +44,51 @@ links diretos para cada registro.
 
 ## 2. Inventário de Dados Disponíveis
 
-Levantamento dos arquivos reais no repositório (`data/`):
+Levantamento dos arquivos reais no repositório (`data/`), validado em 10/03/2026:
 
-| Arquivo | Tamanho Real | Incluir na Busca | Observação |
-|---|---|---|---|
-| `index_regulados.json` | **2,1 MB** | ✅ Sim | Fonte primária de regulados |
-| `regulados.csv` | 8,3 MB | ❌ Não | Grande demais; usar o JSON |
-| `protocolo.csv` | 543 KB | ✅ Sim | Já carregado pelos stat cards |
-| `tramitacao.csv` | 541 KB | ✅ Sim | Já carregado pelos stat cards |
-| `requerimento.csv` | **3,9 MB** | ⚠️ Parcial | Carregar só campos essenciais |
-| `denuncia.csv` | 1,3 MB | ✅ Sim | Tamanho aceitável |
-| `oficio.csv` | 2,0 MB | ⚠️ Parcial | Carregar só campos essenciais |
-| `alvara.csv` | **8,5 MB** | ❌ Não | Grande demais; usar alvlib |
-| `alvlib.csv` | 3,9 MB | ⚠️ Parcial | Somente campos chave |
-| `inspecoes.csv` | **19,7 MB** | ❌ Não | Inviável para busca client-side |
-| `os_snapshot.json` | 11,8 MB | ❌ Não | Grande demais; usar CSVs acima |
+| Arquivo | Tamanho | Registros | Incluir na Busca | Observação |
+|---|---|---|---|---|
+| `index_regulados.json` | **2,1 MB** | 17.908 | ✅ Sim | Fonte primária de regulados |
+| `regulados.csv` | 7,9 MB | — | ❌ Não | Grande demais; usar o JSON |
+| `protocolo.csv` | 530 KB | 2.370 | ✅ Sim | Já carregado pelos stat cards |
+| `tramitacao.csv` | 529 KB | 9.009 | ✅ Sim | Enriquece protocolos (JOIN) |
+| `requerimento.csv` | **3,7 MB** | 13.194 | ⚠️ Parcial | Carregar só campos essenciais |
+| `denuncia.csv` | 1,3 MB | 2.984 | ✅ Sim | Tamanho aceitável |
+| `oficio.csv` | 2,0 MB | 6.225 | ⚠️ Parcial | Carregar só campos essenciais |
+| `alvara.csv` | 8,2 MB | — | ❌ Não | Grande demais; usar alvlib |
+| `alvlib.csv` | 3,7 MB | 38.895 | ⚠️ JOIN | Sem campos de nome; busca via cruzamento com regulados |
+| `inspecoes.csv` | **19,7 MB** | — | ❌ Não | Inviável para busca client-side |
+| `os_snapshot.json` | 11,8 MB | — | ❌ Não | Grande demais; usar CSVs acima |
 
-### 2.1 Conclusão do Inventário
+### 2.1 Estrutura Real dos Campos (verificação contra CSVs)
 
-> ⚠️ **Atenção crítica:** `requerimento.csv` (3,9 MB), `oficio.csv`
-> (2,0 MB) e `alvlib.csv` (3,9 MB) são carregáveis, mas pesados.
+> **ATENÇÃO**: Os nomes dos campos abaixo são os nomes **reais** extraídos
+> dos cabeçalhos dos CSVs. Todos os CSVs usam **`;`** como delimitador.
+
+| Arquivo | Campos reais relevantes para busca |
+|---|---|
+| `index_regulados.json` | `codigo`, `razao`, `fantasia`, `documento` |
+| `protocolo.csv` | `Protocolo`, `Protocolante`, `Documento`, `Assunto` |
+| `tramitacao.csv` | `PROTOCOLO`, `DATA`, `HORA`, `DESTINO` |
+| `requerimento.csv` | `OS`, `Requerente`, `Prazo`, `Fiscal_Encaminha`, `Atendimento`, `Cancelado` |
+| `denuncia.csv` | `Denuncia`, `Reclamado`, `Logradouro`, `Cnpj`, `Prazo`, `FiscalEncaminha`, `Archive` |
+| `oficio.csv` | `Oficio`, `Fantasia`, `Regulado`, `Cnpj`, `Logradouro`, `Prazo`, `Fiscalencaminha`, `Cancela`, `Archive` |
+| `alvlib.csv` | `Controle`, `Alvara`, `Data`, `Status`, `Atividade`, `Autoridade`, `Documento` |
+
+### 2.2 Conclusão do Inventário
+
+> ⚠️ **Atenção crítica:** `requerimento.csv` (3,7 MB), `oficio.csv`
+> (2,0 MB) e `alvlib.csv` (3,7 MB) são carregáveis, mas pesados.
 > A estratégia de **lazy loading com cache em memória** é obrigatória,
 > não opcional. Esses três arquivos **jamais devem ser carregados na
 > abertura da página** — somente na primeira busca do usuário.
 
-**Peso total dos arquivos incluídos:** ~10,4 MB  
+> ⚠️ **`alvlib.csv` não possui campos de nome fantasia, razão social
+> ou CNPJ.** A busca de alvarás por nome do estabelecimento exige
+> cruzamento com `index_regulados.json` via chave `Controle` ↔ `codigo`.
+> Essa intersecção cobre 15.215 dos 38.895 registros do alvlib.
+
+**Peso total dos arquivos incluídos:** ~10,1 MB
 **Peso estimado após seleção de campos (PapaParse):** ~3–4 MB efetivos na memória
 
 ---
@@ -89,14 +127,20 @@ initBuscaGlobal() verifica _cacheBusca
         │ sem cache
         ▼
 Promise.all([
-  fetch index_regulados.json,   // 2,1 MB
-  PapaParse protocolo.csv,      // 543 KB
-  PapaParse tramitacao.csv,     // 541 KB
-  PapaParse denuncia.csv,       // 1,3 MB
-  PapaParse requerimento.csv,   // 3,9 MB (campos selecionados)
+  fetch index_regulados.json,   // 2,1 MB → { meta, dados: [...] }
+  PapaParse protocolo.csv,      // 530 KB (delimiter: ';')
+  PapaParse tramitacao.csv,     // 529 KB (delimiter: ';')
+  PapaParse denuncia.csv,       // 1,3 MB (delimiter: ';')
+  PapaParse requerimento.csv,   // 3,7 MB (campos selecionados)
   PapaParse oficio.csv,         // 2,0 MB (campos selecionados)
-  PapaParse alvlib.csv          // 3,9 MB (campos selecionados)
+  PapaParse alvlib.csv          // 3,7 MB (campos selecionados)
 ])
+        │
+        ▼
+Pós-processamento:
+  - Constrói mapa regulados: Map<codigo, {razao, fantasia, documento}>
+  - Enriquece alvlib com dados de regulados via Controle ↔ codigo
+  - Enriquece protocolos com última tramitação
         │
         ▼
 Salva em _cacheBusca (memória da sessão)
@@ -113,42 +157,137 @@ Renderiza painel dropdown com resultados agrupados
 ```javascript
 // Singleton de cache — vive enquanto a aba estiver aberta
 let _cacheBusca = null;
-let _carregando  = false;
+let _promiseCarregamento = null;  // Promise compartilhada (evita race condition)
 
 async function garantirDadosCarregados() {
   if (_cacheBusca) return _cacheBusca;   // hit: retorno imediato
-  if (_carregando) return null;          // evita duplo fetch simultâneo
 
-  _carregando = true;
-  mostrarSpinnerNoCampo(true);
+  // Se já há um carregamento em andamento, espera o mesmo Promise
+  // (resolve a race condition da v1.0 que retornava null)
+  if (_promiseCarregamento) return _promiseCarregamento;
 
+  _promiseCarregamento = _carregarTudo();
   try {
-    const ts = Date.now();
-
-    const [regulados, protocolos, tramitacoes, denuncias,
-           requerimentos, oficios, alvaras] =
-      await Promise.all([
-        fetch(`data/index_regulados.json?t=${ts}`).then(r => r.json()),
-        parseCSV(`data/protocolo.csv?t=${ts}`),
-        parseCSV(`data/tramitacao.csv?t=${ts}`),
-        parseCSV(`data/denuncia.csv?t=${ts}`),
-        parseCSV(`data/requerimento.csv?t=${ts}`),
-        parseCSV(`data/oficio.csv?t=${ts}`),
-        parseCSV(`data/alvlib.csv?t=${ts}`)
-      ]);
-
-    _cacheBusca = { regulados, protocolos, tramitacoes,
-                    denuncias, requerimentos, oficios, alvaras };
+    _cacheBusca = await _promiseCarregamento;
     return _cacheBusca;
-
   } catch (e) {
     console.error('[BuscaGlobal] Falha ao carregar dados:', e);
     return null;
   } finally {
-    _carregando = false;
-    mostrarSpinnerNoCampo(false);
+    _promiseCarregamento = null;
   }
 }
+
+async function _carregarTudo() {
+  mostrarSpinnerNoCampo(true);
+
+  // Cache-buster com granularidade diária (evita re-download a cada aba)
+  const hoje = new Date().toISOString().slice(0, 10); // "2026-03-10"
+
+  const [reguladosJson, protocolos, tramitacoes, denuncias,
+         requerimentos, oficios, alvaras] =
+    await Promise.all([
+      fetch(`data/index_regulados.json?d=${hoje}`).then(r => r.json()),
+      parseCSV(`data/protocolo.csv?d=${hoje}`),
+      parseCSV(`data/tramitacao.csv?d=${hoje}`),
+      parseCSV(`data/denuncia.csv?d=${hoje}`),
+      parseCSV(`data/requerimento.csv?d=${hoje}`,
+               ['OS', 'Requerente', 'Prazo', 'Fiscal_Encaminha',
+                'Atendimento', 'Cancelado']),
+      parseCSV(`data/oficio.csv?d=${hoje}`,
+               ['Oficio', 'Fantasia', 'Regulado', 'Cnpj', 'Logradouro',
+                'Prazo', 'Fiscalencaminha', 'Cancela', 'Archive']),
+      parseCSV(`data/alvlib.csv?d=${hoje}`,
+               ['Controle', 'Alvara', 'Data', 'Status', 'Atividade',
+                'Autoridade'])
+    ]);
+
+  // Extrair array de dados do JSON (estrutura: { meta, dados })
+  const regulados = reguladosJson.dados || reguladosJson;
+
+  // Mapa de regulados para JOIN com alvlib
+  const mapaRegulados = new Map();
+  for (const r of regulados) {
+    mapaRegulados.set(String(r.codigo), r);
+  }
+
+  // Enriquecer alvlib com dados de regulados
+  for (const a of alvaras) {
+    const reg = mapaRegulados.get(a.Controle);
+    if (reg) {
+      a._fantasia  = reg.fantasia;
+      a._razao     = reg.razao;
+      a._documento = reg.documento;
+    }
+  }
+
+  // Mapa de última tramitação por protocolo
+  const mapaTramitacao = new Map();
+  for (const t of tramitacoes) {
+    const proto = (t.PROTOCOLO || '').trim();
+    if (!proto) continue;
+    const existente = mapaTramitacao.get(proto);
+    if (!existente || (t.DATA || '') > (existente.DATA || '')) {
+      mapaTramitacao.set(proto, t);
+    }
+  }
+
+  mostrarSpinnerNoCampo(false);
+
+  return { regulados, protocolos, tramitacoes, denuncias,
+           requerimentos, oficios, alvaras,
+           mapaRegulados, mapaTramitacao };
+}
+
+/**
+ * Wrapper do PapaParse com delimiter ';' (padrão dos CSVs do VISA).
+ * @param {string} url - URL do CSV
+ * @param {string[]|null} campos - Se informado, só retorna esses campos
+ */
+function parseCSV(url, campos = null) {
+  return new Promise((resolve, reject) => {
+    Papa.parse(url, {
+      download: true,
+      header: true,
+      delimiter: ';',
+      skipEmptyLines: true,
+      complete: (results) => {
+        if (campos && results.data.length > 0) {
+          const camposSet = new Set(campos);
+          resolve(results.data.map(row => {
+            const filtrado = {};
+            for (const c of camposSet) {
+              if (c in row) filtrado[c] = row[c];
+            }
+            return filtrado;
+          }));
+        } else {
+          resolve(results.data);
+        }
+      },
+      error: reject
+    });
+  });
+}
+```
+
+### 3.4 Limpeza de Cache no Logout
+
+```javascript
+// Chamar quando o usuário fizer logout ou a sessão expirar
+export function limparCacheBusca() {
+  _cacheBusca = null;
+  _promiseCarregamento = null;
+}
+```
+
+No `index.html`, após o `signOut`:
+
+```javascript
+window.logout = function() {
+  import('./js/busca-global.js').then(m => m.limparCacheBusca?.());
+  signOut(auth).catch(console.error);
+};
 ```
 
 ---
@@ -167,27 +306,70 @@ function norm(s) {
     .replace(/[.\-\/\s]+/g, ' ');     // normaliza CNPJ, espaços
 }
 
-function match(campo, termo) {
-  return norm(campo).includes(norm(termo));
+function match(campo, termoNorm) {
+  return norm(campo).includes(termoNorm);
 }
 ```
 
-### 4.2 Campos Pesquisados por Fonte
+> **Otimização**: normalizar o termo de busca **uma única vez** fora do
+> loop, não a cada chamada de `match()`. A função `match()` recebe o
+> termo já normalizado.
 
-| Fonte | Campos indexados |
-|---|---|
-| **Regulados** | `NomeFantasia`, `RazaoSocial`, `CNPJ`, `Endereco` |
-| **Protocolos** | `Protocolo` (nº), `NomeFantasia`, `RazaoSocial`, `CNPJ` |
-| **Requerimentos** | `NumReq`, `NomeFantasia`, `CNPJ` |
-| **Denúncias** | `NumDenuncia`, `Endereco`, `NomeFantasia` |
-| **Ofícios** | `NumOficio`, `NomeFantasia`, `CNPJ` |
-| **Alvarás** | `NomeFantasia`, `RazaoSocial`, `CNPJ` |
+### 4.2 Campos Pesquisados por Fonte (NOMES REAIS)
 
-### 4.3 Limite de Resultados
+| Fonte | Campos reais pesquisados | Campos exibidos no resultado |
+|---|---|---|
+| **Regulados** (`index_regulados.json`) | `fantasia`, `razao`, `documento` | Nome fantasia, CNPJ |
+| **Protocolos** (`protocolo.csv`) | `Protocolo`, `Protocolante`, `Documento`, `Assunto` | Nº protocolo, protocolante, data tramitação |
+| **Requerimentos** (`requerimento.csv`) | `OS`, `Requerente` | Nº OS, requerente, prazo |
+| **Denúncias** (`denuncia.csv`) | `Denuncia`, `Reclamado`, `Logradouro`, `Cnpj` | Nº denúncia, reclamado, endereço |
+| **Ofícios** (`oficio.csv`) | `Oficio`, `Fantasia`, `Regulado`, `Cnpj` | Nº ofício, nome fantasia, CNPJ |
+| **Alvarás** (`alvlib.csv` + JOIN) | `_fantasia`, `_razao`, `_documento`, `Alvara`, `Autoridade` | Nº alvará, nome, atividade CNAE |
+
+> **Nota sobre Alvarás**: O `alvlib.csv` não possui campos de nome/CNPJ.
+> Os campos `_fantasia`, `_razao` e `_documento` são injetados via JOIN
+> com `index_regulados.json` na etapa de pós-processamento (seção 3.3).
+> Registros sem correspondência (23.680 de 38.895) serão pesquisáveis
+> apenas por `Alvara` (número) e `Autoridade` (nome da pessoa autorizada).
+
+### 4.3 Filtros de Registros Ativos
+
+Antes do matching, filtrar registros inativos/cancelados:
+
+```javascript
+// Requerimentos: ignorar atendidos e cancelados
+requerimentos.filter(r =>
+  String(r.Atendimento || '').trim().toUpperCase() !== 'TRUE' &&
+  String(r.Cancelado || '').trim().toUpperCase() !== 'TRUE'
+);
+
+// Denúncias: ignorar arquivadas
+denuncias.filter(d =>
+  String(d.Archive || '').trim().toUpperCase() !== 'TRUE'
+);
+
+// Ofícios: ignorar cancelados e arquivados
+oficios.filter(o =>
+  String(o.Cancela || '').trim().toUpperCase() !== 'TRUE' &&
+  String(o.Archive || '').trim().toUpperCase() !== 'TRUE'
+);
+```
+
+### 4.4 Limite de Resultados
 
 - Máximo **5 resultados por categoria** exibidos no dropdown
 - Se houver mais, exibir link `"Ver todos os X resultados →"` que abre
   a página do módulo correspondente com o filtro pré-aplicado via URL
+
+### 4.5 Considerações de Performance
+
+Com ~83.000 registros totais (17.908 + 2.370 + 13.194 + 2.984 + 6.225 + 38.895),
+o loop de matching deve ser otimizado:
+
+- Normalizar o termo de busca **uma vez** antes de todos os loops
+- Usar `break` assim que 5 resultados forem encontrados por categoria
+- Buscar em ordem de relevância: Regulados → Protocolos → Denúncias → Ofícios → Requerimentos → Alvarás
+- Total de iterações no pior caso: ~83K comparações × 3 campos ≈ 250K `includes()` — aceitável (< 50ms em hardware moderno)
 
 ---
 
@@ -345,6 +527,14 @@ após o `<p class="page-subtitle">`, sem alterar nenhuma outra estrutura:
 .badge-avencer { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
 .badge-aberto  { background: rgba(44,90,160,.08); color: #2c5aa0; border: 1px solid rgba(44,90,160,.2); }
 
+/* Dark mode para badges */
+@media (prefers-color-scheme: dark) {
+  .badge-ok      { background: rgba(22,163,74,.15); color: #4ade80; border-color: rgba(74,222,128,.25); }
+  .badge-vencida { background: rgba(220,38,38,.15); color: #f87171; border-color: rgba(248,113,113,.25); }
+  .badge-avencer { background: rgba(180,83,9,.15);  color: #fbbf24; border-color: rgba(251,191,36,.25); }
+  .badge-aberto  { background: rgba(107,154,212,.12); color: #93bbef; border-color: rgba(107,154,212,.25); }
+}
+
 .busca-ver-todos {
   display: block;
   font-size: 0.78rem;
@@ -375,11 +565,15 @@ após o `<p class="page-subtitle">`, sem alterar nenhuma outra estrutura:
 }
 .busca-spinner {
   width: 14px; height: 14px;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--line, #e2e8f0);
   border-top-color: var(--brand1, #2c5aa0);
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: buscaSpin 0.8s linear infinite;
   flex-shrink: 0;
+}
+
+@keyframes buscaSpin {
+  to { transform: rotate(360deg); }
 }
 ```
 
@@ -419,18 +613,22 @@ após o `<p class="page-subtitle">`, sem alterar nenhuma outra estrutura:
 │     CNPJ: 98.765.432/0001-55 · CNAE: 4771-7/02    │
 ├─────────────────────────────────────────────────────┤
 │ PROTOCOLOS                                          │
-│ 📋  2025/1.847 · Farmácia Boa Saúde     🔴 Vencida│
-│     Fiscal: CLÁUDIO · Tramitado: 10/02/2026        │
-│ 📋  2024/3.210 · Farmácia Popular        ✅ OK     │
-│     Concluído                                       │
+│ 📋  Prot. 20220015 · JOSE CASSIO ALVES   🔴 Vencida│
+│     Assunto: PROJETO ARQUITETÔNICO SANITÁRIO       │
+│ 📋  Prot. 20240210 · MARIA SILVA          ✅ OK    │
+│     Tramitado: 10/02/2026 → DVISA                  │
 ├─────────────────────────────────────────────────────┤
 │ DENÚNCIAS                                           │
 │ ⚠️  Den. 456/2025 · Rua das Flores, 123 🔵 Aberta │
-│     Prazo: 15/03/2026 · Fiscal: THIAGO             │
+│     Reclamado: FARMÁCIA BOA SAÚDE                  │
+├─────────────────────────────────────────────────────┤
+│ OFÍCIOS                                             │
+│ 📨  Of. 789/2025 · Farmácia Popular       🔵 Aberto│
+│     CNPJ: 98.765.432/0001-55                       │
 ├─────────────────────────────────────────────────────┤
 │ ALVARÁS                                             │
-│ 🏦  Farmácia Boa Saúde                  ✅ Vigente │
-│     Validade: 31/12/2026                           │
+│ 🏦  Alv. 5182 · Farmácia Boa Saúde     ✅ Vigente │
+│     CNAE: 9602-5/01                                │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -446,24 +644,60 @@ após o `<p class="page-subtitle">`, sem alterar nenhuma outra estrutura:
 | `Esc` | Fecha dropdown, mantém foco no campo |
 | `↑` / `↓` | Navega pelos itens do dropdown |
 | `Enter` sobre item | Abre o link do item |
-| Clique fora | Fecha dropdown |
+| Clique fora | Fecha dropdown (via `mousedown` para evitar bug mobile) |
 | Clique em item | Navega para a página do módulo |
 
 ---
 
 ## 7. Links de Navegação por Tipo de Resultado
 
-Cada item do dropdown linka diretamente para a página correspondente,
-aproveitando os parâmetros de URL já existentes no app:
+> ⚠️ **ATENÇÃO (v2.0)**: Na v1.0, esta seção assumia que `cvs.html`,
+> `protocolo.html` e `alvara.html` aceitam query parameters (`?q=`,
+> `?num=`). **Isso é falso** — essas páginas não implementam leitura
+> de `URLSearchParams` atualmente. Apenas `os.html` suporta `?tipo=`
+> e `?fiscal=`.
 
-| Tipo | URL gerada |
-|---|---|
-| Regulado | `cvs.html?q=CNPJ_OU_NOME` |
-| Protocolo | `protocolo.html?num=2025/1847` |
-| Requerimento | `os.html?tipo=Requerimento&q=NOME` |
-| Denúncia | `os.html?tipo=Den%C3%BAncia&q=NOME` |
-| Ofício | `os.html?tipo=Of%C3%ADcio&q=NOME` |
-| Alvará | `alvara.html?q=CNPJ_OU_NOME` |
+### 7.1 Estratégia de Navegação
+
+**Opção A — Implementar `?q=` nas páginas de destino (RECOMENDADA)**
+
+Adicionar suporte a query parameter `?q=` em `protocolo.html`, `cvs.html`
+e `alvara.html`, preenchendo automaticamente o campo de busca existente
+e disparando a pesquisa. Isso exige modificar 3 páginas (escopo adicional).
+
+**Opção B — Navegar sem filtro pré-aplicado**
+
+Simplesmente abrir a página do módulo. O usuário precisará digitar
+novamente o termo de busca. Menos útil, mas zero modificações extras.
+
+### 7.2 URLs Geradas (com Opção A implementada)
+
+| Tipo | URL gerada | Status do suporte |
+|---|---|---|
+| Regulado | `cvs.html?q=CNPJ_OU_NOME` | ❌ Precisa implementar |
+| Protocolo | `protocolo.html?q=NUMERO_OU_NOME` | ❌ Precisa implementar |
+| Requerimento | `os.html?tipo=Requerimento` | ✅ Funciona hoje |
+| Denúncia | `os.html?tipo=Den%C3%BAncia` | ✅ Funciona hoje |
+| Ofício | `os.html?tipo=Of%C3%ADcio` | ✅ Funciona hoje |
+| Alvará | `alvara.html?q=CNPJ_OU_NOME` | ❌ Precisa implementar |
+
+### 7.3 Implementação do `?q=` nas Páginas de Destino
+
+Padrão mínimo a adicionar no `DOMContentLoaded` de cada página:
+
+```javascript
+// Adicionar em protocolo.html, cvs.html, alvara.html:
+const urlParams = new URLSearchParams(window.location.search);
+const qParam = urlParams.get('q');
+if (qParam) {
+  const campoBusca = document.getElementById('campoBusca'); // ajustar ID
+  if (campoBusca) {
+    campoBusca.value = qParam;
+    // Disparar busca automaticamente
+    executarBusca(); // ajustar nome da função
+  }
+}
+```
 
 ---
 
@@ -487,19 +721,20 @@ login — somente após a autenticação ser confirmada.
 
 ## 9. Plano de Implementação
 
-| Fase | Tarefa | Estimativa |
+| Fase | Tarefa | Detalhe |
 |---|---|---|
-| **1** | Criar `js/busca-global.js` com estrutura base, cache e parseCSV | 4h |
-| **2** | Matching para Regulados (`index_regulados.json`) | 2h |
-| **3** | Matching para Protocolos + Tramitação | 2h |
-| **4** | Matching para Denúncias + Requerimentos + Ofícios | 3h |
-| **5** | Matching para Alvarás (`alvlib.csv`) | 2h |
-| **6** | Renderizador do dropdown (HTML + badges) | 3h |
-| **7** | CSS completo (campo, dropdown, dark mode, responsivo) | 2h |
-| **8** | Inserir HTML no `index.html` + import dinâmico | 1h |
-| **9** | Navegação por teclado (↑↓ Enter Esc) + atalho Ctrl+K | 2h |
-| **10** | Testes: mobile, dark mode, Fiscal e Administrador | 2h |
-| | **Total estimado** | **~23h** |
+| **1** | Criar `js/busca-global.js` — estrutura base | Cache com Promise compartilhada, `parseCSV()` com delimiter `;`, `limparCacheBusca()` |
+| **2** | Matching para Regulados | Campos: `fantasia`, `razao`, `documento` do JSON |
+| **3** | Matching para Protocolos + Tramitação | Campos: `Protocolo`, `Protocolante`, `Documento`; enriquecido com `mapaTramitacao` |
+| **4** | Matching para Denúncias + Requerimentos + Ofícios | Denúncia: `Denuncia`, `Reclamado`, `Logradouro`, `Cnpj`; Req: `OS`, `Requerente`; Ofício: `Oficio`, `Fantasia`, `Cnpj` |
+| **5** | Matching para Alvarás com JOIN | JOIN `alvlib.Controle` ↔ `regulados.codigo`; busca em `_fantasia`, `_razao`, `_documento`, `Alvara`, `Autoridade` |
+| **6** | Renderizador do dropdown | HTML + badges de status + filtro de cancelados/arquivados |
+| **7** | CSS completo | Campo, dropdown, dark mode (incluindo badges), responsivo, `@keyframes buscaSpin` |
+| **8** | Inserir HTML no `index.html` + import dinâmico | Inserir no `.page-header` após `#dashboardSubtitle`; import após auth |
+| **9** | Navegação por teclado + Ctrl+K | `↑↓` com `aria-activedescendant`, `Enter`, `Esc`, `mousedown` para fechar |
+| **10** | Implementar `?q=` nas páginas de destino | `protocolo.html`, `cvs.html`, `alvara.html` — ler param e disparar busca |
+| **11** | Integrar `limparCacheBusca()` no logout | Chamar no `window.logout` e no expirar de sessão |
+| **12** | Testes | Mobile, dark mode, Fiscal vs Admin, alvará sem correspondência, CNPJ formatado vs sem formato |
 
 ---
 
@@ -507,30 +742,51 @@ login — somente após a autenticação ser confirmada.
 
 | Risco | Probabilidade | Mitigação |
 |---|---|---|
-| `requerimento.csv` (3,9 MB) lento em 3G | Média | Spinner com mensagem; carregar campos selecionados |
-| `alvlib.csv` (3,9 MB) idem | Média | Mesmo tratamento acima |
-| CNPJ com formatação diferente entre arquivos | Alta | Normalizar: remover `.`, `-`, `/` antes de comparar |
-| Campo de Prazo em formato variado | Média | Reutilizar `parseData()` já existente no `index.html` |
-| Nome do fiscal em caixa mista | Alta | Reutilizar `.normalize('NFD')` já usado no projeto |
-| Dropdown some ao clicar (mobile — evento `blur`) | Média | Usar `mousedown` em vez de `click` para fechar |
-| Memória (~10 MB de dados em RAM) | Baixa | Aceitável para uso moderno; limpar `_cacheBusca` no logout |
+| `requerimento.csv` (3,7 MB) lento em 3G | Média | Spinner com mensagem; carregar só 6 campos essenciais |
+| `alvlib.csv` (3,7 MB / 38.895 registros) lento em 3G | Média | Carregar só 6 campos; JOIN reduz busca textual a 15.215 registros |
+| CNPJ com formatação diferente entre arquivos | **Alta** | `norm()` já remove `.`, `-`, `/`; testar: `12345678000100` vs `12.345.678/0001-00` |
+| Nomes de campos com caixa inconsistente entre CSVs | **Alta** | `Cnpj` (denúncia/ofício), `PROTOCOLO` (tramitação) — acessar exatamente como no cabeçalho |
+| 23.680 alvarás sem correspondência em regulados | Média | Pesquisáveis apenas por nº alvará e nome Autoridade; exibir "(sem vínculo)" |
+| Páginas de destino sem suporte a `?q=` | **Alta** | Implementar antes ou junto com a busca global (Fase 10) |
+| Dropdown some ao clicar (mobile — evento `blur`) | Média | Usar `mousedown` em vez de `click` para itens do dropdown |
+| Memória (~10 MB de dados em RAM) | Baixa | Aceitável para uso moderno; `limparCacheBusca()` no logout |
+| Race condition em chamadas simultâneas | Média | Promise compartilhada `_promiseCarregamento` (v2.0) |
 
 ---
 
-## 11. Considerações Finais
+## 11. Pré-requisitos (NOVO na v2.0)
+
+Antes de iniciar a implementação da busca global, verificar:
+
+1. **PapaParse** já está carregado no `index.html` via CDN ✅
+2. **`index_regulados.json`** está atualizado e acessível ✅
+3. **Todos os CSVs** usam delimiter `;` e estão com cabeçalhos corretos ✅
+4. **`os.html`** suporta `?tipo=` ✅
+5. **`protocolo.html`**, **`cvs.html`**, **`alvara.html`** precisam de
+   suporte a `?q=` — implementar na Fase 10 ou antes
+
+---
+
+## 12. Considerações Finais
 
 - **Zero dependências novas** — PapaParse já está no `index.html`,
   padrão ES Module já é usado em todo o projeto
 - **Não quebra nada existente** — inserção é estritamente aditiva,
-  sem alterar nenhuma lógica atual
+  sem alterar nenhuma lógica atual do dashboard
 - **Escalável** — adicionar nova fonte (ex.: `rdpf.csv`) é inserir
   um bloco no `Promise.all` e um renderizador de grupo
 - **Consistente com o design system** — usa 100% das variáveis CSS
   e classes já definidas (`var(--card)`, `var(--brand1)` etc.)
 - **Funciona offline (PWA)** — se os CSVs estiverem no cache do
   Service Worker, a busca funciona sem conexão
-- **Dark mode automático** — herda todas as variáveis CSS sem CSS extra
+- **Dark mode automático** — herda todas as variáveis CSS; badges
+  têm variantes dark mode explícitas (v2.0)
+- **JOIN Alvarás-Regulados** — estratégia nova na v2.0 que resolve
+  a ausência de campos de nome/CNPJ no `alvlib.csv`
+- **Race-condition-free** — Promise compartilhada substitui flag
+  booleana que silenciava erros (v2.0)
 
 ---
 
-*Documento gerado em 09/03/2026 · Vigilância Sanitária — Diretoria de Vigilância em Saúde · Anápolis – GO*
+*Documento original: 09/03/2026 · Revisão v2.0: 10/03/2026*
+*Vigilância Sanitária — Diretoria de Vigilância em Saúde · Anápolis – GO*
