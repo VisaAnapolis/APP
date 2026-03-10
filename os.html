@@ -748,13 +748,8 @@
 
             <div class="filter-row">
                 <div class="filter-group">
-                    <label for="filterRazao">Razão Social:</label>
-                    <input type="text" id="filterRazao" placeholder="Digite parte do nome...">
-                </div>
-
-                <div class="filter-group">
-                    <label for="filterFantasia">Nome Fantasia:</label>
-                    <input type="text" id="filterFantasia" placeholder="Digite parte do fantasia...">
+                    <label for="filterRegulado">Estabelecimento / CNPJ:</label>
+                    <input type="text" id="filterRegulado" placeholder="Razão social, fantasia ou CNPJ/CPF...">
                 </div>
 
                 <div class="filter-group">
@@ -1285,6 +1280,35 @@ function buscarUltimaTramitacao(numeroProtocolo) {
     return tramitacoesFiltradas[0];
 }
 
+        // Busca fiscal válido e status de arquivamento do protocolo
+        // Retorna { fiscal, dataEncaminha, atendida } ou null se não houver fiscal válido
+function buscarInfoProtocolo(numeroProtocolo) {
+    if (!dadosTramitacao || dadosTramitacao.length === 0) return null;
+
+    const trams = dadosTramitacao.filter(t => t.PROTOCOLO === numeroProtocolo);
+    if (trams.length === 0) return null;
+
+    // Ordenar mais recente primeiro
+    trams.sort((a, b) => {
+        const dA = converterData(a.DATA), dB = converterData(b.DATA);
+        if (dA !== dB) return dB > dA ? 1 : -1;
+        const hA = converterHora12para24(a.HORA || '00:00:00');
+        const hB = converterHora12para24(b.HORA || '00:00:00');
+        return hB > hA ? 1 : -1;
+    });
+
+    // Última tramitação determina se foi arquivado
+    const atendida = (trams[0].DESTINO || '').trim().toUpperCase() === 'ARQUIVO';
+
+    // Último fiscal válido (pode estar antes do ARQUIVO)
+    for (const t of trams) {
+        if (fiscalValido(t.DESTINO || '')) {
+            return { fiscal: (t.DESTINO || '').trim(), dataEncaminha: t.DATA, atendida };
+        }
+    }
+    return null;
+}
+
         // ==================== BUSCA OTIMIZADA ====================
         
         function buscarOrdens() {
@@ -1298,7 +1322,7 @@ function buscarUltimaTramitacao(numeroProtocolo) {
             // Coletar filtros
             const filtros = {
                 numero: $('#filterNumero').val().trim(),
-                razaoSocial: $('#filterRazao').val().trim().toUpperCase(),
+                regulado: $('#filterRegulado').val().trim().toUpperCase(),
                 fiscal: $('#filterFiscal').val(),
                 tipo: $('#filterTipo').val(),
                 atendida: $('#filterAtendido').val(),
@@ -1491,6 +1515,16 @@ function converterData(dataStr) {
             }
         }
         
+        // Filtra por texto em razão social, fantasia ou CNPJ/CPF
+        function matchRegulado(busca, razao, fantasia, cnpj, cpf) {
+            if (!busca) return true;
+            const b = busca.toUpperCase();
+            return (razao    && razao.toUpperCase().includes(b))    ||
+                   (fantasia && fantasia.toUpperCase().includes(b)) ||
+                   (cnpj     && cnpj.replace(/\D/g, '').includes(b.replace(/\D/g, ''))) ||
+                   (cpf      && cpf.replace(/\D/g, '').includes(b.replace(/\D/g, '')));
+        }
+
         // Processar booleano
         function processarBool(valor) {
             if (!valor || String(valor).trim() === '') return false;
@@ -1589,19 +1623,20 @@ function converterData(dataStr) {
                         // Buscar dados do regulado
                         const codigoRegulado = r.Codigo || r.CODIGO || r.Cd_Regulado || r.CD_REGULADO || '';
                         const regulado = buscarRegulado(codigoRegulado);
-                        const razaoSocial = regulado ? (regulado.RAZAO || regulado.Razao || '') : '';
-                        
-                        if (filtros.razaoSocial && !razaoSocial.toUpperCase().includes(filtros.razaoSocial)) {
+                        const razaoSocial = regulado ? (regulado.RAZAO    || regulado.Razao    || '') : '';
+                        const fantasia    = regulado ? (regulado.FANTASIA  || regulado.Fantasia  || '') : '';
+                        const cnpj        = regulado ? (regulado.CGC       || regulado.Cgc       || '') : '';
+                        const cpf         = regulado ? (regulado.CPF       || regulado.Cpf       || '') : '';
+
+                        if (!matchRegulado(filtros.regulado, razaoSocial, fantasia, cnpj, cpf)) {
                             descartadosFiltroRazao++;
                             return;
                         }
-                        
+
                         const area = r.Area || r.AREA || (regulado ? (regulado.Area || regulado.AREA || '') : '');
                         const areaDesc = area ? buscarCnae(area) : '';
-                        const logradouro = regulado ? (regulado.LOGRADOURO || regulado.Logradouro || '') : '';
+                        const logradouro  = regulado ? (regulado.LOGRADOURO || regulado.Logradouro || '') : '';
                         const complemento = regulado ? (regulado.COMPLEMENT || regulado.Complement || '') : '';
-                        const cnpj = regulado ? (regulado.CGC || regulado.Cgc || '') : '';
-                        const cpf = regulado ? (regulado.CPF || regulado.Cpf || '') : '';
                         const cdbai = regulado ? (regulado.CDBAI || regulado.Cdbai || '') : '';
                         const bairro = cdbai ? buscarBairro(cdbai) : '';
                         
@@ -1610,7 +1645,7 @@ function converterData(dataStr) {
                             tipo: 'Requerimento',
                             fiscal: fiscal,
                             razao_social: razaoSocial,
-                            fantasia: regulado ? (regulado.FANTASIA || regulado.Fantasia || '') : '',
+                            fantasia: fantasia,
                             complexidade: r.Complexidade || '',
                             data_req: dataReq,  // CORRIGIDO
                             data_encaminha: dataEncaminha,
@@ -1677,7 +1712,7 @@ function converterData(dataStr) {
                         if (filtros.cancelado && cancelado !== filtros.cancelado) return;
                         
                         const razaoSocial = o.Regulado || '';
-                        if (filtros.razaoSocial && !razaoSocial.toUpperCase().includes(filtros.razaoSocial)) return;
+                        if (!matchRegulado(filtros.regulado, razaoSocial, o.Fantasia || '', o.Cnpj || '', o.Cpf || '')) return;
                         
                         const cdbai = o.Cdbai || '';
                         const bairro = cdbai ? buscarBairro(cdbai) : '';
@@ -1742,9 +1777,8 @@ function converterData(dataStr) {
                         const cancelado = 'Não';
                         if (filtros.cancelado && cancelado !== filtros.cancelado) return;
                         
-                        // CORRIGIDO: Campo é "Reclamado" não "Regulado"
                         const razaoSocial = d.Reclamado || '';
-                        if (filtros.razaoSocial && !razaoSocial.toUpperCase().includes(filtros.razaoSocial)) return;
+                        if (!matchRegulado(filtros.regulado, razaoSocial, '', d.Cnpj || '', d.Cpf || '')) return;
                         
                         const cdbai = d.Cdbai || '';
                         const bairro = cdbai ? buscarBairro(cdbai) : '';
@@ -1798,57 +1832,42 @@ function converterData(dataStr) {
                     
                     console.log(`📦 Processando ${dadosProtocolo.length} protocolos...`);
                     let contadorProtocolos = 0;
-                    let semTramitacao = 0;
                     let tramitacaoInvalida = 0;
-                    const fiscaisNaoEncontrados = new Set();
                     
                     dadosProtocolo.forEach((p, index) => {
                         if (!p.Protocolo || p.Protocolo.trim() === '') return;
                         
                         if (filtros.numero && p.Protocolo !== filtros.numero) return;
                         
-                        // LÓGICA CORRETA: Buscar tramitação mais recente do protocolo
-                        const tramitacao = buscarUltimaTramitacao(p.Protocolo);
-                        
-                        // Se NÃO encontrou tramitação → DESCARTAR
-                        if (!tramitacao) {
-                            semTramitacao++;
-                            if (index < 3) {
-                                console.log(`  ❌ Protocolo ${p.Protocolo} descartado: sem tramitação`);
-                            }
-                            return;
-                        }
-                        
-                        // Verificar se Destino da tramitação é um fiscal válido
-                        // CORRIGIDO: Campo é "DESTINO" (maiúsculo)
-                        const fiscal = tramitacao.DESTINO || '';
-                        const fiscalEhValido = fiscalValido(fiscal);
-                        
-                        if (!fiscal || !fiscalEhValido) {
+                        // Buscar fiscal válido e status de arquivamento
+                        const infoProtocolo = buscarInfoProtocolo(p.Protocolo);
+
+                        // Se NÃO encontrou fiscal válido → DESCARTAR
+                        if (!infoProtocolo) {
                             tramitacaoInvalida++;
-                            fiscaisNaoEncontrados.add(fiscal);
                             if (tramitacaoInvalida <= 5) {
-                                console.log(`  ❌ Protocolo ${p.Protocolo} descartado: Destino "${fiscal}" não está na lista de fiscais`);
+                                console.log(`  ❌ Protocolo ${p.Protocolo} descartado: sem fiscal válido nas tramitações`);
                             }
                             return;
                         }
+
+                        const fiscal = infoProtocolo.fiscal;
                         
                         // Aplicar filtro de fiscal se houver
                         if (filtros.fiscal && fiscal !== filtros.fiscal) return;
                         
-                        // Data de encaminhamento vem da tramitação
-                        // CORRIGIDO: Campo é "DATA" (maiúsculo)
-                        const dataEncaminha = converterData(tramitacao.DATA);
+                        // Data de encaminhamento vem da tramitação ao fiscal
+                        const dataEncaminha = converterData(infoProtocolo.dataEncaminha);
                         const dataReq = converterData(p.Data);
                         if (filtros.dataReqIni && dataReq < filtros.dataReqIni) return;
                         if (filtros.dataReqFim && dataReq > filtros.dataReqFim) return;
                         if (filtros.dataReq && dataReq !== filtros.dataReq) return;
 
                         
-                        // Protocolo não tem Archive/Atendido - sempre "Não"
-                        const atendida = 'Não';
+                        // Atendido = última tramitação com DESTINO "ARQUIVO"
+                        const atendida = infoProtocolo.atendida ? 'Sim' : 'Não';
                         if (filtros.atendida && atendida !== filtros.atendida) return;
-                        
+
                         // Protocolo não tem Cancelado - sempre "Não"
                         const cancelado = 'Não';
                         if (filtros.cancelado && cancelado !== filtros.cancelado) return;
@@ -1865,7 +1884,7 @@ function converterData(dataStr) {
                         const cnpj = regulado ? (regulado.CGC || regulado.Cgc || '') : '';
                         const cpf = regulado ? (regulado.CPF || regulado.Cpf || '') : '';
                         
-                        if (filtros.razaoSocial && !razaoSocial.toUpperCase().includes(filtros.razaoSocial)) return;
+                        if (!matchRegulado(filtros.regulado, razaoSocial, fantasia, cnpj, cpf)) return;
                         
                         todasOS.push({
                             numero: p.Protocolo,
@@ -1899,14 +1918,7 @@ function converterData(dataStr) {
                     
                     console.log(`✅ Protocolos incluídos: ${contadorProtocolos}`);
                     console.log(`📊 Estatísticas de descarte de protocolos:`);
-                    console.log(`  - Sem tramitação: ${semTramitacao}`);
-                    console.log(`  - Tramitação com destino inválido: ${tramitacaoInvalida}`);
-                    if (fiscaisNaoEncontrados.size > 0) {
-                        console.log(`  📋 Exemplos de destinos não encontrados na lista de fiscais:`);
-                        Array.from(fiscaisNaoEncontrados).slice(0, 10).forEach(f => {
-                            console.log(`      - "${f}"`);
-                        });
-                    }
+                    console.log(`  - Sem fiscal válido nas tramitações: ${tramitacaoInvalida}`);
                 }
                 
                 console.log(`✅ Processamento concluído: ${todasOS.length} registros`);
