@@ -286,7 +286,7 @@ Deduplication is handled by `data/os_snapshot.json`, which is committed to the r
 
 ## Service Worker & PWA
 
-- **Cache name**: `visa-v2.4.9` em `service-worker.js` (⚠️ APP_VERSION em `js/version.js` está em v2.5.0 — bump o service worker quando fizer deploy de mudanças significativas de UI)
+- **Cache name**: `visa-v2.5.1` em `service-worker.js` (bump quando fizer deploy de mudanças significativas de UI)
 - **Strategy**: Network First — always tries the network, falls back to cache if offline
 - **PWA manifest** (`manifest.webmanifest`):
   - `start_url`: `/VISA/`
@@ -374,6 +374,7 @@ O próximo grande trabalho é implementar **seções colapsáveis (accordion)** 
 
 | Versão | O que mudou |
 |--------|------------|
+| **v2.5.1** | Fix de links do sidebar bloqueados em páginas com guard; `sidebar.js` agora sempre aplica permissões independente de `__sidebarUserManaged`; bump do service worker cache para `visa-v2.5.1` |
 | **v2.5.0** | Busca global unificada no dashboard (`js/busca-global.js`) — 7 fontes de dados, lazy load, cache em memória, normalização de CNPJ; CNPJ/CPF exibido nos resultados; links do sidebar desabilitados por perfil imediatamente ao carregar (`sidebar.js`) |
 | **v2.4.9** | Vinculação atômica de token FCM ao dispositivo eliminando tokens órfãos por rotação; correção de ocultar regulados sem protocolo na busca |
 | **v2.4.8** | Token FCM vinculado ao dispositivo (`dispositivos.<chave>.fcmToken`); status push exibido no admin; `clean.html` atualizado para nova lógica; adição de `comply.html` (Compliance) |
