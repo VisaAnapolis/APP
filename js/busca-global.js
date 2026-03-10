@@ -184,7 +184,8 @@ function norm(s) {
     .trim()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')   // remove acentos
-    .replace(/[.\-\/\s]+/g, ' ');      // normaliza CNPJ, espaços
+    .replace(/[.\-\/]+/g, '')          // remove pontuação CNPJ/CPF
+    .replace(/\s+/g, ' ');             // normaliza espaços
 }
 
 function match(campo, termoNorm) {
