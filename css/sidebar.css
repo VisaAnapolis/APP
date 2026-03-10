@@ -55,7 +55,12 @@ body.with-sidebar {
   position: sticky; top: 0;
   background: var(--card, #fff);
   z-index: 1;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.15s;
 }
+a.sidebar__header:hover { opacity: 0.75; }
+
 .sidebar__logo {
   width: 36px; height: 36px;
   border-radius: 9px;
