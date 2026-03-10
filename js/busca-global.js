@@ -1,6 +1,6 @@
 /**
  * BUSCA-GLOBAL.JS — Pesquisa Global Unificada
- * VISA Anápolis — v1.1.1
+ * VISA Anápolis — v1.1.2
  *
  * Módulo ES6 que implementa busca unificada no Dashboard.
  * Consulta: regulados (JSON), protocolos, denúncias, requerimentos,
@@ -79,9 +79,25 @@ async function _carregarTudo() {
   const denuncias = denunciasRaw;
 
   // Requerimentos: somente ativos (sem Atendimento e sem Cancelado)
-  const requerimentos = requerimentosRaw.filter(r =>
+  const requerimentosAtivos = requerimentosRaw.filter(r =>
     !_processarBool(r.Atendimento) && !_processarBool(r.Cancelado)
   );
+
+  // ── SOMENTE O ÚLTIMO REQUERIMENTO ATIVO POR REQUERENTE (maior número OS) ──
+  // Agrupa pelo nome normalizado do requerente; mantém apenas o de maior OS.
+  // Como OS é numérico sequencial, o maior valor identifica o mais recente.
+  const mapaUltimoRequerimento = new Map();
+  for (const r of requerimentosAtivos) {
+    const chave = norm(r.Requerente);
+    if (!chave) continue;
+    const existente = mapaUltimoRequerimento.get(chave);
+    const osA = parseInt(r.OS, 10) || 0;
+    const osE = existente ? (parseInt(existente.OS, 10) || 0) : -1;
+    if (!existente || osA > osE) {
+      mapaUltimoRequerimento.set(chave, r);
+    }
+  }
+  const requerimentos = Array.from(mapaUltimoRequerimento.values());
 
   // Ofícios: somente ativos (sem Cancela e sem Archive)
   const oficios = oficiosRaw.filter(o =>
@@ -170,6 +186,7 @@ async function _carregarTudo() {
   }
 
   // ── ENRIQUECER REQUERIMENTOS com nome normalizado do requerente ──
+  // (já deduplicados; _requerente_n já é a própria chave do mapa)
   for (const r of requerimentos) {
     r._requerente_n = norm(r.Requerente);
   }
@@ -336,7 +353,7 @@ function executarBuscaComContagem(dados, termoNorm) {
          match(o.Oficio, termoNorm)
   );
 
-  // ── Requerimentos (só ativos) ──
+  // ── Requerimentos (apenas o último ativo por requerente) ──
   buscar(dados.requerimentos, 'requerimentos',
     r => (r._requerente_n && r._requerente_n.includes(termoNorm)) ||
          match(r.OS, termoNorm)
@@ -492,7 +509,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
     }
   }
 
-  // ── Requerimentos ──
+  // ── Requerimentos (último ativo por requerente) ──
   if (resultados.requerimentos.length > 0) {
     html += '<div class="busca-grupo-titulo" aria-hidden="true">Requerimentos</div>';
     for (const r of resultados.requerimentos) {
