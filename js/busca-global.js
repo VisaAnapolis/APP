@@ -1,6 +1,6 @@
 /**
  * BUSCA-GLOBAL.JS — Pesquisa Global Unificada
- * VISA Anápolis — v1.1.2
+ * VISA Anápolis — v1.1.3
  *
  * Módulo ES6 que implementa busca unificada no Dashboard.
  * Consulta: regulados (JSON), protocolos, denúncias, requerimentos,
@@ -60,7 +60,7 @@ async function _carregarTudo() {
       parseCSV(`data/tramitacao.csv?d=${hoje}`),
       parseCSV(`data/denuncia.csv?d=${hoje}`),
       parseCSV(`data/requerimento.csv?d=${hoje}`,
-               ['OS', 'Requerente', 'Prazo', 'Fiscal_Encaminha',
+               ['OS', 'Codigo', 'Requerente', 'Prazo', 'Fiscal_Encaminha',
                 'Atendimento', 'Cancelado']),
       parseCSV(`data/oficio.csv?d=${hoje}`,
                ['Oficio', 'Regulado', 'Cnpj', 'Logradouro',
@@ -83,18 +83,18 @@ async function _carregarTudo() {
     !_processarBool(r.Atendimento) && !_processarBool(r.Cancelado)
   );
 
-  // ── SOMENTE O ÚLTIMO REQUERIMENTO ATIVO POR REQUERENTE (maior número OS) ──
-  // Agrupa pelo nome normalizado do requerente; mantém apenas o de maior OS.
-  // Como OS é numérico sequencial, o maior valor identifica o mais recente.
+  // ── SOMENTE O ÚLTIMO REQUERIMENTO ATIVO POR REGULADO (maior número OS) ──
+  // Chave: Codigo (FK para regulados) — mesmo padrão usado nos alvarás.
+  // Critério de recente: maior OS (numérico sequencial).
   const mapaUltimoRequerimento = new Map();
   for (const r of requerimentosAtivos) {
-    const chave = norm(r.Requerente);
-    if (!chave) continue;
-    const existente = mapaUltimoRequerimento.get(chave);
+    const cod = String(r.Codigo || '').trim();
+    if (!cod) continue;
+    const existente = mapaUltimoRequerimento.get(cod);
     const osA = parseInt(r.OS, 10) || 0;
     const osE = existente ? (parseInt(existente.OS, 10) || 0) : -1;
     if (!existente || osA > osE) {
-      mapaUltimoRequerimento.set(chave, r);
+      mapaUltimoRequerimento.set(cod, r);
     }
   }
   const requerimentos = Array.from(mapaUltimoRequerimento.values());
@@ -110,8 +110,6 @@ async function _carregarTudo() {
   );
 
   // ── SOMENTE O ÚLTIMO ALVARÁ POR REGULADO (maior Exercicio) ──
-  // Evita exibir múltiplos alvarás do mesmo regulado na busca;
-  // apenas o do exercício mais recente é mostrado no resultado.
   const mapaUltimoAlvara = new Map();
   for (const a of alvarasAtivos) {
     const cod = String(a.Codigo || '').trim();
@@ -138,8 +136,7 @@ async function _carregarTudo() {
     if (docNorm) mapaReguladosPorDoc.set(docNorm, r);
   }
 
-  // Enriquecer alvara.csv com dados de regulados via Codigo (FK)
-  // Pre-normaliza campos JOINed para evitar ~200K norm() por keystroke
+  // ── ENRIQUECER ALVARÁS com dados de regulados via Codigo (FK) ──
   for (const a of alvarasUltimos) {
     const reg = mapaRegulados.get(String(a.Codigo || '').trim());
     if (reg) {
@@ -150,9 +147,27 @@ async function _carregarTudo() {
       a._razao_n     = norm(reg.razao);
       a._documento_n = norm(reg.documento);
     }
-    // Pre-normalizar campos próprios do alvará também
     a._numero_n     = norm(a.Numero);
     a._autoridade_n = norm(a.Autoridade);
+  }
+
+  // ── ENRIQUECER REQUERIMENTOS com dados de regulados via Codigo (FK) ──
+  for (const r of requerimentos) {
+    const reg = mapaRegulados.get(String(r.Codigo || '').trim());
+    if (reg) {
+      r._fantasia    = reg.fantasia;
+      r._razao       = reg.razao;
+      r._documento   = reg.documento;
+      r._fantasia_n  = norm(reg.fantasia);
+      r._razao_n     = norm(reg.razao);
+      r._documento_n = norm(reg.documento);
+    } else {
+      // Fallback: usa o nome do próprio campo Requerente
+      r._fantasia_n  = norm(r.Requerente);
+      r._razao_n     = '';
+      r._documento_n = '';
+    }
+    r._requerente_n = norm(r.Requerente);
   }
 
   // ── ENRIQUECER OFÍCIOS com dados de regulados via CNPJ ──
@@ -163,7 +178,6 @@ async function _carregarTudo() {
       o._razao_n     = norm(reg.razao);
       o._documento_n = norm(reg.documento);
     } else {
-      // Fallback: usa o campo Regulado do próprio CSV
       o._fantasia_n  = norm(o.Regulado);
       o._razao_n     = '';
       o._documento_n = norm(o.Cnpj);
@@ -178,17 +192,10 @@ async function _carregarTudo() {
       d._razao_n     = norm(reg.razao);
       d._documento_n = norm(reg.documento);
     } else {
-      // Fallback: usa o campo Reclamado do próprio CSV
       d._fantasia_n  = norm(d.Reclamado);
       d._razao_n     = '';
       d._documento_n = norm(d.Cnpj);
     }
-  }
-
-  // ── ENRIQUECER REQUERIMENTOS com nome normalizado do requerente ──
-  // (já deduplicados; _requerente_n já é a própria chave do mapa)
-  for (const r of requerimentos) {
-    r._requerente_n = norm(r.Requerente);
   }
 
   // ── ENRIQUECER PROTOCOLOS com dados de regulados via Codigo (FK) ──
@@ -288,13 +295,11 @@ function match(campo, termoNorm) {
 /**
  * Passe único: coleta os primeiros MAX_POR_CATEGORIA resultados
  * E conta o total de matches para o link "Ver todos".
- * Elimina a necessidade de 2 iterações separadas (~120K ops a menos).
  */
 function executarBuscaComContagem(dados, termoNorm) {
   const resultados = {};
   const contagens  = {};
 
-  // Helper: itera uma fonte, aplica matchFn, coleta resultados e conta total
   function buscar(fonte, chave, matchFn, transformFn) {
     const lista = [];
     let total = 0;
@@ -315,7 +320,7 @@ function executarBuscaComContagem(dados, termoNorm) {
     r => match(r.fantasia, termoNorm) || match(r.razao, termoNorm) || match(r.documento, termoNorm)
   );
 
-  // ── Protocolos (todos — histórico completo + JOIN tramitação e regulados) ──
+  // ── Protocolos ──
   buscar(dados.protocolos, 'protocolos',
     p => (p._fantasia_n && p._fantasia_n.includes(termoNorm)) ||
          (p._razao_n && p._razao_n.includes(termoNorm)) ||
@@ -336,7 +341,7 @@ function executarBuscaComContagem(dados, termoNorm) {
     }
   );
 
-  // ── Denúncias (só ativas) ──
+  // ── Denúncias ──
   buscar(dados.denuncias, 'denuncias',
     d => (d._fantasia_n && d._fantasia_n.includes(termoNorm)) ||
          (d._razao_n && d._razao_n.includes(termoNorm)) ||
@@ -345,7 +350,7 @@ function executarBuscaComContagem(dados, termoNorm) {
          match(d.Logradouro, termoNorm)
   );
 
-  // ── Ofícios (só ativos) ──
+  // ── Ofícios ──
   buscar(dados.oficios, 'oficios',
     o => (o._fantasia_n && o._fantasia_n.includes(termoNorm)) ||
          (o._razao_n && o._razao_n.includes(termoNorm)) ||
@@ -353,13 +358,16 @@ function executarBuscaComContagem(dados, termoNorm) {
          match(o.Oficio, termoNorm)
   );
 
-  // ── Requerimentos (apenas o último ativo por requerente) ──
+  // ── Requerimentos (apenas o último ativo por regulado via Codigo FK) ──
   buscar(dados.requerimentos, 'requerimentos',
-    r => (r._requerente_n && r._requerente_n.includes(termoNorm)) ||
+    r => (r._fantasia_n  && r._fantasia_n.includes(termoNorm)) ||
+         (r._razao_n     && r._razao_n.includes(termoNorm)) ||
+         (r._documento_n && r._documento_n.includes(termoNorm)) ||
+         (r._requerente_n && r._requerente_n.includes(termoNorm)) ||
          match(r.OS, termoNorm)
   );
 
-  // ── Alvarás (apenas o último por regulado — usa campos pre-normalizados) ──
+  // ── Alvarás (apenas o último por regulado) ──
   buscar(dados.alvaras, 'alvaras',
     a => (a._fantasia_n  && a._fantasia_n.includes(termoNorm)) ||
          (a._razao_n     && a._razao_n.includes(termoNorm)) ||
@@ -381,31 +389,20 @@ function _esc(s) {
   return d.innerHTML;
 }
 
-/**
- * Calcula badge de validade para alvarás.
- * @returns {string} HTML do badge ou vazio
- */
 function _badgeAlvara(dtValidade) {
   if (!dtValidade || !dtValidade.trim()) return '';
-  // Formato: DD.MM.YYYY
   const partes = dtValidade.trim().split('.');
   if (partes.length !== 3) return '';
   const dataVal = new Date(+partes[2], +partes[1] - 1, +partes[0]);
   if (isNaN(dataVal.getTime())) return '';
-
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
   const diff = Math.floor((dataVal - hoje) / 86400000);
-
-  if (diff < 0)  return '<span class="busca-item-badge badge-vencida">Vencido</span>';
+  if (diff < 0)   return '<span class="busca-item-badge badge-vencida">Vencido</span>';
   if (diff <= 30) return '<span class="busca-item-badge badge-avencer">A vencer</span>';
   return '<span class="busca-item-badge badge-ok">Vigente</span>';
 }
 
-/**
- * Renderiza o painel de resultados agrupado por categoria.
- * Cada item recebe id="busca-opt-N" para suporte a aria-activedescendant.
- */
 function renderizarResultados(resultados, contagens, termoOriginal) {
   const painel = document.getElementById('buscaResultado');
   if (!painel) return;
@@ -419,8 +416,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
 
   let html = '';
   const q = encodeURIComponent(termoOriginal);
-  let idxGlobal = 0; // índice global para id="busca-opt-N"
-
+  let idxGlobal = 0;
   function itemId() { return `busca-opt-${idxGlobal++}`; }
 
   // ── Regulados ──
@@ -509,16 +505,17 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
     }
   }
 
-  // ── Requerimentos (último ativo por requerente) ──
+  // ── Requerimentos (último ativo por regulado, enriquecido via Codigo FK) ──
   if (resultados.requerimentos.length > 0) {
     html += '<div class="busca-grupo-titulo" aria-hidden="true">Requerimentos</div>';
     for (const r of resultados.requerimentos) {
       const id = itemId();
+      const nome = r._fantasia || r._razao || _esc(r.Requerente);
       html += `<a id="${id}" class="busca-item" href="os.html?tipo=Requerimento" role="option">
         <span class="busca-item-icon" aria-hidden="true">📝</span>
         <div>
-          <span class="busca-item-nome">OS ${_esc(r.OS)} · ${_esc(r.Requerente)}</span>
-          <span class="busca-item-sub">${r.Prazo ? 'Prazo: ' + _esc(r.Prazo) : ''}</span>
+          <span class="busca-item-nome">OS ${_esc(r.OS)} · ${_esc(nome)}</span>
+          <span class="busca-item-sub">${r._documento ? _esc(r._documento) + ' · ' : ''}${r.Prazo ? 'Prazo: ' + _esc(r.Prazo) : ''}</span>
         </div>
         <span class="busca-item-badge badge-aberto" aria-label="Requerimento aberto">Aberto</span>
       </a>`;
@@ -539,7 +536,6 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
       const validade = a.Dt_validade ? 'Validade: ' + _esc(a.Dt_validade) : '';
       const datas = [emissao, validade].filter(Boolean).join(' · ');
       const sub = datas || (a.Autoridade ? _esc(a.Autoridade) : '');
-
       const exerc = a.Exercicio ? ` (${_esc(a.Exercicio)})` : '';
       html += `<a id="${id}" class="busca-item" href="alvara.html?q=${q}" role="option">
         <span class="busca-item-icon" aria-hidden="true">🏦</span>
@@ -594,7 +590,6 @@ function fecharPainel() {
     painel.innerHTML = '';
   }
   _indiceSelecionado = -1;
-  // Limpar aria-activedescendant ao fechar o painel
   const campo = document.getElementById('buscaGlobal');
   if (campo) campo.removeAttribute('aria-activedescendant');
 }
@@ -611,10 +606,6 @@ function _getItensNavegaveis() {
   return Array.from(painel.querySelectorAll('.busca-item'));
 }
 
-/**
- * Atualiza a classe visual e o aria-activedescendant no input.
- * O input aponta para o id do item selecionado para screen readers.
- */
 function _atualizarSelecao(itens) {
   const campo = document.getElementById('buscaGlobal');
   itens.forEach((el, i) => {
@@ -631,12 +622,9 @@ function _atualizarSelecao(itens) {
 function _onKeyDown(e) {
   const painel = document.getElementById('buscaResultado');
   const campo  = document.getElementById('buscaGlobal');
-
   if (!painel || painel.hidden) return;
-
   const itens = _getItensNavegaveis();
   if (itens.length === 0) return;
-
   if (e.key === 'ArrowDown') {
     e.preventDefault();
     _indiceSelecionado = (_indiceSelecionado + 1) % itens.length;
@@ -651,7 +639,7 @@ function _onKeyDown(e) {
   } else if (e.key === 'Escape') {
     e.preventDefault();
     fecharPainel();
-    if (campo) campo.focus(); // mantém foco no campo (spec seção 6)
+    if (campo) campo.focus();
   }
 }
 
@@ -660,7 +648,7 @@ function _onKeyDown(e) {
    ══════════════════════════════════════════════════════════════════════════ */
 
 let _timerDebounce  = null;
-let _inicializado   = false; // guard: evita dupla inicialização (ex: logout+login)
+let _inicializado   = false;
 
 export function initBuscaGlobal() {
   if (_inicializado) return;
@@ -673,7 +661,6 @@ export function initBuscaGlobal() {
     return;
   }
 
-  // ── Função para executar busca ──
   const executarBusca = () => {
     const termo = campo.value.trim();
     if (termo.length < MIN_CHARS) {
@@ -683,24 +670,15 @@ export function initBuscaGlobal() {
     _executarBuscaUI(termo);
   };
 
-  // ── Botão de Buscar ──
   const btnBuscar = document.getElementById('buscaBtnBuscar');
-  if (btnBuscar) {
-    btnBuscar.addEventListener('click', executarBusca);
-  }
+  if (btnBuscar) btnBuscar.addEventListener('click', executarBusca);
 
-  // ── Enter para buscar ──
   campo.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      executarBusca();
-    }
+    if (e.key === 'Enter') { e.preventDefault(); executarBusca(); }
   });
 
-  // ── Navegação por teclado (setas para navegar resultados) ──
   campo.addEventListener('keydown', _onKeyDown);
 
-  // ── Ctrl+K / Cmd+K para focar ──
   document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
       e.preventDefault();
@@ -709,12 +687,9 @@ export function initBuscaGlobal() {
     }
   });
 
-  // ── Fechar ao clicar fora (mousedown para evitar bug mobile) ──
   document.addEventListener('mousedown', (e) => {
     const container = document.querySelector('.busca-global-container');
-    if (container && !container.contains(e.target)) {
-      fecharPainel();
-    }
+    if (container && !container.contains(e.target)) fecharPainel();
   });
 
   console.log('[BuscaGlobal] Inicializado');
@@ -722,15 +697,9 @@ export function initBuscaGlobal() {
 
 async function _executarBuscaUI(termo) {
   const termoNorm = norm(termo);
-  if (!termoNorm || termoNorm.length < MIN_CHARS) {
-    fecharPainel();
-    return;
-  }
+  if (!termoNorm || termoNorm.length < MIN_CHARS) { fecharPainel(); return; }
 
-  // Se dados ainda não carregados, mostra loading
-  if (!_cacheBusca) {
-    mostrarLoading();
-  }
+  if (!_cacheBusca) mostrarLoading();
 
   const dados = await garantirDadosCarregados();
   if (!dados) {
@@ -742,7 +711,6 @@ async function _executarBuscaUI(termo) {
     return;
   }
 
-  // Verificar se o campo ainda contém o mesmo termo (usuário pode ter mudado)
   const campoAtual = document.getElementById('buscaGlobal');
   if (campoAtual && campoAtual.value.trim() !== termo) return;
 
@@ -758,5 +726,5 @@ async function _executarBuscaUI(termo) {
 export function limparCacheBusca() {
   _cacheBusca = null;
   _promiseCarregamento = null;
-  _inicializado = false; // permite re-inicializar na próxima sessão
+  _inicializado = false;
 }
