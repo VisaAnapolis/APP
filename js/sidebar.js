@@ -165,16 +165,16 @@ window.sidebarLogout = function() {
     window.__sidebarAuth = auth;
 
     firebaseAuth.onAuthStateChanged(auth, function(user) {
-      // Se a página tem guard próprio que já gerencia o #userInfo, não interferir
-      if (window.__sidebarUserManaged) return;
+      var managed = !!window.__sidebarUserManaged;
       if (!user) {
-        sidebarSetUserAnon();
+        if (!managed) sidebarSetUserAnon();
         return;
       }
-      // Usuário logado: exibe imediatamente com dados básicos
-      sidebarSetUserLoading(user.email);
+      // Usuário logado: exibe imediatamente com dados básicos (só se a página não gerencia)
+      if (!managed) sidebarSetUserLoading(user.email);
 
       // Tenta buscar perfil no Firestore para exibir nome e grupo
+      // Sempre aplica permissões, mesmo quando a página gerencia o #userInfo
       import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js')
         .then(function(fs) {
           var db = fs.getFirestore(app);
@@ -183,14 +183,16 @@ window.sidebarLogout = function() {
         })
         .then(function(snap) {
           var perfil = snap.exists() ? snap.data() : null;
-          var nome  = (perfil && perfil.nome)  || user.displayName || 'Usuário';
           var grupo = (perfil && perfil.grupo) || '';
-          sidebarSetUser(nome, user.email, grupo);
+          if (!managed) {
+            var nome = (perfil && perfil.nome) || user.displayName || 'Usuário';
+            sidebarSetUser(nome, user.email, grupo);
+          }
           sidebarAplicarPermissoes(grupo);
         })
         .catch(function() {
-          // Firestore falhou — usa só os dados do Auth; libera todos os links
-          sidebarSetUser(user.displayName || 'Usuário', user.email, '');
+          // Firestore falhou — libera todos os links como fallback
+          if (!managed) sidebarSetUser(user.displayName || 'Usuário', user.email, '');
           sidebarAplicarPermissoes('');
         });
     });
