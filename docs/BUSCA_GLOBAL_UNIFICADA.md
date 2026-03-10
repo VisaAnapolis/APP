@@ -1,7 +1,7 @@
 # Especificação Técnica — Pesquisa Global Unificada
 ## VISA Anápolis · APP garrado/VISA
 
-**Versão:** 2.2
+**Versão:** 2.3
 **Data:** 10/03/2026
 **Autor original:** Cláudio Nascimento Silva
 **Revisão técnica:** Claude (Opus 4.6) — validação com análise dos dados reais
@@ -9,7 +9,7 @@
 
 ---
 
-## Changelog v1.0 → v2.2
+## Changelog v1.0 → v2.3
 
 > A v2.1 incorpora análise direta dos arquivos de dados (`python3`) em
 > cima das correções estruturais da v2.0. Todos os valores abaixo foram
@@ -47,6 +47,17 @@
 | 21 | `alvara.csv` FK: `Codigo` (não `Controle`) → `regulados.codigo` | JOIN correto: 34.167/40.129 (85%) vinculam a um regulado |
 | 22 | `alvara.csv`: `Dt_emite` preenchido em 28.613/40.129; `Dt_validade` em 20.745/40.129 | Possível exibir badge de validade (vigente/vencido) |
 | 23 | `alvara.csv`: `Cancela` preenchido em 334/40.129 | Filtrar cancelados |
+
+### Correções da v2.3 (validação cruzada com código das páginas existentes)
+
+| # | Achado | Impacto / Correção |
+|---|---|---|
+| 24 | Nomes de campos de "Fiscal" variam entre tipos: `Fiscal_Encaminha` (req), `Fiscalencaminha` (ofício), `FiscalEncaminha` (denúncia) | Nova seção 4.4 documenta mapeamento exato |
+| 25 | Denúncia **não tem campo `Cancelado`** — sempre tratada como não cancelada | Removido do filtro de denúncias |
+| 26 | Protocolo **não tem campos `Archive` nem `Cancelado`** — confirma decisão de buscar todos | Sem filtro para protocolos |
+| 27 | `os.html` usa `processarBool()` que aceita `TRUE/true/T/SIM/Sim/S` | Busca global deve usar mesma lógica |
+| 28 | Campo `Motivo` em denúncia é `Objeto1` (não `Motivo`) | Corrigido na tabela 4.4 |
+| 29 | Fluxo de dados (seção 3.2) ainda referenciava `alvlib.csv` | Corrigido para `alvara.csv` |
 
 ---
 
@@ -163,13 +174,14 @@ Promise.all([
   PapaParse denuncia.csv,       // 1,3 MB (delimiter: ';')
   PapaParse requerimento.csv,   // 3,7 MB (campos selecionados)
   PapaParse oficio.csv,         // 2,0 MB (campos selecionados)
-  PapaParse alvlib.csv          // 3,7 MB (campos selecionados)
+  PapaParse alvara.csv          // 8,2 MB (campos selecionados)
 ])
         │
         ▼
 Pós-processamento:
+  - Filtra ativos: den/req/ofi (protocolo = todos)
   - Constrói mapa regulados: Map<codigo, {razao, fantasia, documento}>
-  - Enriquece alvlib com dados de regulados via Controle ↔ codigo
+  - Enriquece alvara com dados de regulados via Codigo ↔ codigo
   - Enriquece protocolos com última tramitação
         │
         ▼
@@ -414,13 +426,71 @@ Escopo definido pelo usuário:
 > Os filtros são aplicados na etapa de carregamento (seção 3.3), **antes** do
 > matching, reduzindo drasticamente o número de iterações.
 
-### 4.4 Limite de Resultados
+### 4.4 Referência Cruzada — Campos Reais vs Código Existente
+
+> Análise do código-fonte de `os.html`, `protocolo.html`, `cvs.html` e
+> `alvara.html` confirmou os nomes exatos dos campos e suas inconsistências
+> de caixa entre CSVs. Esta seção documenta o mapeamento real.
+
+#### Inconsistência crítica de nomes de campos entre tipos de OS
+
+| Campo | Requerimento | Ofício | Denúncia | Protocolo |
+|---|---|---|---|---|
+| **Nº OS** | `OS` | `Oficio` | `Denuncia` | `Protocolo` |
+| **Fiscal** | `Fiscal_Encaminha` | `Fiscalencaminha` | `FiscalEncaminha` | via `tramitacao.DESTINO` |
+| **Data encaminhamento** | `Dt_encaminha` | `Dtencaminha` | `DtEncaminha` | `DATA` (tramitação) |
+| **Data do registro** | `Dt_Req` | `Data` | `Data` | `Data` |
+| **Atendido** | `Atendimento` | `Archive` | `Archive` | *(sem campo)* |
+| **Cancelado** | `Cancelado` | `Cancela` | *(sem campo)* | *(sem campo)* |
+| **Nome** | `Requerente` | `Regulado` | `Reclamado` | `Protocolante` |
+| **CNPJ** | *(via Codigo→regulados)* | `Cnpj` | `Cnpj` | *(Documento ≠ CNPJ)* |
+| **Motivo** | `Motivo` | `Motivo` | `Objeto1` | `Assunto` |
+| **Endereço** | *(via Codigo→regulados)* | `Logradouro` | `Logradouro` | — |
+| **Bairro** | *(via Codigo→regulados)* | `Cdbai` → bairros.csv | `Cdbai` → bairros.csv | — |
+| **Prazo** | `Prazo` | `Prazo` | `Prazo` | — |
+| **Código regulado** | `Codigo` | — | — | `Codigo` |
+
+> ⚠️ **Atenção**: Os nomes de campos para "Fiscal" e "Data" variam entre
+> os 4 tipos de OS (underscores, CamelCase, tudo junto). Usar os nomes
+> **exatos** listados acima.
+
+#### Função `processarBool()` do `os.html`
+
+O código real usa a seguinte lógica para converter campos booleanos:
+
+```javascript
+// Extraído de os.html (linha ~1495)
+function processarBool(valor) {
+    const v = String(valor).toUpperCase();
+    return v === 'TRUE' || v === 'SIM' || v === 'T' || v === 'S';
+}
+```
+
+Aceita: `TRUE`, `true`, `True`, `T`, `SIM`, `Sim`, `S` → `true`
+Tudo o resto → `false`
+
+A busca global deve usar a mesma lógica (ou equivalente) para filtrar ativos.
+
+#### Campos de `alvara.csv` confirmados pelo `alvara.html`
+
+| Campo | Uso no `alvara.html` |
+|---|---|
+| `Codigo` | FK → `regulados.codigo` (JOIN para nome/CNPJ) |
+| `Numero` | Número do alvará exibido |
+| `Exercicio` | Ano fiscal |
+| `Dt_emite` | Data de emissão (badge) |
+| `Dt_validade` | Data de validade (badge vigente/vencido) |
+| `Cancela` | Flag de cancelamento |
+| `Autoridade` | Autoridade responsável |
+| `Autenticador` | Código de autenticação |
+
+### 4.5 Limite de Resultados
 
 - Máximo **5 resultados por categoria** exibidos no dropdown
 - Se houver mais, exibir link `"Ver todos os X resultados →"` que abre
   a página do módulo correspondente com o filtro pré-aplicado via URL
 
-### 4.5 Considerações de Performance
+### 4.6 Considerações de Performance
 
 Com os filtros aplicados, o total de registros pesquisáveis é **muito menor**:
 
@@ -803,7 +873,7 @@ login — somente após a autenticação ser confirmada.
 |---|---|---|
 | **1** | Criar `js/busca-global.js` — estrutura base | Cache com Promise compartilhada, `parseCSV()` com delimiter `;`, `limparCacheBusca()` |
 | **2** | Matching para Regulados | Campos: `fantasia`, `razao`, `documento` do JSON |
-| **3** | Matching para Protocolos + Tramitação | Campos: `Protocolo`, `Protocolante`, `Documento`; enriquecido com `mapaTramitacao` |
+| **3** | Matching para Protocolos + Tramitação | Campos: `Protocolo`, `Protocolante`, `Assunto`; enriquecido com `mapaTramitacao` |
 | **4** | Matching para Denúncias + Requerimentos + Ofícios | Denúncia: `Denuncia`, `Reclamado`, `Logradouro`, `Cnpj`; Req: `OS`, `Requerente`; Ofício: `Oficio`, `Regulado`, `Cnpj` |
 | **5** | Matching para Alvarás com JOIN | JOIN `alvara.Codigo` ↔ `regulados.codigo`; busca em `_fantasia`, `_razao`, `_documento`, `Numero`, `Autoridade`; badge via `Dt_validade` |
 | **6** | Renderizador do dropdown | HTML + badges de status + filtro de cancelados/arquivados |
@@ -868,5 +938,5 @@ Antes de iniciar a implementação da busca global, verificar:
 
 ---
 
-*Documento original: 09/03/2026 · Revisão v2.0: 10/03/2026 · Revisão v2.2: 10/03/2026*
+*Documento original: 09/03/2026 · Revisão v2.0: 10/03/2026 · Revisão v2.3: 10/03/2026*
 *Vigilância Sanitária — Diretoria de Vigilância em Saúde · Anápolis – GO*
