@@ -57,11 +57,14 @@ body.with-sidebar {
   z-index: 1;
   text-decoration: none;
   color: inherit;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s;
 }
 
 /* Hover somente em desktop — no mobile o hamburger já cumpre a função */
 @media (min-width: 769px) {
-  a.sidebar__header:hover { opacity: 0.75; transition: opacity 0.15s; }
+  a.sidebar__header:hover { opacity: 0.75; color: inherit; }
 }
 
 .sidebar__logo {
