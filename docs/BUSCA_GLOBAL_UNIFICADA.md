@@ -1,28 +1,48 @@
 # Especificação Técnica — Pesquisa Global Unificada
 ## VISA Anápolis · APP garrado/VISA
 
-**Versão:** 2.0
+**Versão:** 2.1
 **Data:** 10/03/2026
 **Autor original:** Cláudio Nascimento Silva
-**Revisão técnica:** Claude (Opus 4.6) — validação contra codebase real
+**Revisão técnica:** Claude (Opus 4.6) — validação com análise dos dados reais
 **Status:** Proposta revisada para implementação
 
 ---
 
-## Changelog v1.0 → v2.0
+## Changelog v1.0 → v2.1
 
-| # | Problema na v1.0 | Correção na v2.0 |
+> A v2.1 incorpora análise direta dos arquivos de dados (`python3`) em
+> cima das correções estruturais da v2.0. Todos os valores abaixo foram
+> verificados contra os arquivos reais do repositório em 10/03/2026.
+
+### Correções da v2.0 (estruturais)
+
+| # | Problema na v1.0 | Correção |
 |---|---|---|
-| 1 | Nomes de campos fictícios na seção 4.2 (`NomeFantasia`, `RazaoSocial`, `CNPJ`, `NumReq`, `NumDenuncia`, `NumOficio`, `Endereco`) não existem nos CSVs reais | Mapeamento corrigido com nomes reais dos campos de cada arquivo |
-| 2 | `index_regulados.json` referenciado com campo `Endereco` — campo inexistente (JSON só tem `codigo`, `razao`, `fantasia`, `documento`) | Removido `Endereco` da lista de campos pesquisáveis em Regulados |
-| 3 | `alvlib.csv` listado como pesquisável por `NomeFantasia`, `RazaoSocial`, `CNPJ` — nenhum desses campos existe nesse CSV | Estratégia de JOIN: busca via `Controle` (FK) cruzando com `index_regulados.json` |
-| 4 | URLs de navegação (`cvs.html?q=`, `protocolo.html?num=`, `alvara.html?q=`) pressupõem query params que **não existem** nessas páginas | Seção 7 reescrita: links reais (somente `os.html?tipo=` funciona hoje); demais páginas precisam de adaptação prévia ou estratégia alternativa |
-| 5 | `parseCSV()` não especifica `delimiter: ';'` — todos os CSVs usam ponto-e-vírgula | Corrigido no código de cache e na função `parseCSV()` |
-| 6 | Race condition na flag `_carregando`: segundo chamador recebe `null` silenciosamente | Substituído por Promise compartilhada (`_promiseCarregamento`) |
-| 7 | `Date.now()` como cache-buster força re-download a cada nova aba | Substituído por cache-buster baseado em data (granularidade diária) |
-| 8 | Faltava `@keyframes spin` no CSS (referenciado mas não definido) | Adicionado |
-| 9 | Badge colors hardcoded sem variantes dark mode | Adicionadas variantes dark mode para badges |
-| 10 | Contagem de registros não mencionada (impacta performance) | Adicionada: 17.908 regulados, 2.370 protocolos, 13.194 requerimentos, 2.984 denúncias, 6.225 ofícios, 38.895 alvlib |
+| 1 | Nomes de campos fictícios (`NomeFantasia`, `RazaoSocial`, `CNPJ`, `NumReq`, `NumDenuncia`, `NumOficio`, `Endereco`) não existem nos CSVs | Mapeamento corrigido com nomes reais |
+| 2 | `index_regulados.json` com campo `Endereco` inexistente | Removido; JSON só tem `codigo`, `razao`, `fantasia`, `documento` |
+| 3 | `alvlib.csv` pesquisável por nome/CNPJ — campos inexistentes | Estratégia JOIN `Controle` ↔ `codigo` dos regulados |
+| 4 | URLs `cvs.html?q=`, `protocolo.html?num=`, `alvara.html?q=` não existem | Seção 7 reescrita; só `os.html?tipo=` funciona hoje |
+| 5 | `parseCSV()` sem `delimiter: ';'` | Corrigido |
+| 6 | Race condition na flag `_carregando` | Substituída por Promise compartilhada |
+| 7 | `Date.now()` como cache-buster | Substituído por data (granularidade diária) |
+| 8 | `@keyframes spin` ausente no CSS | Adicionado como `buscaSpin` |
+| 9 | Badges sem variantes dark mode | Adicionadas |
+
+### Correções adicionais da v2.1 (validação dos dados reais)
+
+| # | Achado | Impacto / Correção |
+|---|---|---|
+| 10 | `denuncia.csv`: 2.946 de 2.978 registros têm `Archive='True'` — restam **32 ativas** | Decisão de escopo documentada na seção 4.3 |
+| 11 | `requerimento.csv`: só **404** de 13.146 são ativos (sem Atendimento e sem Cancelado) | Mesmo impacto; seção 4.3 |
+| 12 | `oficio.csv`: só **194** de 6.213 são ativos (sem Cancela e sem Archive) | Mesmo impacto; seção 4.3 |
+| 13 | `oficio.csv`: campo `Fantasia` preenchido em apenas 195 registros; campo `Regulado` preenchido em **6.213/6.213** | Campo de busca principal em ofícios deve ser `Regulado`, não `Fantasia` |
+| 14 | `alvlib.csv`: campo `Status` vazio em **todos os 38.895 registros** | Impossível exibir badge de status para alvarás |
+| 15 | `protocolo.csv`: campo `Documento` é número de registro profissional (CRF, CAU, CRO), não CNPJ — apenas 25 de 2.346 linkam para regulados | Removido da lista de campos de busca por CNPJ |
+| 16 | Formato real do número de protocolo: `20220015` (numérico puro) | Spec v1.0 mostrava `2025/1.847` — formato errado |
+| 17 | `index_regulados.json` não tem campo CNAE | Spec v1.0 mostrava "CNAE: 4771-7/01" no dropdown de regulados — impossível; CNAE só existe no `alvlib.csv` (campo `Atividade`) |
+| 18 | CNPJs são consistentemente formatados `XX.XXX.XXX/XXXX-XX` em todas as fontes | A normalização `norm()` já trata isso corretamente |
+| 19 | Datas em todas as fontes no formato `DD.MM.YYYY` | Função `parseData()` existente cobre esse formato |
 
 ---
 
@@ -315,32 +335,69 @@ function match(campo, termoNorm) {
 > loop, não a cada chamada de `match()`. A função `match()` recebe o
 > termo já normalizado.
 
-### 4.2 Campos Pesquisados por Fonte (NOMES REAIS)
+### 4.2 Campos Pesquisados por Fonte (VALIDADOS CONTRA DADOS REAIS)
 
-| Fonte | Campos reais pesquisados | Campos exibidos no resultado |
+| Fonte | Campos de busca | Campos exibidos no resultado |
 |---|---|---|
-| **Regulados** (`index_regulados.json`) | `fantasia`, `razao`, `documento` | Nome fantasia, CNPJ |
-| **Protocolos** (`protocolo.csv`) | `Protocolo`, `Protocolante`, `Documento`, `Assunto` | Nº protocolo, protocolante, data tramitação |
+| **Regulados** (`index_regulados.json`) | `fantasia`, `razao`, `documento` | Nome fantasia, CNPJ (sem CNAE — não existe no JSON) |
+| **Protocolos** (`protocolo.csv`) | `Protocolo`, `Protocolante`, `Assunto` | Nº protocolo (ex: `20220015`), protocolante, assunto, destino tramitação |
 | **Requerimentos** (`requerimento.csv`) | `OS`, `Requerente` | Nº OS, requerente, prazo |
-| **Denúncias** (`denuncia.csv`) | `Denuncia`, `Reclamado`, `Logradouro`, `Cnpj` | Nº denúncia, reclamado, endereço |
-| **Ofícios** (`oficio.csv`) | `Oficio`, `Fantasia`, `Regulado`, `Cnpj` | Nº ofício, nome fantasia, CNPJ |
-| **Alvarás** (`alvlib.csv` + JOIN) | `_fantasia`, `_razao`, `_documento`, `Alvara`, `Autoridade` | Nº alvará, nome, atividade CNAE |
+| **Denúncias** (`denuncia.csv`) | `Denuncia`, `Reclamado`, `Logradouro`, `Cnpj` | Nº denúncia, reclamado, logradouro |
+| **Ofícios** (`oficio.csv`) | `Oficio`, `Regulado`, `Cnpj` | Nº ofício, nome regulado, CNPJ |
+| **Alvarás** (`alvlib.csv` + JOIN) | `_fantasia`, `_razao`, `_documento`, `Alvara`, `Autoridade` | Nº alvará, nome (via JOIN), CNAE (`Atividade`) |
 
-> **Nota sobre Alvarás**: O `alvlib.csv` não possui campos de nome/CNPJ.
-> Os campos `_fantasia`, `_razao` e `_documento` são injetados via JOIN
-> com `index_regulados.json` na etapa de pós-processamento (seção 3.3).
-> Registros sem correspondência (23.680 de 38.895) serão pesquisáveis
-> apenas por `Alvara` (número) e `Autoridade` (nome da pessoa autorizada).
+> **Regulados — sem CNAE**: O `index_regulados.json` só tem `codigo`, `razao`,
+> `fantasia`, `documento`. CNAE não existe nesta fonte. Removido do dropdown.
+> O CNAE (`Atividade`) existe apenas no `alvlib.csv`.
 
-### 4.3 Filtros de Registros Ativos
+> **Protocolos — `Documento` não é CNPJ**: O campo `Documento` em `protocolo.csv`
+> contém número de registro profissional (CRF, CAU, CRO, etc.), não CNPJ.
+> Apenas 25 de 2.346 protocolos linkam para um regulado via esse campo.
+> Removido da busca por CNPJ.
 
-Antes do matching, filtrar registros inativos/cancelados:
+> **Ofícios — usar `Regulado` não `Fantasia`**: `Regulado` está preenchido
+> em 6.213/6.213 registros; `Fantasia` em apenas 195. Campo principal é `Regulado`.
+
+> **Alvarás — `Status` vazio**: Campo `Status` do `alvlib.csv` está vazio em
+> todos os 38.895 registros. Não é possível exibir badge de status para alvarás.
+> Exibir apenas número do alvará e atividade CNAE.
+
+### 4.3 Filtros de Registros — Decisão de Escopo
+
+> ⚠️ **Decisão de design obrigatória antes da implementação.**
+
+A validação dos dados reais revelou que a grande maioria dos registros
+está "encerrada" (arquivada/atendida/cancelada):
+
+| Fonte | Total | Ativos | Históricos |
+|---|---|---|---|
+| Denúncias | 2.978 | **32** (1%) | 2.946 |
+| Requerimentos | 13.146 | **404** (3%) | 12.742 |
+| Ofícios | 6.213 | **194** (3%) | 6.019 |
+
+**Opção A — Buscar somente registros ativos**
+- Pros: resultados relevantes, menor iteração
+- Contras: fiscal não consegue consultar histórico de um estabelecimento
+
+**Opção B — Buscar todos os registros (RECOMENDADA para ferramenta de consulta)**
+- Pros: busca histórica completa; fiscal pode ver todo o histórico de um CNPJ
+- Contras: 83K iterações no pior caso (aceitável — < 50ms em hardware moderno)
+
+**Se Opção B adotada**: não aplicar filtro de ativos. Exibir badge de
+status indicando se o registro está aberto ou encerrado.
+
+**Se Opção A adotada**: usar os filtros abaixo. Os valores reais dos
+campos são `'True'` (capital T) e `''` (vazio) — a comparação `.toUpperCase() !== 'TRUE'`
+funciona corretamente para ambos os casos.
 
 ```javascript
+// Nota: valores reais são 'True'/'', nunca 'TRUE'/'FALSE'
+// toUpperCase() torna a comparação robusta para qualquer caixa
+
 // Requerimentos: ignorar atendidos e cancelados
 requerimentos.filter(r =>
   String(r.Atendimento || '').trim().toUpperCase() !== 'TRUE' &&
-  String(r.Cancelado || '').trim().toUpperCase() !== 'TRUE'
+  String(r.Cancelado   || '').trim().toUpperCase() !== 'TRUE'
 );
 
 // Denúncias: ignorar arquivadas
@@ -350,8 +407,8 @@ denuncias.filter(d =>
 
 // Ofícios: ignorar cancelados e arquivados
 oficios.filter(o =>
-  String(o.Cancela || '').trim().toUpperCase() !== 'TRUE' &&
-  String(o.Archive || '').trim().toUpperCase() !== 'TRUE'
+  String(o.Cancela  || '').trim().toUpperCase() !== 'TRUE' &&
+  String(o.Archive  || '').trim().toUpperCase() !== 'TRUE'
 );
 ```
 
@@ -602,35 +659,41 @@ após o `<p class="page-subtitle">`, sem alterar nenhuma outra estrutura:
 }
 ```
 
-### 5.5 Exemplo Visual do Dropdown
+### 5.5 Exemplo Visual do Dropdown (dados reais)
 
 ```
 ┌─────────────────────────────────────────────────────┐
 │ REGULADOS                                           │
-│ 🏪  Farmácia Boa Saúde                    ✅ Ativo │
-│     CNPJ: 12.345.678/0001-00 · CNAE: 4771-7/01    │
-│ 🏪  Farmácia Popular LTDA               ⚠️ Vencido│
-│     CNPJ: 98.765.432/0001-55 · CNAE: 4771-7/02    │
+│ 🏪  BRISA SORVETERIA                               │
+│     CNPJ: 23.730.770/0001-83                       │
+│     Razão: MARCIO FLAVIO DOS SANTOS                │
 ├─────────────────────────────────────────────────────┤
 │ PROTOCOLOS                                          │
-│ 📋  Prot. 20220015 · JOSE CASSIO ALVES   🔴 Vencida│
+│ 📋  20220015 · JOSE CASSIO ALVES PINTO             │
 │     Assunto: PROJETO ARQUITETÔNICO SANITÁRIO       │
-│ 📋  Prot. 20240210 · MARIA SILVA          ✅ OK    │
-│     Tramitado: 10/02/2026 → DVISA                  │
+│     → NÚCLEO DE ENGENHARIA · 18.01.2022            │
 ├─────────────────────────────────────────────────────┤
 │ DENÚNCIAS                                           │
-│ ⚠️  Den. 456/2025 · Rua das Flores, 123 🔵 Aberta │
-│     Reclamado: FARMÁCIA BOA SAÚDE                  │
+│ ⚠️  20210002 · PRAÇA DO AVIÃO          🔵 Aberta  │
+│     Reclamado: URBAN                               │
 ├─────────────────────────────────────────────────────┤
 │ OFÍCIOS                                             │
-│ 📨  Of. 789/2025 · Farmácia Popular       🔵 Aberto│
-│     CNPJ: 98.765.432/0001-55                       │
+│ 📨  20240008 · HOSPITAL EVANGÉLICO GOIANO 🔵 Aberto│
+│     CNPJ: 46.551.897/0001-42                       │
 ├─────────────────────────────────────────────────────┤
-│ ALVARÁS                                             │
-│ 🏦  Alv. 5182 · Farmácia Boa Saúde     ✅ Vigente │
+│ ALVARÁS                (via JOIN com regulados)     │
+│ 🏦  Alv. 5182 · BRISA SORVETERIA                  │
 │     CNAE: 9602-5/01                                │
+│ 🏦  Alv. 9999 · sem vínculo cadastral             │
+│     Autoridade: MARIA LUCIA ARAUJO OLIVEIRA        │
 └─────────────────────────────────────────────────────┘
 ```
+
+> **Notas sobre o exemplo**:
+> - Regulados **não exibem CNAE** (campo inexistente no JSON)
+> - Número de protocolo é numérico puro: `20220015`, não `2025/1.847`
+> - Alvarás **não têm badge de status** (campo `Status` vazio em 100% dos registros)
+> - Alvarás sem JOIN mostram o nome da `Autoridade` (pessoa responsável)
 
 ---
 
@@ -740,14 +803,17 @@ login — somente após a autenticação ser confirmada.
 
 ## 10. Riscos e Mitigações
 
-| Risco | Probabilidade | Mitigação |
+| Risco | Prob. | Mitigação |
 |---|---|---|
-| `requerimento.csv` (3,7 MB) lento em 3G | Média | Spinner com mensagem; carregar só 6 campos essenciais |
-| `alvlib.csv` (3,7 MB / 38.895 registros) lento em 3G | Média | Carregar só 6 campos; JOIN reduz busca textual a 15.215 registros |
-| CNPJ com formatação diferente entre arquivos | **Alta** | `norm()` já remove `.`, `-`, `/`; testar: `12345678000100` vs `12.345.678/0001-00` |
-| Nomes de campos com caixa inconsistente entre CSVs | **Alta** | `Cnpj` (denúncia/ofício), `PROTOCOLO` (tramitação) — acessar exatamente como no cabeçalho |
-| 23.680 alvarás sem correspondência em regulados | Média | Pesquisáveis apenas por nº alvará e nome Autoridade; exibir "(sem vínculo)" |
-| Páginas de destino sem suporte a `?q=` | **Alta** | Implementar antes ou junto com a busca global (Fase 10) |
+| `requerimento.csv` (3,7 MB) lento em 3G | Média | Spinner; carregar só 6 campos essenciais |
+| `alvlib.csv` (3,7 MB / 38.895 registros) lento em 3G | Média | Carregar só 6 campos; JOIN reduz busca textual a 15.215 registros com nome |
+| CNPJ — validado: formato consistente `XX.XXX.XXX/XXXX-XX` em todas as fontes | Baixa | `norm()` remove `.`, `-`, `/` — cobre busca por CNPJ com e sem formatação |
+| Nomes de campos com caixa inconsistente entre CSVs | **Alta** | Usar nomes exatos: `Cnpj` (denúncia/ofício), `PROTOCOLO` (tramitação), `Regulado` (ofício) |
+| 23.680 alvarás sem correspondência em regulados | Média | Pesquisáveis por nº alvará e `Autoridade`; exibir "(sem vínculo cadastral)" |
+| Páginas de destino sem suporte a `?q=` | **Alta** | Fase 10 do plano; sem isso, links abrem a página sem filtro pré-aplicado |
+| Escopo de busca (ativos vs histórico) indefinido | **Alta** | Decisão documentada na seção 4.3; obrigatória antes de codificar |
+| `Status` do alvlib vazio — sem badge de status | **Alta** | Não exibir badge para alvarás; confirmed via análise dos dados |
+| `oficio.csv` campo `Fantasia` quase vazio (195/6213) | **Alta** | Usar campo `Regulado` (100% preenchido) como campo de busca principal |
 | Dropdown some ao clicar (mobile — evento `blur`) | Média | Usar `mousedown` em vez de `click` para itens do dropdown |
 | Memória (~10 MB de dados em RAM) | Baixa | Aceitável para uso moderno; `limparCacheBusca()` no logout |
 | Race condition em chamadas simultâneas | Média | Promise compartilhada `_promiseCarregamento` (v2.0) |
