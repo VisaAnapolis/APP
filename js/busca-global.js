@@ -96,17 +96,24 @@ async function _carregarTudo() {
   // ── MAPA DE REGULADOS (para JOIN) ──
   const mapaRegulados = new Map();
   for (const r of regulados) {
-    mapaRegulados.set(String(r.codigo), r);
+    mapaRegulados.set(String(r.codigo).trim(), r);
   }
 
   // Enriquecer alvara.csv com dados de regulados via Codigo (FK)
+  // Pre-normaliza campos JOINed para evitar ~200K norm() por keystroke
   for (const a of alvarasAtivos) {
-    const reg = mapaRegulados.get(a.Codigo);
+    const reg = mapaRegulados.get(String(a.Codigo || '').trim());
     if (reg) {
       a._fantasia  = reg.fantasia;
       a._razao     = reg.razao;
       a._documento = reg.documento;
+      a._fantasia_n  = norm(reg.fantasia);
+      a._razao_n     = norm(reg.razao);
+      a._documento_n = norm(reg.documento);
     }
+    // Pre-normalizar campos próprios do alvará também
+    a._numero_n     = norm(a.Numero);
+    a._autoridade_n = norm(a.Autoridade);
   }
 
   // ── MAPA DE ÚLTIMA TRAMITAÇÃO POR PROTOCOLO ──
@@ -188,117 +195,71 @@ function match(campo, termoNorm) {
    SEÇÃO 3 — BUSCA EM TODAS AS FONTES
    ══════════════════════════════════════════════════════════════════════════ */
 
-function executarBusca(dados, termoNorm) {
+/**
+ * Passe único: coleta os primeiros MAX_POR_CATEGORIA resultados
+ * E conta o total de matches para o link "Ver todos".
+ * Elimina a necessidade de 2 iterações separadas (~120K ops a menos).
+ */
+function executarBuscaComContagem(dados, termoNorm) {
   const resultados = {};
+  const contagens  = {};
+
+  // Helper: itera uma fonte, aplica matchFn, coleta resultados e conta total
+  function buscar(fonte, chave, matchFn, transformFn) {
+    const lista = [];
+    let total = 0;
+    for (const item of fonte) {
+      if (matchFn(item)) {
+        total++;
+        if (lista.length < MAX_POR_CATEGORIA) {
+          lista.push(transformFn ? transformFn(item) : item);
+        }
+      }
+    }
+    resultados[chave] = lista;
+    contagens[chave]  = total;
+  }
 
   // ── Regulados ──
-  resultados.regulados = [];
-  for (const r of dados.regulados) {
-    if (resultados.regulados.length >= MAX_POR_CATEGORIA) break;
-    if (match(r.fantasia, termoNorm) || match(r.razao, termoNorm) || match(r.documento, termoNorm)) {
-      resultados.regulados.push(r);
-    }
-  }
+  buscar(dados.regulados, 'regulados',
+    r => match(r.fantasia, termoNorm) || match(r.razao, termoNorm) || match(r.documento, termoNorm)
+  );
 
-  // ── Protocolos (todos — histórico completo) ──
-  resultados.protocolos = [];
-  for (const p of dados.protocolos) {
-    if (resultados.protocolos.length >= MAX_POR_CATEGORIA) break;
-    if (match(p.Protocolo, termoNorm) || match(p.Protocolante, termoNorm) || match(p.Assunto, termoNorm)) {
-      // Enriquecer com última tramitação
+  // ── Protocolos (todos — histórico completo + JOIN tramitação) ──
+  buscar(dados.protocolos, 'protocolos',
+    p => match(p.Protocolo, termoNorm) || match(p.Protocolante, termoNorm) || match(p.Assunto, termoNorm),
+    p => {
       const tram = dados.mapaTramitacao.get((p.Protocolo || '').trim());
-      resultados.protocolos.push({ ...p, _tramitacao: tram || null });
+      return { ...p, _tramitacao: tram || null };
     }
-  }
+  );
 
   // ── Denúncias (só ativas) ──
-  resultados.denuncias = [];
-  for (const d of dados.denuncias) {
-    if (resultados.denuncias.length >= MAX_POR_CATEGORIA) break;
-    if (match(d.Denuncia, termoNorm) || match(d.Reclamado, termoNorm) ||
-        match(d.Logradouro, termoNorm) || match(d.Cnpj, termoNorm)) {
-      resultados.denuncias.push(d);
-    }
-  }
-
-  // ── Requerimentos (só ativos) ──
-  resultados.requerimentos = [];
-  for (const r of dados.requerimentos) {
-    if (resultados.requerimentos.length >= MAX_POR_CATEGORIA) break;
-    if (match(r.OS, termoNorm) || match(r.Requerente, termoNorm)) {
-      resultados.requerimentos.push(r);
-    }
-  }
+  buscar(dados.denuncias, 'denuncias',
+    d => match(d.Denuncia, termoNorm) || match(d.Reclamado, termoNorm) ||
+         match(d.Logradouro, termoNorm) || match(d.Cnpj, termoNorm)
+  );
 
   // ── Ofícios (só ativos) ──
-  resultados.oficios = [];
-  for (const o of dados.oficios) {
-    if (resultados.oficios.length >= MAX_POR_CATEGORIA) break;
-    if (match(o.Oficio, termoNorm) || match(o.Regulado, termoNorm) || match(o.Cnpj, termoNorm)) {
-      resultados.oficios.push(o);
-    }
-  }
+  buscar(dados.oficios, 'oficios',
+    o => match(o.Oficio, termoNorm) || match(o.Regulado, termoNorm) || match(o.Cnpj, termoNorm)
+  );
 
-  // ── Alvarás (com JOIN regulados) ──
-  resultados.alvaras = [];
-  for (const a of dados.alvaras) {
-    if (resultados.alvaras.length >= MAX_POR_CATEGORIA) break;
-    if (match(a._fantasia, termoNorm) || match(a._razao, termoNorm) ||
-        match(a._documento, termoNorm) || match(a.Numero, termoNorm) ||
-        match(a.Autoridade, termoNorm)) {
-      resultados.alvaras.push(a);
-    }
-  }
+  // ── Requerimentos (só ativos) ──
+  buscar(dados.requerimentos, 'requerimentos',
+    r => match(r.OS, termoNorm) || match(r.Requerente, termoNorm)
+  );
 
-  return resultados;
-}
+  // ── Alvarás (JOIN regulados — usa campos pre-normalizados) ──
+  buscar(dados.alvaras, 'alvaras',
+    a => (a._fantasia_n  && a._fantasia_n.includes(termoNorm)) ||
+         (a._razao_n     && a._razao_n.includes(termoNorm)) ||
+         (a._documento_n && a._documento_n.includes(termoNorm)) ||
+         a._numero_n.includes(termoNorm) ||
+         a._autoridade_n.includes(termoNorm)
+  );
 
-/**
- * Conta total de resultados para exibir contagem.
- */
-function contarTotal(dados, termoNorm) {
-  const contagens = {};
-
-  let c = 0;
-  for (const r of dados.regulados) {
-    if (match(r.fantasia, termoNorm) || match(r.razao, termoNorm) || match(r.documento, termoNorm)) c++;
-  }
-  contagens.regulados = c;
-
-  c = 0;
-  for (const p of dados.protocolos) {
-    if (match(p.Protocolo, termoNorm) || match(p.Protocolante, termoNorm) || match(p.Assunto, termoNorm)) c++;
-  }
-  contagens.protocolos = c;
-
-  c = 0;
-  for (const d of dados.denuncias) {
-    if (match(d.Denuncia, termoNorm) || match(d.Reclamado, termoNorm) ||
-        match(d.Logradouro, termoNorm) || match(d.Cnpj, termoNorm)) c++;
-  }
-  contagens.denuncias = c;
-
-  c = 0;
-  for (const r of dados.requerimentos) {
-    if (match(r.OS, termoNorm) || match(r.Requerente, termoNorm)) c++;
-  }
-  contagens.requerimentos = c;
-
-  c = 0;
-  for (const o of dados.oficios) {
-    if (match(o.Oficio, termoNorm) || match(o.Regulado, termoNorm) || match(o.Cnpj, termoNorm)) c++;
-  }
-  contagens.oficios = c;
-
-  c = 0;
-  for (const a of dados.alvaras) {
-    if (match(a._fantasia, termoNorm) || match(a._razao, termoNorm) ||
-        match(a._documento, termoNorm) || match(a.Numero, termoNorm) ||
-        match(a.Autoridade, termoNorm)) c++;
-  }
-  contagens.alvaras = c;
-
-  return contagens;
+  return { resultados, contagens };
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -461,10 +422,11 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
       const datas = [emissao, validade].filter(Boolean).join(' · ');
       const sub = datas || (a.Autoridade ? _esc(a.Autoridade) : '');
 
+      const exerc = a.Exercicio ? ` (${_esc(a.Exercicio)})` : '';
       html += `<a id="${id}" class="busca-item" href="alvara.html?q=${q}" role="option">
         <span class="busca-item-icon" aria-hidden="true">🏦</span>
         <div>
-          <span class="busca-item-nome">Alv. ${_esc(a.Numero)} · ${_esc(nome)}</span>
+          <span class="busca-item-nome">Alv. ${_esc(a.Numero)}${exerc} · ${_esc(nome)}</span>
           <span class="busca-item-sub">${sub}</span>
         </div>
         ${badge}
@@ -649,8 +611,7 @@ async function _executarBuscaUI(termo) {
   if (campoAtual && campoAtual.value.trim() !== termo) return;
 
   _indiceSelecionado = -1;
-  const resultados = executarBusca(dados, termoNorm);
-  const contagens  = contarTotal(dados, termoNorm);
+  const { resultados, contagens } = executarBuscaComContagem(dados, termoNorm);
   renderizarResultados(resultados, contagens, termo);
 }
 
