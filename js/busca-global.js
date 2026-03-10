@@ -463,6 +463,13 @@ function mostrarLoading() {
   painel.hidden = false;
 }
 
+function mostrarVazio(mensagem) {
+  const painel = document.getElementById('buscaResultado');
+  if (!painel) return;
+  painel.innerHTML = `<div class="busca-vazio">${mensagem}</div>`;
+  painel.hidden = false;
+}
+
 function fecharPainel() {
   const painel = document.getElementById('buscaResultado');
   if (painel) {
@@ -549,20 +556,31 @@ export function initBuscaGlobal() {
     return;
   }
 
-  // ── Debounce na digitação ──
-  campo.addEventListener('input', () => {
-    clearTimeout(_timerDebounce);
+  // ── Função para executar busca ──
+  const executarBusca = () => {
     const termo = campo.value.trim();
-
     if (termo.length < MIN_CHARS) {
-      fecharPainel();
+      mostrarVazio('Digite pelo menos 3 caracteres para buscar');
       return;
     }
+    _executarBuscaUI(termo);
+  };
 
-    _timerDebounce = setTimeout(() => _executarBuscaUI(termo), DEBOUNCE_MS);
+  // ── Botão de Buscar ──
+  const btnBuscar = document.getElementById('buscaBtnBuscar');
+  if (btnBuscar) {
+    btnBuscar.addEventListener('click', executarBusca);
+  }
+
+  // ── Enter para buscar ──
+  campo.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      executarBusca();
+    }
   });
 
-  // ── Navegação por teclado ──
+  // ── Navegação por teclado (setas para navegar resultados) ──
   campo.addEventListener('keydown', _onKeyDown);
 
   // ── Ctrl+K / Cmd+K para focar ──
