@@ -681,6 +681,17 @@
       `${dadosProtocolo.length.toLocaleString('pt-BR')} protocolos · ` +
       `${dadosRegulados.length.toLocaleString('pt-BR')} regulados carregados`;
 
+    // ── Fase 10: Suporte a ?q= query param ──
+    const urlParams = new URLSearchParams(window.location.search);
+    const qParam = urlParams.get('q');
+    if (qParam) {
+      const campoBusca = document.getElementById('campoBusca');
+      if (campoBusca) {
+        campoBusca.value = qParam;
+        executarBusca();
+      }
+    }
+
     document.getElementById('campoBusca').addEventListener('keydown', e => {
       if (e.key === 'Enter') executarBusca();
     });

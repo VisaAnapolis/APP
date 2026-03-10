@@ -825,6 +825,17 @@
       paginaAtual = 1;
       ordenacao = { campo: 'numero', direcao: 'asc' };
       ordenarTabela('numero');
+
+      // ── Fase 10: Suporte a ?q= query param ──
+      const urlParams = new URLSearchParams(window.location.search);
+      const qParam = urlParams.get('q');
+      if (qParam) {
+        const razaoSocialInput = document.getElementById('razaoSocial');
+        if (razaoSocialInput) {
+          razaoSocialInput.value = qParam;
+          buscarAlvaras();
+        }
+      }
     }
 
     function buscarAlvaras() {
