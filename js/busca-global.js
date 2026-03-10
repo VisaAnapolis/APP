@@ -334,6 +334,7 @@ function _badgeAlvara(dtValidade) {
 
 /**
  * Renderiza o painel de resultados agrupado por categoria.
+ * Cada item recebe id="busca-opt-N" para suporte a aria-activedescendant.
  */
 function renderizarResultados(resultados, contagens, termoOriginal) {
   const painel = document.getElementById('buscaResultado');
@@ -348,13 +349,17 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
 
   let html = '';
   const q = encodeURIComponent(termoOriginal);
+  let idxGlobal = 0; // índice global para id="busca-opt-N"
+
+  function itemId() { return `busca-opt-${idxGlobal++}`; }
 
   // ── Regulados ──
   if (resultados.regulados.length > 0) {
-    html += '<div class="busca-grupo-titulo">Regulados</div>';
+    html += '<div class="busca-grupo-titulo" aria-hidden="true">Regulados</div>';
     for (const r of resultados.regulados) {
-      html += `<a class="busca-item" href="cvs.html?q=${q}" role="option">
-        <span class="busca-item-icon">🏪</span>
+      const id = itemId();
+      html += `<a id="${id}" class="busca-item" href="cvs.html?q=${q}" role="option">
+        <span class="busca-item-icon" aria-hidden="true">🏪</span>
         <div>
           <span class="busca-item-nome">${_esc(r.fantasia || r.razao)}</span>
           <span class="busca-item-sub">${_esc(r.documento)}${r.razao && r.fantasia ? ' · ' + _esc(r.razao) : ''}</span>
@@ -368,17 +373,18 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
 
   // ── Protocolos ──
   if (resultados.protocolos.length > 0) {
-    html += '<div class="busca-grupo-titulo">Protocolos</div>';
+    html += '<div class="busca-grupo-titulo" aria-hidden="true">Protocolos</div>';
     for (const p of resultados.protocolos) {
+      const id = itemId();
       const tram = p._tramitacao;
       const tramInfo = tram ? `→ ${_esc(tram.DESTINO)} · ${_esc(tram.DATA)}` : '';
-      html += `<a class="busca-item" href="protocolo.html?q=${q}" role="option">
-        <span class="busca-item-icon">📋</span>
+      html += `<a id="${id}" class="busca-item" href="protocolo.html?q=${q}" role="option">
+        <span class="busca-item-icon" aria-hidden="true">📋</span>
         <div>
           <span class="busca-item-nome">${_esc(p.Protocolo)} · ${_esc(p.Protocolante)}</span>
           <span class="busca-item-sub">${_esc(p.Assunto)}${tramInfo ? ' ' + tramInfo : ''}</span>
         </div>
-        <span class="busca-item-badge badge-aberto">Protocolo</span>
+        <span class="busca-item-badge badge-aberto" aria-label="Protocolo">Protocolo</span>
       </a>`;
     }
     if (contagens.protocolos > MAX_POR_CATEGORIA) {
@@ -388,15 +394,16 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
 
   // ── Denúncias ──
   if (resultados.denuncias.length > 0) {
-    html += '<div class="busca-grupo-titulo">Denúncias</div>';
+    html += '<div class="busca-grupo-titulo" aria-hidden="true">Denúncias</div>';
     for (const d of resultados.denuncias) {
-      html += `<a class="busca-item" href="os.html?tipo=Den%C3%BAncia" role="option">
-        <span class="busca-item-icon">⚠️</span>
+      const id = itemId();
+      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Den%C3%BAncia" role="option">
+        <span class="busca-item-icon" aria-hidden="true">⚠️</span>
         <div>
           <span class="busca-item-nome">${_esc(d.Denuncia)} · ${_esc(d.Reclamado)}</span>
           <span class="busca-item-sub">${_esc(d.Logradouro)}${d.Cnpj ? ' · ' + _esc(d.Cnpj) : ''}</span>
         </div>
-        <span class="busca-item-badge badge-aberto">Aberta</span>
+        <span class="busca-item-badge badge-aberto" aria-label="Denúncia ativa">Aberta</span>
       </a>`;
     }
     if (contagens.denuncias > MAX_POR_CATEGORIA) {
@@ -406,15 +413,16 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
 
   // ── Ofícios ──
   if (resultados.oficios.length > 0) {
-    html += '<div class="busca-grupo-titulo">Ofícios</div>';
+    html += '<div class="busca-grupo-titulo" aria-hidden="true">Ofícios</div>';
     for (const o of resultados.oficios) {
-      html += `<a class="busca-item" href="os.html?tipo=Of%C3%ADcio" role="option">
-        <span class="busca-item-icon">📨</span>
+      const id = itemId();
+      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Of%C3%ADcio" role="option">
+        <span class="busca-item-icon" aria-hidden="true">📨</span>
         <div>
           <span class="busca-item-nome">${_esc(o.Oficio)} · ${_esc(o.Regulado)}</span>
           <span class="busca-item-sub">${o.Cnpj ? _esc(o.Cnpj) : ''}${o.Logradouro ? ' · ' + _esc(o.Logradouro) : ''}</span>
         </div>
-        <span class="busca-item-badge badge-aberto">Aberto</span>
+        <span class="busca-item-badge badge-aberto" aria-label="Ofício aberto">Aberto</span>
       </a>`;
     }
     if (contagens.oficios > MAX_POR_CATEGORIA) {
@@ -424,15 +432,16 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
 
   // ── Requerimentos ──
   if (resultados.requerimentos.length > 0) {
-    html += '<div class="busca-grupo-titulo">Requerimentos</div>';
+    html += '<div class="busca-grupo-titulo" aria-hidden="true">Requerimentos</div>';
     for (const r of resultados.requerimentos) {
-      html += `<a class="busca-item" href="os.html?tipo=Requerimento" role="option">
-        <span class="busca-item-icon">📝</span>
+      const id = itemId();
+      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Requerimento" role="option">
+        <span class="busca-item-icon" aria-hidden="true">📝</span>
         <div>
           <span class="busca-item-nome">OS ${_esc(r.OS)} · ${_esc(r.Requerente)}</span>
           <span class="busca-item-sub">${r.Prazo ? 'Prazo: ' + _esc(r.Prazo) : ''}</span>
         </div>
-        <span class="busca-item-badge badge-aberto">Aberto</span>
+        <span class="busca-item-badge badge-aberto" aria-label="Requerimento aberto">Aberto</span>
       </a>`;
     }
     if (contagens.requerimentos > MAX_POR_CATEGORIA) {
@@ -442,8 +451,9 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
 
   // ── Alvarás ──
   if (resultados.alvaras.length > 0) {
-    html += '<div class="busca-grupo-titulo">Alvarás</div>';
+    html += '<div class="busca-grupo-titulo" aria-hidden="true">Alvarás</div>';
     for (const a of resultados.alvaras) {
+      const id = itemId();
       const nome = a._fantasia || a._razao || '(sem vínculo cadastral)';
       const badge = _badgeAlvara(a.Dt_validade);
       const emissao = a.Dt_emite ? 'Emissão: ' + _esc(a.Dt_emite) : '';
@@ -451,8 +461,8 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
       const datas = [emissao, validade].filter(Boolean).join(' · ');
       const sub = datas || (a.Autoridade ? _esc(a.Autoridade) : '');
 
-      html += `<a class="busca-item" href="alvara.html?q=${q}" role="option">
-        <span class="busca-item-icon">🏦</span>
+      html += `<a id="${id}" class="busca-item" href="alvara.html?q=${q}" role="option">
+        <span class="busca-item-icon" aria-hidden="true">🏦</span>
         <div>
           <span class="busca-item-nome">Alv. ${_esc(a.Numero)} · ${_esc(nome)}</span>
           <span class="busca-item-sub">${sub}</span>
@@ -497,6 +507,9 @@ function fecharPainel() {
     painel.innerHTML = '';
   }
   _indiceSelecionado = -1;
+  // Limpar aria-activedescendant ao fechar o painel
+  const campo = document.getElementById('buscaGlobal');
+  if (campo) campo.removeAttribute('aria-activedescendant');
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -511,11 +524,17 @@ function _getItensNavegaveis() {
   return Array.from(painel.querySelectorAll('.busca-item'));
 }
 
+/**
+ * Atualiza a classe visual e o aria-activedescendant no input.
+ * O input aponta para o id do item selecionado para screen readers.
+ */
 function _atualizarSelecao(itens) {
+  const campo = document.getElementById('buscaGlobal');
   itens.forEach((el, i) => {
     if (i === _indiceSelecionado) {
       el.classList.add('busca-item--ativo');
       el.scrollIntoView({ block: 'nearest' });
+      if (campo) campo.setAttribute('aria-activedescendant', el.id);
     } else {
       el.classList.remove('busca-item--ativo');
     }
@@ -524,6 +543,8 @@ function _atualizarSelecao(itens) {
 
 function _onKeyDown(e) {
   const painel = document.getElementById('buscaResultado');
+  const campo  = document.getElementById('buscaGlobal');
+
   if (!painel || painel.hidden) return;
 
   const itens = _getItensNavegaveis();
@@ -543,6 +564,7 @@ function _onKeyDown(e) {
   } else if (e.key === 'Escape') {
     e.preventDefault();
     fecharPainel();
+    if (campo) campo.focus(); // mantém foco no campo (spec seção 6)
   }
 }
 
@@ -550,12 +572,17 @@ function _onKeyDown(e) {
    SEÇÃO 7 — INICIALIZAÇÃO (ENTRY POINT)
    ══════════════════════════════════════════════════════════════════════════ */
 
-let _timerDebounce = null;
+let _timerDebounce  = null;
+let _inicializado   = false; // guard: evita dupla inicialização (ex: logout+login)
 
 export function initBuscaGlobal() {
+  if (_inicializado) return;
+  _inicializado = true;
+
   const campo = document.getElementById('buscaGlobal');
   if (!campo) {
     console.warn('[BuscaGlobal] Campo #buscaGlobal não encontrado');
+    _inicializado = false;
     return;
   }
 
@@ -634,4 +661,5 @@ async function _executarBuscaUI(termo) {
 export function limparCacheBusca() {
   _cacheBusca = null;
   _promiseCarregamento = null;
+  _inicializado = false; // permite re-inicializar na próxima sessão
 }
