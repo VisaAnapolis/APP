@@ -297,7 +297,8 @@ function executarBuscaComContagem(dados, termoNorm) {
         ...p,
         _tramitacao: tram || null,
         _razao: reg ? reg.razao : '',
-        _fantasia: reg ? reg.fantasia : ''
+        _fantasia: reg ? reg.fantasia : '',
+        _documento: reg ? reg.documento : ''
       };
     }
   );
@@ -423,7 +424,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
         <span class="busca-item-icon" aria-hidden="true">📋</span>
         <div>
           <span class="busca-item-nome">${_esc(p.Protocolo)} · ${_esc(razaoSocial)}</span>
-          <span class="busca-item-sub">${_esc(p.Assunto)}${tramInfo ? ' ' + tramInfo : ''}</span>
+          <span class="busca-item-sub">${_esc(p.Assunto)}${p._documento ? ' · ' + _esc(p._documento) : ''}${tramInfo ? ' ' + tramInfo : ''}</span>
         </div>
         ${badge}
       </a>`;
@@ -511,7 +512,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
         <span class="busca-item-icon" aria-hidden="true">🏦</span>
         <div>
           <span class="busca-item-nome">Alv. ${_esc(a.Numero)}${exerc} · ${_esc(nome)}</span>
-          <span class="busca-item-sub">${sub}</span>
+          <span class="busca-item-sub">${sub}${a._documento ? ' · ' + _esc(a._documento) : ''}</span>
         </div>
         ${badge}
       </a>`;
