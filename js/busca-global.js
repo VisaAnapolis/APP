@@ -75,8 +75,8 @@ async function _carregarTudo() {
 
   // ── FILTROS DE REGISTROS ATIVOS ──
 
-  // Denúncias: somente ativas (Archive !== 'True')
-  const denuncias = denunciasRaw.filter(d => !_processarBool(d.Archive));
+  // Denúncias: todas (ativas e atendidas) — busca histórica completa
+  const denuncias = denunciasRaw;
 
   // Requerimentos: somente ativos (sem Atendimento e sem Cancelado)
   const requerimentos = requerimentosRaw.filter(r =>
@@ -413,15 +413,19 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
     for (const p of resultados.protocolos) {
       const id = itemId();
       const tram = p._tramitacao;
-      const tramInfo = tram ? `→ ${_esc(tram.DESTINO)} · ${_esc(tram.DATA)}` : '';
+      const arquivado = tram && (tram.DESTINO || '').trim().toUpperCase() === 'ARQUIVO';
+      const tramInfo = tram && !arquivado ? `→ ${_esc(tram.DESTINO)} · ${_esc(tram.DATA)}` : '';
       const razaoSocial = p._razao || p._fantasia || p.Protocolante;
+      const badge = arquivado
+        ? '<span class="busca-item-badge badge-ok" aria-label="Protocolo arquivado">Arquivado</span>'
+        : '<span class="busca-item-badge badge-aberto" aria-label="Protocolo">Protocolo</span>';
       html += `<a id="${id}" class="busca-item" href="protocolo.html?q=${q}" role="option">
         <span class="busca-item-icon" aria-hidden="true">📋</span>
         <div>
           <span class="busca-item-nome">${_esc(p.Protocolo)} · ${_esc(razaoSocial)}</span>
           <span class="busca-item-sub">${_esc(p.Assunto)}${tramInfo ? ' ' + tramInfo : ''}</span>
         </div>
-        <span class="busca-item-badge badge-aberto" aria-label="Protocolo">Protocolo</span>
+        ${badge}
       </a>`;
     }
     if (contagens.protocolos > MAX_POR_CATEGORIA) {
@@ -434,13 +438,17 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
     html += '<div class="busca-grupo-titulo" aria-hidden="true">Denúncias</div>';
     for (const d of resultados.denuncias) {
       const id = itemId();
+      const atendida = _processarBool(d.Archive);
+      const badge = atendida
+        ? '<span class="busca-item-badge badge-ok" aria-label="Denúncia atendida">Atendida</span>'
+        : '<span class="busca-item-badge badge-aberto" aria-label="Denúncia ativa">Aberta</span>';
       html += `<a id="${id}" class="busca-item" href="os.html?tipo=Den%C3%BAncia" role="option">
         <span class="busca-item-icon" aria-hidden="true">⚠️</span>
         <div>
           <span class="busca-item-nome">${_esc(d.Denuncia)} · ${_esc(d.Reclamado)}</span>
           <span class="busca-item-sub">${_esc(d.Logradouro)}${d.Cnpj ? ' · ' + _esc(d.Cnpj) : ''}</span>
         </div>
-        <span class="busca-item-badge badge-aberto" aria-label="Denúncia ativa">Aberta</span>
+        ${badge}
       </a>`;
     }
     if (contagens.denuncias > MAX_POR_CATEGORIA) {
