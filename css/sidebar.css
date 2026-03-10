@@ -57,9 +57,12 @@ body.with-sidebar {
   z-index: 1;
   text-decoration: none;
   color: inherit;
-  transition: opacity 0.15s;
 }
-a.sidebar__header:hover { opacity: 0.75; }
+
+/* Hover somente em desktop — no mobile o hamburger já cumpre a função */
+@media (min-width: 769px) {
+  a.sidebar__header:hover { opacity: 0.75; transition: opacity 0.15s; }
+}
 
 .sidebar__logo {
   width: 36px; height: 36px;
@@ -257,7 +260,6 @@ a.sidebar__header:hover { opacity: 0.75; }
   position: sticky;
   top: 0;
   z-index: 200;
-  /* Fallback opaco explícito para garantir fundo não-transparente */
   background-color: #ffffff;
   background: var(--card, #ffffff);
   border-bottom: 1px solid var(--line, #e2e8f0);
@@ -266,9 +268,7 @@ a.sidebar__header:hover { opacity: 0.75; }
   align-items: center;
   gap: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-  /* Força contexto de empilhamento opaco */
   isolation: isolate;
-  /* Força renderização correta em iOS Safari */
   -webkit-backdrop-filter: none;
 }
 .btn-hamburger {
@@ -291,7 +291,6 @@ a.sidebar__header:hover { opacity: 0.75; }
 .page-content {
   flex: 1;
   padding: 28px 28px 40px;
-  /* Scroll-padding para não ser coberto por topbar sticky em mobile */
   scroll-padding-top: 60px;
 }
 .page-header { margin-bottom: 24px; }
@@ -332,12 +331,10 @@ a.sidebar__header:hover { opacity: 0.75; }
   .main-area { margin-left: 0; }
   .topbar {
     display: flex;
-    z-index: 300; /* Aumenta z-index para garantir que topbar fica acima do conteúdo */
+    z-index: 300;
   }
   .page-content { padding: 16px 14px 32px; }
   .page-title { font-size: 1.25rem; }
-
-  /* Oculta o app-header original no mobile (topbar assume o papel) */
   .main-area .app-header { display: none; }
 }
 
@@ -354,7 +351,6 @@ a.sidebar__header:hover { opacity: 0.75; }
   .sidebar__app-name { color: #e8e6e3; }
   .sidebar__user-name { color: #e8e6e3; }
   .topbar {
-    /* Fallback opaco para dark mode */
     background-color: #2a2a31;
     background: var(--card-bg, #2a2a31);
     border-bottom-color: var(--border-primary, rgba(168,162,158,0.2));
@@ -371,19 +367,12 @@ a.sidebar__header:hover { opacity: 0.75; }
 
 /* ===================================================================
    FIX iOS Safari — Forçar cores corretas do topbar em dark mode
-   iOS Safari tem bug com variáveis CSS em position:sticky
    =================================================================== */
-/* iOS light mode — garantir fundo branco opaco */
 @supports (-webkit-touch-callout: none) {
   @media (prefers-color-scheme: light) {
-    .topbar {
-      background-color: #ffffff !important;
-      background: #ffffff !important;
-    }
+    .topbar { background-color: #ffffff !important; background: #ffffff !important; }
   }
 }
-
-/* iOS dark mode — garantir fundo escuro opaco */
 @supports (-webkit-touch-callout: none) {
   @media (prefers-color-scheme: dark) {
     .topbar {
