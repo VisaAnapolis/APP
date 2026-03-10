@@ -1,6 +1,6 @@
 /**
  * BUSCA-GLOBAL.JS — Pesquisa Global Unificada
- * VISA Anápolis — v1.1.0
+ * VISA Anápolis — v1.1.1
  *
  * Módulo ES6 que implementa busca unificada no Dashboard.
  * Consulta: regulados (JSON), protocolos, denúncias, requerimentos,
@@ -93,6 +93,22 @@ async function _carregarTudo() {
     !String(a.Cancela || '').trim()
   );
 
+  // ── SOMENTE O ÚLTIMO ALVARÁ POR REGULADO (maior Exercicio) ──
+  // Evita exibir múltiplos alvarás do mesmo regulado na busca;
+  // apenas o do exercício mais recente é mostrado no resultado.
+  const mapaUltimoAlvara = new Map();
+  for (const a of alvarasAtivos) {
+    const cod = String(a.Codigo || '').trim();
+    if (!cod) continue;
+    const existente = mapaUltimoAlvara.get(cod);
+    const exercA = parseInt(a.Exercicio, 10) || 0;
+    const exercE = existente ? (parseInt(existente.Exercicio, 10) || 0) : -1;
+    if (!existente || exercA > exercE) {
+      mapaUltimoAlvara.set(cod, a);
+    }
+  }
+  const alvarasUltimos = Array.from(mapaUltimoAlvara.values());
+
   // ── MAPA DE REGULADOS (para JOIN por código) ──
   const mapaRegulados = new Map();
   for (const r of regulados) {
@@ -108,7 +124,7 @@ async function _carregarTudo() {
 
   // Enriquecer alvara.csv com dados de regulados via Codigo (FK)
   // Pre-normaliza campos JOINed para evitar ~200K norm() por keystroke
-  for (const a of alvarasAtivos) {
+  for (const a of alvarasUltimos) {
     const reg = mapaRegulados.get(String(a.Codigo || '').trim());
     if (reg) {
       a._fantasia  = reg.fantasia;
@@ -186,7 +202,7 @@ async function _carregarTudo() {
   mostrarSpinnerNoCampo(false);
 
   return { regulados, protocolos, tramitacoes, denuncias,
-           requerimentos, oficios, alvaras: alvarasAtivos,
+           requerimentos, oficios, alvaras: alvarasUltimos,
            mapaRegulados, mapaReguladosPorDoc, mapaTramitacao };
 }
 
@@ -326,7 +342,7 @@ function executarBuscaComContagem(dados, termoNorm) {
          match(r.OS, termoNorm)
   );
 
-  // ── Alvarás (JOIN regulados — usa campos pre-normalizados) ──
+  // ── Alvarás (apenas o último por regulado — usa campos pre-normalizados) ──
   buscar(dados.alvaras, 'alvaras',
     a => (a._fantasia_n  && a._fantasia_n.includes(termoNorm)) ||
          (a._razao_n     && a._razao_n.includes(termoNorm)) ||
@@ -495,7 +511,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
     }
   }
 
-  // ── Alvarás ──
+  // ── Alvarás (último por regulado) ──
   if (resultados.alvaras.length > 0) {
     html += '<div class="busca-grupo-titulo" aria-hidden="true">Alvarás</div>';
     for (const a of resultados.alvaras) {
