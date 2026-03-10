@@ -893,7 +893,7 @@
                 </div>
 
                 <div class="filter-group" style="align-self: end;">
-                    <button class="btn-os" id="btnGerarOS" onclick="gerarOrdemDeServico()" title="Gerar Ordem de Serviço (somente Administradores)">📄 Gerar Ordem de Serviço</button>
+                    <button class="btn-os btn-os--disabled" id="btnGerarOS" onclick="gerarOrdemDeServico()" title="Gerar Ordem de Serviço (somente Administradores)">📄 Gerar Ordem de Serviço</button>
                 </div>
             </div>
 
@@ -940,52 +940,8 @@
                 </table>
             </div>
             <div id="mobileTotal" class="mobileList mobileOnly" aria-label="Lista mobile de totalização"></div>
-  <!--
-            <div class="note-box" style="margin-top: 14px;">
-                📌 Regra anual: os fiscais que fizerem <b>mais de 1 plantão</b> no mês devem ser <b>revezados</b> no mês subsequente,
-                evitando que sejam sempre os mesmos ao longo do ano.
-            </div>
-            -->
         </div>
 
-        <!-- Card Regras 
-        <div class="card">
-            <h3>📜 Regras (base executável)</h3>
-
-            <details>
-                <summary style="cursor:pointer; font-weight:700;">Ver regras</summary>
-                <div style="margin-top:12px;">
-                    <ol style="line-height:1.6;">
-                        <li><b>Regra primordial (capacidade):</b> cada dia útil tem <b>2 posições oficiais</b> de plantão. Composições permitidas:
-                            <b>(2×40h)</b>; <b>(2×30h + 1×40h)</b> (fecha cobertura do dia); <b>(2×40h + 1×30h “sobra”)</b> (para absorver excedente do <i>vespertino</i>).</li>
-                        <li><b>Escopo:</b> plantão somente de <b>segunda a sexta</b>; fins de semana apenas referenciais. Excluir <b>feriados</b> e <b>pontos facultativos</b>.</li>
-                        <li><b>30h (regra mais forte):</b> fiscal 30h faz <b>no máximo 1 plantão/mês</b> e <b>somente meio período</b> (matutino ou vespertino). <b>Nunca</b> atribuir “integral” para 30h.</li>
-                        <li><b>40h:</b> preenche prioritariamente as posições “integral” (dia todo). Pode ter <b>2 plantões</b> no mês quando necessário, respeitando intervalo e revezamento.</li>
-                        <li><b>Espaçamento (regra forte):</b> se um fiscal repetir no mês (tipicamente 40h), manter <b>mínimo de 15 dias</b> entre os plantões.</li>
-                        <li><b>Férias/afastamentos:</b> não escalar dentro do período. Se o fiscal ficar <b>1–15 dias</b> ausente no mês, entra com <b>1</b> plantão; se ficar <b>&gt;15 dias</b>, entra com <b>0</b> plantões (mas permanece na totalização).</li>
-                        <li><b>Aniversários (regra forte):</b> não escalar no dia do aniversário.</li>
-                        <li><b>Regra de área (bloqueio):</b> não colocar fiscais da <b>mesma área</b> no mesmo dia, exceto a área <b>Geral</b> (pode repetir).</li>
-                        <li><b>Indisponibilidades semanais:</b>
-                            <ul>
-                                <li><b>Garantia (segunda):</b> evitar escalar o grupo; <b>Viviane Manoel</b> é bloqueio na segunda (ponto focal). Demais podem ser usados somente se necessário.</li>
-                                <li><b>Plano Diretor:</b> Clóvis indisponível às <b>terças e quintas</b>.</li>
-                                <li><b>CMDCA:</b> Lidiane preferencialmente na <b>quinta</b> (regra fraca; pode ser quebrada se necessário).</li>
-                                <li><b>Sexta:</b> Maria  e Gleiciane indisponíveis às <b>sextas-feiras</b>.</li>
-                            </ul>
-                        </li>
-                        <li><b>Treinamentos/cursos:</b> datas específicas são bloqueio do dia (quando informado).</li>
-                        <li><b>Revezamento (regra média permanente):</b> evitar repetir padrões olhando <b>pelo menos 3 meses anteriores</b> (para 30h e para quem pegar 2 plantões). Para março/2026, usar janela de jan+fev/2026.</li>
-                        <li><b>Totalização:</b> listar <b>todos os 41 fiscais</b> em ordem alfabética, incluindo quem tiver 0 plantões.</li>
-                        <li><b>Veículos:</b> evitar conflito com a escala de veículos no mesmo dia, quando possível.</li>
-                    </ol>
-
-                    <div class="note-box">
-                        <b>Variáveis internas:</b> edite abaixo no código: <code>feriadosMunicipais</code> e <code>pontosFacultativosExtras</code>.
-                    </div>
-                </div>
-            </details>
-        </div>
-    -->
     </div>
 
 <script>
@@ -1511,20 +1467,8 @@ function init(){
 
 /* =========================
    Gerar Ordem de Serviço PDF
+   (restrito a Administradores — botão desabilitado por padrão)
 ========================= */
-
-function _atualizarBotaoOS() {
-  const btn = document.getElementById('btnGerarOS');
-  if (!btn) return;
-  const isAdmin = !!(window.perfilGlobal && window.perfilGlobal.grupo === 'Administrador');
-  if (isAdmin) {
-    btn.classList.remove('btn-os--disabled');
-    btn.title = 'Gerar Ordem de Serviço de Plantão Fiscal';
-  } else {
-    btn.classList.add('btn-os--disabled');
-    btn.title = 'Acesso restrito a Administradores';
-  }
-}
 
 function gerarOrdemDeServico() {
   const isAdmin = !!(window.perfilGlobal && window.perfilGlobal.grupo === 'Administrador');
@@ -1727,7 +1671,8 @@ function _montarPDF(mesKey, mesTitulo, diasComPlantao, brasaoData, dataEmissao) 
 // =============================
 document.addEventListener('DOMContentLoaded', () => {
   init();
-  _atualizarBotaoOS(); // estado inicial: desabilitado até auth confirmar
+  // perfilGlobal não definido: botão OS permanece desabilitado para usuários não autenticados
+  window.perfilGlobal = null;
 });
 
 </script>
@@ -1739,42 +1684,6 @@ document.addEventListener('DOMContentLoaded', () => {
   <script src="./js/sidebar.js"></script>
 
   <script src="./js/version.js"></script>
-
-  <!-- Autenticação: carrega perfil para habilitar botão de OS (somente Administrador) -->
-  <script type="module">
-    const firebaseConfig = {
-      apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
-      authDomain: "visam-3a30b.firebaseapp.com",
-      projectId: "visam-3a30b",
-      messagingSenderId: "308899251430",
-      appId: "1:308899251430:web:0053cdbd0bed7f0de76727"
-    };
-
-    import { protectPage } from './js/guard1.js';
-
-    protectPage(firebaseConfig, (user, auth, perfil) => {
-      window.perfilGlobal = perfil || null;
-
-      // Mostra usuário na sidebar
-      const userInfo = document.getElementById('userInfo');
-      if (userInfo && perfil) {
-        userInfo.innerHTML = `
-          <span class="user-name">${perfil.nome || user.displayName || ''}</span>
-          <span class="user-email">${user.email}</span>
-        `;
-      }
-
-      // Atualiza estado do botão agora que o perfil foi carregado
-      if (typeof _atualizarBotaoOS === 'function') _atualizarBotaoOS();
-
-      // Expõe logout para a sidebar
-      window.logout = async () => {
-        const { getAuth, signOut } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
-        await signOut(getAuth());
-        location.href = 'index.html';
-      };
-    });
-  </script>
 
   <script>
     window.sidebarLogout = function() {
