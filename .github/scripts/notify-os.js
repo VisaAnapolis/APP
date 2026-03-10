@@ -156,6 +156,13 @@ function parseCSV(conteudo) {
   return registros;
 }
 
+// ── Interpreta campo booleano (aceita True/False inglês e Sim/Não português) ──
+function parseBool(valor) {
+  if (!valor) return false;
+  const v = String(valor).trim().toLowerCase();
+  return v === 'true' || v === 'sim' || v === 't' || v === 's' || v === '1';
+}
+
 // ── Converte data DD/MM/YYYY ou DD.MM.YYYY para objeto Date ──
 function converterData(dataStr) {
   if (!dataStr) return null;
@@ -330,8 +337,8 @@ function lerTodasOSs(idxReg, idxBai, idxCnae) {
     for (const r of registros) {
       const numero = (r[cfg.campoNumero] || '').trim();
       if (!numero) continue;
-      const atendida  = cfg.campoAtendida  ? (r[cfg.campoAtendida]  || '').toLowerCase() === 'sim' : false;
-      const cancelada = cfg.campoCancelada ? (r[cfg.campoCancelada] || '').toLowerCase() === 'sim' : false;
+      const atendida  = cfg.campoAtendida  ? parseBool(r[cfg.campoAtendida])  : false;
+      const cancelada = cfg.campoCancelada ? parseBool(r[cfg.campoCancelada]) : false;
       if (atendida || cancelada) continue;
 
       const fiscal = (r[cfg.campoFiscal] || '').trim();
