@@ -376,6 +376,15 @@
     indexItems = Array.isArray(root?.dados) ? root.dados : (Array.isArray(root) ? root : []);
     showStatus(`Índice carregado (${indexItems.length}).`);
     renderResults(indexItems.slice(0, 80));
+
+    // ── Fase 10: Suporte a ?q= query param ──
+    const urlParams = new URLSearchParams(window.location.search);
+    const qParam = urlParams.get('q');
+    if (qParam && els.q) {
+      els.q.value = qParam;
+      applyFilter();
+    }
+
     els.q?.addEventListener("input", applyFilter);
     els.btnClear?.addEventListener("click", () => {
       if (els.q) els.q.value = "";
