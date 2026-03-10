@@ -720,6 +720,112 @@
     .page-title    { font-size: 1.6rem; font-weight: 700; color: var(--text-primary, #1a202c); margin: 0 0 4px; }
     .page-subtitle { font-size: 0.88rem; color: var(--muted, #64748b); margin: 0; }
 
+    /* === BUSCA GLOBAL UNIFICADA === */
+    .busca-global-wrapper { margin-top: 16px; }
+    .busca-global-field {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--card, #fff);
+      border: 1.5px solid var(--line, #e2e8f0);
+      border-radius: 12px; padding: 10px 14px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .busca-global-field:focus-within {
+      border-color: var(--brand1, #2c5aa0);
+      box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.12);
+    }
+    .busca-global-input {
+      flex: 1; border: none; outline: none; background: transparent;
+      font-size: 0.92rem; color: var(--text, #1a1a2e); font-family: inherit;
+    }
+    .busca-global-input::placeholder { color: var(--muted, #94a3b8); }
+    .busca-global-input::-webkit-search-cancel-button { display: none; }
+    .busca-kbd {
+      font-size: 0.68rem; color: var(--muted, #94a3b8);
+      background: var(--bg, #f4f6f9); border: 1px solid var(--line, #e2e8f0);
+      border-radius: 5px; padding: 2px 6px; font-family: monospace;
+      white-space: nowrap; flex-shrink: 0;
+    }
+
+    /* Painel de resultados */
+    .busca-resultado {
+      position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+      background: var(--card, #fff); border: 1px solid var(--line, #e2e8f0);
+      border-radius: 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+      max-height: 60vh; overflow-y: auto; z-index: 500; padding: 6px 0;
+    }
+    .busca-grupo-titulo {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted, #94a3b8); padding: 10px 14px 4px;
+    }
+    .busca-grupo-titulo:not(:first-child) {
+      border-top: 1px solid var(--line, #e2e8f0); margin-top: 4px;
+    }
+    .busca-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 9px 14px; cursor: pointer; text-decoration: none;
+      color: var(--text, #1a1a2e); transition: background 0.12s;
+      border-left: 3px solid transparent;
+    }
+    .busca-item:hover, .busca-item:focus, .busca-item.busca-item--ativo {
+      background: rgba(44, 90, 160, 0.06);
+      border-left-color: var(--brand1, #2c5aa0); outline: none;
+    }
+    .busca-item-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .busca-item-nome { font-size: 0.87rem; font-weight: 700; color: var(--text-primary, #1a202c); display: block; }
+    .busca-item-sub  { font-size: 0.78rem; color: var(--muted, #64748b); display: block; margin-top: 1px; }
+    .busca-item-badge {
+      margin-left: auto; font-size: 0.68rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px; flex-shrink: 0; align-self: center;
+    }
+    .badge-ok      { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+    .badge-vencida { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .badge-avencer { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+    .badge-aberto  { background: rgba(44,90,160,.08); color: #2c5aa0; border: 1px solid rgba(44,90,160,.2); }
+
+    @media (prefers-color-scheme: dark) {
+      .badge-ok      { background: rgba(22,163,74,.15); color: #4ade80; border-color: rgba(74,222,128,.25); }
+      .badge-vencida { background: rgba(220,38,38,.15); color: #f87171; border-color: rgba(248,113,113,.25); }
+      .badge-avencer { background: rgba(180,83,9,.15);  color: #fbbf24; border-color: rgba(251,191,36,.25); }
+      .badge-aberto  { background: rgba(107,154,212,.12); color: #93bbef; border-color: rgba(107,154,212,.25); }
+    }
+
+    .busca-ver-todos {
+      display: block; font-size: 0.78rem; font-weight: 600;
+      color: var(--brand1, #2c5aa0); padding: 6px 14px 8px;
+      text-decoration: none; opacity: 0.85;
+    }
+    .busca-ver-todos:hover { opacity: 1; text-decoration: underline; }
+    .busca-vazio {
+      padding: 20px 14px; text-align: center;
+      color: var(--muted, #94a3b8); font-size: 0.88rem;
+    }
+    .busca-loading {
+      padding: 16px 14px; text-align: center; color: var(--muted, #94a3b8);
+      font-size: 0.85rem; display: flex; align-items: center;
+      justify-content: center; gap: 8px;
+    }
+    .busca-spinner {
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid var(--line, #e2e8f0);
+      border-top-color: var(--brand1, #2c5aa0);
+      border-radius: 50%; animation: buscaSpin 0.8s linear infinite; flex-shrink: 0;
+    }
+    @keyframes buscaSpin { to { transform: rotate(360deg); } }
+
+    /* Responsivo mobile */
+    @media (max-width: 768px) {
+      .busca-kbd { display: none; }
+      .busca-global-wrapper {
+        position: sticky; top: 56px; z-index: 200;
+        background: var(--bg, #f4f6f9); padding: 8px 14px 6px; margin: 0 -14px;
+      }
+      .busca-resultado {
+        position: fixed; top: 110px; left: 0; right: 0;
+        border-radius: 0 0 14px 14px; max-height: calc(100vh - 120px);
+      }
+      .busca-item { padding: 12px 14px; }
+    }
+
     /* ── STAT CARDS DE OS ── */
     .fiscal-stats { margin-bottom: 24px; }
     .stats-container {
@@ -1188,6 +1294,37 @@
           <div class="page-header">
             <h1 class="page-title">🗂️ Dashboard</h1>
             <p class="page-subtitle" id="dashboardSubtitle"></p>
+
+            <!-- Busca Global Unificada -->
+            <div class="busca-global-wrapper">
+              <div class="busca-global-container" style="position:relative">
+
+                <div class="busca-global-field">
+                  <span class="busca-icon" id="buscaIcon">🔍</span>
+                  <input
+                    type="search"
+                    id="buscaGlobal"
+                    class="busca-global-input"
+                    placeholder="Buscar regulado, OS, CNPJ, protocolo..."
+                    autocomplete="off"
+                    spellcheck="false"
+                    aria-label="Pesquisa global"
+                    aria-autocomplete="list"
+                    aria-controls="buscaResultado"
+                  />
+                  <kbd class="busca-kbd">Ctrl K</kbd>
+                </div>
+
+                <div
+                  id="buscaResultado"
+                  class="busca-resultado"
+                  role="listbox"
+                  aria-label="Resultados da pesquisa"
+                  hidden
+                ></div>
+
+              </div>
+            </div>
           </div>
 
           <!-- STAT CARDS OS (exibido apenas para Fiscal/Administrador pelo JS) -->
@@ -1680,7 +1817,10 @@
 
     /* LOGIN / LOGOUT */
     window.loginGoogle = function() { signInWithPopup(auth, provider).catch(console.error); };
-    window.logout = function(){ signOut(auth).catch(console.error); };
+    window.logout = function(){
+      import('./js/busca-global.js').then(m => m.limparCacheBusca?.()).catch(() => {});
+      signOut(auth).catch(console.error);
+    };
 
     // ===== Links dependentes do perfil =====
     const LINKS = {
@@ -2925,6 +3065,11 @@ try {
         // Administrativo / outros: não carrega nada pesado
         if (fiscalStats) fiscalStats.style.display = 'none';
       }
+
+      // ── Busca Global Unificada ──
+      import('./js/busca-global.js').then(({ initBuscaGlobal }) => {
+        initBuscaGlobal();
+      }).catch(e => console.warn('[BuscaGlobal] Falha ao carregar módulo:', e));
     });
   </script>
     <!-- Modal de Opt-in de Notificações -->
