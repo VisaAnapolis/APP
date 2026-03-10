@@ -869,20 +869,36 @@ login — somente após a autenticação ser confirmada.
 
 ## 9. Plano de Implementação
 
-| Fase | Tarefa | Detalhe |
-|---|---|---|
-| **1** | Criar `js/busca-global.js` — estrutura base | Cache com Promise compartilhada, `parseCSV()` com delimiter `;`, `limparCacheBusca()` |
-| **2** | Matching para Regulados | Campos: `fantasia`, `razao`, `documento` do JSON |
-| **3** | Matching para Protocolos + Tramitação | Campos: `Protocolo`, `Protocolante`, `Assunto`; enriquecido com `mapaTramitacao` |
-| **4** | Matching para Denúncias + Requerimentos + Ofícios | Denúncia: `Denuncia`, `Reclamado`, `Logradouro`, `Cnpj`; Req: `OS`, `Requerente`; Ofício: `Oficio`, `Regulado`, `Cnpj` |
-| **5** | Matching para Alvarás com JOIN | JOIN `alvara.Codigo` ↔ `regulados.codigo`; busca em `_fantasia`, `_razao`, `_documento`, `Numero`, `Autoridade`; badge via `Dt_validade` |
-| **6** | Renderizador do dropdown | HTML + badges de status + filtro de cancelados/arquivados |
-| **7** | CSS completo | Campo, dropdown, dark mode (incluindo badges), responsivo, `@keyframes buscaSpin` |
-| **8** | Inserir HTML no `index.html` + import dinâmico | Inserir no `.page-header` após `#dashboardSubtitle`; import após auth |
-| **9** | Navegação por teclado + Ctrl+K | `↑↓` com `aria-activedescendant`, `Enter`, `Esc`, `mousedown` para fechar |
-| **10** | Implementar `?q=` nas páginas de destino | `protocolo.html`, `cvs.html`, `alvara.html` — ler param e disparar busca |
-| **11** | Integrar `limparCacheBusca()` no logout | Chamar no `window.logout` e no expirar de sessão |
-| **12** | Testes | Mobile, dark mode, Fiscal vs Admin, alvará sem correspondência, CNPJ formatado vs sem formato |
+> **Modelo recomendado por fase**: cada fase indica o modelo Claude ideal
+> com base na complexidade da tarefa. Opus para arquitetura e lógica complexa,
+> Sonnet para implementação padrão com contexto, Haiku para tarefas mecânicas.
+
+| Fase | Tarefa | Modelo | Detalhe | Justificativa do modelo |
+|---|---|---|---|---|
+| **1** | Criar `js/busca-global.js` — estrutura base | **Opus** | Cache com Promise compartilhada, `parseCSV()` com delimiter `;`, `limparCacheBusca()`, filtros de ativos, JOIN alvara→regulados | Arquitetura do módulo inteiro; decisões de design que impactam todas as fases seguintes |
+| **2** | Matching para Regulados | **Sonnet** | Campos: `fantasia`, `razao`, `documento` do JSON | Implementação direta seguindo padrão definido na fase 1 |
+| **3** | Matching para Protocolos + Tramitação | **Sonnet** | Campos: `Protocolo`, `Protocolante`, `Assunto`; enriquecido com `mapaTramitacao` | JOIN com tramitação exige atenção ao mapa, mas padrão já definido |
+| **4** | Matching para Denúncias + Requerimentos + Ofícios | **Sonnet** | Denúncia: `Denuncia`, `Reclamado`, `Logradouro`, `Cnpj`; Req: `OS`, `Requerente`; Ofício: `Oficio`, `Regulado`, `Cnpj` | 3 fontes com nomes de campos inconsistentes (seção 4.4) — precisa de atenção |
+| **5** | Matching para Alvarás com JOIN | **Opus** | JOIN `alvara.Codigo` ↔ `regulados.codigo`; busca em `_fantasia`, `_razao`, `_documento`, `Numero`, `Autoridade`; badge via `Dt_validade` | Lógica complexa: JOIN + badge de validade + 15% sem vínculo + cálculo de datas |
+| **6** | Renderizador do dropdown | **Sonnet** | HTML + badges de status + agrupamento por categoria | Geração de HTML dinâmico com múltiplos layouts por tipo de resultado |
+| **7** | CSS completo | **Haiku** | Campo, dropdown, dark mode (incluindo badges), responsivo, `@keyframes buscaSpin` | CSS já especificado por completo nas seções 5.2–5.4; copiar e ajustar |
+| **8** | Inserir HTML no `index.html` + import dinâmico | **Haiku** | Inserir no `.page-header` após `#dashboardSubtitle`; import após auth | Inserção pontual de HTML e uma linha de import |
+| **9** | Navegação por teclado + Ctrl+K | **Sonnet** | `↑↓` com `aria-activedescendant`, `Enter`, `Esc`, `mousedown` para fechar | Lógica de eventos com edge cases (mobile blur, foco) |
+| **10** | Implementar `?q=` nas páginas de destino | **Haiku** | `protocolo.html`, `cvs.html`, `alvara.html` — ler param e disparar busca | Mesmo padrão repetido em 3 páginas: ler URLSearchParams e preencher campo |
+| **11** | Integrar `limparCacheBusca()` no logout | **Haiku** | Chamar no `window.logout` e no expirar de sessão | Duas linhas de código em pontos já identificados |
+| **12** | Testes e validação final | **Opus** | Mobile, dark mode, Fiscal vs Admin, alvará sem correspondência, CNPJ formatado vs sem formato | Validação end-to-end requer visão global do sistema e capacidade de identificar edge cases |
+
+### 9.1 Resumo de Alocação por Modelo
+
+| Modelo | Fases | Custo relativo | Justificativa |
+|---|---|---|---|
+| **Opus 4.6** | 1, 5, 12 | Alto | Arquitetura base, lógica complexa de JOIN/datas, validação final |
+| **Sonnet 4.6** | 2, 3, 4, 6, 9 | Médio | Implementação que segue padrões definidos mas exige atenção a detalhes |
+| **Haiku 4.5** | 7, 8, 10, 11 | Baixo | Tarefas mecânicas/repetitivas com spec completo; copiar e ajustar |
+
+> **Nota**: As fases 2–4 podem ser executadas **em paralelo** se usar
+> agentes separados (cada um implementa o matching de uma fonte).
+> As fases 7 e 8 também podem rodar em paralelo entre si.
 
 ---
 
