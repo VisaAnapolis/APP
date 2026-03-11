@@ -427,8 +427,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
       const badge = atendida
         ? '<span class="busca-item-badge badge-ok" aria-label="Denúncia atendida">Atendida</span>'
         : '<span class="busca-item-badge badge-aberto" aria-label="Denúncia ativa">Aberta</span>';
-      const qDen = encodeURIComponent(d.Cnpj || d.Reclamado || '');
-      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Den%C3%BAncia&q=${qDen}" role="option">
+      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Den%C3%BAncia&numero=${encodeURIComponent(d.Denuncia||'')}" role="option">
         <span class="busca-item-icon" aria-hidden="true">⚠️</span>
         <div>
           <span class="busca-item-nome">${_esc(d.Denuncia)} · ${_esc(d.Reclamado)}</span>
@@ -451,8 +450,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
         o.Cnpj   ? _esc(o.Cnpj)   : '',
         o.Logradouro ? _esc(o.Logradouro) : ''
       ].filter(Boolean);
-      const qOfi = encodeURIComponent(o.Cnpj || o.Regulado || '');
-      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Of%C3%ADcio&q=${qOfi}" role="option">
+      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Of%C3%ADcio&numero=${encodeURIComponent(o.Oficio||'')}" role="option">
         <span class="busca-item-icon" aria-hidden="true">📨</span>
         <div>
           <span class="busca-item-nome">${_esc(o.Oficio)} · ${_esc(o.Regulado)}</span>
@@ -471,8 +469,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
     for (const r of resultados.requerimentos) {
       const id = itemId();
       const nome = r._fantasia || r._razao || _esc(r.Requerente);
-      const qReq = encodeURIComponent(r._documento || r._razao || r._fantasia || r.Requerente || '');
-      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Requerimento&q=${qReq}" role="option">
+      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Requerimento&numero=${encodeURIComponent(r.OS||'')}" role="option">
         <span class="busca-item-icon" aria-hidden="true">📝</span>
         <div>
           <span class="busca-item-nome">OS ${_esc(r.OS)} · ${_esc(nome)}</span>
@@ -497,8 +494,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
       const datas = [emissao, validade].filter(Boolean).join(' · ');
       const sub   = datas || (a.Autoridade ? _esc(a.Autoridade) : '');
       const exerc = a.Exercicio ? ` (${_esc(a.Exercicio)})` : '';
-      const qAlv = encodeURIComponent(a._documento || a._razao || a._fantasia || '');
-      html += `<a id="${id}" class="busca-item" href="alvara.html?q=${qAlv}" role="option">
+      html += `<a id="${id}" class="busca-item" href="alvara.html?numero=${encodeURIComponent(a.Numero||'')}" role="option">
         <span class="busca-item-icon" aria-hidden="true">🏦</span>
         <div>
           <span class="busca-item-nome">Alv. ${_esc(a.Numero)}${exerc} · ${_esc(nome)}</span>
@@ -527,8 +523,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
       const dtParts = i.DT_VISITA ? i.DT_VISITA.split('.') : [];
       const dataISO = dtParts.length === 3 ? `${dtParts[2]}-${dtParts[1].padStart(2,'0')}-${dtParts[0].padStart(2,'0')}` : '';
       const dataParam = dataISO ? `&data=${dataISO}` : '';
-      const qInsp = encodeURIComponent(i._documento || i._razao || i._fantasia || '');
-      html += `<a id="${id}" class="busca-item" href="inspecoes.html?q=${qInsp}${dataParam}" role="option">
+      html += `<a id="${id}" class="busca-item" href="inspecoes.html?numero=${encodeURIComponent(i.NUMERO||'')}${dataParam}" role="option">
         <span class="busca-item-icon" aria-hidden="true">👁️</span>
         <div>
           <span class="busca-item-nome">${_esc(nome)}</span>

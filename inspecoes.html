@@ -939,13 +939,15 @@
             if (carregados === total) {
                 prepararIndices();
                 mostrarInfo('✅ Dados carregados com sucesso! Selecione um fiscal e o período para consultar.', 'success');
-                // Auto-busca quando vem do dashboard com ?q=TERMO e/ou ?data=YYYY-MM-DD
+                // Auto-busca quando vem do dashboard com ?numero=, ?q= e/ou ?data=
                 const urlAutoParams = new URLSearchParams(window.location.search);
-                const qParam    = urlAutoParams.get('q');
-                const dataParam = urlAutoParams.get('data');
-                if (qParam || dataParam) {
+                const qParam      = urlAutoParams.get('q');
+                const dataParam   = urlAutoParams.get('data');
+                const numeroParam = urlAutoParams.get('numero');
+                if (numeroParam || qParam || dataParam) {
                     setTimeout(function() {
-                        if (qParam)    $('#filtroRegulado').val(qParam);
+                        if (numeroParam) $('#filtroNumDoc').val(numeroParam);
+                        else if (qParam) $('#filtroRegulado').val(qParam);
                         if (dataParam) { $('#dataInicial').val(dataParam); $('#dataFinal').val(dataParam); }
                         buscarInspecoes();
                     }, 650);

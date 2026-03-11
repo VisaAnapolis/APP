@@ -2526,24 +2526,18 @@ function obterDataPrazo(os) {
             // Quando o usuário clica num card do dashboard (index.html), a URL chega
             // com ?tipo=Protocolo&fiscal=NOME (perfil Fiscal) ou apenas ?tipo=Protocolo (Admin).
             // Nesse caso: pré-seleciona os filtros e dispara a busca automaticamente.
-            const urlParams = new URLSearchParams(window.location.search);
-            const tipoParam  = urlParams.get('tipo');
+            const urlParams   = new URLSearchParams(window.location.search);
+            const tipoParam   = urlParams.get('tipo');
             const fiscalParam = urlParams.get('fiscal');
             const qParam      = urlParams.get('q');
-            if (tipoParam || qParam) {
-                // Marcar que a busca veio do dashboard (para ordenar por prazo e rolar até a tabela)
+            const numeroParam = urlParams.get('numero');
+            if (tipoParam || qParam || numeroParam) {
                 window.__buscaViaDashboard = true;
-                // Pré-selecionar o tipo no select
-                if (tipoParam) $('#filterTipo').val(tipoParam);
-                // Pré-selecionar o fiscal, se informado na URL (perfil Fiscal)
-                if (fiscalParam) {
-                    $('#filterFiscal').val(fiscalParam);
-                }
-                // Pré-preencher o campo de regulado com o termo pesquisado
-                if (qParam) {
-                    $('#filterRegulado').val(qParam);
-                }
-                // Garantir que cancelado=Não e atendido=Não (já são padrão, mas reforça)
+                if (tipoParam)   $('#filterTipo').val(tipoParam);
+                if (fiscalParam) $('#filterFiscal').val(fiscalParam);
+                // numero tem prioridade sobre q (regulado)
+                if (numeroParam) $('#filterNumero').val(numeroParam);
+                else if (qParam) $('#filterRegulado').val(qParam);
                 if (!$('#filterCancelado').val()) $('#filterCancelado').val('Não');
                 if (!$('#filterAtendido').val())  $('#filterAtendido').val('Não');
                 // Disparar a busca automaticamente
