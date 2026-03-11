@@ -2529,14 +2529,19 @@ function obterDataPrazo(os) {
             const urlParams = new URLSearchParams(window.location.search);
             const tipoParam  = urlParams.get('tipo');
             const fiscalParam = urlParams.get('fiscal');
-            if (tipoParam) {
+            const qParam      = urlParams.get('q');
+            if (tipoParam || qParam) {
                 // Marcar que a busca veio do dashboard (para ordenar por prazo e rolar até a tabela)
                 window.__buscaViaDashboard = true;
                 // Pré-selecionar o tipo no select
-                $('#filterTipo').val(tipoParam);
+                if (tipoParam) $('#filterTipo').val(tipoParam);
                 // Pré-selecionar o fiscal, se informado na URL (perfil Fiscal)
                 if (fiscalParam) {
                     $('#filterFiscal').val(fiscalParam);
+                }
+                // Pré-preencher o campo de regulado com o termo pesquisado
+                if (qParam) {
+                    $('#filterRegulado').val(qParam);
                 }
                 // Garantir que cancelado=Não e atendido=Não (já são padrão, mas reforça)
                 if (!$('#filterCancelado').val()) $('#filterCancelado').val('Não');

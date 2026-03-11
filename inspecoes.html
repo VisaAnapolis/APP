@@ -939,6 +939,14 @@
             if (carregados === total) {
                 prepararIndices();
                 mostrarInfo('✅ Dados carregados com sucesso! Selecione um fiscal e o período para consultar.', 'success');
+                // Auto-busca quando vem do dashboard com ?q=TERMO
+                const qParam = new URLSearchParams(window.location.search).get('q');
+                if (qParam) {
+                    setTimeout(function() {
+                        $('#filtroRegulado').val(qParam);
+                        buscarInspecoes();
+                    }, 650);
+                }
             }
         }
 
