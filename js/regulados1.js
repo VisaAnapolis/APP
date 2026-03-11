@@ -72,7 +72,7 @@
     dDoc: byId("dDoc"),
     dEnd: byId("dEnd"),
     dBairro: byId("dBairro"),
-    dMaps: byId("dMaps"),          // ← NOVO
+    dMaps: byId("dMaps"),
     dAlvEx: byId("dAlvEx"),
     dAlvVal: byId("dAlvVal"),
     btnAtividades: byId("btnAtividades"),
@@ -172,7 +172,6 @@
     const b = reg.bairro || {};
     safeText(els.dBairro, b.nome || "—");
 
-    // ← NOVO: link Google Maps
     if (els.dMaps) {
       const q = encodeURIComponent([endParts.join(", "), b.nome, "Anápolis GO"].filter(Boolean).join(" - "));
       els.dMaps.innerHTML = q
@@ -377,12 +376,23 @@
     showStatus(`Índice carregado (${indexItems.length}).`);
     renderResults(indexItems.slice(0, 80));
 
-    // ── Fase 10: Suporte a ?q= query param ──
     const urlParams = new URLSearchParams(window.location.search);
-    const qParam = urlParams.get('q');
-    if (qParam && els.q) {
-      els.q.value = qParam;
-      applyFilter();
+
+    // ── ?codigo= : abertura direta do regulado (vindo de inspeções da busca global) ──
+    const codigoParam = urlParams.get('codigo');
+    if (codigoParam && /^\d+$/.test(codigoParam.trim())) {
+      try {
+        await loadRegulado(Number(codigoParam.trim()));
+      } catch (e) {
+        showStatus(`Regulado #${codigoParam} não encontrado.`);
+      }
+    } else {
+      // ── ?q= : filtro de texto (comportamento original) ──
+      const qParam = urlParams.get('q');
+      if (qParam && els.q) {
+        els.q.value = qParam;
+        applyFilter();
+      }
     }
 
     els.q?.addEventListener("input", applyFilter);
