@@ -128,11 +128,11 @@ window.sidebarLogout = function() {
       .catch(console.error);
   }
   // Redireciona para index em qualquer caso
-  window.location.href = 'index.html';
+  window.location.replace('index.html');
 };
 
 /* ── Inicialização Firebase (leve, só Auth) ─────────────────────────────── */
-(function initSidebarAuth() {
+function initSidebarAuth() {
   // Evita dupla inicialização se a página já tem Firebase (páginas com guard)
   if (window.__sidebarAuthInitialized) return;
   window.__sidebarAuthInitialized = true;
@@ -200,7 +200,8 @@ window.sidebarLogout = function() {
     console.warn('[sidebar.js] Firebase não carregou:', err);
     sidebarSetUserAnon();
   });
-})();
+}
+initSidebarAuth();
 
 /* ── DOMContentLoaded ───────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', function () {
@@ -219,4 +220,12 @@ document.addEventListener('DOMContentLoaded', function () {
   var sEl = document.getElementById('sidebar');
   var itemAtivo = sEl && sEl.querySelector('.visa-nav-item.active');
   if (sEl && itemAtivo) itemAtivo.scrollIntoView({ block: 'center' });
+});
+
+/* ── Bfcache: re-inicializa auth ao voltar pelo histórico ───────────────── */
+window.addEventListener('pageshow', function(e) {
+  if (e.persisted) {
+    window.__sidebarAuthInitialized = false;
+    initSidebarAuth();
+  }
 });
