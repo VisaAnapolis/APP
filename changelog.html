@@ -182,8 +182,8 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
-  <h3>v2.5.1 — 10/03/2026 14:20 (Horário de Brasília – UTC−3)</h3>
-  <strong>🐛 Correções pós-v2.5.0 — sidebar, permissões e documentação</strong>
+  <h3>v2.5.2 — 10/03/2026 23:34 (Horário de Brasília – UTC−3)</h3>
+  <strong>🐛 Correções pós-v2.5.0 e 2.5.1 — sidebar, permissões, busca unificadae documentação</strong>
   <ul>
     <li><strong>Fix: Links do sidebar bloqueados em páginas com guard:</strong> em páginas com autenticação (<code>admin.html</code>, <code>os.html</code>, <code>cvs.html</code>, etc.) que gerenciam seu próprio <code>#userInfo</code> via <code>window.__sidebarUserManaged = true</code>, o <code>sidebar.js</code> agora <strong>sempre aplica as permissões de navegação</strong> (<code>sidebarAplicarPermissoes(grupo)</code>) mesmo quando a página controla a exibição do usuário. Antes, o callback <code>onAuthStateChanged</code> retornava cedo, deixando todos os links restritos permanentemente desabilitados. Agora: apenas a exibição de nome/email é pulada (respeitando a página), mas as permissões baseadas no grupo (Fiscal, Admin) são sempre aplicadas.</li>
     <li><strong>Documentação do CLAUDE.md atualizada:</strong> adicionadas as características recentes da app: <code>busca-global.js</code>, <code>version.js</code>, <code>header-component.css</code>, tabela completa de 23 páginas com coluna de acesso por grupo, seções detalhadas de diferenças entre <code>guard.js</code> vs <code>guard1.js</code>, permissões de links por sidebar, documentação de <code>busca-global.js</code> como novo módulo chave, atualização da tabela de estado do sidebar colapsável.</li>
