@@ -379,7 +379,8 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
     html += '<div class="busca-grupo-titulo" aria-hidden="true">Regulados</div>';
     for (const r of resultados.regulados) {
       const id = itemId();
-      html += `<a id="${id}" class="busca-item" href="cvs.html?q=${q}" role="option">
+      const qReg = encodeURIComponent(r.documento || r.fantasia || r.razao || '');
+      html += `<a id="${id}" class="busca-item" href="cvs.html?q=${qReg}" role="option">
         <span class="busca-item-icon" aria-hidden="true">🏪</span>
         <div>
           <span class="busca-item-nome">${_esc(r.fantasia || r.razao)}</span>
@@ -403,7 +404,8 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
       const badge = arquivado
         ? '<span class="busca-item-badge badge-ok" aria-label="Protocolo arquivado">Arquivado</span>'
         : '<span class="busca-item-badge badge-aberto" aria-label="Protocolo">Protocolo</span>';
-      html += `<a id="${id}" class="busca-item" href="protocolo.html?q=${q}" role="option">
+      const qProto = encodeURIComponent(p.Protocolo || p._documento || p._razao || p._fantasia || p.Protocolante || '');
+      html += `<a id="${id}" class="busca-item" href="protocolo.html?q=${qProto}" role="option">
         <span class="busca-item-icon" aria-hidden="true">📋</span>
         <div>
           <span class="busca-item-nome">${_esc(p.Protocolo)} · ${_esc(razaoSocial)}</span>
@@ -425,7 +427,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
       const badge = atendida
         ? '<span class="busca-item-badge badge-ok" aria-label="Denúncia atendida">Atendida</span>'
         : '<span class="busca-item-badge badge-aberto" aria-label="Denúncia ativa">Aberta</span>';
-      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Den%C3%BAncia&q=${q}" role="option">
+      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Den%C3%BAncia&numero=${encodeURIComponent(d.Denuncia||'')}" role="option">
         <span class="busca-item-icon" aria-hidden="true">⚠️</span>
         <div>
           <span class="busca-item-nome">${_esc(d.Denuncia)} · ${_esc(d.Reclamado)}</span>
@@ -448,7 +450,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
         o.Cnpj   ? _esc(o.Cnpj)   : '',
         o.Logradouro ? _esc(o.Logradouro) : ''
       ].filter(Boolean);
-      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Of%C3%ADcio&q=${q}" role="option">
+      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Of%C3%ADcio&numero=${encodeURIComponent(o.Oficio||'')}" role="option">
         <span class="busca-item-icon" aria-hidden="true">📨</span>
         <div>
           <span class="busca-item-nome">${_esc(o.Oficio)} · ${_esc(o.Regulado)}</span>
@@ -467,7 +469,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
     for (const r of resultados.requerimentos) {
       const id = itemId();
       const nome = r._fantasia || r._razao || _esc(r.Requerente);
-      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Requerimento&q=${q}" role="option">
+      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Requerimento&numero=${encodeURIComponent(r.OS||'')}" role="option">
         <span class="busca-item-icon" aria-hidden="true">📝</span>
         <div>
           <span class="busca-item-nome">OS ${_esc(r.OS)} · ${_esc(nome)}</span>
@@ -492,7 +494,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
       const datas = [emissao, validade].filter(Boolean).join(' · ');
       const sub   = datas || (a.Autoridade ? _esc(a.Autoridade) : '');
       const exerc = a.Exercicio ? ` (${_esc(a.Exercicio)})` : '';
-      html += `<a id="${id}" class="busca-item" href="alvara.html?q=${q}" role="option">
+      html += `<a id="${id}" class="busca-item" href="alvara.html?numero=${encodeURIComponent(a.Numero||'')}" role="option">
         <span class="busca-item-icon" aria-hidden="true">🏦</span>
         <div>
           <span class="busca-item-nome">Alv. ${_esc(a.Numero)}${exerc} · ${_esc(nome)}</span>
@@ -517,7 +519,11 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
         i.TIPO      ? _esc(i.TIPO)      : '',
         fiscais
       ].filter(Boolean);
-      html += `<a id="${id}" class="busca-item" href="inspecoes.html?q=${q}" role="option">
+      // Converter DT_VISITA de DD.MM.YYYY para YYYY-MM-DD (formato do input[date])
+      const dtParts = i.DT_VISITA ? i.DT_VISITA.split('.') : [];
+      const dataISO = dtParts.length === 3 ? `${dtParts[2]}-${dtParts[1].padStart(2,'0')}-${dtParts[0].padStart(2,'0')}` : '';
+      const dataParam = dataISO ? `&data=${dataISO}` : '';
+      html += `<a id="${id}" class="busca-item" href="inspecoes.html?numero=${encodeURIComponent(i.NUMERO||'')}${dataParam}" role="option">
         <span class="busca-item-icon" aria-hidden="true">👁️</span>
         <div>
           <span class="busca-item-nome">${_esc(nome)}</span>
