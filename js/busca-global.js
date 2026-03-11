@@ -425,7 +425,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
       const badge = atendida
         ? '<span class="busca-item-badge badge-ok" aria-label="Denúncia atendida">Atendida</span>'
         : '<span class="busca-item-badge badge-aberto" aria-label="Denúncia ativa">Aberta</span>';
-      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Den%C3%BAncia" role="option">
+      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Den%C3%BAncia&q=${q}" role="option">
         <span class="busca-item-icon" aria-hidden="true">⚠️</span>
         <div>
           <span class="busca-item-nome">${_esc(d.Denuncia)} · ${_esc(d.Reclamado)}</span>
@@ -435,7 +435,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
       </a>`;
     }
     if (contagens.denuncias > MAX_POR_CATEGORIA)
-      html += `<a class="busca-ver-todos" href="os.html?tipo=Den%C3%BAncia">Ver todas as ${contagens.denuncias} denúncias →</a>`;
+      html += `<a class="busca-ver-todos" href="os.html?tipo=Den%C3%BAncia&q=${q}">Ver todas as ${contagens.denuncias} denúncias →</a>`;
   }
 
   // ── Ofícios (exibe Motivo no subtítulo) ──
@@ -448,7 +448,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
         o.Cnpj   ? _esc(o.Cnpj)   : '',
         o.Logradouro ? _esc(o.Logradouro) : ''
       ].filter(Boolean);
-      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Of%C3%ADcio" role="option">
+      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Of%C3%ADcio&q=${q}" role="option">
         <span class="busca-item-icon" aria-hidden="true">📨</span>
         <div>
           <span class="busca-item-nome">${_esc(o.Oficio)} · ${_esc(o.Regulado)}</span>
@@ -458,7 +458,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
       </a>`;
     }
     if (contagens.oficios > MAX_POR_CATEGORIA)
-      html += `<a class="busca-ver-todos" href="os.html?tipo=Of%C3%ADcio">Ver todos os ${contagens.oficios} ofícios →</a>`;
+      html += `<a class="busca-ver-todos" href="os.html?tipo=Of%C3%ADcio&q=${q}">Ver todos os ${contagens.oficios} ofícios →</a>`;
   }
 
   // ── Requerimentos ──
@@ -467,7 +467,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
     for (const r of resultados.requerimentos) {
       const id = itemId();
       const nome = r._fantasia || r._razao || _esc(r.Requerente);
-      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Requerimento" role="option">
+      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Requerimento&q=${q}" role="option">
         <span class="busca-item-icon" aria-hidden="true">📝</span>
         <div>
           <span class="busca-item-nome">OS ${_esc(r.OS)} · ${_esc(nome)}</span>
@@ -477,7 +477,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
       </a>`;
     }
     if (contagens.requerimentos > MAX_POR_CATEGORIA)
-      html += `<a class="busca-ver-todos" href="os.html?tipo=Requerimento">Ver todos os ${contagens.requerimentos} requerimentos →</a>`;
+      html += `<a class="busca-ver-todos" href="os.html?tipo=Requerimento&q=${q}">Ver todos os ${contagens.requerimentos} requerimentos →</a>`;
   }
 
   // ── Alvarás ──
@@ -517,7 +517,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
         i.TIPO      ? _esc(i.TIPO)      : '',
         fiscais
       ].filter(Boolean);
-      html += `<a id="${id}" class="busca-item" href="inspecoes.html" role="option">
+      html += `<a id="${id}" class="busca-item" href="inspecoes.html?q=${q}" role="option">
         <span class="busca-item-icon" aria-hidden="true">👁️</span>
         <div>
           <span class="busca-item-nome">${_esc(nome)}</span>
@@ -527,7 +527,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
       </a>`;
     }
     if (contagens.inspecoes > MAX_POR_CATEGORIA)
-      html += `<a class="busca-ver-todos" href="inspecoes.html">Ver todas as ${contagens.inspecoes} inspeções →</a>`;
+      html += `<a class="busca-ver-todos" href="inspecoes.html?q=${q}">Ver todas as ${contagens.inspecoes} inspeções →</a>`;
   }
 
   painel.innerHTML = html;
