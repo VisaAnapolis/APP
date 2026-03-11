@@ -632,6 +632,12 @@
                         </button>
                     </div>
                 </div>
+                <div class="filter-row" style="grid-template-columns: 1fr; margin-top: 12px;">
+                    <div class="filter-group">
+                        <label for="filtroRegulado">Regulado (Razão Social, Nome Fantasia ou CNPJ/CPF):</label>
+                        <input type="text" id="filtroRegulado" placeholder="Buscar por razão social, nome fantasia ou CNPJ/CPF..." autocomplete="off">
+                    </div>
+                </div>
             </div>
 
             <!-- Botões de Exportação -->
@@ -909,7 +915,12 @@
                 mapaRegulados = new Map();
                 (dadosRegulados || []).forEach(r => {
                     const cod = trimSafe(r.CODIGO);
-                    if (cod) mapaRegulados.set(cod, trimSafe(r.RAZAO));
+                    if (cod) mapaRegulados.set(cod, {
+                        razao:    trimSafe(r.RAZAO),
+                        fantasia: trimSafe(r.FANTASIA),
+                        cpf:      trimSafe(r.CPF),
+                        cgc:      trimSafe(r.CGC)
+                    });
                 });
 
                 mapaCNAE = new Map();
@@ -963,6 +974,7 @@
             const dataInicial = $('#dataInicial').val();
             const dataFinal = $('#dataFinal').val();
             const filtroNumDoc = trimSafe($('#filtroNumDoc').val()).toUpperCase();
+            const filtroRegulado = trimSafe($('#filtroRegulado').val()).toUpperCase();
 
             if (!fiscalSelecionado) {
                 if (!isAdmin()) {
@@ -973,9 +985,9 @@
                 return;
             }
 
-            // Se filtro por Nº do Documento preenchido, data não é obrigatória
-            if (!filtroNumDoc && (!dataInicial || !dataFinal)) {
-                mostrarInfo('⚠️ Por favor, selecione o período (data inicial e final) ou informe o Nº do Documento.', 'warning');
+            // Datas são obrigatórias apenas se nenhum filtro textual foi informado
+            if (!filtroNumDoc && !filtroRegulado && (!dataInicial || !dataFinal)) {
+                mostrarInfo('⚠️ Por favor, selecione o período (data inicial e final), informe o Nº do Documento ou pesquise pelo Regulado.', 'warning');
                 return;
             }
 
@@ -985,18 +997,23 @@
 
             // Processar em segundo plano
             setTimeout(() => {
-                const resultados = processarInspecoes(fiscalSelecionado, dataInicial, dataFinal, filtroNumDoc);
+                const resultados = processarInspecoes(fiscalSelecionado, dataInicial, dataFinal, filtroNumDoc, filtroRegulado);
                 exibirResultados(resultados, fiscalSelecionado, dataInicial, dataFinal);
             }, 100);
         }
 
-        function processarInspecoes(fiscal, dataIni, dataFim, filtroNumDoc) {
-            filtroNumDoc = trimSafe(filtroNumDoc).toUpperCase();
+        function processarInspecoes(fiscal, dataIni, dataFim, filtroNumDoc, filtroRegulado) {
+            filtroNumDoc    = trimSafe(filtroNumDoc).toUpperCase();
+            filtroRegulado  = trimSafe(filtroRegulado).toUpperCase();
             const resultados = [];
 
             // Admin + "TODOS" (ou vazio) => não filtra por fiscal
             const fiscalKey = trimSafe(fiscal);
             const fiscalEhTodos = (fiscalKey === '' || fiscalKey === 'TODOS');
+
+            // Helper: normaliza doc (remove pontuação) para comparar CNPJ/CPF
+            const normDoc = v => String(v || '').replace(/[\.\-\/\s]/g, '').toUpperCase();
+            const filtroReguladoDoc = normDoc(filtroRegulado);
 
             (dadosInspecoes || []).forEach(insp => {
                 // 1) Filtro por fiscal (se não for TODOS)
@@ -1009,10 +1026,11 @@
                     if (!participou) return;
                 }
 
-                // 2) Filtro por período (ignorado se filtroNumDoc preenchido e datas vazias)
+                // 2) Filtro por período (ignorado se algum filtro textual preenchido e datas vazias)
                 const dataInspecao = converterData(trimSafe(insp.DT_VISITA));
-                if (!filtroNumDoc && (!dataInspecao || dataInspecao < dataIni || dataInspecao > dataFim)) return;
-                if (filtroNumDoc && dataIni && dataFim && (!dataInspecao || dataInspecao < dataIni || dataInspecao > dataFim)) return;
+                const temFiltroTexto = filtroNumDoc || filtroRegulado;
+                if (!temFiltroTexto && (!dataInspecao || dataInspecao < dataIni || dataInspecao > dataFim)) return;
+                if (temFiltroTexto && dataIni && dataFim && (!dataInspecao || dataInspecao < dataIni || dataInspecao > dataFim)) return;
 
                 // 2b) Filtro por Nº do Documento
                 if (filtroNumDoc) {
@@ -1022,13 +1040,31 @@
 
                 // 3) Dados do regulado (por CODIGO)
                 const cod = trimSafe(insp.CODIGO);
-                let razaoSocial = '';
+                let reguladoInfo = null;
                 if (mapaRegulados && cod) {
-                    razaoSocial = mapaRegulados.get(cod) || '';
+                    reguladoInfo = mapaRegulados.get(cod) || null;
                 } else if (cod) {
-                    const regulado = (dadosRegulados || []).find(r => trimSafe(r.CODIGO) === cod);
-                    razaoSocial = regulado ? trimSafe(regulado.RAZAO) : '';
+                    const r = (dadosRegulados || []).find(r => trimSafe(r.CODIGO) === cod);
+                    if (r) reguladoInfo = {
+                        razao:    trimSafe(r.RAZAO),
+                        fantasia: trimSafe(r.FANTASIA),
+                        cpf:      trimSafe(r.CPF),
+                        cgc:      trimSafe(r.CGC)
+                    };
                 }
+
+                // 2c) Filtro unificado por Regulado (razão social, fantasia, CPF ou CNPJ)
+                if (filtroRegulado) {
+                    if (!reguladoInfo) return;
+                    const match =
+                        reguladoInfo.razao.toUpperCase().includes(filtroRegulado) ||
+                        reguladoInfo.fantasia.toUpperCase().includes(filtroRegulado) ||
+                        normDoc(reguladoInfo.cpf).includes(filtroReguladoDoc) ||
+                        normDoc(reguladoInfo.cgc).includes(filtroReguladoDoc);
+                    if (!match) return;
+                }
+
+                const razaoSocial = reguladoInfo ? reguladoInfo.razao : '';
 
                 // 4) CNAE / Complexidade (por Subclasse = Atividade)
                 let cnaeSubclasse = '';
