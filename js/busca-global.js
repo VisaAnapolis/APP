@@ -1,6 +1,6 @@
 /**
  * BUSCA-GLOBAL.JS — Pesquisa Global Unificada
- * VISA Anápolis — v1.2.1
+ * VISA Anápolis — v1.2.2
  *
  * Módulo ES6 que implementa busca unificada no Dashboard.
  * Consulta: regulados (JSON), protocolos, denúncias, requerimentos,
@@ -10,14 +10,14 @@
  * Exporta: initBuscaGlobal(), limparCacheBusca()
  */
 
-/* ── Constantes ────────────────────────────────────────────────────────── */
+/* ── Constantes ─────────────────────────────────────────────────────────── */
 const MAX_POR_CATEGORIA    = 5;
-const MAX_INSPECOES_VISITA = 5;   // últimas N visitas exibidas por estabelecimento
-const MAX_FETCH_REG_JSON   = 20;  // máx. de JSONs individuais buscados em paralelo
+const MAX_INSPECOES_VISITA = 5;
+const MAX_FETCH_REG_JSON   = 20;
 const DEBOUNCE_MS          = 400;
 const MIN_CHARS            = 3;
 
-/* ── Cache em memória (singleton por sessão/aba) ───────────────────────── */
+/* ── Cache em memória (singleton por sessão/aba) ────────────────────────── */
 let _cacheBusca          = null;
 let _promiseCarregamento = null;
 
@@ -48,7 +48,6 @@ async function _carregarTudo() {
 
   const hoje = new Date().toISOString().slice(0, 10);
 
-  // inspecoes.csv REMOVIDO (era ~19,66 MB) — inspeções agora vêm dos JSONs individuais
   const [reguladosJson, protocolos, tramitacoes, denunciasRaw,
          requerimentosRaw, oficiosRaw, alvarasRaw] =
     await Promise.all([
@@ -69,14 +68,12 @@ async function _carregarTudo() {
 
   const regulados = reguladosJson.dados || reguladosJson;
 
-  // ── FILTROS DE REGISTROS ATIVOS ──
   const denuncias = denunciasRaw;
 
   const requerimentosAtivos = requerimentosRaw.filter(r =>
     !_processarBool(r.Atendimento) && !_processarBool(r.Cancelado)
   );
 
-  // ── SOMENTE O ÚLTIMO REQUERIMENTO ATIVO POR REGULADO (maior OS) ──
   const mapaUltimoRequerimento = new Map();
   for (const r of requerimentosAtivos) {
     const cod = String(r.Codigo || '').trim();
@@ -88,15 +85,12 @@ async function _carregarTudo() {
   }
   const requerimentos = Array.from(mapaUltimoRequerimento.values());
 
-  // Ofícios: somente ativos
   const oficios = oficiosRaw.filter(o =>
     !_processarBool(o.Cancela) && !_processarBool(o.Archive)
   );
 
-  // Alvarás: excluir cancelados
   const alvarasAtivos = alvarasRaw.filter(a => !String(a.Cancela || '').trim());
 
-  // ── SOMENTE O ÚLTIMO ALVARÁ POR REGULADO (maior Exercicio) ──
   const mapaUltimoAlvara = new Map();
   for (const a of alvarasAtivos) {
     const cod = String(a.Codigo || '').trim();
@@ -108,7 +102,6 @@ async function _carregarTudo() {
   }
   const alvarasUltimos = Array.from(mapaUltimoAlvara.values());
 
-  // ── MAPAS DE REGULADOS ──
   const mapaRegulados = new Map();
   for (const r of regulados) mapaRegulados.set(String(r.codigo).trim(), r);
 
@@ -118,60 +111,61 @@ async function _carregarTudo() {
     if (docNorm) mapaReguladosPorDoc.set(docNorm, r);
   }
 
-  // ── ENRIQUECER ALVARÁS via Codigo (FK) ──
   for (const a of alvarasUltimos) {
     const reg = mapaRegulados.get(String(a.Codigo || '').trim());
     if (reg) {
-      a._fantasia  = reg.fantasia; a._razao = reg.razao; a._documento = reg.documento;
+      a._fantasia = reg.fantasia; a._razao = reg.razao; a._documento = reg.documento;
       a._fantasia_n = norm(reg.fantasia); a._razao_n = norm(reg.razao); a._documento_n = norm(reg.documento);
     }
     a._numero_n = norm(a.Numero); a._autoridade_n = norm(a.Autoridade);
   }
 
-  // ── ENRIQUECER REQUERIMENTOS via Codigo (FK) ──
   for (const r of requerimentos) {
     const reg = mapaRegulados.get(String(r.Codigo || '').trim());
     if (reg) {
       r._fantasia = reg.fantasia; r._razao = reg.razao; r._documento = reg.documento;
       r._fantasia_n = norm(reg.fantasia); r._razao_n = norm(reg.razao); r._documento_n = norm(reg.documento);
     } else {
+      r._fantasia = ''; r._razao = ''; r._documento = '';
       r._fantasia_n = norm(r.Requerente); r._razao_n = ''; r._documento_n = '';
     }
     r._requerente_n = norm(r.Requerente);
   }
 
-  // ── ENRIQUECER OFÍCIOS via CNPJ ──
   for (const o of oficios) {
     const reg = mapaReguladosPorDoc.get(norm(o.Cnpj));
     if (reg) {
+      o._fantasia = reg.fantasia; o._razao = reg.razao; o._documento = reg.documento;
       o._fantasia_n = norm(reg.fantasia); o._razao_n = norm(reg.razao); o._documento_n = norm(reg.documento);
     } else {
+      o._fantasia = ''; o._razao = ''; o._documento = '';
       o._fantasia_n = norm(o.Regulado); o._razao_n = ''; o._documento_n = norm(o.Cnpj);
     }
     o._motivo_n = norm(o.Motivo);
   }
 
-  // ── ENRIQUECER DENÚNCIAS via CNPJ ──
   for (const d of denuncias) {
     const reg = mapaReguladosPorDoc.get(norm(d.Cnpj));
     if (reg) {
+      d._fantasia = reg.fantasia; d._razao = reg.razao; d._documento = reg.documento;
       d._fantasia_n = norm(reg.fantasia); d._razao_n = norm(reg.razao); d._documento_n = norm(reg.documento);
     } else {
+      d._fantasia = ''; d._razao = ''; d._documento = '';
       d._fantasia_n = norm(d.Reclamado); d._razao_n = ''; d._documento_n = norm(d.Cnpj);
     }
   }
 
-  // ── ENRIQUECER PROTOCOLOS via Codigo (FK) ──
   for (const p of protocolos) {
     const reg = mapaRegulados.get(String(p.Codigo || '').trim());
     if (reg) {
+      p._fantasia = reg.fantasia; p._razao = reg.razao; p._documento = reg.documento;
       p._fantasia_n = norm(reg.fantasia); p._razao_n = norm(reg.razao); p._documento_n = norm(reg.documento);
     } else {
+      p._fantasia = ''; p._razao = ''; p._documento = '';
       p._fantasia_n = ''; p._razao_n = ''; p._documento_n = '';
     }
   }
 
-  // ── MAPA DE ÚLTIMA TRAMITAÇÃO POR PROTOCOLO ──
   const mapaTramitacao = new Map();
   for (const t of tramitacoes) {
     const proto = (t.PROTOCOLO || '').trim();
@@ -182,7 +176,6 @@ async function _carregarTudo() {
 
   mostrarSpinnerNoCampo(false);
 
-  // Nota: inspeções NÃO são pré-carregadas — buscadas sob demanda via _fetchRegJSON()
   return { regulados, protocolos, tramitacoes, denuncias,
            requerimentos, oficios, alvaras: alvarasUltimos,
            mapaRegulados, mapaReguladosPorDoc, mapaTramitacao };
@@ -280,7 +273,9 @@ function _buscarSincrono(dados, termoNorm) {
       const tram = dados.mapaTramitacao.get((p.Protocolo || '').trim());
       const reg  = dados.mapaRegulados.get(String(p.Codigo || '').trim());
       return { ...p, _tramitacao: tram || null,
-               _razao: reg ? reg.razao : '', _fantasia: reg ? reg.fantasia : '', _documento: reg ? reg.documento : '' };
+               _razao: reg ? reg.razao : (p._razao || ''),
+               _fantasia: reg ? reg.fantasia : (p._fantasia || ''),
+               _documento: reg ? reg.documento : (p._documento || '') };
     }
   );
 
@@ -317,9 +312,8 @@ function _buscarSincrono(dados, termoNorm) {
   return { resultados, contagens };
 }
 
-/* ── Busca inspeções sob demanda nos JSONs dos regulados encontrados ──── */
+/* ── Busca inspeções sob demanda nos JSONs dos regulados encontrados ────── */
 async function _buscarInspecoes(dados, termoNorm) {
-  // 1. Encontrar regulados que batem com o termo (até MAX_FETCH_REG_JSON)
   const reguladosMatch = [];
   for (const r of dados.regulados) {
     if (match(r.fantasia, termoNorm) || match(r.razao, termoNorm) || match(r.documento, termoNorm)) {
@@ -330,12 +324,10 @@ async function _buscarInspecoes(dados, termoNorm) {
 
   if (reguladosMatch.length === 0) return { lista: [], total: 0 };
 
-  // 2. Buscar JSONs individuais em paralelo
   const jsons = await Promise.all(
     reguladosMatch.map(r => _fetchRegJSON(String(r.codigo)))
   );
 
-  // 3. Extrair estabelecimentos com inspeções
   const lista = [];
   let total = 0;
 
@@ -343,7 +335,6 @@ async function _buscarInspecoes(dados, termoNorm) {
     const json = jsons[idx];
     if (!json || !Array.isArray(json.inspecoes) || json.inspecoes.length === 0) continue;
 
-    // Filtro adicional: se a busca foi por nome de fiscal, verificar nos dados de inspeção
     const termoEhFiscal = !match(json.fantasia, termoNorm) &&
                           !match(json.razao, termoNorm) &&
                           !match(json.cnpj, termoNorm);
@@ -379,6 +370,26 @@ function _esc(s) {
   return d.innerHTML;
 }
 
+/**
+ * Monta o bloco padrão de nome para TODAS as categorias:
+ *   linha principal → <strong>RAZÃO SOCIAL</strong> (fantasia)
+ *   se só um existe → exibe o que houver, sem negrito desnecessário
+ * @param {string} razao
+ * @param {string} fantasia
+ * @param {string} [fallback] - usado quando nenhum dos dois existe (ex: Requerente)
+ * @returns {string} HTML seguro
+ */
+function _nomeRegulado(razao, fantasia, fallback = '') {
+  const r = (razao   || '').trim();
+  const f = (fantasia || '').trim();
+  if (r && f && r !== f) {
+    return `<strong>${_esc(r)}</strong> <span class="busca-item-fantasia">(${_esc(f)})</span>`;
+  }
+  if (r) return `<strong>${_esc(r)}</strong>`;
+  if (f) return `<strong>${_esc(f)}</strong>`;
+  return _esc(fallback);
+}
+
 function _badgeAlvara(dtValidade) {
   if (!dtValidade || !dtValidade.trim()) return '';
   const partes = dtValidade.trim().split('.');
@@ -392,7 +403,6 @@ function _badgeAlvara(dtValidade) {
   return '<span class="busca-item-badge badge-ok">Vigente</span>';
 }
 
-/* Converte ISO YYYY-MM-DD para DD/MM/YYYY para exibição */
 function _isoParaExibicao(iso) {
   if (!iso) return '';
   const p = iso.split('-');
@@ -421,13 +431,13 @@ function renderizarResultados(resultados, contagens, inspecoes, totalInspecoes, 
   if (resultados.regulados.length > 0) {
     html += '<div class="busca-grupo-titulo" aria-hidden="true">Regulados</div>';
     for (const r of resultados.regulados) {
-      const id = itemId();
+      const id  = itemId();
       const qReg = encodeURIComponent(r.documento || r.fantasia || r.razao || '');
       html += `<a id="${id}" class="busca-item" href="cvs.html?q=${qReg}" role="option">
         <span class="busca-item-icon" aria-hidden="true">🏪</span>
         <div>
-          <span class="busca-item-nome">${_esc(r.fantasia || r.razao)}</span>
-          <span class="busca-item-sub">${_esc(r.documento)}${r.razao && r.fantasia ? ' · ' + _esc(r.razao) : ''}</span>
+          <span class="busca-item-nome">${_nomeRegulado(r.razao, r.fantasia)}</span>
+          <span class="busca-item-sub">${_esc(r.documento)}</span>
         </div>
       </a>`;
     }
@@ -442,17 +452,16 @@ function renderizarResultados(resultados, contagens, inspecoes, totalInspecoes, 
       const id = itemId();
       const tram = p._tramitacao;
       const arquivado = tram && (tram.DESTINO || '').trim().toUpperCase() === 'ARQUIVO';
-      const tramInfo = tram && !arquivado ? `→ ${_esc(tram.DESTINO)} · ${_esc(tram.DATA)}` : '';
-      const razaoSocial = p._razao || p._fantasia || p.Protocolante;
+      const tramInfo  = tram && !arquivado ? ` → ${_esc(tram.DESTINO)} · ${_esc(tram.DATA)}` : '';
       const badge = arquivado
-        ? '<span class="busca-item-badge badge-ok" aria-label="Protocolo arquivado">Arquivado</span>'
-        : '<span class="busca-item-badge badge-aberto" aria-label="Protocolo">Protocolo</span>';
+        ? '<span class="busca-item-badge badge-ok">Arquivado</span>'
+        : '<span class="busca-item-badge badge-aberto">Protocolo</span>';
       const qProto = encodeURIComponent(p.Protocolo || p._documento || p._razao || p._fantasia || p.Protocolante || '');
       html += `<a id="${id}" class="busca-item" href="protocolo.html?q=${qProto}" role="option">
         <span class="busca-item-icon" aria-hidden="true">📋</span>
         <div>
-          <span class="busca-item-nome">${_esc(p.Protocolo)} · ${_esc(razaoSocial)}</span>
-          <span class="busca-item-sub">${_esc(p.Assunto)}${p._documento ? ' · ' + _esc(p._documento) : ''}${tramInfo ? ' ' + tramInfo : ''}</span>
+          <span class="busca-item-nome">${_esc(p.Protocolo)} · ${_nomeRegulado(p._razao, p._fantasia, p.Protocolante)}</span>
+          <span class="busca-item-sub">${_esc(p.Assunto)}${p._documento ? ' · ' + _esc(p._documento) : ''}${tramInfo}</span>
         </div>
         ${badge}
       </a>`;
@@ -468,12 +477,12 @@ function renderizarResultados(resultados, contagens, inspecoes, totalInspecoes, 
       const id = itemId();
       const atendida = _processarBool(d.Archive);
       const badge = atendida
-        ? '<span class="busca-item-badge badge-ok" aria-label="Denúncia atendida">Atendida</span>'
-        : '<span class="busca-item-badge badge-aberto" aria-label="Denúncia ativa">Aberta</span>';
+        ? '<span class="busca-item-badge badge-ok">Atendida</span>'
+        : '<span class="busca-item-badge badge-aberto">Aberta</span>';
       html += `<a id="${id}" class="busca-item" href="os.html?tipo=Den%C3%BAncia&numero=${encodeURIComponent(d.Denuncia||'')}" role="option">
         <span class="busca-item-icon" aria-hidden="true">⚠️</span>
         <div>
-          <span class="busca-item-nome">${_esc(d.Denuncia)} · ${_esc(d.Reclamado)}</span>
+          <span class="busca-item-nome">${_esc(d.Denuncia)} · ${_nomeRegulado(d._razao, d._fantasia, d.Reclamado)}</span>
           <span class="busca-item-sub">${_esc(d.Logradouro)}${d.Cnpj ? ' · ' + _esc(d.Cnpj) : ''}</span>
         </div>
         ${badge}
@@ -489,17 +498,17 @@ function renderizarResultados(resultados, contagens, inspecoes, totalInspecoes, 
     for (const o of resultados.oficios) {
       const id = itemId();
       const subParts = [
-        o.Motivo ? _esc(o.Motivo) : '',
-        o.Cnpj   ? _esc(o.Cnpj)   : '',
+        o.Motivo     ? _esc(o.Motivo)     : '',
+        o.Cnpj       ? _esc(o.Cnpj)       : '',
         o.Logradouro ? _esc(o.Logradouro) : ''
       ].filter(Boolean);
       html += `<a id="${id}" class="busca-item" href="os.html?tipo=Of%C3%ADcio&numero=${encodeURIComponent(o.Oficio||'')}" role="option">
         <span class="busca-item-icon" aria-hidden="true">📨</span>
         <div>
-          <span class="busca-item-nome">${_esc(o.Oficio)} · ${_esc(o.Regulado)}</span>
+          <span class="busca-item-nome">${_esc(o.Oficio)} · ${_nomeRegulado(o._razao, o._fantasia, o.Regulado)}</span>
           <span class="busca-item-sub">${subParts.join(' · ')}</span>
         </div>
-        <span class="busca-item-badge badge-aberto" aria-label="Ofício aberto">Aberto</span>
+        <span class="busca-item-badge badge-aberto">Aberto</span>
       </a>`;
     }
     if (contagens.oficios > MAX_POR_CATEGORIA)
@@ -511,14 +520,13 @@ function renderizarResultados(resultados, contagens, inspecoes, totalInspecoes, 
     html += '<div class="busca-grupo-titulo" aria-hidden="true">Requerimentos</div>';
     for (const r of resultados.requerimentos) {
       const id = itemId();
-      const nome = r._fantasia || r._razao || _esc(r.Requerente);
       html += `<a id="${id}" class="busca-item" href="os.html?tipo=Requerimento&numero=${encodeURIComponent(r.OS||'')}" role="option">
         <span class="busca-item-icon" aria-hidden="true">📝</span>
         <div>
-          <span class="busca-item-nome">OS ${_esc(r.OS)} · ${_esc(nome)}</span>
+          <span class="busca-item-nome">OS ${_esc(r.OS)} · ${_nomeRegulado(r._razao, r._fantasia, r.Requerente)}</span>
           <span class="busca-item-sub">${r._documento ? _esc(r._documento) + ' · ' : ''}${r.Prazo ? 'Prazo: ' + _esc(r.Prazo) : ''}</span>
         </div>
-        <span class="busca-item-badge badge-aberto" aria-label="Requerimento aberto">Aberto</span>
+        <span class="busca-item-badge badge-aberto">Aberto</span>
       </a>`;
     }
     if (contagens.requerimentos > MAX_POR_CATEGORIA)
@@ -529,18 +537,17 @@ function renderizarResultados(resultados, contagens, inspecoes, totalInspecoes, 
   if (resultados.alvaras.length > 0) {
     html += '<div class="busca-grupo-titulo" aria-hidden="true">Alvarás</div>';
     for (const a of resultados.alvaras) {
-      const id = itemId();
-      const nome = a._fantasia || a._razao || '(sem vínculo cadastral)';
+      const id    = itemId();
       const badge = _badgeAlvara(a.Dt_validade);
       const emissao  = a.Dt_emite    ? 'Emissão: '  + _esc(a.Dt_emite)    : '';
       const validade = a.Dt_validade ? 'Validade: ' + _esc(a.Dt_validade) : '';
-      const datas = [emissao, validade].filter(Boolean).join(' · ');
-      const sub   = datas || (a.Autoridade ? _esc(a.Autoridade) : '');
-      const exerc = a.Exercicio ? ` (${_esc(a.Exercicio)})` : '';
+      const datas    = [emissao, validade].filter(Boolean).join(' · ');
+      const sub      = datas || (a.Autoridade ? _esc(a.Autoridade) : '');
+      const exerc    = a.Exercicio ? ` (${_esc(a.Exercicio)})` : '';
       html += `<a id="${id}" class="busca-item" href="alvara.html?numero=${encodeURIComponent(a.Numero||'')}" role="option">
         <span class="busca-item-icon" aria-hidden="true">🏦</span>
         <div>
-          <span class="busca-item-nome">Alv. ${_esc(a.Numero)}${exerc} · ${_esc(nome)}</span>
+          <span class="busca-item-nome">Alv. ${_esc(a.Numero)}${exerc} · ${_nomeRegulado(a._razao, a._fantasia)}</span>
           <span class="busca-item-sub">${sub}${a._documento ? ' · ' + _esc(a._documento) : ''}</span>
         </div>
         ${badge}
@@ -550,24 +557,20 @@ function renderizarResultados(resultados, contagens, inspecoes, totalInspecoes, 
       html += `<a class="busca-ver-todos" href="alvara.html?q=${q}">Ver todos os ${contagens.alvaras} alvarás →</a>`;
   }
 
-  // ── Inspeções — card agrupado com as últimas 5 visitas por estabelecimento ──
+  // ── Inspeções ──
   if (inspecoes.length > 0) {
     html += '<div class="busca-grupo-titulo" aria-hidden="true">Inspeções</div>';
     for (const est of inspecoes) {
-      const id = itemId();
-      const nome = _esc(est._fantasia || est._razao || '(sem vínculo cadastral)');
-      // FIX: usa ?codigo= para busca exata por código numérico, evitando
-      // que o cvs.html interprete o número como CNPJ e retorne múltiplos resultados
+      const id   = itemId();
       const href = `cvs.html?codigo=${encodeURIComponent(String(est._codigo || ''))}`;
 
       let visitasHtml = '<ul class="busca-insp-lista">';
       for (const v of est.inspecoes) {
-        const dt      = _isoParaExibicao(v.dt_visita);
-        // Número do documento: exibe somente se diferente de '000000'
-        const numer   = v.numer && v.numer !== '000000' ? _esc(v.numer) : '—';
+        const dt     = _isoParaExibicao(v.dt_visita);
+        const numer  = v.numer && v.numer !== '000000' ? _esc(v.numer) : '—';
         const fiscais = [v.Fiscal1, v.Fiscal2, v.Fiscal3]
           .filter(Boolean)
-          .map(f => _esc(f.split(' ')[0]))   // só o primeiro nome
+          .map(f => _esc(f.split(' ')[0]))
           .join(', ');
         visitasHtml += `<li class="busca-insp-row">
           <span class="busca-insp-col-dt">${_esc(dt)}<br><span class="busca-insp-numer">${numer}</span></span>
@@ -580,11 +583,11 @@ function renderizarResultados(resultados, contagens, inspecoes, totalInspecoes, 
       html += `<a id="${id}" class="busca-item busca-item--inspecoes" href="${href}" role="option">
         <span class="busca-item-icon" aria-hidden="true">👁️</span>
         <div class="busca-item-corpo">
-          <span class="busca-item-nome">${nome}</span>
+          <span class="busca-item-nome">${_nomeRegulado(est._razao, est._fantasia)}</span>
           <span class="busca-item-sub">${_esc(est._cnpj || '')}</span>
           ${visitasHtml}
         </div>
-        <span class="busca-item-badge badge-aberto" aria-label="Inspeções">Inspeção</span>
+        <span class="busca-item-badge badge-aberto">Inspeção</span>
       </a>`;
     }
     if (totalInspecoes > MAX_POR_CATEGORIA)
@@ -713,7 +716,7 @@ export function initBuscaGlobal() {
     if (container && !container.contains(e.target)) fecharPainel();
   });
 
-  console.log('[BuscaGlobal] Inicializado v1.2.1');
+  console.log('[BuscaGlobal] Inicializado v1.2.2');
 }
 
 async function _executarBuscaUI(termo) {
@@ -732,20 +735,15 @@ async function _executarBuscaUI(termo) {
   const campoAtual = document.getElementById('buscaGlobal');
   if (campoAtual && campoAtual.value.trim() !== termo) return;
 
-  // Busca síncrona nas fontes CSV (já em memória)
   const { resultados, contagens } = _buscarSincrono(dados, termoNorm);
 
-  // Renderiza imediatamente o que já temos (sem inspeções)
   _indiceSelecionado = -1;
   renderizarResultados(resultados, contagens, [], 0, termo);
 
-  // Busca assíncrona de inspeções nos JSONs individuais
   const { lista: inspecoes, total: totalInsp } = await _buscarInspecoes(dados, termoNorm);
 
-  // Verifica se o usuário não digitou outra coisa enquanto aguardava
   if (campoAtual && campoAtual.value.trim() !== termo) return;
 
-  // Re-renderiza com inspeções incluídas
   renderizarResultados(resultados, contagens, inspecoes, totalInsp, termo);
 }
 
