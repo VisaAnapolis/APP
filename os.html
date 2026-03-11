@@ -1282,6 +1282,11 @@ function buscarUltimaTramitacao(numeroProtocolo) {
 
         // Busca fiscal válido e status de arquivamento do protocolo
         // Retorna { fiscal, dataEncaminha, atendida } ou null se não houver fiscal válido
+        //
+        // Lógica:
+        //   1. Última tramitação → fiscal válido  → protocolo está com esse fiscal (atendida=Não)
+        //   2. Última tramitação → ARQUIVO        → protocolo concluído; busca o último fiscal anterior (atendida=Sim)
+        //   3. Última tramitação → outro destino  → protocolo não está com fiscal, não inclui (null)
 function buscarInfoProtocolo(numeroProtocolo) {
     if (!dadosTramitacao || dadosTramitacao.length === 0) return null;
 
@@ -1297,15 +1302,25 @@ function buscarInfoProtocolo(numeroProtocolo) {
         return hB > hA ? 1 : -1;
     });
 
-    // Última tramitação determina se foi arquivado
-    const atendida = (trams[0].DESTINO || '').trim().toUpperCase() === 'ARQUIVO';
+    const ultimaTram = trams[0];
+    const destUltimo = (ultimaTram.DESTINO || '').trim().toUpperCase();
 
-    // Último fiscal válido (pode estar antes do ARQUIVO)
-    for (const t of trams) {
-        if (fiscalValido(t.DESTINO || '')) {
-            return { fiscal: (t.DESTINO || '').trim(), dataEncaminha: t.DATA, atendida };
+    // Caso 1: última tramitação é para um fiscal → protocolo ativo com esse fiscal
+    if (fiscalValido(ultimaTram.DESTINO || '')) {
+        return { fiscal: ultimaTram.DESTINO.trim(), dataEncaminha: ultimaTram.DATA, atendida: false };
+    }
+
+    // Caso 2: última tramitação é ARQUIVO → concluído; encontra o último fiscal anterior
+    if (destUltimo === 'ARQUIVO') {
+        for (const t of trams) {
+            if (fiscalValido(t.DESTINO || '')) {
+                return { fiscal: t.DESTINO.trim(), dataEncaminha: t.DATA, atendida: true };
+            }
         }
     }
+
+    // Caso 3: última tramitação foi para outro destino (não fiscal, não ARQUIVO)
+    // → protocolo não está sob responsabilidade de fiscal, não exibir
     return null;
 }
 
