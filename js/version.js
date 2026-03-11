@@ -1,6 +1,6 @@
 /**
  * ─────────────────────────────────────────────────────────────
- * VISA APP - GERENCIAMENTO CENTRALIZADO DE VERSÃO
+ * VISA APP - GERENCIAMENTO CENTRALIZADO DE VERSÃO *
  * ─────────────────────────────────────────────────────────────
  *
  * Arquivo único de verdade para versionamento da aplicação.
