@@ -37053,7 +37053,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": false
+    "notif_hoje": true
   },
   "20255565": {
     "tipo": "Ofício",
@@ -38154,7 +38154,7 @@
     "descricao": "",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -39426,7 +39426,7 @@
     "descricao": "",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -45855,30 +45855,6 @@
     "complexidade": "MÉDIA",
     "cnaeCode": "4771-7/01",
     "cnaeDesc": "Comercio varejista de produtos farmaceuticos, sem manipulacao de formulas",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false
-  },
-  "20260641": {
-    "tipo": "Requerimento",
-    "fiscal": "RODRIGO ALESSANDRO TÔGO SANTOS",
-    "motivo": "Renovação",
-    "prazo": "27.05.2026",
-    "dataReq": "2026-02-25",
-    "razao": "LABOR. SABIN DE ANALISES CLINICAS DE ANAPOLIS LTDA",
-    "fantasia": "SABIN MED.DIAGNOSTICA-UNIDADE VL. JAIARA",
-    "logradouro": "AV. FERNANDO COSTA  Nº 384",
-    "complemento": "LJ  03",
-    "bairro": "VILA JAIARA",
-    "cnpj": "02.325.140/0009-12",
-    "cpf": "",
-    "complexidade": "MÉDIA",
-    "cnaeCode": "8640-2/02",
-    "cnaeDesc": "Laboratorios clinicos",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
