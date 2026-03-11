@@ -522,8 +522,10 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
       // Converter DT_VISITA de DD.MM.YYYY para YYYY-MM-DD (formato do input[date])
       const dtParts = i.DT_VISITA ? i.DT_VISITA.split('.') : [];
       const dataISO = dtParts.length === 3 ? `${dtParts[2]}-${dtParts[1].padStart(2,'0')}-${dtParts[0].padStart(2,'0')}` : '';
-      const dataParam = dataISO ? `&data=${dataISO}` : '';
-      html += `<a id="${id}" class="busca-item" href="inspecoes.html?numero=${encodeURIComponent(i.NUMERO||'')}${dataParam}" role="option">
+      // Usar nome do contribuinte como filtro (?q=) em vez de ?numero= (NUMERO não está no CSV parseado)
+      const nomeContrib = i._fantasia || i._razao || '';
+      const qParam = nomeContrib ? `&q=${encodeURIComponent(nomeContrib)}` : '';
+      html += `<a id="${id}" class="busca-item" href="inspecoes.html${dataISO ? '?data=' + dataISO : ''}${qParam}" role="option">
         <span class="busca-item-icon" aria-hidden="true">👁️</span>
         <div>
           <span class="busca-item-nome">${_esc(nome)}</span>
