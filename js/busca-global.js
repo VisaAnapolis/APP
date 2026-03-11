@@ -1,22 +1,28 @@
 /**
  * BUSCA-GLOBAL.JS — Pesquisa Global Unificada
- * VISA Anápolis — v1.1.5
+ * VISA Anápolis — v1.2.0
  *
  * Módulo ES6 que implementa busca unificada no Dashboard.
  * Consulta: regulados (JSON), protocolos, denúncias, requerimentos,
- * ofícios, alvarás e inspeções (CSVs) com cache em memória e lazy loading.
+ * ofícios, alvarás via CSVs e inspeções via JSONs individuais
+ * (data/reg/XX/CODIGO.json) com cache em memória e lazy loading.
  *
  * Exporta: initBuscaGlobal(), limparCacheBusca()
  */
 
 /* ── Constantes ────────────────────────────────────────────────────────── */
-const MAX_POR_CATEGORIA = 5;
-const DEBOUNCE_MS       = 400;
-const MIN_CHARS         = 3;
+const MAX_POR_CATEGORIA    = 5;
+const MAX_INSPECOES_VISITA = 5;   // últimas N visitas exibidas por estabelecimento
+const MAX_FETCH_REG_JSON   = 20;  // máx. de JSONs individuais buscados em paralelo
+const DEBOUNCE_MS          = 400;
+const MIN_CHARS            = 3;
 
 /* ── Cache em memória (singleton por sessão/aba) ───────────────────────── */
 let _cacheBusca          = null;
 let _promiseCarregamento = null;
+
+/* ── Cache de JSONs individuais de regulados (por código) ─────────────── */
+const _cacheRegJSON = new Map();
 
 /* ══════════════════════════════════════════════════════════════════════════
    SEÇÃO 1 — CARREGAMENTO E CACHE DE DADOS
@@ -42,8 +48,9 @@ async function _carregarTudo() {
 
   const hoje = new Date().toISOString().slice(0, 10);
 
+  // inspecoes.csv REMOVIDO (era ~19,66 MB) — inspeções agora vêm dos JSONs individuais
   const [reguladosJson, protocolos, tramitacoes, denunciasRaw,
-         requerimentosRaw, oficiosRaw, alvarasRaw, inspecoesRaw] =
+         requerimentosRaw, oficiosRaw, alvarasRaw] =
     await Promise.all([
       fetch(`data/index_regulados.json?d=${hoje}`).then(r => r.json()),
       parseCSV(`data/protocolo.csv?d=${hoje}`),
@@ -57,9 +64,7 @@ async function _carregarTudo() {
                 'Prazo', 'Fiscalencaminha', 'Cancela', 'Archive']),
       parseCSV(`data/alvara.csv?d=${hoje}`,
                ['Controle', 'Codigo', 'Numero', 'Exercicio',
-                'Dt_emite', 'Dt_validade', 'Autoridade', 'Cancela']),
-      parseCSV(`data/inspecoes.csv?d=${hoje}`,
-               ['CONTROLE', 'CODIGO', 'DT_VISITA', 'TIPO', 'Fiscal1', 'Fiscal2', 'Fiscal3'])
+                'Dt_emite', 'Dt_validade', 'Autoridade', 'Cancela'])
     ]);
 
   const regulados = reguladosJson.dados || reguladosJson;
@@ -175,38 +180,33 @@ async function _carregarTudo() {
     if (!existente || (t.DATA || '') > (existente.DATA || '')) mapaTramitacao.set(proto, t);
   }
 
-  // ── SOMENTE A INSPEÇÃO MAIS RECENTE POR REGULADO (maior DT_VISITA) ──
-  const mapaUltimaInspecao = new Map();
-  for (const i of inspecoesRaw) {
-    const cod = String(i.CODIGO || '').trim();
-    if (!cod) continue;
-    const existente = mapaUltimaInspecao.get(cod);
-    const dtA = _dtVisitaParaInt(i.DT_VISITA);
-    const dtE = existente ? _dtVisitaParaInt(existente.DT_VISITA) : -1;
-    if (!existente || dtA > dtE) mapaUltimaInspecao.set(cod, i);
-  }
-  const inspecoesUltimas = Array.from(mapaUltimaInspecao.values());
-
-  // ── ENRIQUECER INSPEÇÕES via CODIGO (FK) ──
-  for (const i of inspecoesUltimas) {
-    const reg = mapaRegulados.get(String(i.CODIGO || '').trim());
-    if (reg) {
-      i._fantasia  = reg.fantasia; i._razao = reg.razao; i._documento = reg.documento;
-      i._fantasia_n = norm(reg.fantasia); i._razao_n = norm(reg.razao); i._documento_n = norm(reg.documento);
-    } else {
-      i._fantasia_n = ''; i._razao_n = ''; i._documento_n = '';
-    }
-    i._fiscal1_n = norm(i.Fiscal1);
-    i._fiscal2_n = norm(i.Fiscal2);
-    i._fiscal3_n = norm(i.Fiscal3);
-  }
-
   mostrarSpinnerNoCampo(false);
 
+  // Nota: inspeções NÃO são pré-carregadas — buscadas sob demanda via _fetchRegJSON()
   return { regulados, protocolos, tramitacoes, denuncias,
            requerimentos, oficios, alvaras: alvarasUltimos,
-           inspecoes: inspecoesUltimas,
            mapaRegulados, mapaReguladosPorDoc, mapaTramitacao };
+}
+
+/* ── Busca JSON individual de um regulado com cache por sessão ─────────── */
+function _prefixoReg(codigo) {
+  return String(codigo).substring(0, 2);
+}
+
+async function _fetchRegJSON(codigo) {
+  const chave = String(codigo);
+  if (_cacheRegJSON.has(chave)) return _cacheRegJSON.get(chave);
+  const prefixo = _prefixoReg(chave);
+  const hoje = new Date().toISOString().slice(0, 10);
+  try {
+    const r = await fetch(`data/reg/${prefixo}/${chave}.json?d=${hoje}`);
+    if (!r.ok) return null;
+    const json = await r.json();
+    _cacheRegJSON.set(chave, json);
+    return json;
+  } catch {
+    return null;
+  }
 }
 
 function parseCSV(url, campos = null) {
@@ -235,14 +235,6 @@ function _processarBool(valor) {
   return v === 'TRUE' || v === 'SIM' || v === 'T' || v === 'S';
 }
 
-function _dtVisitaParaInt(dt) {
-  if (!dt || !dt.trim()) return 0;
-  const p = dt.trim().split('.');
-  if (p.length !== 3) return 0;
-  if (!/^\d+$/.test(p[0]) || !/^\d+$/.test(p[1]) || !/^\d+$/.test(p[2])) return 0;
-  return parseInt(p[2] + p[1].padStart(2, '0') + p[0].padStart(2, '0'), 10) || 0;
-}
-
 /* ══════════════════════════════════════════════════════════════════════════
    SEÇÃO 2 — NORMALIZAÇÃO E MATCHING
    ══════════════════════════════════════════════════════════════════════════ */
@@ -260,7 +252,7 @@ function match(campo, termoNorm) { return norm(campo).includes(termoNorm); }
    SEÇÃO 3 — BUSCA EM TODAS AS FONTES
    ══════════════════════════════════════════════════════════════════════════ */
 
-function executarBuscaComContagem(dados, termoNorm) {
+function _buscarSincrono(dados, termoNorm) {
   const resultados = {};
   const contagens  = {};
 
@@ -299,7 +291,6 @@ function executarBuscaComContagem(dados, termoNorm) {
          match(d.Denuncia, termoNorm) || match(d.Logradouro, termoNorm)
   );
 
-  // Ofícios: pesquisável também pelo campo Motivo
   buscar(dados.oficios, 'oficios',
     o => (o._fantasia_n && o._fantasia_n.includes(termoNorm)) ||
          (o._razao_n && o._razao_n.includes(termoNorm)) ||
@@ -323,16 +314,59 @@ function executarBuscaComContagem(dados, termoNorm) {
          a._numero_n.includes(termoNorm) || a._autoridade_n.includes(termoNorm)
   );
 
-  buscar(dados.inspecoes, 'inspecoes',
-    i => (i._fantasia_n  && i._fantasia_n.includes(termoNorm)) ||
-         (i._razao_n     && i._razao_n.includes(termoNorm)) ||
-         (i._documento_n && i._documento_n.includes(termoNorm)) ||
-         (i._fiscal1_n   && i._fiscal1_n.includes(termoNorm)) ||
-         (i._fiscal2_n   && i._fiscal2_n.includes(termoNorm)) ||
-         (i._fiscal3_n   && i._fiscal3_n.includes(termoNorm))
+  return { resultados, contagens };
+}
+
+/* ── Busca inspeções sob demanda nos JSONs dos regulados encontrados ───── */
+async function _buscarInspecoes(dados, termoNorm) {
+  // 1. Encontrar regulados que batem com o termo (até MAX_FETCH_REG_JSON)
+  const reguladosMatch = [];
+  for (const r of dados.regulados) {
+    if (match(r.fantasia, termoNorm) || match(r.razao, termoNorm) || match(r.documento, termoNorm)) {
+      reguladosMatch.push(r);
+      if (reguladosMatch.length >= MAX_FETCH_REG_JSON) break;
+    }
+  }
+
+  if (reguladosMatch.length === 0) return { lista: [], total: 0 };
+
+  // 2. Buscar JSONs individuais em paralelo
+  const jsons = await Promise.all(
+    reguladosMatch.map(r => _fetchRegJSON(String(r.codigo)))
   );
 
-  return { resultados, contagens };
+  // 3. Extrair estabelecimentos com inspeções; também buscar por fiscal
+  const lista = [];
+  let total = 0;
+
+  for (let idx = 0; idx < reguladosMatch.length; idx++) {
+    const json = jsons[idx];
+    if (!json || !Array.isArray(json.inspecoes) || json.inspecoes.length === 0) continue;
+
+    // Filtro adicional: se a busca foi por nome de fiscal, verificar nos dados de inspeção
+    const termoEhFiscal = !match(json.fantasia, termoNorm) &&
+                          !match(json.razao, termoNorm) &&
+                          !match(json.cnpj, termoNorm);
+    if (termoEhFiscal) {
+      const temFiscal = json.inspecoes.some(v =>
+        match(v.Fiscal1, termoNorm) || match(v.Fiscal2, termoNorm) || match(v.Fiscal3, termoNorm)
+      );
+      if (!temFiscal) continue;
+    }
+
+    total++;
+    if (lista.length < MAX_POR_CATEGORIA) {
+      lista.push({
+        _codigo:   json.codigo,
+        _fantasia: json.fantasia,
+        _razao:    json.razao,
+        _cnpj:     json.cnpj,
+        inspecoes: json.inspecoes.slice(0, MAX_INSPECOES_VISITA)
+      });
+    }
+  }
+
+  return { lista, total };
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -358,11 +392,20 @@ function _badgeAlvara(dtValidade) {
   return '<span class="busca-item-badge badge-ok">Vigente</span>';
 }
 
-function renderizarResultados(resultados, contagens, termoOriginal) {
+/* Converte ISO YYYY-MM-DD para DD/MM/YYYY para exibição */
+function _isoParaExibicao(iso) {
+  if (!iso) return '';
+  const p = iso.split('-');
+  if (p.length !== 3) return iso;
+  return `${p[2]}/${p[1]}/${p[0]}`;
+}
+
+function renderizarResultados(resultados, contagens, inspecoes, totalInspecoes, termoOriginal) {
   const painel = document.getElementById('buscaResultado');
   if (!painel) return;
 
-  const totalExibido = Object.values(resultados).reduce((s, arr) => s + arr.length, 0);
+  const totalExibido = Object.values(resultados).reduce((s, arr) => s + arr.length, 0)
+                     + inspecoes.length;
   if (totalExibido === 0) {
     painel.innerHTML = '<div class="busca-vazio">Nenhum resultado encontrado</div>';
     painel.hidden = false;
@@ -440,7 +483,7 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
       html += `<a class="busca-ver-todos" href="os.html?tipo=Den%C3%BAncia&q=${q}">Ver todas as ${contagens.denuncias} denúncias →</a>`;
   }
 
-  // ── Ofícios (exibe Motivo no subtítulo) ──
+  // ── Ofícios ──
   if (resultados.oficios.length > 0) {
     html += '<div class="busca-grupo-titulo" aria-hidden="true">Ofícios</div>';
     for (const o of resultados.oficios) {
@@ -507,35 +550,41 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
       html += `<a class="busca-ver-todos" href="alvara.html?q=${q}">Ver todos os ${contagens.alvaras} alvarás →</a>`;
   }
 
-  // ── Inspeções ──
-  if (resultados.inspecoes && resultados.inspecoes.length > 0) {
+  // ── Inspeções — card agrupado com as últimas 5 visitas por estabelecimento ──
+  if (inspecoes.length > 0) {
     html += '<div class="busca-grupo-titulo" aria-hidden="true">Inspeções</div>';
-    for (const i of resultados.inspecoes) {
+    for (const est of inspecoes) {
       const id = itemId();
-      const nome = i._fantasia || i._razao || '(sem vínculo cadastral)';
-      const fiscais = [i.Fiscal1, i.Fiscal2, i.Fiscal3].filter(Boolean).map(_esc).join(', ');
-      const subParts = [
-        i.DT_VISITA ? _esc(i.DT_VISITA) : '',
-        i.TIPO      ? _esc(i.TIPO)      : '',
-        fiscais
-      ].filter(Boolean);
-      // Converter DT_VISITA de DD.MM.YYYY para YYYY-MM-DD (formato do input[date])
-      const dtParts = i.DT_VISITA ? i.DT_VISITA.split('.') : [];
-      const dataISO = dtParts.length === 3 ? `${dtParts[2]}-${dtParts[1].padStart(2,'0')}-${dtParts[0].padStart(2,'0')}` : '';
-      // Usar nome do contribuinte como filtro (?q=) em vez de ?numero= (NUMERO não está no CSV parseado)
-      const nomeContrib = i._fantasia || i._razao || '';
-      const qParam = nomeContrib ? `&q=${encodeURIComponent(nomeContrib)}` : '';
-      html += `<a id="${id}" class="busca-item" href="inspecoes.html${dataISO ? '?data=' + dataISO : ''}${qParam}" role="option">
+      const nome = _esc(est._fantasia || est._razao || '(sem vínculo cadastral)');
+      const qParam = encodeURIComponent(String(est._codigo || ''));
+
+      let visitasHtml = '<ul class="busca-insp-lista">';
+      for (const v of est.inspecoes) {
+        const dt      = _isoParaExibicao(v.dt_visita);
+        const fiscais = [v.Fiscal1, v.Fiscal2, v.Fiscal3]
+          .filter(Boolean)
+          .map(f => _esc(f.split(' ')[0]))   // só o primeiro nome
+          .join(', ');
+        visitasHtml += `<li>
+          <span class="busca-insp-dt">${_esc(dt)}</span>
+          <span class="busca-insp-tipo">${_esc(v.tipo || '')}</span>
+          <span class="busca-insp-fiscal">${fiscais}</span>
+        </li>`;
+      }
+      visitasHtml += '</ul>';
+
+      html += `<a id="${id}" class="busca-item busca-item--inspecoes" href="cvs.html?q=${qParam}" role="option">
         <span class="busca-item-icon" aria-hidden="true">👁️</span>
-        <div>
-          <span class="busca-item-nome">${_esc(nome)}</span>
-          <span class="busca-item-sub">${subParts.join(' · ')}${i._documento ? ' · ' + _esc(i._documento) : ''}</span>
+        <div class="busca-item-corpo">
+          <span class="busca-item-nome">${nome}</span>
+          <span class="busca-item-sub">${_esc(est._cnpj || '')}</span>
+          ${visitasHtml}
         </div>
-        <span class="busca-item-badge badge-aberto" aria-label="Inspeção">Inspeção</span>
+        <span class="busca-item-badge badge-aberto" aria-label="Inspeções">Inspeção</span>
       </a>`;
     }
-    if (contagens.inspecoes > MAX_POR_CATEGORIA)
-      html += `<a class="busca-ver-todos" href="inspecoes.html?q=${q}">Ver todas as ${contagens.inspecoes} inspeções →</a>`;
+    if (totalInspecoes > MAX_POR_CATEGORIA)
+      html += `<a class="busca-ver-todos" href="inspecoes.html?q=${q}">Ver todos os ${totalInspecoes} resultados →</a>`;
   }
 
   painel.innerHTML = html;
@@ -660,7 +709,7 @@ export function initBuscaGlobal() {
     if (container && !container.contains(e.target)) fecharPainel();
   });
 
-  console.log('[BuscaGlobal] Inicializado');
+  console.log('[BuscaGlobal] Inicializado v1.2.0');
 }
 
 async function _executarBuscaUI(termo) {
@@ -679,9 +728,21 @@ async function _executarBuscaUI(termo) {
   const campoAtual = document.getElementById('buscaGlobal');
   if (campoAtual && campoAtual.value.trim() !== termo) return;
 
+  // Busca síncrona nas fontes CSV (já em memória)
+  const { resultados, contagens } = _buscarSincrono(dados, termoNorm);
+
+  // Renderiza imediatamente o que já temos (sem inspeções)
   _indiceSelecionado = -1;
-  const { resultados, contagens } = executarBuscaComContagem(dados, termoNorm);
-  renderizarResultados(resultados, contagens, termo);
+  renderizarResultados(resultados, contagens, [], 0, termo);
+
+  // Busca assíncrona de inspeções nos JSONs individuais
+  const { lista: inspecoes, total: totalInsp } = await _buscarInspecoes(dados, termoNorm);
+
+  // Verifica se o usuário não digitou outra coisa enquanto aguardava
+  if (campoAtual && campoAtual.value.trim() !== termo) return;
+
+  // Re-renderiza com inspeções incluídas
+  renderizarResultados(resultados, contagens, inspecoes, totalInsp, termo);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -691,5 +752,6 @@ async function _executarBuscaUI(termo) {
 export function limparCacheBusca() {
   _cacheBusca = null;
   _promiseCarregamento = null;
+  _cacheRegJSON.clear();
   _inicializado = false;
 }
