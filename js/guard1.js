@@ -45,7 +45,7 @@ function startExpiryTimer(signOutFn){
       sessionStorage.removeItem("visa_session_start");
       sessionStorage.removeItem("visa_last_active");
       alert("Sessão expirada por tempo/inatividade. Faça login novamente.");
-      location.href = INDEX_URL;
+      location.replace(INDEX_URL);
     }
   }, 10_000);
 }
@@ -88,7 +88,7 @@ export async function protectPage(firebaseConfig, onAuthorized){
   onAuthStateChanged(auth, async (user) => {
     if (!user){
       console.log('❌ Usuário não autenticado - redirecionando');
-      location.href = INDEX_URL;
+      location.replace(INDEX_URL);
       return;
     }
 
@@ -111,14 +111,14 @@ export async function protectPage(firebaseConfig, onAuthorized){
       if (perfil && !perfil.ativo) {
         alert(`Perfil inativo: ${email}. Contate o administrador.`);
         await signOut(auth);
-        location.href = INDEX_URL;
+        location.replace(INDEX_URL);
         return;
       }
 
       // Bloqueia Administrativo de páginas específicas
       if (perfil && perfil.grupo === 'Administrativo') {
         alert(`Acesso negado. Esta página é restrita.\n\nGrupo: ${perfil.grupo}`);
-        location.href = INDEX_URL;
+        location.replace(INDEX_URL);
         return;
       }
     } catch(e) {
