@@ -1,10 +1,10 @@
 /**
  * BUSCA-GLOBAL.JS — Pesquisa Global Unificada
- * VISA Anápolis — v1.1.4
+ * VISA Anápolis — v1.1.5
  *
  * Módulo ES6 que implementa busca unificada no Dashboard.
  * Consulta: regulados (JSON), protocolos, denúncias, requerimentos,
- * ofícios e alvarás (CSVs) com cache em memória e lazy loading.
+ * ofícios, alvarás e inspeções (CSVs) com cache em memória e lazy loading.
  *
  * Exporta: initBuscaGlobal(), limparCacheBusca()
  */
@@ -43,7 +43,7 @@ async function _carregarTudo() {
   const hoje = new Date().toISOString().slice(0, 10);
 
   const [reguladosJson, protocolos, tramitacoes, denunciasRaw,
-         requerimentosRaw, oficiosRaw, alvarasRaw] =
+         requerimentosRaw, oficiosRaw, alvarasRaw, inspecoesRaw] =
     await Promise.all([
       fetch(`data/index_regulados.json?d=${hoje}`).then(r => r.json()),
       parseCSV(`data/protocolo.csv?d=${hoje}`),
@@ -57,7 +57,9 @@ async function _carregarTudo() {
                 'Prazo', 'Fiscalencaminha', 'Cancela', 'Archive']),
       parseCSV(`data/alvara.csv?d=${hoje}`,
                ['Controle', 'Codigo', 'Numero', 'Exercicio',
-                'Dt_emite', 'Dt_validade', 'Autoridade', 'Cancela'])
+                'Dt_emite', 'Dt_validade', 'Autoridade', 'Cancela']),
+      parseCSV(`data/inspecoes.csv?d=${hoje}`,
+               ['CONTROLE', 'CODIGO', 'DT_VISITA', 'TIPO', 'Fiscal1', 'Fiscal2', 'Fiscal3'])
     ]);
 
   const regulados = reguladosJson.dados || reguladosJson;
@@ -173,10 +175,37 @@ async function _carregarTudo() {
     if (!existente || (t.DATA || '') > (existente.DATA || '')) mapaTramitacao.set(proto, t);
   }
 
+  // ── SOMENTE A INSPEÇÃO MAIS RECENTE POR REGULADO (maior DT_VISITA) ──
+  const mapaUltimaInspecao = new Map();
+  for (const i of inspecoesRaw) {
+    const cod = String(i.CODIGO || '').trim();
+    if (!cod) continue;
+    const existente = mapaUltimaInspecao.get(cod);
+    const dtA = _dtVisitaParaInt(i.DT_VISITA);
+    const dtE = existente ? _dtVisitaParaInt(existente.DT_VISITA) : -1;
+    if (!existente || dtA > dtE) mapaUltimaInspecao.set(cod, i);
+  }
+  const inspecoesUltimas = Array.from(mapaUltimaInspecao.values());
+
+  // ── ENRIQUECER INSPEÇÕES via CODIGO (FK) ──
+  for (const i of inspecoesUltimas) {
+    const reg = mapaRegulados.get(String(i.CODIGO || '').trim());
+    if (reg) {
+      i._fantasia  = reg.fantasia; i._razao = reg.razao; i._documento = reg.documento;
+      i._fantasia_n = norm(reg.fantasia); i._razao_n = norm(reg.razao); i._documento_n = norm(reg.documento);
+    } else {
+      i._fantasia_n = ''; i._razao_n = ''; i._documento_n = '';
+    }
+    i._fiscal1_n = norm(i.Fiscal1);
+    i._fiscal2_n = norm(i.Fiscal2);
+    i._fiscal3_n = norm(i.Fiscal3);
+  }
+
   mostrarSpinnerNoCampo(false);
 
   return { regulados, protocolos, tramitacoes, denuncias,
            requerimentos, oficios, alvaras: alvarasUltimos,
+           inspecoes: inspecoesUltimas,
            mapaRegulados, mapaReguladosPorDoc, mapaTramitacao };
 }
 
@@ -204,6 +233,14 @@ function parseCSV(url, campos = null) {
 function _processarBool(valor) {
   const v = String(valor || '').toUpperCase().trim();
   return v === 'TRUE' || v === 'SIM' || v === 'T' || v === 'S';
+}
+
+function _dtVisitaParaInt(dt) {
+  if (!dt || !dt.trim()) return 0;
+  const p = dt.trim().split('.');
+  if (p.length !== 3) return 0;
+  if (!/^\d+$/.test(p[0]) || !/^\d+$/.test(p[1]) || !/^\d+$/.test(p[2])) return 0;
+  return parseInt(p[2] + p[1].padStart(2, '0') + p[0].padStart(2, '0'), 10) || 0;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -284,6 +321,15 @@ function executarBuscaComContagem(dados, termoNorm) {
          (a._razao_n     && a._razao_n.includes(termoNorm)) ||
          (a._documento_n && a._documento_n.includes(termoNorm)) ||
          a._numero_n.includes(termoNorm) || a._autoridade_n.includes(termoNorm)
+  );
+
+  buscar(dados.inspecoes, 'inspecoes',
+    i => (i._fantasia_n  && i._fantasia_n.includes(termoNorm)) ||
+         (i._razao_n     && i._razao_n.includes(termoNorm)) ||
+         (i._documento_n && i._documento_n.includes(termoNorm)) ||
+         (i._fiscal1_n   && i._fiscal1_n.includes(termoNorm)) ||
+         (i._fiscal2_n   && i._fiscal2_n.includes(termoNorm)) ||
+         (i._fiscal3_n   && i._fiscal3_n.includes(termoNorm))
   );
 
   return { resultados, contagens };
@@ -457,6 +503,31 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
     }
     if (contagens.alvaras > MAX_POR_CATEGORIA)
       html += `<a class="busca-ver-todos" href="alvara.html?q=${q}">Ver todos os ${contagens.alvaras} alvarás →</a>`;
+  }
+
+  // ── Inspeções ──
+  if (resultados.inspecoes && resultados.inspecoes.length > 0) {
+    html += '<div class="busca-grupo-titulo" aria-hidden="true">Inspeções</div>';
+    for (const i of resultados.inspecoes) {
+      const id = itemId();
+      const nome = i._fantasia || i._razao || '(sem vínculo cadastral)';
+      const fiscais = [i.Fiscal1, i.Fiscal2, i.Fiscal3].filter(Boolean).map(_esc).join(', ');
+      const subParts = [
+        i.DT_VISITA ? _esc(i.DT_VISITA) : '',
+        i.TIPO      ? _esc(i.TIPO)      : '',
+        fiscais
+      ].filter(Boolean);
+      html += `<a id="${id}" class="busca-item" href="inspecoes.html" role="option">
+        <span class="busca-item-icon" aria-hidden="true">👁️</span>
+        <div>
+          <span class="busca-item-nome">${_esc(nome)}</span>
+          <span class="busca-item-sub">${subParts.join(' · ')}${i._documento ? ' · ' + _esc(i._documento) : ''}</span>
+        </div>
+        <span class="busca-item-badge badge-aberto" aria-label="Inspeção">Inspeção</span>
+      </a>`;
+    }
+    if (contagens.inspecoes > MAX_POR_CATEGORIA)
+      html += `<a class="busca-ver-todos" href="inspecoes.html">Ver todas as ${contagens.inspecoes} inspeções →</a>`;
   }
 
   painel.innerHTML = html;
