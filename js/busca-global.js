@@ -425,7 +425,8 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
       const badge = atendida
         ? '<span class="busca-item-badge badge-ok" aria-label="Denúncia atendida">Atendida</span>'
         : '<span class="busca-item-badge badge-aberto" aria-label="Denúncia ativa">Aberta</span>';
-      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Den%C3%BAncia&q=${q}" role="option">
+      const qDen = encodeURIComponent(d.Cnpj || d.Reclamado || '');
+      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Den%C3%BAncia&q=${qDen}" role="option">
         <span class="busca-item-icon" aria-hidden="true">⚠️</span>
         <div>
           <span class="busca-item-nome">${_esc(d.Denuncia)} · ${_esc(d.Reclamado)}</span>
@@ -448,7 +449,8 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
         o.Cnpj   ? _esc(o.Cnpj)   : '',
         o.Logradouro ? _esc(o.Logradouro) : ''
       ].filter(Boolean);
-      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Of%C3%ADcio&q=${q}" role="option">
+      const qOfi = encodeURIComponent(o.Cnpj || o.Regulado || '');
+      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Of%C3%ADcio&q=${qOfi}" role="option">
         <span class="busca-item-icon" aria-hidden="true">📨</span>
         <div>
           <span class="busca-item-nome">${_esc(o.Oficio)} · ${_esc(o.Regulado)}</span>
@@ -467,7 +469,8 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
     for (const r of resultados.requerimentos) {
       const id = itemId();
       const nome = r._fantasia || r._razao || _esc(r.Requerente);
-      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Requerimento&q=${q}" role="option">
+      const qReq = encodeURIComponent(r._documento || r._razao || r._fantasia || r.Requerente || '');
+      html += `<a id="${id}" class="busca-item" href="os.html?tipo=Requerimento&q=${qReq}" role="option">
         <span class="busca-item-icon" aria-hidden="true">📝</span>
         <div>
           <span class="busca-item-nome">OS ${_esc(r.OS)} · ${_esc(nome)}</span>
@@ -521,7 +524,8 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
       const dtParts = i.DT_VISITA ? i.DT_VISITA.split('.') : [];
       const dataISO = dtParts.length === 3 ? `${dtParts[2]}-${dtParts[1].padStart(2,'0')}-${dtParts[0].padStart(2,'0')}` : '';
       const dataParam = dataISO ? `&data=${dataISO}` : '';
-      html += `<a id="${id}" class="busca-item" href="inspecoes.html?q=${q}${dataParam}" role="option">
+      const qInsp = encodeURIComponent(i._documento || i._razao || i._fantasia || '');
+      html += `<a id="${id}" class="busca-item" href="inspecoes.html?q=${qInsp}${dataParam}" role="option">
         <span class="busca-item-icon" aria-hidden="true">👁️</span>
         <div>
           <span class="busca-item-nome">${_esc(nome)}</span>
