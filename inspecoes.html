@@ -939,11 +939,14 @@
             if (carregados === total) {
                 prepararIndices();
                 mostrarInfo('✅ Dados carregados com sucesso! Selecione um fiscal e o período para consultar.', 'success');
-                // Auto-busca quando vem do dashboard com ?q=TERMO
-                const qParam = new URLSearchParams(window.location.search).get('q');
-                if (qParam) {
+                // Auto-busca quando vem do dashboard com ?q=TERMO e/ou ?data=YYYY-MM-DD
+                const urlAutoParams = new URLSearchParams(window.location.search);
+                const qParam    = urlAutoParams.get('q');
+                const dataParam = urlAutoParams.get('data');
+                if (qParam || dataParam) {
                     setTimeout(function() {
-                        $('#filtroRegulado').val(qParam);
+                        if (qParam)    $('#filtroRegulado').val(qParam);
+                        if (dataParam) { $('#dataInicial').val(dataParam); $('#dataFinal').val(dataParam); }
                         buscarInspecoes();
                     }, 650);
                 }
@@ -1179,7 +1182,10 @@
             if (resultados.length === 0) {
                 renderizarEstatisticas({});
                 const fiscalLabel = (fiscal === 'TODOS') ? 'TODOS OS FISCAIS' : fiscal;
-                mostrarInfo(`❌ Nenhuma inspeção encontrada para <strong>${fiscalLabel}</strong> no período de ${formatarDataBR(dataIni)} a ${formatarDataBR(dataFim)}.`, 'warning');
+                const periodoLabelErr = (dataIni && dataFim && dataIni !== dataFim)
+                    ? ` no período de ${formatarDataBR(dataIni)} a ${formatarDataBR(dataFim)}`
+                    : (dataIni ? ` em ${formatarDataBR(dataIni)}` : '');
+                mostrarInfo(`❌ Nenhuma inspeção encontrada para <strong>${fiscalLabel}</strong>${periodoLabelErr}.`, 'warning');
                 const box = document.getElementById('estatisticasBox');
                 if (box) { box.style.display = 'none'; box.innerHTML = ''; }
                 $('#tabelaInspecoes').hide();
@@ -1187,7 +1193,10 @@
             }
 
             const fiscalLabel = (fiscal === 'TODOS') ? 'TODOS OS FISCAIS' : fiscal;
-            mostrarInfo(`✅ Encontradas <strong>${resultados.length}</strong> inspeções de <strong>${fiscalLabel}</strong> no período de ${formatarDataBR(dataIni)} a ${formatarDataBR(dataFim)}.`, 'success');
+            const periodoLabel = (dataIni && dataFim && dataIni !== dataFim)
+                ? ` no período de ${formatarDataBR(dataIni)} a ${formatarDataBR(dataFim)}`
+                : (dataIni ? ` em ${formatarDataBR(dataIni)}` : '');
+            mostrarInfo(`✅ Encontradas <strong>${resultados.length}</strong> inspeções de <strong>${fiscalLabel}</strong>${periodoLabel}.`, 'success');
 
             // Estatísticas (antes da tabela)
             renderizarEstatisticas(resultados);
@@ -1210,7 +1219,7 @@
                 
                 $('#tabelaInspecoes tbody').append(`
                     <tr>
-                        <td>${formatarDataBR(r.data)}</td>
+                        <td data-order="${r.data || ''}">${formatarDataBR(r.data)}</td>
                         <td class="os-cell">${osHTML}</td>
                         <td>${r.tipo}</td>
                         <td>${r.numero}</td>

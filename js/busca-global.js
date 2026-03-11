@@ -517,7 +517,11 @@ function renderizarResultados(resultados, contagens, termoOriginal) {
         i.TIPO      ? _esc(i.TIPO)      : '',
         fiscais
       ].filter(Boolean);
-      html += `<a id="${id}" class="busca-item" href="inspecoes.html?q=${q}" role="option">
+      // Converter DT_VISITA de DD.MM.YYYY para YYYY-MM-DD (formato do input[date])
+      const dtParts = i.DT_VISITA ? i.DT_VISITA.split('.') : [];
+      const dataISO = dtParts.length === 3 ? `${dtParts[2]}-${dtParts[1].padStart(2,'0')}-${dtParts[0].padStart(2,'0')}` : '';
+      const dataParam = dataISO ? `&data=${dataISO}` : '';
+      html += `<a id="${id}" class="busca-item" href="inspecoes.html?q=${q}${dataParam}" role="option">
         <span class="busca-item-icon" aria-hidden="true">👁️</span>
         <div>
           <span class="busca-item-nome">${_esc(nome)}</span>
