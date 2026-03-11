@@ -3075,6 +3075,11 @@ try {
         initBuscaGlobal();
       }).catch(e => console.warn('[BuscaGlobal] Falha ao carregar módulo:', e));
     });
+
+    // Bfcache: força reload para re-executar o fluxo de auth ao voltar pelo histórico
+    window.addEventListener('pageshow', function(e) {
+      if (e.persisted) location.reload();
+    });
   </script>
     <!-- Modal de Opt-in de Notificações -->
     <div id="notificationOptInModal" class="modalOverlay">
