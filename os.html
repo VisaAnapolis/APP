@@ -2538,8 +2538,8 @@ function obterDataPrazo(os) {
                 // numero tem prioridade sobre q (regulado)
                 if (numeroParam) $('#filterNumero').val(numeroParam);
                 else if (qParam) $('#filterRegulado').val(qParam);
-                if (!$('#filterCancelado').val()) $('#filterCancelado').val('Não');
-                if (!$('#filterAtendido').val())  $('#filterAtendido').val('Não');
+                $('#filterCancelado').val('');
+                $('#filterAtendido').val('');
                 // Disparar a busca automaticamente
                 setTimeout(function() { buscarOrdens(); }, 300);
             }
