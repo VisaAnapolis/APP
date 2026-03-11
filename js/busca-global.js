@@ -1,6 +1,6 @@
 /**
  * BUSCA-GLOBAL.JS — Pesquisa Global Unificada
- * VISA Anápolis — v1.2.0
+ * VISA Anápolis — v1.2.1
  *
  * Módulo ES6 que implementa busca unificada no Dashboard.
  * Consulta: regulados (JSON), protocolos, denúncias, requerimentos,
@@ -21,7 +21,7 @@ const MIN_CHARS            = 3;
 let _cacheBusca          = null;
 let _promiseCarregamento = null;
 
-/* ── Cache de JSONs individuais de regulados (por código) ─────────────── */
+/* ── Cache de JSONs individuais de regulados (por código) ───────────────── */
 const _cacheRegJSON = new Map();
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -188,7 +188,7 @@ async function _carregarTudo() {
            mapaRegulados, mapaReguladosPorDoc, mapaTramitacao };
 }
 
-/* ── Busca JSON individual de um regulado com cache por sessão ─────────── */
+/* ── Busca JSON individual de um regulado com cache por sessão ──────────── */
 function _prefixoReg(codigo) {
   return String(codigo).substring(0, 2);
 }
@@ -317,7 +317,7 @@ function _buscarSincrono(dados, termoNorm) {
   return { resultados, contagens };
 }
 
-/* ── Busca inspeções sob demanda nos JSONs dos regulados encontrados ───── */
+/* ── Busca inspeções sob demanda nos JSONs dos regulados encontrados ──── */
 async function _buscarInspecoes(dados, termoNorm) {
   // 1. Encontrar regulados que batem com o termo (até MAX_FETCH_REG_JSON)
   const reguladosMatch = [];
@@ -335,7 +335,7 @@ async function _buscarInspecoes(dados, termoNorm) {
     reguladosMatch.map(r => _fetchRegJSON(String(r.codigo)))
   );
 
-  // 3. Extrair estabelecimentos com inspeções; também buscar por fiscal
+  // 3. Extrair estabelecimentos com inspeções
   const lista = [];
   let total = 0;
 
@@ -556,24 +556,28 @@ function renderizarResultados(resultados, contagens, inspecoes, totalInspecoes, 
     for (const est of inspecoes) {
       const id = itemId();
       const nome = _esc(est._fantasia || est._razao || '(sem vínculo cadastral)');
-      const qParam = encodeURIComponent(String(est._codigo || ''));
+      // FIX: usa ?codigo= para busca exata por código numérico, evitando
+      // que o cvs.html interprete o número como CNPJ e retorne múltiplos resultados
+      const href = `cvs.html?codigo=${encodeURIComponent(String(est._codigo || ''))}`;
 
       let visitasHtml = '<ul class="busca-insp-lista">';
       for (const v of est.inspecoes) {
         const dt      = _isoParaExibicao(v.dt_visita);
+        // Número do documento: exibe somente se diferente de '000000'
+        const numer   = v.numer && v.numer !== '000000' ? _esc(v.numer) : '—';
         const fiscais = [v.Fiscal1, v.Fiscal2, v.Fiscal3]
           .filter(Boolean)
           .map(f => _esc(f.split(' ')[0]))   // só o primeiro nome
           .join(', ');
-        visitasHtml += `<li>
-          <span class="busca-insp-dt">${_esc(dt)}</span>
-          <span class="busca-insp-tipo">${_esc(v.tipo || '')}</span>
-          <span class="busca-insp-fiscal">${fiscais}</span>
+        visitasHtml += `<li class="busca-insp-row">
+          <span class="busca-insp-col-dt">${_esc(dt)}<br><span class="busca-insp-numer">${numer}</span></span>
+          <span class="busca-insp-col-tipo">${_esc(v.tipo || '')}</span>
+          <span class="busca-insp-col-fiscal">${fiscais}</span>
         </li>`;
       }
       visitasHtml += '</ul>';
 
-      html += `<a id="${id}" class="busca-item busca-item--inspecoes" href="cvs.html?q=${qParam}" role="option">
+      html += `<a id="${id}" class="busca-item busca-item--inspecoes" href="${href}" role="option">
         <span class="busca-item-icon" aria-hidden="true">👁️</span>
         <div class="busca-item-corpo">
           <span class="busca-item-nome">${nome}</span>
@@ -709,7 +713,7 @@ export function initBuscaGlobal() {
     if (container && !container.contains(e.target)) fecharPainel();
   });
 
-  console.log('[BuscaGlobal] Inicializado v1.2.0');
+  console.log('[BuscaGlobal] Inicializado v1.2.1');
 }
 
 async function _executarBuscaUI(termo) {
