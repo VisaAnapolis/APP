@@ -123,6 +123,13 @@ function parseCSV(conteudo) {
   return registros;
 }
 
+// ── Interpreta campo booleano (aceita True/False inglês e Sim/Não português) ──
+function parseBool(valor) {
+  if (!valor) return false;
+  const v = String(valor).trim().toLowerCase();
+  return v === 'true' || v === 'sim' || v === 't' || v === 's' || v === '1';
+}
+
 function converterData(dataStr) {
   if (!dataStr) return null;
   const m = dataStr.match(/(\d{1,2})[./](\d{1,2})[./](\d{4})/);
@@ -253,8 +260,8 @@ function lerTodasOSs(idxReg, idxBai, idxCnae) {
     if (!fs.existsSync(arq)) { console.warn(`⚠️  Não encontrado: ${cfg.arquivo}`); continue; }
     for (const r of parseCSV(fs.readFileSync(arq, 'utf8'))) {
       const num = (r[cfg.campoNumero] || '').trim(); if (!num) continue;
-      if ((r[cfg.campoAtendida]  || '').toLowerCase() === 'sim') continue;
-      if (cfg.campoCancelada && (r[cfg.campoCancelada] || '').toLowerCase() === 'sim') continue;
+      if (parseBool(r[cfg.campoAtendida]))  continue;
+      if (cfg.campoCancelada && parseBool(r[cfg.campoCancelada])) continue;
 
       const fiscal = (r[cfg.campoFiscal] || '').trim();
       let razao = '', fantasia = '', logradouro = '', complemento = '',
