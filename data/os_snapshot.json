@@ -32349,8 +32349,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20254137": {
     "tipo": "Requerimento",
@@ -35854,8 +35853,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255258": {
     "tipo": "Requerimento",
@@ -35879,8 +35877,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255260": {
     "tipo": "Requerimento",
@@ -35904,8 +35901,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255267": {
     "tipo": "Requerimento",
@@ -35929,8 +35925,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255273": {
     "tipo": "Requerimento",
@@ -35978,8 +35973,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255281": {
     "tipo": "Requerimento",
@@ -36003,8 +35997,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255282": {
     "tipo": "Requerimento",
@@ -36028,8 +36021,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255284": {
     "tipo": "Requerimento",
@@ -36053,8 +36045,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255287": {
     "tipo": "Requerimento",
@@ -36102,8 +36093,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255296": {
     "tipo": "Requerimento",
@@ -36127,8 +36117,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255298": {
     "tipo": "Requerimento",
@@ -36152,8 +36141,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255300": {
     "tipo": "Requerimento",
@@ -36177,8 +36165,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255302": {
     "tipo": "Requerimento",
@@ -36274,8 +36261,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255324": {
     "tipo": "Requerimento",
@@ -36299,8 +36285,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255332": {
     "tipo": "Requerimento",
@@ -36324,8 +36309,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255333": {
     "tipo": "Ofício",
@@ -37501,8 +37485,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260081": {
     "tipo": "Requerimento",
@@ -37646,8 +37629,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260092": {
     "tipo": "Requerimento",
@@ -37743,8 +37725,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260098": {
     "tipo": "Denúncia",
@@ -37768,8 +37749,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260099": {
     "tipo": "Ofício",
@@ -37817,8 +37797,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260101": {
     "tipo": "Denúncia",
@@ -37938,8 +37917,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260109": {
     "tipo": "Denúncia",
@@ -39187,8 +39165,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260215": {
     "tipo": "Requerimento",
@@ -39908,8 +39885,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260264": {
     "tipo": "Ofício",
@@ -41277,8 +41253,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260348": {
     "tipo": "Ofício",
@@ -43249,17 +43224,17 @@
     "notif_hoje": false
   },
   "20260459": {
-    "tipo": "Ofício",
-    "fiscal": "ANA PAULA RODRIGUES CORRÊA GUIMARÃES",
-    "motivo": "RETORNO",
-    "prazo": "09.04.2026",
-    "dataReq": "2026-03-10",
-    "razao": "BIOLINE FIOS CIRURGICOS LTDA",
-    "fantasia": "",
-    "logradouro": "AV. MARANHÃO Nº 500",
-    "complemento": "",
-    "bairro": "BAIRRO JUNDIAI",
-    "cnpj": "37.844.479/0001-52",
+    "tipo": "Requerimento",
+    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "motivo": "Renovação",
+    "prazo": "",
+    "dataReq": "2026-02-11",
+    "razao": "ROSANGELA CANDIDA JACINTO 59677759191",
+    "fantasia": "STAR ATELIE DE BELEZA",
+    "logradouro": "AV CONTORNO AMERICA, QD 11 LT 08",
+    "complemento": "CASA 02",
+    "bairro": "JARDIM AMERICA",
+    "cnpj": "23.016.427/0001-83",
     "cpf": "",
     "complexidade": "",
     "cnaeCode": "",
@@ -43561,21 +43536,69 @@
     "notif_hoje": false
   },
   "20260476": {
-    "tipo": "Requerimento",
-    "fiscal": "LIVIA BRITO",
-    "motivo": "Renovação",
-    "prazo": "13.05.2026",
-    "dataReq": "2026-02-11",
-    "razao": "EMERSON DE FREITAS NOGUEIRA",
-    "fantasia": "CLIMED",
-    "logradouro": "RUA DESEMBARGADOR JAIME",
-    "complemento": "Nº 40 SL 01",
-    "bairro": "CENTRO",
+    "tipo": "Ofício",
+    "fiscal": "ANA PAULA RODRIGUES CORRÊA GUIMARÃES",
+    "motivo": "RETORNO",
+    "prazo": "12.04.2026",
+    "dataReq": "2026-03-13",
+    "razao": "BIOLINE FIOS CIRURGICOS LTDA",
+    "fantasia": "",
+    "logradouro": "AV. MARANHÃO Nº 500",
+    "complemento": "",
+    "bairro": "BAIRRO JUNDIAI",
+    "cnpj": "37.844.479/0001-52",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20260477": {
+    "tipo": "Ofício",
+    "fiscal": "VIVIANE MANOEL DA SILVA BORGES",
+    "motivo": "OPERAÇÃO FISCAL",
+    "prazo": "16.03.2026",
+    "dataReq": "2026-03-12",
+    "razao": "CMEI JOSÉ EPAMINONDAS RORIZ",
+    "fantasia": "CMEI JOSÉ EPAMINONDAS RORIZ",
+    "logradouro": "AVENIDA FABRIL S/N",
+    "complemento": "",
+    "bairro": "VILA FABRIL",
     "cnpj": "",
-    "cpf": "757.836.226-72",
-    "complexidade": "MÉDIA",
-    "cnaeCode": "8630-5/03",
-    "cnaeDesc": "Atividade medica ambulatorial restrita a consultas",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": true,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20260478": {
+    "tipo": "Ofício",
+    "fiscal": "CLÓVIS RAFAEL BORGES FERREIRA",
+    "motivo": "RETORNO",
+    "prazo": "14.04.2026",
+    "dataReq": "2026-03-13",
+    "razao": "OTICA IMAGEM LTDA",
+    "fantasia": "",
+    "logradouro": "AV. FERNANDO COSTA Nº 271",
+    "complemento": "",
+    "bairro": "VILA JAIARA",
+    "cnpj": "18.197.551/0004-03",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -43648,30 +43671,6 @@
     "complexidade": "",
     "cnaeCode": "",
     "cnaeDesc": "",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false
-  },
-  "20260489": {
-    "tipo": "Requerimento",
-    "fiscal": "PATRÍCIA CORDEIRO DE MORAES E SOUZA",
-    "motivo": "Renovação",
-    "prazo": "13.05.2026",
-    "dataReq": "2026-02-11",
-    "razao": "EMPORIUM COMERCIO DISTRIBUICAO LTDA -EPP",
-    "fantasia": "EMPORIUM DISTRIBUIDORA",
-    "logradouro": "RUA  DONA CARIME",
-    "complemento": "QD 25  LT 11",
-    "bairro": "BAIRRO SAO CARLOS",
-    "cnpj": "07.034.412/0001-91",
-    "cpf": "",
-    "complexidade": "MÉDIA",
-    "cnaeCode": "4646-0/02",
-    "cnaeDesc": "Comercio atacadista de produtos de higiene pessoal",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -44584,30 +44583,6 @@
     "complexidade": "MÉDIA",
     "cnaeCode": "4646-0/01",
     "cnaeDesc": "Comercio atacadista de cosmeticos e produtos de perfumaria",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false
-  },
-  "20260575": {
-    "tipo": "Requerimento",
-    "fiscal": "CLÓVIS RAFAEL BORGES FERREIRA",
-    "motivo": "Abertura",
-    "prazo": "24.04.2026",
-    "dataReq": "2026-02-20",
-    "razao": "OTICA IMAGEM LTDA",
-    "fantasia": "OTICA IMAGEM",
-    "logradouro": "AV. FERNANDO COSTA Nº 271",
-    "complemento": "QD. 07 LT. 0 SL. 02",
-    "bairro": "VILA JAIARA",
-    "cnpj": "18.197.551/0004-03",
-    "cpf": "",
-    "complexidade": "MÉDIA",
-    "cnaeCode": "3250-7/09",
-    "cnaeDesc": "Serviço de Laboratório Óptico",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -47352,30 +47327,6 @@
     "notif_amanha": false,
     "notif_hoje": false
   },
-  "20260782": {
-    "tipo": "Requerimento",
-    "fiscal": "CLÓVIS RAFAEL BORGES FERREIRA",
-    "motivo": "Renovação",
-    "prazo": "",
-    "dataReq": "2026-03-05",
-    "razao": "50.441.093 LUDMYLLA SILVA HONORIO",
-    "fantasia": "VISOTICA",
-    "logradouro": "AVENIDA: FERNANDO COSTA",
-    "complemento": "Nº. 271, QD.07 LT.0 SALA 02",
-    "bairro": "VILA JAIARA",
-    "cnpj": "50.441.093/0001-68",
-    "cpf": "",
-    "complexidade": "BAIXA",
-    "cnaeCode": "4774-1/00",
-    "cnaeDesc": "Comercio varejista de artigos de optica",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false
-  },
   "20260785": {
     "tipo": "Requerimento",
     "fiscal": "",
@@ -49240,6 +49191,78 @@
     "complexidade": "MÉDIA",
     "cnaeCode": "5611-2/01",
     "cnaeDesc": "Restaurantes e similares",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20260896": {
+    "tipo": "Requerimento",
+    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "motivo": "Renovação",
+    "prazo": "",
+    "dataReq": "2026-03-13",
+    "razao": "CENTRO EDUCACIONAL SANTANA LTDA",
+    "fantasia": "ESCOLA CANDIDO AMBROSIO",
+    "logradouro": "RUA CEL. ANTONIO CRISPIM",
+    "complemento": "Nº 51",
+    "bairro": "BAIRRO JUNDIAI",
+    "cnpj": "00.942.028/0001-48",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20260898": {
+    "tipo": "Requerimento",
+    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "motivo": "Renovação",
+    "prazo": "",
+    "dataReq": "2026-03-13",
+    "razao": "LUCLEBER CRESTANI COSTA",
+    "fantasia": "ROTA 060",
+    "logradouro": "RUA  AMELIA SILVA BRAGA S/N",
+    "complemento": "QD 05 LT 01",
+    "bairro": "SETOR TROPICAL",
+    "cnpj": "41.134.005/0001-94",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20260899": {
+    "tipo": "Requerimento",
+    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "motivo": "Renovação",
+    "prazo": "",
+    "dataReq": "2026-03-13",
+    "razao": "SIMONE VIEIRA DA FONSECA 90500440182",
+    "fantasia": "DOCES DONA SALVINA",
+    "logradouro": "RUA U",
+    "complemento": "QD.01 , LT 02",
+    "bairro": "BAIRRO DAS BANDEIRAS",
+    "cnpj": "13.921.914/0001-37",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
