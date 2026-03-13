@@ -32349,7 +32349,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_recuperacao": true
   },
   "20254137": {
     "tipo": "Requerimento",
@@ -35853,7 +35854,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_5d": true
   },
   "20255258": {
     "tipo": "Requerimento",
@@ -35877,7 +35879,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_5d": true
   },
   "20255260": {
     "tipo": "Requerimento",
@@ -35901,7 +35904,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_5d": true
   },
   "20255267": {
     "tipo": "Requerimento",
@@ -35925,7 +35929,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_5d": true
   },
   "20255273": {
     "tipo": "Requerimento",
@@ -35973,7 +35978,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_5d": true
   },
   "20255281": {
     "tipo": "Requerimento",
@@ -35997,7 +36003,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_5d": true
   },
   "20255282": {
     "tipo": "Requerimento",
@@ -36021,7 +36028,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_5d": true
   },
   "20255284": {
     "tipo": "Requerimento",
@@ -36045,7 +36053,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_5d": true
   },
   "20255287": {
     "tipo": "Requerimento",
@@ -36093,7 +36102,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_5d": true
   },
   "20255296": {
     "tipo": "Requerimento",
@@ -36117,7 +36127,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_5d": true
   },
   "20255298": {
     "tipo": "Requerimento",
@@ -36141,7 +36152,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_5d": true
   },
   "20255300": {
     "tipo": "Requerimento",
@@ -36165,7 +36177,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_5d": true
   },
   "20255302": {
     "tipo": "Requerimento",
@@ -36261,7 +36274,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_5d": true
   },
   "20255324": {
     "tipo": "Requerimento",
@@ -36285,7 +36299,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_5d": true
   },
   "20255332": {
     "tipo": "Requerimento",
@@ -36309,7 +36324,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_5d": true
   },
   "20255333": {
     "tipo": "Ofício",
@@ -37485,7 +37501,8 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_amanha": true
   },
   "20260081": {
     "tipo": "Requerimento",
@@ -37629,7 +37646,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true
+    "notif_hoje": true,
+    "email_notif_hoje": true
   },
   "20260092": {
     "tipo": "Requerimento",
@@ -37725,7 +37743,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_5d": true
   },
   "20260098": {
     "tipo": "Denúncia",
@@ -37749,7 +37768,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_5d": true
   },
   "20260099": {
     "tipo": "Ofício",
@@ -37797,7 +37817,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_5d": true
   },
   "20260101": {
     "tipo": "Denúncia",
@@ -37917,7 +37938,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_recuperacao": true
   },
   "20260109": {
     "tipo": "Denúncia",
@@ -39165,7 +39187,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_recuperacao": true
   },
   "20260215": {
     "tipo": "Requerimento",
@@ -39885,7 +39908,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_recuperacao": true
   },
   "20260264": {
     "tipo": "Ofício",
@@ -41253,7 +41277,8 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false
+    "notif_hoje": false,
+    "email_notif_recuperacao": true
   },
   "20260348": {
     "tipo": "Ofício",
