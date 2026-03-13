@@ -32349,8 +32349,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20254137": {
     "tipo": "Requerimento",
@@ -35830,8 +35829,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255260": {
     "tipo": "Requerimento",
@@ -35855,8 +35853,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255267": {
     "tipo": "Requerimento",
@@ -35880,8 +35877,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255273": {
     "tipo": "Requerimento",
@@ -35929,8 +35925,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255281": {
     "tipo": "Requerimento",
@@ -35954,8 +35949,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255282": {
     "tipo": "Requerimento",
@@ -35979,8 +35973,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255284": {
     "tipo": "Requerimento",
@@ -36004,8 +35997,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255287": {
     "tipo": "Requerimento",
@@ -36053,8 +36045,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255296": {
     "tipo": "Requerimento",
@@ -36078,8 +36069,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255298": {
     "tipo": "Requerimento",
@@ -36103,8 +36093,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255300": {
     "tipo": "Requerimento",
@@ -36128,8 +36117,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255302": {
     "tipo": "Requerimento",
@@ -36225,8 +36213,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255324": {
     "tipo": "Requerimento",
@@ -36250,8 +36237,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255332": {
     "tipo": "Requerimento",
@@ -36275,8 +36261,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20255333": {
     "tipo": "Ofício",
@@ -37572,8 +37557,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260092": {
     "tipo": "Requerimento",
@@ -37669,8 +37653,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260098": {
     "tipo": "Denúncia",
@@ -37694,8 +37677,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260099": {
     "tipo": "Ofício",
@@ -37743,8 +37725,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260101": {
     "tipo": "Denúncia",
@@ -37864,8 +37845,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260109": {
     "tipo": "Denúncia",
@@ -39089,8 +39069,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260215": {
     "tipo": "Requerimento",
@@ -39810,8 +39789,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260264": {
     "tipo": "Ofício",
@@ -41155,8 +41133,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260348": {
     "tipo": "Ofício",
@@ -43484,8 +43461,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260478": {
     "tipo": "Ofício",
@@ -49451,6 +49427,54 @@
     "complemento": "nº 400, Galpão 2",
     "bairro": "VILA SAO VICENTE (IGREJINHA)",
     "cnpj": "64.881.715/0001-83",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20260916": {
+    "tipo": "Requerimento",
+    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "motivo": "Renovação",
+    "prazo": "",
+    "dataReq": "2026-03-13",
+    "razao": "CASA DOS REMEDIOS LTDA",
+    "fantasia": "DROGARIA FORMOSA",
+    "logradouro": "RUA FREI JOAO BATISTA VOGEL N.472",
+    "complemento": "QD.45 LT.07",
+    "bairro": "VILA FORMOSA",
+    "cnpj": "04.193.381/0001-23",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20260917": {
+    "tipo": "Requerimento",
+    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "motivo": "Renovação",
+    "prazo": "",
+    "dataReq": "2026-03-13",
+    "razao": "PETMED CLINICA VETERINARIA LTDA-ME",
+    "fantasia": "PETMED",
+    "logradouro": "SANTOS DUMONT Nº 246",
+    "complemento": "SL 02",
+    "bairro": "BAIRRO JUNDIAI",
+    "cnpj": "18.960.573/0001-22",
     "cpf": "",
     "complexidade": "",
     "cnaeCode": "",
