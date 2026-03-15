@@ -11,7 +11,7 @@
  *    - README ou documentação se necessário
  */
 
-const APP_VERSION = '2.5.2';
+const APP_VERSION = '2.5.3';
 
 // Preenche a versão e a data no sidebar de qualquer página
 document.addEventListener('DOMContentLoaded', function() {
