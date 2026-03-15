@@ -57,13 +57,23 @@
   /**
    * Carrega um CSV via PapaParse.
    * @param {string} url
-   * @param {string[]|null} campos - colunas a manter (null = todas)
+   * @param {string[]|null} campos  - colunas a manter (null = todas)
+   * @param {string|null}   encoding - encoding do arquivo (ex: 'windows-1252').
+   *   Quando informado, busca os bytes brutos e decodifica antes de parsear,
+   *   evitando mojibake em arquivos Latin-1/Windows-1252.
    * @returns {Promise<object[]>}
    */
-  function parseCSV(url, campos = null) {
+  async function parseCSV(url, campos = null, encoding = null) {
+    let text;
+    if (encoding) {
+      const r = await fetch(url, { cache: "no-store" });
+      if (!r.ok) throw new Error(`HTTP ${r.status} ao buscar ${url}`);
+      const buf = await r.arrayBuffer();
+      text = new TextDecoder(encoding).decode(buf);
+    }
+
     return new Promise((resolve, reject) => {
-      Papa.parse(url, {
-        download:       true,
+      const opts = {
         header:         true,
         delimiter:      ";",
         skipEmptyLines: true,
@@ -80,7 +90,15 @@
           resolve(data);
         },
         error: reject,
-      });
+      };
+
+      if (text !== undefined) {
+        // Já decodificado: parsear string diretamente
+        Papa.parse(text, opts);
+      } else {
+        // Deixa o PapaParse baixar (UTF-8 padrão)
+        Papa.parse(url, { ...opts, download: true });
+      }
     });
   }
 
@@ -140,7 +158,7 @@
 
     const [indexRoot, auxRows, regRows, cnaeRows] = await Promise.all([
       fetchJson(`./data/index_regulados.json?${ts}`),
-      parseCSV(`./data/cnae_aux.csv?${ts}`,   ["INSCRICAO_ISS", "CNAE", "ATIVIDADE", "DOCUMENTO"]),
+      parseCSV(`./data/cnae_aux.csv?${ts}`,   ["INSCRICAO_ISS", "CNAE", "ATIVIDADE", "DOCUMENTO"], "windows-1252"),
       parseCSV(`./data/regulados.csv?${ts}`,   ["CODIGO", "MUNICIPAL", "CGC", "CPF"]),
       parseCSV(`./data/cnae.csv?${ts}`,        ["Subclasse"]),
     ]);
