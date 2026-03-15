@@ -383,17 +383,11 @@
     }
 
     const trRows = rows.map((r) => {
-      const statusBadge = badgeHtml(r.status);
-      const compBadge   = r.compete ? "" : `<span class="badge badge--nao-comp">Não Compete</span>`;
+      const badge = r.compete ? badgeHtml(r.status) : `<span class="badge badge--nao-comp">Não Compete</span>`;
       return `
         <tr>
-          <td>
-            <div class="badges-cell">
-              ${statusBadge}
-              ${compBadge}
-            </div>
-          </td>
-          <td><span class="subclasse-code">${esc(r.subclasse)}</span></td>
+          <td>${badge}</td>
+          <td style="white-space:nowrap"><span class="subclasse-code">${esc(r.subclasse)}</span></td>
           <td><span class="descricao-text">${esc(r.descricao)}</span></td>
         </tr>`;
     }).join("");
