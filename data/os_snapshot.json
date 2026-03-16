@@ -32349,8 +32349,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20254137": {
     "tipo": "Requerimento",
@@ -35806,8 +35805,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255260": {
     "tipo": "Requerimento",
@@ -35831,8 +35829,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255267": {
     "tipo": "Requerimento",
@@ -35856,8 +35853,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255273": {
     "tipo": "Requerimento",
@@ -35905,8 +35901,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255281": {
     "tipo": "Requerimento",
@@ -35930,8 +35925,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255282": {
     "tipo": "Requerimento",
@@ -35955,8 +35949,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255284": {
     "tipo": "Requerimento",
@@ -35980,8 +35973,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255287": {
     "tipo": "Requerimento",
@@ -36029,8 +36021,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255296": {
     "tipo": "Requerimento",
@@ -36054,8 +36045,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255298": {
     "tipo": "Requerimento",
@@ -36079,8 +36069,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255300": {
     "tipo": "Requerimento",
@@ -36104,8 +36093,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255302": {
     "tipo": "Requerimento",
@@ -36201,8 +36189,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255324": {
     "tipo": "Requerimento",
@@ -36226,8 +36213,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255332": {
     "tipo": "Requerimento",
@@ -36251,8 +36237,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255333": {
     "tipo": "Ofício",
@@ -36924,8 +36909,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260008": {
     "tipo": "Denúncia",
@@ -36973,8 +36957,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260010": {
     "tipo": "Requerimento",
@@ -37238,8 +37221,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260058": {
     "tipo": "Requerimento",
@@ -37575,8 +37557,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260099": {
     "tipo": "Ofício",
@@ -37744,8 +37725,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260109": {
     "tipo": "Denúncia",
@@ -37913,8 +37893,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260120": {
     "tipo": "Denúncia",
@@ -37962,8 +37941,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260122": {
     "tipo": "Denúncia",
@@ -38491,8 +38469,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260173": {
     "tipo": "Ofício",
@@ -38996,8 +38973,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260215": {
     "tipo": "Requerimento",
@@ -39045,8 +39021,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260217": {
     "tipo": "Ofício",
@@ -39166,8 +39141,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260223": {
     "tipo": "Requerimento",
@@ -39575,8 +39549,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260256": {
     "tipo": "Ofício",
@@ -39696,8 +39669,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260264": {
     "tipo": "Ofício",
@@ -41761,8 +41733,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260394": {
     "tipo": "Ofício",
@@ -43322,8 +43293,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260478": {
     "tipo": "Ofício",
@@ -43395,8 +43365,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260482": {
     "tipo": "Ofício",
@@ -43420,8 +43389,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260484": {
     "tipo": "Requerimento",
@@ -44375,30 +44343,6 @@
     "complexidade": "MÉDIA",
     "cnaeCode": "4731-8/00",
     "cnaeDesc": "Comércio varejista de combustíveis para veículos automotores",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false
-  },
-  "20260576": {
-    "tipo": "Requerimento",
-    "fiscal": "CLÓVIS RAFAEL BORGES FERREIRA",
-    "motivo": "Renovação",
-    "prazo": "24.05.2026",
-    "dataReq": "2026-02-20",
-    "razao": "CASA DE RECUP. LOGOS PROJETO CRER, REESTR E REEDIF",
-    "fantasia": "CASA DE RECUPERACAO NOVA VIDA",
-    "logradouro": "RUA MARIA ROSA VEIGA, QD.05",
-    "complemento": "LT.17 E 18",
-    "bairro": "CHACARAS VALE DAS ANTAS",
-    "cnpj": "10.854.849/0001-86",
-    "cpf": "",
-    "complexidade": "ALTA",
-    "cnaeCode": "8720-4/99",
-    "cnaeDesc": "Atividades de assistencia psicossocial e a saude a portadores de disturbios psiquicos, deficiencia mental e dependencia quimica nao especificadas anteriormente",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -49363,6 +49307,78 @@
     "complemento": "QUADRA28 LOTE 23",
     "bairro": "BAIRRO SANTO ANTONIO",
     "cnpj": "61.505.294/0001-06",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20260930": {
+    "tipo": "Requerimento",
+    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "motivo": "Renovação",
+    "prazo": "",
+    "dataReq": "2026-03-16",
+    "razao": "SABARA QUIMICOS E INGREDIENTES SA",
+    "fantasia": "SABARA",
+    "logradouro": "RUA VP, 5400",
+    "complemento": "LOTE 10 E 11",
+    "bairro": "DISTRITO AGROINDUSTRIAL DE ANAPOLIS",
+    "cnpj": "12.884.672/0004-39",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20260931": {
+    "tipo": "Requerimento",
+    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "motivo": "Renovação",
+    "prazo": "",
+    "dataReq": "2026-03-16",
+    "razao": "BOM DE MAIS EIRELI",
+    "fantasia": "BOM DE MAIS",
+    "logradouro": "RUA 01 N 535",
+    "complemento": "QD04 LT 01 SALA 03 ESQ C/10",
+    "bairro": "BAIRRO ELDORADO",
+    "cnpj": "33.099.428/0001-92",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20260932": {
+    "tipo": "Requerimento",
+    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "motivo": "Renovação",
+    "prazo": "",
+    "dataReq": "2026-03-16",
+    "razao": "JOAO DIAS MARQUES E CIA LTDA",
+    "fantasia": "TEMPERO CERTO",
+    "logradouro": "AV. FEDERAL",
+    "complemento": "Qd 01; Lt 33; C-1",
+    "bairro": "VILA SANTA MARIA DE NAZARETH",
+    "cnpj": "05.458.155/0001-90",
     "cpf": "",
     "complexidade": "",
     "cnaeCode": "",
