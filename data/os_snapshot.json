@@ -32349,8 +32349,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20254137": {
     "tipo": "Requerimento",
@@ -35352,30 +35351,6 @@
     "notif_amanha": false,
     "notif_hoje": false
   },
-  "20255126": {
-    "tipo": "Requerimento",
-    "fiscal": "GERALDO EDSON ROSA",
-    "motivo": "Renovação",
-    "prazo": "03.03.2026",
-    "dataReq": "2025-12-02",
-    "razao": "ADRIANA DE COSTA CUNHA",
-    "fantasia": "BAMBINOS CONSULTORIO VETERINARIO E PET S",
-    "logradouro": "AV UNIVERSITATRIA",
-    "complemento": "QD 01 LT 07",
-    "bairro": "VILA SANTA ISABEL",
-    "cnpj": "61.191.744/0001-25",
-    "cpf": "",
-    "complexidade": "MÉDIA",
-    "cnaeCode": "7500-1/00",
-    "cnaeDesc": "Atividades veterinarias",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": true,
-    "notif_amanha": true,
-    "notif_hoje": true
-  },
   "20255139": {
     "tipo": "Requerimento",
     "fiscal": "JULIANA FERREIRA VITURINO",
@@ -35830,8 +35805,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255260": {
     "tipo": "Requerimento",
@@ -35855,8 +35829,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255267": {
     "tipo": "Requerimento",
@@ -35880,8 +35853,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255273": {
     "tipo": "Requerimento",
@@ -35929,8 +35901,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255281": {
     "tipo": "Requerimento",
@@ -35954,8 +35925,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255282": {
     "tipo": "Requerimento",
@@ -35979,8 +35949,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255284": {
     "tipo": "Requerimento",
@@ -36004,8 +35973,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255287": {
     "tipo": "Requerimento",
@@ -36053,8 +36021,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255296": {
     "tipo": "Requerimento",
@@ -36078,8 +36045,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255298": {
     "tipo": "Requerimento",
@@ -36103,8 +36069,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255300": {
     "tipo": "Requerimento",
@@ -36128,8 +36093,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255302": {
     "tipo": "Requerimento",
@@ -36225,8 +36189,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255324": {
     "tipo": "Requerimento",
@@ -36250,8 +36213,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255332": {
     "tipo": "Requerimento",
@@ -36275,8 +36237,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255333": {
     "tipo": "Ofício",
@@ -36948,8 +36909,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260008": {
     "tipo": "Denúncia",
@@ -36997,8 +36957,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260010": {
     "tipo": "Requerimento",
@@ -37262,8 +37221,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260058": {
     "tipo": "Requerimento",
@@ -37599,8 +37557,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260099": {
     "tipo": "Ofício",
@@ -37648,8 +37605,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260101": {
     "tipo": "Denúncia",
@@ -37769,8 +37725,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260109": {
     "tipo": "Denúncia",
@@ -37938,8 +37893,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260120": {
     "tipo": "Denúncia",
@@ -37987,8 +37941,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260122": {
     "tipo": "Denúncia",
@@ -38151,30 +38104,6 @@
     "cnaeCode": "",
     "cnaeDesc": "",
     "descricao": "PROCESSO SEI Nº 01120.00000658/2026-92 - ÁGUA SERVIDA COM DEJETOS.",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false
-  },
-  "20260131": {
-    "tipo": "Requerimento",
-    "fiscal": "GERALDO EDSON ROSA",
-    "motivo": "Renovação",
-    "prazo": "19.04.2026",
-    "dataReq": "2026-01-15",
-    "razao": "BEM ESTAR E SAUDE ANIMAL LTDA",
-    "fantasia": "UNIVET HOSPITAL VETERINARIO",
-    "logradouro": "AV JOSE NETO PARANHOS Nº 115",
-    "complemento": "QD 70 LT 05",
-    "bairro": "BAIRRO JUNDIAI",
-    "cnpj": "44.159.905/0001-84",
-    "cpf": "",
-    "complexidade": "MÉDIA",
-    "cnaeCode": "7500-1/00",
-    "cnaeDesc": "Atividades veterinarias",
-    "descricao": "",
     "atendida": false,
     "cancelada": false,
     "notif_5d": false,
@@ -38540,8 +38469,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260173": {
     "tipo": "Ofício",
@@ -39069,8 +38997,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260215": {
     "tipo": "Requerimento",
@@ -39118,8 +39045,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260217": {
     "tipo": "Ofício",
@@ -39239,8 +39165,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260223": {
     "tipo": "Requerimento",
@@ -39648,8 +39573,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260256": {
     "tipo": "Ofício",
@@ -39769,8 +39693,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260264": {
     "tipo": "Ofício",
@@ -41834,8 +41757,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260394": {
     "tipo": "Ofício",
@@ -43395,8 +43317,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260478": {
     "tipo": "Ofício",
@@ -43468,8 +43389,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260482": {
     "tipo": "Ofício",
@@ -43493,8 +43413,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260484": {
     "tipo": "Requerimento",
@@ -44688,30 +44607,6 @@
     "complexidade": "BAIXA",
     "cnaeCode": "9609-2/08",
     "cnaeDesc": "Higiene e embelezamento de animais",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false
-  },
-  "20260591": {
-    "tipo": "Requerimento",
-    "fiscal": "GERALDO EDSON ROSA",
-    "motivo": "Renovação",
-    "prazo": "24.05.2026",
-    "dataReq": "2026-02-20",
-    "razao": "NORONHA E LOURENCO LTDA",
-    "fantasia": "CASA DE CARNE JIBRAN",
-    "logradouro": "AV. PEDRO LUDOVICO",
-    "complemento": "QD 03 LT 11 LOJA 03",
-    "bairro": "RESIDENCIAL RENY CURY",
-    "cnpj": "48.445.780/0001-00",
-    "cpf": "",
-    "complexidade": "MÉDIA",
-    "cnaeCode": "4722-9/01",
-    "cnaeDesc": "Comercio varejista de carnes - acougues",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -46712,30 +46607,6 @@
     "notif_amanha": false,
     "notif_hoje": false
   },
-  "20260761": {
-    "tipo": "Requerimento",
-    "fiscal": "VIVIANE MANOEL DA SILVA BORGES",
-    "motivo": "Renovação",
-    "prazo": "07.06.2026",
-    "dataReq": "2026-03-04",
-    "razao": "PREFEITURA MUNICIPAL DE ANAPOLIS",
-    "fantasia": "CMEI PROF HAROLDO ANTONIO DE SOUZA",
-    "logradouro": "R.SANTA VIRGINIA ESQ.SANTA MARIA",
-    "complemento": "S/N",
-    "bairro": "RESIDENCIAL SAO VICENTE",
-    "cnpj": "01.067.479/0001-46",
-    "cpf": "",
-    "complexidade": "ALTA",
-    "cnaeCode": "8511-2/00",
-    "cnaeDesc": "Educacao infantil - creche",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false
-  },
   "20260762": {
     "tipo": "Requerimento",
     "fiscal": "GERALDO EDSON ROSA",
@@ -47208,30 +47079,6 @@
     "complexidade": "MÉDIA",
     "cnaeCode": "4930-2/02",
     "cnaeDesc": "Transporte rodoviario de carga, exceto produtos perigosos e mudancas, intermunicipal, interestadual e internacional",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false
-  },
-  "20260798": {
-    "tipo": "Requerimento",
-    "fiscal": "JOÃO BATISTA LUCAS DA SILVA REIS",
-    "motivo": "Renovação",
-    "prazo": "07.06.2026",
-    "dataReq": "2026-03-05",
-    "razao": "S. S. ARAUJO LICITACOES LTDA",
-    "fantasia": "S & B LICITACOES",
-    "logradouro": "RUA 02 N.420",
-    "complemento": "QD 05 LT 12",
-    "bairro": "BAIRRO SANTO ANDRE",
-    "cnpj": "38.193.351/0001-39",
-    "cpf": "",
-    "complexidade": "MÉDIA",
-    "cnaeCode": "5620-1/02",
-    "cnaeDesc": "Servicos de alimentacao para eventos e recepcoes - bufe",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -49436,6 +49283,30 @@
     "complemento": "Nº 955 SL 01",
     "bairro": "CENTRO",
     "cnpj": "33.236.555/0001-96",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20260926": {
+    "tipo": "Requerimento",
+    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "motivo": "Renovação",
+    "prazo": "",
+    "dataReq": "2026-03-16",
+    "razao": "ROAN ALIMENTOS LTDA",
+    "fantasia": "ROAN ALIMENTOS",
+    "logradouro": "VIA PRINCIPAL 2 D  QD 04",
+    "complemento": "MODULO 10/14",
+    "bairro": "DISTRITO AGROINDUSTRIAL DE ANAPOLIS",
+    "cnpj": "01.687.284/0001-07",
     "cpf": "",
     "complexidade": "",
     "cnaeCode": "",
