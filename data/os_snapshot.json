@@ -32349,8 +32349,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20254137": {
     "tipo": "Requerimento",
@@ -35830,8 +35829,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255260": {
     "tipo": "Requerimento",
@@ -35855,8 +35853,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255267": {
     "tipo": "Requerimento",
@@ -35880,8 +35877,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255273": {
     "tipo": "Requerimento",
@@ -35929,8 +35925,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255281": {
     "tipo": "Requerimento",
@@ -35954,8 +35949,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255282": {
     "tipo": "Requerimento",
@@ -35979,8 +35973,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255284": {
     "tipo": "Requerimento",
@@ -36004,8 +35997,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255287": {
     "tipo": "Requerimento",
@@ -36053,8 +36045,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255296": {
     "tipo": "Requerimento",
@@ -36078,8 +36069,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255298": {
     "tipo": "Requerimento",
@@ -36103,8 +36093,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255300": {
     "tipo": "Requerimento",
@@ -36128,8 +36117,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255302": {
     "tipo": "Requerimento",
@@ -36225,8 +36213,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255324": {
     "tipo": "Requerimento",
@@ -36250,8 +36237,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255332": {
     "tipo": "Requerimento",
@@ -36275,8 +36261,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255333": {
     "tipo": "Ofício",
@@ -36948,8 +36933,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260008": {
     "tipo": "Denúncia",
@@ -36997,8 +36981,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260010": {
     "tipo": "Requerimento",
@@ -37286,8 +37269,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260058": {
     "tipo": "Requerimento",
@@ -37435,9 +37417,9 @@
   },
   "20260081": {
     "tipo": "Requerimento",
-    "fiscal": "MARINA PERILLO NAVARRETE LAVERS",
+    "fiscal": "JULIO CÉSAR TELES SPINDOLA",
     "motivo": "Renovação",
-    "prazo": "13.04.2026",
+    "prazo": "",
     "dataReq": "2026-01-12",
     "razao": "MENDES ESTETICA AVANCADA LTDA",
     "fantasia": "DRA  ANA FLAVIA M. FERREIRA EST. AVANCAD",
@@ -37446,9 +37428,9 @@
     "bairro": "VILA JAIARA",
     "cnpj": "34.738.102/0001-20",
     "cpf": "",
-    "complexidade": "MÉDIA",
-    "cnaeCode": "9602-5/02",
-    "cnaeDesc": "Atividades de estética e outros serviços de cuidados com a beleza",
+    "complexidade": "BAIXA",
+    "cnaeCode": "8650-0/99",
+    "cnaeDesc": "Atividades de profissionais da area de saude nao especificadas anteriormente",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -37505,30 +37487,6 @@
     "notif_amanha": false,
     "notif_hoje": false
   },
-  "20260088": {
-    "tipo": "Ofício",
-    "fiscal": "JULIO CÉSAR TELES SPINDOLA",
-    "motivo": "RETORNO",
-    "prazo": "31.03.2026",
-    "dataReq": "2026-01-15",
-    "razao": "JULIANA RABELO CUNHA",
-    "fantasia": "",
-    "logradouro": "AVENIDA ANDERSON CLAYTON",
-    "complemento": "",
-    "bairro": "JARDIM AMERICA",
-    "cnpj": "",
-    "cpf": "037.959.581-80",
-    "complexidade": "",
-    "cnaeCode": "",
-    "cnaeDesc": "",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false
-  },
   "20260089": {
     "tipo": "Ofício",
     "fiscal": "JULIO CÉSAR TELES SPINDOLA",
@@ -37555,7 +37513,7 @@
   },
   "20260092": {
     "tipo": "Requerimento",
-    "fiscal": "MARINA PERILLO NAVARRETE LAVERS",
+    "fiscal": "LIVIA BRITO",
     "motivo": "Renovação",
     "prazo": "14.04.2026",
     "dataReq": "2026-01-13",
@@ -37647,8 +37605,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260099": {
     "tipo": "Ofício",
@@ -37696,8 +37653,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260101": {
     "tipo": "Denúncia",
@@ -37817,8 +37773,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260109": {
     "tipo": "Denúncia",
@@ -37870,7 +37825,7 @@
   },
   "20260111": {
     "tipo": "Requerimento",
-    "fiscal": "MARINA PERILLO NAVARRETE LAVERS",
+    "fiscal": "LIVIA BRITO",
     "motivo": "Renovação",
     "prazo": "19.04.2026",
     "dataReq": "2026-01-14",
@@ -37986,8 +37941,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260120": {
     "tipo": "Denúncia",
@@ -38035,8 +37989,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260122": {
     "tipo": "Denúncia",
@@ -38588,8 +38541,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260173": {
     "tipo": "Ofício",
@@ -39117,8 +39069,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260215": {
     "tipo": "Requerimento",
@@ -39166,8 +39117,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260217": {
     "tipo": "Ofício",
@@ -39287,8 +39237,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260223": {
     "tipo": "Requerimento",
@@ -39696,8 +39645,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260256": {
     "tipo": "Ofício",
@@ -39817,8 +39765,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260264": {
     "tipo": "Ofício",
@@ -41906,8 +41853,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260394": {
     "tipo": "Ofício",
@@ -43467,8 +43413,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260478": {
     "tipo": "Ofício",
@@ -43540,8 +43485,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260482": {
     "tipo": "Ofício",
@@ -43565,8 +43509,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260484": {
     "tipo": "Requerimento",
@@ -43632,30 +43575,6 @@
     "complexidade": "MÉDIA",
     "cnaeCode": "8630-5/04",
     "cnaeDesc": "Atividade odontológica",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false
-  },
-  "20260492": {
-    "tipo": "Requerimento",
-    "fiscal": "MARINA PERILLO NAVARRETE LAVERS",
-    "motivo": "Abertura",
-    "prazo": "12.05.2026",
-    "dataReq": "2026-02-11",
-    "razao": "PREFEITURA MUNICIPAL DE ANAPOLIS",
-    "fantasia": "UNIDADE DE SAUDE DR.ILION FLEURY JR.",
-    "logradouro": "AV.SAO FRANCISCO",
-    "complemento": "N.810",
-    "bairro": "BAIRRO JUNDIAI",
-    "cnpj": "01.067.479/0001-46",
-    "cpf": "",
-    "complexidade": "ALTA",
-    "cnaeCode": "8610-1/01",
-    "cnaeDesc": "Atividades de atendimento hospitalar, exceto pronto-socorro e unidades para atendimento a urgencias",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
