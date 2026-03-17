@@ -54,6 +54,23 @@
     return r.json();
   }
 
+  async function fetchLastModified(url) {
+    try {
+      const r = await fetch(url, { method: "HEAD", cache: "no-store" });
+      return r.headers.get("Last-Modified") || null;
+    } catch { return null; }
+  }
+
+  function formatCsvDate(lm) {
+    if (!lm) return "";
+    try {
+      return new Date(lm).toLocaleString("pt-BR", {
+        day: "2-digit", month: "2-digit", year: "numeric",
+        hour: "2-digit", minute: "2-digit",
+      });
+    } catch { return ""; }
+  }
+
   /**
    * Carrega um CSV via PapaParse.
    * @param {string} url
@@ -113,6 +130,8 @@
   let simByDoc       = new Map();     // digits-only doc → cnae_aux row[]
   // Regulados: mapa de CODIGO → info de inscrição e doc
   let reguladosMap   = new Map();     // codigo_str → { municipal, cgc, cpf }
+  // Data/hora do arquivo cnae_aux.csv (Last-Modified)
+  let simCsvDate     = null;
 
   /* ══════════════════════════════════════════════════════════
      ELEMENTOS DOM
@@ -156,12 +175,14 @@
 
     const ts = `v=${Date.now()}`;
 
-    const [indexRoot, auxRows, regRows, cnaeRows] = await Promise.all([
+    const [indexRoot, auxRows, regRows, cnaeRows, auxLastModified] = await Promise.all([
       fetchJson(`./data/index_regulados.json?${ts}`),
       parseCSV(`./data/cnae_aux.csv?${ts}`,   ["INSCRICAO_ISS", "CNAE", "ATIVIDADE", "DOCUMENTO"], "windows-1252"),
       parseCSV(`./data/regulados.csv?${ts}`,   ["CODIGO", "MUNICIPAL", "CGC", "CPF"]),
       parseCSV(`./data/cnae.csv?${ts}`,        ["Subclasse"]),
+      fetchLastModified(`./data/cnae_aux.csv?${ts}`),
     ]);
+    simCsvDate = auxLastModified;
 
     /* ── Índice de busca ─────────────────────────────────── */
     indexItems = Array.isArray(indexRoot?.dados)
@@ -315,12 +336,15 @@
 
     /* Faixa de correspondência */
     if (els.matchInfo) {
+      const csvDateHtml = simCsvDate
+        ? `<span style="margin-left:auto;font-size:.8em;color:#64748b;white-space:nowrap;padding-left:12px;">📅 SIM: ${esc(formatCsvDate(simCsvDate))}</span>`
+        : "";
       if (matchMethod) {
         els.matchInfo.innerHTML =
-          `🔗 Encontrado no SIM <span class="match-badge ${matchCls}">${esc(matchMethod)}</span>`;
+          `🔗 Encontrado no SIM <span class="match-badge ${matchCls}">${esc(matchMethod)}</span>${csvDateHtml}`;
       } else {
         els.matchInfo.innerHTML =
-          `<span class="match-badge match-badge--err">⚠️ Contribuinte não encontrado no SIM (sem inscrição, CNPJ ou CPF correspondente)</span>`;
+          `<span class="match-badge match-badge--err">⚠️ Contribuinte não encontrado no SIM (sem inscrição, CNPJ ou CPF correspondente)</span>${csvDateHtml}`;
       }
     }
 
