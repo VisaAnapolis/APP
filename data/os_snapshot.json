@@ -32349,8 +32349,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20254137": {
     "tipo": "Requerimento",
@@ -35806,8 +35805,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255260": {
     "tipo": "Requerimento",
@@ -35831,8 +35829,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255267": {
     "tipo": "Requerimento",
@@ -35856,8 +35853,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255273": {
     "tipo": "Requerimento",
@@ -35905,8 +35901,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255281": {
     "tipo": "Requerimento",
@@ -35930,8 +35925,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255282": {
     "tipo": "Requerimento",
@@ -35955,8 +35949,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255284": {
     "tipo": "Requerimento",
@@ -35980,8 +35973,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255287": {
     "tipo": "Requerimento",
@@ -36029,8 +36021,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255296": {
     "tipo": "Requerimento",
@@ -36054,8 +36045,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255298": {
     "tipo": "Requerimento",
@@ -36079,8 +36069,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255300": {
     "tipo": "Requerimento",
@@ -36104,8 +36093,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255302": {
     "tipo": "Requerimento",
@@ -36201,8 +36189,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255324": {
     "tipo": "Requerimento",
@@ -36226,8 +36213,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255332": {
     "tipo": "Requerimento",
@@ -36251,8 +36237,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255333": {
     "tipo": "Ofício",
@@ -36902,31 +36887,6 @@
     "notif_amanha": false,
     "notif_hoje": false
   },
-  "20255607": {
-    "tipo": "Ofício",
-    "fiscal": "TATHIANE PESSOA DE SOUZA",
-    "motivo": "RETORNO",
-    "prazo": "20.03.2026",
-    "dataReq": "2026-01-05",
-    "razao": "JRM CARNES E EMPORIO LTDA.",
-    "fantasia": "",
-    "logradouro": "RUA MIGUEL JORGE",
-    "complemento": "",
-    "bairro": "JARDIM PETROPOLIS",
-    "cnpj": "17.859.135/0001-00",
-    "cpf": "",
-    "complexidade": "",
-    "cnaeCode": "",
-    "cnaeDesc": "",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": true,
-    "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
-  },
   "20260008": {
     "tipo": "Denúncia",
     "fiscal": "KAMILLA CHRYSTINE ROLIM D. SANTOS GARCÊS",
@@ -36973,8 +36933,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260010": {
     "tipo": "Requerimento",
@@ -37238,8 +37197,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260058": {
     "tipo": "Requerimento",
@@ -37552,31 +37510,6 @@
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
-  },
-  "20260098": {
-    "tipo": "Denúncia",
-    "fiscal": "ACADIA DE SOUZA VIEIRA SILVA",
-    "motivo": "- [ ] PRODUTOS ALIMENTÍCIOS - COMÉRCIO",
-    "prazo": "18.03.2026",
-    "dataReq": "2026-02-26",
-    "razao": "SENDAS DISTRIBUIDORA S/A",
-    "fantasia": "",
-    "logradouro": "AV. UNIVERSITÁRIA",
-    "complemento": "Nº 765",
-    "bairro": "JARDIM BANDEIRANTE",
-    "cnpj": "06.057.223/0392-05",
-    "cpf": "",
-    "complexidade": "",
-    "cnaeCode": "",
-    "cnaeDesc": "",
-    "descricao": "Não troca os filtros dos bebdouros e a cozinha não tem higiene.",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": true,
-    "notif_recuperacao": false,
-    "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
   },
   "20260099": {
     "tipo": "Ofício",
@@ -37912,8 +37845,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260120": {
     "tipo": "Denúncia",
@@ -37961,8 +37893,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260122": {
     "tipo": "Denúncia",
@@ -38132,6 +38063,30 @@
     "notif_amanha": false,
     "notif_hoje": false
   },
+  "20260130": {
+    "tipo": "Denúncia",
+    "fiscal": "",
+    "motivo": "- [ ] PRODUTOS ALIMENTÍCIOS - COMÉRCIO",
+    "prazo": "",
+    "dataReq": "2026-03-17",
+    "razao": "BURGUER SANTOS",
+    "fantasia": "",
+    "logradouro": "AV. VILMAR ADAIR GOMES, QD 12, LT 16",
+    "complemento": "EM FRENTE A ESCOLA SANTOS DUMONT",
+    "bairro": "BAIRRO SANTOS DUMONT",
+    "cnpj": "",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
+    "descricao": "HAMBURGUERIA NÃO REGULARIZADA, POSSUI UMA COZINHA IMPROVISADA EM QUE A EXAUSTÃO DA CHAPA SAI PARA CASA DOS VIZINHOS. A COZINHA NÃO TEM RALO, EMPOÇA NA RUA E NA LATERAL DO MURO. SÓ ABRE A NOITE.",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
   "20260137": {
     "tipo": "Ofício",
     "fiscal": "TODOS FISCAIS",
@@ -38178,8 +38133,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260142": {
     "tipo": "Ofício",
@@ -38491,8 +38445,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260173": {
     "tipo": "Ofício",
@@ -39044,8 +38997,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260217": {
     "tipo": "Ofício",
@@ -39165,8 +39117,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260223": {
     "tipo": "Requerimento",
@@ -39574,8 +39525,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260256": {
     "tipo": "Ofício",
@@ -39695,8 +39645,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260264": {
     "tipo": "Ofício",
@@ -41760,8 +41709,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260394": {
     "tipo": "Ofício",
@@ -42244,21 +42192,21 @@
     "notif_hoje": false
   },
   "20260422": {
-    "tipo": "Ofício",
-    "fiscal": "JOSE LUIZ RIBEIRO",
-    "motivo": "RETORNO",
-    "prazo": "30.03.2026",
-    "dataReq": "2026-03-04",
-    "razao": "IMPERADOR DA CARNE LTDA (PONTO DA CARNE LTDA)",
-    "fantasia": "PONTO DA CARNE",
-    "logradouro": "AV.DOS PIRINEUS QD.10, LT.48, LOJA 02",
-    "complemento": "",
-    "bairro": "PARQUE DOS PIRINEUS",
-    "cnpj": "59.385.668/0001-47",
+    "tipo": "Requerimento",
+    "fiscal": "MARCIO HENRIQUE GOMES RODOVALHO",
+    "motivo": "Ren. Medicamentos",
+    "prazo": "10.05.2026",
+    "dataReq": "2026-02-06",
+    "razao": "FARMACIA SANTO AGOSTINHO LTDA",
+    "fantasia": "FARMACIA SANTO AGOSTINHO",
+    "logradouro": "AV. FERNANDO COSTA",
+    "complemento": "Nº 417 SL 04",
+    "bairro": "VILA JAIARA",
+    "cnpj": "37.636.339/0001-99",
     "cpf": "",
-    "complexidade": "",
-    "cnaeCode": "",
-    "cnaeDesc": "",
+    "complexidade": "ALTA",
+    "cnaeCode": "4771-7/02",
+    "cnaeDesc": "Comercio varejista de produtos farmaceuticos, com manipulacao de formulas",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -43393,8 +43341,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260482": {
     "tipo": "Ofício",
@@ -43418,8 +43365,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260484": {
     "tipo": "Requerimento",
@@ -43541,22 +43487,46 @@
     "notif_amanha": false,
     "notif_hoje": false
   },
-  "20260490": {
-    "tipo": "Requerimento",
-    "fiscal": "MARIA EDWIGES PINHEIRO DE SOUZA CHAVES",
-    "motivo": "Renovação",
-    "prazo": "12.05.2026",
-    "dataReq": "2026-02-11",
-    "razao": "PAULO VICTOR BARRETO DA HORA",
-    "fantasia": "INSTITUTO DE MEDICINA DA FACE E ESTETICA",
-    "logradouro": "RUA EVANGELINO MEIRELES",
-    "complemento": "QD.45, LT.27, CASA 5",
-    "bairro": "BAIRRO JUNDIAI",
-    "cnpj": "36.446.779/0001-10",
+  "20260489": {
+    "tipo": "Ofício",
+    "fiscal": "ACADIA DE SOUZA VIEIRA SILVA",
+    "motivo": "RETORNO",
+    "prazo": "09.04.2026",
+    "dataReq": "2026-03-17",
+    "razao": "SENDAS DISTRIBUIDORA S/A",
+    "fantasia": "",
+    "logradouro": "AV. UNIVERSITÁRIA",
+    "complemento": "",
+    "bairro": "JARDIM BANDEIRANTE",
+    "cnpj": "06.057.223/0392-05",
     "cpf": "",
-    "complexidade": "MÉDIA",
-    "cnaeCode": "8630-5/04",
-    "cnaeDesc": "Atividade odontológica",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20260490": {
+    "tipo": "Ofício",
+    "fiscal": "JOSE LUIZ RIBEIRO",
+    "motivo": "RETORNO",
+    "prazo": "13.05.2026",
+    "dataReq": "2026-03-17",
+    "razao": "PONTO DA CARNE LTDA",
+    "fantasia": "",
+    "logradouro": "AV DOS PIRINEUS,  QD 10 LT 48",
+    "complemento": "",
+    "bairro": "PARQUE DOS PIRINEUS",
+    "cnpj": "59.385.668/0001-47",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -49409,6 +49379,30 @@
     "complemento": "Qd 01; Lt 33; C-1",
     "bairro": "VILA SANTA MARIA DE NAZARETH",
     "cnpj": "05.458.155/0001-90",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20260934": {
+    "tipo": "Requerimento",
+    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "motivo": "Abertura",
+    "prazo": "",
+    "dataReq": "2026-03-17",
+    "razao": "GABRIEL HRNRIQUE LEITE PEREIRA",
+    "fantasia": "ACAI DO GABRIEL",
+    "logradouro": "AV. DOS PIRENEUS",
+    "complemento": "qd 3 lt 2",
+    "bairro": "PARQUE DOS PIRINEUS",
+    "cnpj": "59.066.707/0001-43",
     "cpf": "",
     "complexidade": "",
     "cnaeCode": "",
