@@ -32325,8 +32325,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20254137": {
     "tipo": "Requerimento",
@@ -35758,8 +35757,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255260": {
     "tipo": "Requerimento",
@@ -35783,8 +35781,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255267": {
     "tipo": "Requerimento",
@@ -35808,8 +35805,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255273": {
     "tipo": "Requerimento",
@@ -35857,8 +35853,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255281": {
     "tipo": "Requerimento",
@@ -35882,8 +35877,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255284": {
     "tipo": "Requerimento",
@@ -35907,8 +35901,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255287": {
     "tipo": "Requerimento",
@@ -35956,8 +35949,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255296": {
     "tipo": "Requerimento",
@@ -35981,8 +35973,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255300": {
     "tipo": "Requerimento",
@@ -36006,8 +35997,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255302": {
     "tipo": "Requerimento",
@@ -36103,8 +36093,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255324": {
     "tipo": "Requerimento",
@@ -36128,8 +36117,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255332": {
     "tipo": "Requerimento",
@@ -36153,8 +36141,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20255333": {
     "tipo": "Ofício",
@@ -37066,8 +37053,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260058": {
     "tipo": "Requerimento",
@@ -37377,30 +37363,6 @@
     "atendida": false,
     "cancelada": false,
     "notif_5d": true,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false
-  },
-  "20260101": {
-    "tipo": "Denúncia",
-    "fiscal": "JOÃO BATISTA LUCAS DA SILVA REIS",
-    "motivo": "- [ ] PRODUTOS ALIMENTÍCIOS - COMÉRCIO",
-    "prazo": "24.03.2026",
-    "dataReq": "2026-03-02",
-    "razao": "LUAU SANDUICHERIA",
-    "fantasia": "",
-    "logradouro": "AV. JORGE GUIMARÃES DE ALMEIDA",
-    "complemento": "QD. 20 ; LT. 7",
-    "bairro": "BAIRRO SANTO ANDRE",
-    "cnpj": "",
-    "cpf": "",
-    "complexidade": "",
-    "cnaeCode": "",
-    "cnaeDesc": "",
-    "descricao": "ESTÁ DEPOSITANDO SACOS COM LIXO BEM PRÓXIMO DO PONTO DE ÔNIBUS DE FORMA INADEQUADA.",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -37907,8 +37869,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260142": {
     "tipo": "Ofício",
@@ -38220,8 +38181,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260173": {
     "tipo": "Ofício",
@@ -38773,8 +38733,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260217": {
     "tipo": "Ofício",
@@ -38894,8 +38853,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260223": {
     "tipo": "Requerimento",
@@ -39303,8 +39261,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260256": {
     "tipo": "Ofício",
@@ -39401,31 +39358,6 @@
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
-  },
-  "20260262": {
-    "tipo": "Ofício",
-    "fiscal": "JULIANA KÊNIA MARTINS DA SILVA",
-    "motivo": "RETORNO",
-    "prazo": "17.03.2026",
-    "dataReq": "2026-02-09",
-    "razao": "ARMS CHURRASCO E DEFUMADOS LTDA",
-    "fantasia": "",
-    "logradouro": "RUA PEREIRA DO LAGO",
-    "complemento": "",
-    "bairro": "BAIRRO JUNDIAI",
-    "cnpj": "43.767.064/0001-25",
-    "cpf": "",
-    "complexidade": "",
-    "cnaeCode": "",
-    "cnaeDesc": "",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": true,
-    "notif_recuperacao": false,
-    "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
   },
   "20260264": {
     "tipo": "Ofício",
@@ -41465,8 +41397,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260394": {
     "tipo": "Ofício",
@@ -42333,21 +42264,21 @@
     "notif_hoje": false
   },
   "20260443": {
-    "tipo": "Ofício",
-    "fiscal": "WANESSA DE BRITO JORGE",
-    "motivo": "OPERAÇÃO FISCAL",
-    "prazo": "23.03.2026",
-    "dataReq": "2026-03-08",
-    "razao": "VALDISSON ALVES PINTO",
-    "fantasia": "VP SOBERANO TEMPEROS",
-    "logradouro": "RUA3 QD. 12 LT. 01",
-    "complemento": "",
-    "bairro": "BAIRRO DE LOURDES",
-    "cnpj": "13.962.555/0001-66",
+    "tipo": "Requerimento",
+    "fiscal": "GÚBIO DIAS PEREIRA",
+    "motivo": "Renovação",
+    "prazo": "13.05.2026",
+    "dataReq": "2026-02-10",
+    "razao": "MARILENE FERNANDES DA SILVA 84677252149",
+    "fantasia": "CEARA GRIL",
+    "logradouro": "RUA CANADA",
+    "complemento": "QD 42 LT 1",
+    "bairro": "JARDIM DAS AMERICAS I ETAPA.",
+    "cnpj": "41.191.555/0001-45",
     "cpf": "",
-    "complexidade": "",
-    "cnaeCode": "",
-    "cnaeDesc": "",
+    "complexidade": "ALTA",
+    "cnaeCode": "5620-1/04",
+    "cnaeDesc": "Fornecimento de alimentos preparados preponderantemente para consumo domiciliar",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -43098,8 +43029,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260482": {
     "tipo": "Ofício",
@@ -43123,8 +43053,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260484": {
     "tipo": "Requerimento",
@@ -43436,8 +43365,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260497": {
     "tipo": "Ofício",
@@ -49403,6 +49331,54 @@
     "complemento": "QD. 42 LT. 15",
     "bairro": "PARQUE SAO JOAO",
     "cnpj": "17.349.385/0001-08",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20260943": {
+    "tipo": "Requerimento",
+    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "motivo": "Abertura",
+    "prazo": "",
+    "dataReq": "2026-03-17",
+    "razao": "65.005.329 ANDERSON RODRIGUES SANTOS",
+    "fantasia": "",
+    "logradouro": "R. BRASILIENSE",
+    "complemento": "QD. 11 LT. 24",
+    "bairro": "RESIDENCIAL ITATIAIA",
+    "cnpj": "65.005.329/0001-90",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20260944": {
+    "tipo": "Requerimento",
+    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "motivo": "Abertura",
+    "prazo": "",
+    "dataReq": "2026-03-17",
+    "razao": "CUIDALLE GESTAO EM SAUDE LTDA",
+    "fantasia": "CUIDALLE GESTAO EM SAUDE",
+    "logradouro": "AV. JK, EDIFÍCIO GENESIS OFFICE  Nº 500",
+    "complemento": "QD.19 LT.01 SL. 1002",
+    "bairro": "BAIRRO JUNDIAI",
+    "cnpj": "34.051.104/0002-28",
     "cpf": "",
     "complexidade": "",
     "cnaeCode": "",
