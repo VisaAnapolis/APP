@@ -337,7 +337,7 @@
     /* Faixa de correspondência */
     if (els.matchInfo) {
       const csvDateHtml = simCsvDate
-        ? `<span style="margin-left:auto;font-size:.8em;color:#64748b;white-space:nowrap;padding-left:12px;">📅 SIM: ${esc(formatCsvDate(simCsvDate))}</span>`
+        ? `<span class="csv-stamp">📅 SIM: ${esc(formatCsvDate(simCsvDate))}</span>`
         : "";
       if (matchMethod) {
         els.matchInfo.innerHTML =
