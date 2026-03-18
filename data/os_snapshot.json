@@ -35757,8 +35757,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255260": {
     "tipo": "Requerimento",
@@ -35782,8 +35781,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255267": {
     "tipo": "Requerimento",
@@ -35807,8 +35805,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255273": {
     "tipo": "Requerimento",
@@ -35856,8 +35853,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255281": {
     "tipo": "Requerimento",
@@ -35881,8 +35877,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255284": {
     "tipo": "Requerimento",
@@ -35906,8 +35901,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255287": {
     "tipo": "Requerimento",
@@ -35955,8 +35949,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255296": {
     "tipo": "Requerimento",
@@ -35980,8 +35973,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255300": {
     "tipo": "Requerimento",
@@ -36005,8 +35997,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255302": {
     "tipo": "Requerimento",
@@ -36102,8 +36093,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255324": {
     "tipo": "Requerimento",
@@ -36151,8 +36141,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255333": {
     "tipo": "Ofício",
@@ -37016,8 +37005,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260056": {
     "tipo": "Ofício",
@@ -37065,8 +37053,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260058": {
     "tipo": "Requerimento",
@@ -37858,8 +37845,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260142": {
     "tipo": "Ofício",
@@ -38123,8 +38109,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260173": {
     "tipo": "Ofício",
@@ -38628,8 +38613,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260217": {
     "tipo": "Ofício",
@@ -38749,8 +38733,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260223": {
     "tipo": "Requerimento",
@@ -39158,8 +39141,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260256": {
     "tipo": "Ofício",
@@ -41295,8 +41277,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260394": {
     "tipo": "Ofício",
@@ -42859,29 +42840,28 @@
     "notif_hoje": false
   },
   "20260481": {
-    "tipo": "Ofício",
-    "fiscal": "KAMILLA CHRYSTINE ROLIM D. SANTOS GARCÊS",
-    "motivo": "OPERAÇÃO FISCAL",
-    "prazo": "18.03.2026",
-    "dataReq": "2026-03-12",
-    "razao": "KELLDRIN INDUSTRIAL LTDA ME",
-    "fantasia": "KELLDRIN",
-    "logradouro": ".",
-    "complemento": "",
-    "bairro": "ANASHOPPING",
-    "cnpj": "03.237.990/0001-74",
+    "tipo": "Requerimento",
+    "fiscal": "ALINE CASTRO DAMASIO",
+    "motivo": "Renovação",
+    "prazo": "13.05.2026",
+    "dataReq": "2026-02-11",
+    "razao": "J J F K CLINICA MEDICA EIRELI ME",
+    "fantasia": "NEUROMAIS",
+    "logradouro": "AVENIDA SÃO FRANCISCO Nº 660",
+    "complemento": "QD14 LT 08 SALA 502",
+    "bairro": "BAIRRO JUNDIAI",
+    "cnpj": "07.819.088/0001-17",
     "cpf": "",
-    "complexidade": "",
-    "cnaeCode": "",
-    "cnaeDesc": "",
+    "complexidade": "MÉDIA",
+    "cnaeCode": "8630-5/02",
+    "cnaeDesc": "Atividade medica ambulatorial com recursos para realizacao de exames complementares",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260482": {
     "tipo": "Ofício",
@@ -42905,8 +42885,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260484": {
     "tipo": "Requerimento",
@@ -43218,8 +43197,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260497": {
     "tipo": "Ofício",
