@@ -35757,8 +35757,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255260": {
     "tipo": "Requerimento",
@@ -35782,8 +35781,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255267": {
     "tipo": "Requerimento",
@@ -35807,8 +35805,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255273": {
     "tipo": "Requerimento",
@@ -35856,8 +35853,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255281": {
     "tipo": "Requerimento",
@@ -35881,8 +35877,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255284": {
     "tipo": "Requerimento",
@@ -35906,8 +35901,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255287": {
     "tipo": "Requerimento",
@@ -35955,8 +35949,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255296": {
     "tipo": "Requerimento",
@@ -35980,8 +35973,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255300": {
     "tipo": "Requerimento",
@@ -36005,8 +35997,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255302": {
     "tipo": "Requerimento",
@@ -36102,8 +36093,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255324": {
     "tipo": "Requerimento",
@@ -36151,8 +36141,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20255333": {
     "tipo": "Ofício",
@@ -37040,8 +37029,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260058": {
     "tipo": "Requerimento",
@@ -37929,8 +37917,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260142": {
     "tipo": "Ofício",
@@ -38194,8 +38181,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260173": {
     "tipo": "Ofício",
@@ -38675,8 +38661,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260217": {
     "tipo": "Ofício",
@@ -38796,8 +38781,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260223": {
     "tipo": "Requerimento",
@@ -39205,8 +39189,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260256": {
     "tipo": "Ofício",
@@ -41342,8 +41325,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260394": {
     "tipo": "Ofício",
@@ -42951,8 +42933,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260484": {
     "tipo": "Requerimento",
@@ -43264,8 +43245,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260497": {
     "tipo": "Ofício",
@@ -45611,30 +45591,6 @@
     "complexidade": "MÉDIA",
     "cnaeCode": "8640-2/01",
     "cnaeDesc": "Laboratorios de anatomia patologica e citologica",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false
-  },
-  "20260710": {
-    "tipo": "Requerimento",
-    "fiscal": "GERALDO EDSON ROSA",
-    "motivo": "Abertura",
-    "prazo": "01.06.2026",
-    "dataReq": "2026-03-02",
-    "razao": "PORTO PEREIRA SERVICOS LTDA",
-    "fantasia": "REFEITORIO SOTRIGO",
-    "logradouro": "R. R-5 - QD. 11-B",
-    "complemento": "MOD 01 A 16",
-    "bairro": "DISTRITO AGROINDUSTRIAL DE ANAPOLIS",
-    "cnpj": "24.955.806/0001-00",
-    "cpf": "",
-    "complexidade": "ALTA",
-    "cnaeCode": "5620-1/01",
-    "cnaeDesc": "Fornecimento de alimentos preparados preponderantemente para empresas",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -49543,6 +49499,30 @@
     "complemento": "QD.06, LT.18",
     "bairro": "VILA SANTANA",
     "cnpj": "62.308.365/0001-35",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20260955": {
+    "tipo": "Requerimento",
+    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "motivo": "Abertura",
+    "prazo": "",
+    "dataReq": "2026-03-18",
+    "razao": "ESPIRITO SANTO E RODRIGUES LTDA",
+    "fantasia": "ACESSORIA EM SAUDE",
+    "logradouro": "RUA JP 08",
+    "complemento": "QD20 LT 28A",
+    "bairro": "RESIDENCIAL VIDA NOVA",
+    "cnpj": "18.004.832/0001-41",
     "cpf": "",
     "complexidade": "",
     "cnaeCode": "",
