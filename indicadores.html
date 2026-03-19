@@ -16,6 +16,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; }
@@ -145,6 +146,19 @@
       white-space: nowrap;
     }
     .btn-gerar:hover { opacity: 0.88; }
+    .btn-pdf {
+      padding: 9px 20px;
+      background: linear-gradient(135deg,#34c759,#1a7a38);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-pdf:hover { opacity: 0.88; }
+    .btn-pdf:disabled { opacity: 0.5; cursor: not-allowed; }
 
     /* ── GRADE DE CARDS DE INDICADORES ── */
     .ind-grid {
@@ -412,6 +426,7 @@
             <input type="date" id="dataFinal" min="2018-01-01" max="2030-12-31">
           </div>
           <button class="btn-gerar" onclick="window.gerarIndicadores()">🔄 Gerar Indicadores</button>
+          <button class="btn-pdf" id="btnPdfInd" onclick="window.exportarIndicadoresPDF()">🖨️ Exportar PDF</button>
         </form>
 
         <!-- Área dos resultados -->
@@ -875,11 +890,371 @@
               'text-align:right;font-size:0.8rem;color:var(--muted);">🔄 Dados gerados em ' +
               new Date().toLocaleString('pt-BR') + '</div>';
 
+      /* ── Salvar dados computados para exportação PDF ── */
+      window._indData = {
+        periodoLabel: periodoLabel,
+        di: document.getElementById('dataInicial').value,
+        df: document.getElementById('dataFinal').value,
+        totalInsp: totalInsp,
+        totalFiscais: totalFiscais,
+        mediaPorFiscal: mediaPorFiscal,
+        estabSet_size: estabSet.size,
+        TI: TI, TN: TN, AI: AI, AIT: AIT,
+        outrosDocs: outrosDocs,
+        estabComplexidade_size: estabComplexidade.size,
+        compCount: compCount,
+        COMP_SEM_CLASS: COMP_SEM_CLASS,
+        mediaInspEstab: mediaInspEstab,
+        maxInspEstab: maxInspEstab,
+        distInsp1: distInsp1,
+        distInsp2: distInsp2,
+        distInsp3p: distInsp3p,
+        ofTotal: ofTotal, ofInsp: ofInsp, ofRet: ofRet, ofBusca: ofBusca, ofOutros: ofOutros,
+        reqTotal: reqTotal, reqAb: reqAb, reqRen: reqRen, reqOutros: reqOutros,
+        denTotal: denTotal, denAtend: denAtend, denAtraso: denAtraso, denNaoAt: denNaoAt,
+        protTotal: protTotal, protProj: protProj, projArquivados: projArquivados, projEmAtend: projEmAtend,
+        protPAS: protPAS, pasAbertos: pasAbertos, pasJulg: pasJulg, protOutros: protOutros,
+        alvTotal: alvTotal,
+        siaProcedures: siaProcedures,
+        siaTotal: siaTotal,
+        siaPeriodoLabel: siaPeriodoLabel
+      };
+
       container.innerHTML = html;
     }
 
     /* ── Inicializar ao carregar ── */
     window.initIndicadores = function() { initDates(); };
+
+    /* ── Exportar PDF ── */
+    window.exportarIndicadoresPDF = function() {
+      var data = window._indData;
+      if (!data) {
+        alert('Gere os indicadores antes de exportar.');
+        return;
+      }
+      var btnPdf = document.getElementById('btnPdfInd');
+      var origText = btnPdf ? btnPdf.textContent : '';
+      if (btnPdf) { btnPdf.disabled = true; btnPdf.textContent = '\u23F3 Gerando PDF\u2026'; }
+
+      try {
+        var di = data.di, df = data.df;
+        function fmtData(v) { var p = v.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
+
+        var jsPDF = window.jspdf.jsPDF;
+        var pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+        var PW = 210, MG = 12, CW = PW - MG * 2;
+        var Y = MG;
+        var PAGE_BOTTOM = 282;  /* A4 = 297mm, leaving 15mm for footer */
+        var MAX_LABEL_LEN = 32; /* max chars for truncated card labels */
+        var AZUL  = [26,58,107];
+        var CINZA = [91,107,131];
+        var BGC   = [246,248,252];
+        var LIN   = [220,228,238];
+
+        function sf(style, size, cor) {
+          pdf.setFont('helvetica', style);
+          pdf.setFontSize(size);
+          pdf.setTextColor.apply(pdf, cor || [31,42,58]);
+        }
+
+        function addPage() {
+          pdf.addPage();
+          Y = MG;
+        }
+
+        function checkY(needed) {
+          if (Y + needed > PAGE_BOTTOM) addPage();
+        }
+
+        /* ── Cabeçalho institucional ── */
+        pdf.setFillColor.apply(pdf, AZUL); pdf.rect(0, 0, PW, 22, 'F');
+        sf('bold', 16, [255,255,255]); pdf.text('VISA', MG, 11);
+        sf('bold', 11, [255,255,255]); pdf.text('Indicadores WCVS', MG+16, 9);
+        sf('normal', 7.5, [180,200,230]); pdf.text('Pain\u00e9l de indicadores por per\u00edodo', MG+16, 15);
+        sf('normal', 7, [180,200,230]); pdf.text('Vigil\u00e2ncia Sanit\u00e1ria de An\u00e1polis \u2013 GO', MG+16, 20);
+        Y = 28;
+
+        /* ── Caixa de período ── */
+        pdf.setFillColor.apply(pdf, BGC);
+        pdf.setDrawColor.apply(pdf, LIN);
+        pdf.setLineWidth(0.3);
+        pdf.roundedRect(MG, Y, CW, 8, 2, 2, 'FD');
+        sf('bold', 8.5, AZUL); pdf.text('Per\u00edodo:', MG+4, Y+5.2);
+        sf('normal', 8.5, [31,42,58]); pdf.text(fmtData(di)+'  \u2013  '+fmtData(df), MG+24, Y+5.2);
+        Y += 13;
+
+        /* ── Helpers de layout ── */
+        function sectionTitle(text) {
+          checkY(14);
+          pdf.setFillColor.apply(pdf, AZUL); pdf.rect(MG, Y, 3, 8, 'F');
+          sf('bold', 9.5, AZUL); pdf.text(text, MG+6, Y+5.8);
+          Y += 12;
+        }
+
+        function drawTwoCards(title1, rows1, title2, rows2) {
+          var HW = (CW - 4) / 2;
+          var rH = 6.5;
+          var h1 = 7 + rows1.length * rH + 3;
+          var h2 = 7 + rows2.length * rH + 3;
+          var totalH = Math.max(h1, h2);
+          checkY(totalH + 5);
+
+          function renderCard(x, title, rows) {
+            pdf.setFillColor.apply(pdf, BGC);
+            pdf.setDrawColor.apply(pdf, LIN);
+            pdf.setLineWidth(0.2);
+            pdf.roundedRect(x, Y, HW, totalH, 2, 2, 'FD');
+            pdf.setFillColor.apply(pdf, AZUL);
+            pdf.rect(x, Y, HW, 7, 'F');
+            sf('bold', 7.5, [255,255,255]);
+            pdf.text(title, x+4, Y+4.8);
+            var cy = Y + 7;
+            rows.forEach(function(r) {
+              if (r.subtotal) {
+                sf('bold', 7, AZUL);
+                pdf.text(r.label, x+4, cy+rH-1.5);
+              } else {
+                sf('normal', 7, r.indent ? CINZA : [31,42,58]);
+                pdf.text((r.indent ? '   ' : '') + r.label, x+4, cy+rH-1.5);
+                sf('bold', 7, AZUL);
+                pdf.text(String(r.value !== undefined ? r.value : ''), x+HW-4, cy+rH-1.5, {align:'right'});
+              }
+              cy += rH;
+            });
+          }
+
+          renderCard(MG, title1, rows1);
+          renderCard(MG + HW + 4, title2, rows2);
+          Y += totalH + 5;
+        }
+
+        function drawCard(title, rows) {
+          var rH = 6.5;
+          var totalH = 7 + rows.length * rH + 3;
+          checkY(totalH + 5);
+          pdf.setFillColor.apply(pdf, BGC);
+          pdf.setDrawColor.apply(pdf, LIN);
+          pdf.setLineWidth(0.2);
+          pdf.roundedRect(MG, Y, CW, totalH, 2, 2, 'FD');
+          pdf.setFillColor.apply(pdf, AZUL);
+          pdf.rect(MG, Y, CW, 7, 'F');
+          sf('bold', 8, [255,255,255]);
+          pdf.text(title, MG+4, Y+4.8);
+          var cy = Y + 7;
+          rows.forEach(function(r) {
+            if (r.subtotal) {
+              sf('bold', 7.5, AZUL);
+              pdf.text(r.label, MG+4, cy+rH-1.5);
+            } else {
+              sf('normal', 7.5, r.indent ? CINZA : [31,42,58]);
+              pdf.text((r.indent ? '   ' : '') + r.label, MG+4, cy+rH-1.5);
+              sf('bold', 7.5, AZUL);
+              pdf.text(String(r.value !== undefined ? r.value : ''), MG+CW-4, cy+rH-1.5, {align:'right'});
+            }
+            cy += rH;
+          });
+          Y += totalH + 5;
+        }
+
+        var d = data;
+
+        /* ── Inspeções ── */
+        sectionTitle('INSPE\u00c7\u00d5ES');
+        drawTwoCards(
+          'Resumo das Inspe\u00e7\u00f5es',
+          [
+            {label: 'Total de inspe\u00e7\u00f5es',             value: d.totalInsp},
+            {label: 'Fiscais ativos',                            value: d.totalFiscais},
+            {label: 'M\u00e9dia por fiscal',                     value: d.mediaPorFiscal},
+            {label: 'Estabelecimentos inspecionados',            value: d.estabSet_size}
+          ],
+          'Documentos por Tipo',
+          [
+            {label: 'TI \u2013 Termo de Intima\u00e7\u00e3o',   value: d.TI},
+            {label: 'TN \u2013 Termo de Notifica\u00e7\u00e3o', value: d.TN},
+            {label: 'AI \u2013 Auto de Infra\u00e7\u00e3o',     value: d.AI},
+            {label: 'AIT \u2013 Auto de Imposi\u00e7\u00e3o',   value: d.AIT}
+          ].concat((d.outrosDocs || []).map(function(e) {
+            var lbl = String(e[0]);
+            return {label: lbl.length > MAX_LABEL_LEN ? lbl.substring(0, MAX_LABEL_LEN - 1) + '\u2026' : lbl, value: e[1], indent: true};
+          }))
+        );
+        drawTwoCards(
+          'Estabelecimentos por Complexidade',
+          [
+            {label: 'Total inspecionados',    value: d.estabComplexidade_size},
+            {label: 'Por complexidade',       subtotal: true},
+            {label: 'Alta complexidade',      value: d.compCount['ALTA'],  indent: true},
+            {label: 'M\u00e9dia complexidade',value: d.compCount['M\u00c9DIA'], indent: true},
+            {label: 'Baixa complexidade',     value: d.compCount['BAIXA'], indent: true}
+          ].concat(d.compCount[d.COMP_SEM_CLASS] > 0
+            ? [{label: 'Sem classifica\u00e7\u00e3o CNAE', value: d.compCount[d.COMP_SEM_CLASS], indent: true}]
+            : []),
+          'Inspe\u00e7\u00f5es por Estabelecimento',
+          [
+            {label: 'M\u00e9dia por estabelecimento',    value: d.mediaInspEstab},
+            {label: 'M\u00e1ximo de visitas (1 estab.)', value: d.maxInspEstab},
+            {label: 'Por n\u00famero de visitas',        subtotal: true},
+            {label: 'Visitados 1 vez',                   value: d.distInsp1,  indent: true},
+            {label: 'Visitados 2 vezes',                 value: d.distInsp2,  indent: true},
+            {label: 'Visitados 3 ou mais vezes',         value: d.distInsp3p, indent: true}
+          ]
+        );
+
+        /* ── Ordens de Serviço ── */
+        sectionTitle('ORDENS DE SERVI\u00c7O');
+        drawTwoCards(
+          'Of\u00edcios',
+          [
+            {label: 'Total de of\u00edcios',           value: d.ofTotal},
+            {label: 'Por motivo',                       subtotal: true},
+            {label: 'Inspe\u00e7\u00e3o Sanit\u00e1ria', value: d.ofInsp,   indent: true},
+            {label: 'Retorno',                          value: d.ofRet,    indent: true},
+            {label: 'Busca Ativa',                      value: d.ofBusca,  indent: true},
+            {label: 'Outros motivos',                   value: d.ofOutros, indent: true}
+          ],
+          'Requerimentos',
+          [
+            {label: 'Total de requerimentos', value: d.reqTotal},
+            {label: 'Por motivo',              subtotal: true},
+            {label: 'Abertura',                value: d.reqAb,     indent: true},
+            {label: 'Renova\u00e7\u00e3o',    value: d.reqRen,    indent: true},
+            {label: 'Outros motivos',          value: d.reqOutros, indent: true}
+          ]
+        );
+        drawTwoCards(
+          'Den\u00fancias',
+          [
+            {label: 'Total de den\u00fancias',   value: d.denTotal},
+            {label: 'Por situa\u00e7\u00e3o',    subtotal: true},
+            {label: 'Atendidas',                 value: d.denAtend,  indent: true},
+            {label: 'Atendidas em atraso',        value: d.denAtraso, indent: true},
+            {label: 'N\u00e3o atendidas',         value: d.denNaoAt,  indent: true}
+          ],
+          'Protocolos',
+          [
+            {label: 'Total de protocolos',            value: d.protTotal},
+            {label: 'Projeto Arquitet\u00f4nico',      subtotal: true},
+            {label: 'Total',                           value: d.protProj,        indent: true},
+            {label: 'Conclu\u00eddos/Arquivados',      value: d.projArquivados,  indent: true},
+            {label: 'Em andamento',                    value: d.projEmAtend,     indent: true},
+            {label: 'PAS \u2013 Proc. Adm. Sanit.',   subtotal: true},
+            {label: 'Total abertos',                   value: d.pasAbertos,      indent: true},
+            {label: 'Julgados/Arquivados',             value: d.pasJulg,         indent: true}
+          ].concat(d.protOutros > 0
+            ? [{label: 'Outros assuntos', value: d.protOutros, indent: true}]
+            : [])
+        );
+
+        /* ── Alvarás ── */
+        sectionTitle('ALVAR\u00c1S E ESTABELECIMENTOS');
+        drawCard('Alvar\u00e1s Sanit\u00e1rios Emitidos', [
+          {label: 'Alvar\u00e1s emitidos no per\u00edodo', value: d.alvTotal}
+        ]);
+
+        /* ── Mapa SIA/SUS ── */
+        sectionTitle('MAPA DE COLETA DE DADOS SIA/SUS');
+
+        /* Meta-informações */
+        checkY(14);
+        pdf.setFillColor.apply(pdf, BGC);
+        pdf.setDrawColor.apply(pdf, LIN);
+        pdf.setLineWidth(0.2);
+        pdf.roundedRect(MG, Y, CW, 9, 2, 2, 'FD');
+        sf('normal', 7, CINZA);
+        pdf.text(
+          'Unidade: Vigil\u00e2ncia Sanit\u00e1ria Municipal  |  CNES: 2438380  |  Per\u00edodo: ' + d.siaPeriodoLabel,
+          MG+4, Y+5.8
+        );
+        Y += 13;
+
+        /* Tabela SIA/SUS */
+        var colCode = 36, colQtd = 16, colDesc = CW - colCode - colQtd;
+        var tH = 7.5;
+
+        function drawSiaHeader() {
+          checkY(tH + 5);
+          pdf.setFillColor.apply(pdf, AZUL);
+          pdf.rect(MG, Y, CW, tH, 'F');
+          sf('bold', 7, [255,255,255]);
+          pdf.text('C\u00f3digo',           MG+3,                Y+5);
+          pdf.text('Nome do Procedimento',   MG+colCode+3,        Y+5);
+          pdf.text('Qtd.',                   MG+CW-4,             Y+5, {align:'right'});
+          Y += tH;
+        }
+
+        drawSiaHeader();
+
+        d.siaProcedures.forEach(function(p, idx) {
+          if (Y + tH > PAGE_BOTTOM) {
+            pdf.addPage();
+            Y = MG;
+            drawSiaHeader();
+          }
+          if (idx % 2 === 0) {
+            pdf.setFillColor.apply(pdf, BGC);
+          } else {
+            pdf.setFillColor(255, 255, 255);
+          }
+          pdf.rect(MG, Y, CW, tH, 'F');
+          pdf.setDrawColor.apply(pdf, LIN);
+          pdf.setLineWidth(0.1);
+          pdf.line(MG, Y+tH, MG+CW, Y+tH);
+
+          sf('normal', 6.5, CINZA);
+          pdf.text(String(p[0]), MG+3, Y+5.2);
+
+          var descParts = pdf.splitTextToSize(String(p[1]), colDesc - 4);
+          var desc = descParts.length > 1 ? descParts[0].replace(/\s+$/, '') + '\u2026' : (descParts[0] || '');
+          sf('normal', 7, [31,42,58]);
+          pdf.text(desc, MG+colCode+3, Y+5.2);
+
+          var qtd = p[2] === null ? 'N/A' : String(p[2]);
+          sf('bold', 7.5, p[2] === null ? CINZA : AZUL);
+          pdf.text(qtd, MG+CW-4, Y+5.2, {align:'right'});
+          Y += tH;
+        });
+
+        /* Linha de total */
+        checkY(tH + 3);
+        pdf.setFillColor(224, 236, 255);
+        pdf.rect(MG, Y, CW, tH+1, 'F');
+        pdf.setDrawColor.apply(pdf, LIN);
+        pdf.setLineWidth(0.4);
+        pdf.line(MG, Y, MG+CW, Y);
+        sf('bold', 8, AZUL); pdf.text('TOTAL', MG+colCode+3, Y+5.5);
+        sf('bold', 9, AZUL); pdf.text(d.siaTotal.toLocaleString('pt-BR'), MG+CW-4, Y+5.5, {align:'right'});
+        Y += tH + 6;
+
+        /* Rodapé em todas as páginas */
+        var pages = pdf.getNumberOfPages();
+        for (var i = 1; i <= pages; i++) {
+          pdf.setPage(i);
+          pdf.setDrawColor.apply(pdf, LIN);
+          pdf.setLineWidth(0.3);
+          pdf.line(MG, 290, PW-MG, 290);
+          sf('italic', 6.5, CINZA);
+          pdf.text(
+            'Vigil\u00e2ncia Sanit\u00e1ria de An\u00e1polis  |  Sistema WCVS  |  Gerado em ' +
+            new Date().toLocaleDateString('pt-BR'),
+            PW/2, 294, {align:'center'}
+          );
+          sf('italic', 6.5, CINZA);
+          pdf.text('P\u00e1gina ' + i + ' de ' + pages, PW-MG, 294, {align:'right'});
+        }
+
+        /* Salvar arquivo */
+        var stripDashes = function(v){ return v.replace(/-/g,''); };
+        pdf.save('indicadores-wcvs-' + stripDashes(di) + '-' + stripDashes(df) + '.pdf');
+
+      } catch(e) {
+        alert('Erro ao gerar PDF: ' + (e && e.message ? e.message : e));
+      } finally {
+        if (btnPdf) { btnPdf.disabled = false; btnPdf.textContent = origText; }
+      }
+    };
   })();
   </script>
 
