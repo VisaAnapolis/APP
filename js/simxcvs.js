@@ -429,11 +429,11 @@
 
     const trRows = rows.map((r) => {
       const badge        = r.compete ? badgeHtml(r.status) : `<span class="badge badge--nao-comp">Não Compete</span>`;
-      const principalTag = r.principal ? `<span class="badge badge--principal" title="Atividade principal">★ Principal</span> ` : "";
+      const principalTag = r.principal ? `<br><span class="badge badge--principal" title="Atividade principal">★ Principal</span>` : "";
       return `
         <tr>
-          <td>${badge}</td>
-          <td style="white-space:nowrap">${principalTag}<span class="subclasse-code">${esc(r.subclasse)}</span></td>
+          <td>${badge}${principalTag}</td>
+          <td style="white-space:nowrap"><span class="subclasse-code">${esc(r.subclasse)}</span></td>
           <td><span class="descricao-text">${esc(r.descricao)}</span></td>
         </tr>`;
     }).join("");
@@ -443,7 +443,7 @@
         <thead>
           <tr>
             <th>Status</th>
-            <th>Subclasse</th>
+            <th>CNAE</th>
             <th>Descrição</th>
           </tr>
         </thead>
