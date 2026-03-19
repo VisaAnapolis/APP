@@ -456,7 +456,8 @@
         loadCSV('data/requerimento.csv'),
         loadCSV('data/denuncia.csv'),
         loadCSV('data/protocolo.csv'),
-        loadCSV('data/alvara.csv')
+        loadCSV('data/alvara.csv'),
+        loadCSV('data/cnae.csv')
       ]).then(function(results) {
         var insp  = results[0];
         var ofic  = results[1];
@@ -464,7 +465,8 @@
         var den   = results[3];
         var prot  = results[4];
         var alv   = results[5];
-        renderAll(container, start, end, insp, ofic, req, den, prot, alv);
+        var cnae  = results[6];
+        renderAll(container, start, end, insp, ofic, req, den, prot, alv, cnae);
       }).catch(function(err) {
         container.innerHTML = '<div class="indicadores-loading">⚠️ Erro ao carregar dados: ' + (err && err.message ? err.message : err) + '</div>';
       });
@@ -473,8 +475,15 @@
     /* ══════════════════════════════════════════════════════
        PROCESSAMENTO E RENDERIZAÇÃO
     ══════════════════════════════════════════════════════ */
-    function renderAll(container, start, end, insp, ofic, req, den, prot, alv) {
+    function renderAll(container, start, end, insp, ofic, req, den, prot, alv, cnae) {
       var periodoLabel = fmtDate(start) + ' – ' + fmtDate(end);
+
+      /* ── MAPA DE COMPLEXIDADE (CNAE) ── */
+      var mapaCNAE = new Map();
+      (cnae || []).forEach(function(c) {
+        var sub = (c.Subclasse || '').trim();
+        if (sub) mapaCNAE.set(sub, (c.Complexidade || '').trim());
+      });
 
       /* ── INSPEÇÕES ── */
       var inspeçõesPeriodo = insp.filter(function(r){ return inRange(parseDMY(r.DT_VISITA), start, end); });
@@ -504,6 +513,44 @@
 
       var estabSet = new Set();
       inspeçõesPeriodo.forEach(function(r){ if ((r.CODIGO||'').trim()) estabSet.add(r.CODIGO.trim()); });
+
+      /* ── ESTABELECIMENTOS POR COMPLEXIDADE ── */
+      var COMP_SEM_CLASS = 'Não classificado';
+      var estabComplexidade = new Map(); // CODIGO -> complexidade
+      inspeçõesPeriodo.forEach(function(r) {
+        var cod = (r.CODIGO || '').trim();
+        if (!cod) return;
+        if (!estabComplexidade.has(cod)) {
+          var atividade = (r.Atividade || '').trim();
+          var comp = mapaCNAE.get(atividade) || COMP_SEM_CLASS;
+          estabComplexidade.set(cod, comp);
+        }
+      });
+      var compCount = { 'ALTA': 0, 'MÉDIA': 0, 'BAIXA': 0 };
+      compCount[COMP_SEM_CLASS] = 0;
+      estabComplexidade.forEach(function(comp) {
+        if (Object.prototype.hasOwnProperty.call(compCount, comp)) {
+          compCount[comp]++;
+        } else {
+          compCount[COMP_SEM_CLASS]++;
+        }
+      });
+
+      /* ── INSPEÇÕES POR ESTABELECIMENTO ── */
+      var inspPorEstab = new Map(); // CODIGO -> contagem
+      inspeçõesPeriodo.forEach(function(r) {
+        var cod = (r.CODIGO || '').trim();
+        if (!cod) return;
+        inspPorEstab.set(cod, (inspPorEstab.get(cod) || 0) + 1);
+      });
+      var insCounts = Array.from(inspPorEstab.values());
+      var mediaInspEstab = insCounts.length > 0
+        ? (insCounts.reduce(function(a, b) { return a + b; }, 0) / insCounts.length).toFixed(1)
+        : '0.0';
+      var maxInspEstab = insCounts.length > 0 ? Math.max.apply(null, insCounts) : 0;
+      var distInsp1    = insCounts.filter(function(c) { return c === 1; }).length;
+      var distInsp2    = insCounts.filter(function(c) { return c === 2; }).length;
+      var distInsp3p   = insCounts.filter(function(c) { return c >= 3; }).length;
 
       /* ── OFÍCIOS ── */
       var ofPer = ofic.filter(function(r){ return inRange(parseDMY(r.Data), start, end); });
@@ -600,6 +647,25 @@
         });
       }
       html += card('📄 Documentos por Tipo', rowsDocs);
+
+      var rowsEstabComp = '';
+      rowsEstabComp += row('Total de estabelecimentos inspecionados', estabComplexidade.size);
+      rowsEstabComp += '<tr class="subtotal"><td colspan="2">Por complexidade</td></tr>';
+      rowsEstabComp += row('Alta complexidade', compCount['ALTA'], '', true);
+      rowsEstabComp += row('Média complexidade', compCount['MÉDIA'], '', true);
+      rowsEstabComp += row('Baixa complexidade', compCount['BAIXA'], '', true);
+      if (compCount[COMP_SEM_CLASS] > 0) rowsEstabComp += row('Sem classificação CNAE', compCount[COMP_SEM_CLASS], '', true);
+      html += card('🏢 Estabelecimentos por Complexidade', rowsEstabComp);
+
+      var rowsInspEstab = '';
+      rowsInspEstab += row('Média de inspeções por estabelecimento', mediaInspEstab);
+      rowsInspEstab += row('Máximo de visitas (um estabelecimento)', maxInspEstab);
+      rowsInspEstab += '<tr class="subtotal"><td colspan="2">Por número de visitas</td></tr>';
+      rowsInspEstab += row('Visitados 1 vez', distInsp1, '', true);
+      rowsInspEstab += row('Visitados 2 vezes', distInsp2, '', true);
+      rowsInspEstab += row('Visitados 3 ou mais vezes', distInsp3p, '', true);
+      html += card('🔁 Inspeções por Estabelecimento', rowsInspEstab);
+
       html += '</div>';
 
       /* Seção OS */
