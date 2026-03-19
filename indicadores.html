@@ -74,7 +74,7 @@
       box-shadow: var(--shadow2);
     }
 
-    /* ── INDICADORES (idêntico ao index.html) ── */
+    /* ── INDICADORES ── */
     .indicadores-section {
       margin-top: 8px;
       padding-top: 20px;
@@ -94,6 +94,142 @@
       background: transparent;
       border-radius: 8px;
       border: 1px solid transparent;
+    }
+
+    /* ── FILTRO DE PERÍODO ── */
+    .periodo-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: flex-end;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: var(--card, #fff);
+      border: 1px solid var(--line, #e2e8f0);
+      border-radius: 12px;
+    }
+    .periodo-form .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .periodo-form label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted, #64748b);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .periodo-form input[type="date"] {
+      padding: 8px 12px;
+      border: 1px solid var(--input-border, #cbd5e1);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      background: var(--input-bg, #f8fafc);
+      color: var(--text, #1e293b);
+      min-width: 150px;
+    }
+    .periodo-form input[type="date"]:focus {
+      outline: none;
+      border-color: var(--brand1, #2563eb);
+    }
+    .btn-gerar {
+      padding: 9px 20px;
+      background: var(--brand1, #2563eb);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-gerar:hover { opacity: 0.88; }
+
+    /* ── GRADE DE CARDS DE INDICADORES ── */
+    .ind-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .ind-card {
+      background: var(--card, #fff);
+      border: 1px solid var(--line, #e2e8f0);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: var(--shadow2, 0 1px 4px rgba(0,0,0,.06));
+    }
+    .ind-card h4 {
+      margin: 0 0 12px 0;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--primary, #2c5aa0);
+      border-bottom: 2px solid var(--line, #e2e8f0);
+      padding-bottom: 8px;
+    }
+    .ind-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    .ind-table tr td {
+      padding: 6px 4px;
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+    }
+    .ind-table tr:last-child td { border-bottom: none; }
+    .ind-table .val {
+      text-align: right;
+      font-weight: 700;
+      color: var(--primary, #2c5aa0);
+      white-space: nowrap;
+    }
+    .ind-table .sub {
+      padding-left: 18px;
+      color: var(--text, #1e293b);
+      opacity: 0.85;
+    }
+    .ind-table .subtotal td {
+      font-weight: 600;
+      color: var(--primary, #2c5aa0);
+      padding-top: 8px;
+      border-top: 1px solid var(--line, #e2e8f0);
+    }
+    .ind-total-big {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary, #2c5aa0);
+      display: block;
+      margin-bottom: 2px;
+    }
+    .ind-label-small {
+      font-size: 0.75rem;
+      color: var(--muted, #64748b);
+    }
+    .ind-period-badge {
+      display: inline-block;
+      background: var(--brand1, #2563eb);
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+    .ind-section-title {
+      margin: 24px 0 12px;
+      color: var(--brand1, #2563eb);
+      font-size: 1rem;
+      font-weight: 700;
+      padding-left: 10px;
+      border-left: 5px solid var(--brand1, #2563eb);
+    }
+    .badge-warn { color: #d97706; font-size: 0.75rem; margin-left: 4px; }
+    .badge-ok   { color: #059669; font-size: 0.75rem; margin-left: 4px; }
+
+    @media (max-width: 600px) {
+      .periodo-form { flex-direction: column; }
+      .ind-grid { grid-template-columns: 1fr; }
     }
 
     /* Acesso negado */
@@ -182,13 +318,13 @@
             <line x1="3" y1="18" x2="21" y2="18"/>
           </svg>
         </button>
-        <span class="topbar__title">Indicadores do Mês</span>
+        <span class="topbar__title">Indicadores WCVS</span>
       </header>
 
       <main class="page-content">
         <div class="page-header">
-          <h1 class="page-title">📊 Indicadores do Mês</h1>
-          <p class="page-subtitle">Painel de indicadores mensais da Vigilância Sanitária de Anápolis.</p>
+          <h1 class="page-title">📊 Indicadores WCVS</h1>
+          <p class="page-subtitle">Painel de indicadores por período — Vigilância Sanitária de Anápolis.</p>
         </div>
 
 <div class="main-content" id="mainContent">
@@ -202,214 +338,331 @@
         Esta página está disponível apenas para Administradores.
       </div>
 
-      <!-- Seção de indicadores dentro de card -->
-      <div class="card" id="cardIndicadores" style="display:none;">
-        <div class="indicadores-section">
-          <h3>📊 Indicadores do Mês</h3>
-          <div id="indicadores-content">
-            <div class="indicadores-loading">📊 Carregando...</div>
+      <!-- Filtro de período -->
+      <div id="cardIndicadores" style="display:none;">
+
+        <form class="periodo-form" id="formPeriodo" onsubmit="return false;">
+          <div class="form-group">
+            <label for="dataInicial">Data inicial</label>
+            <input type="date" id="dataInicial" min="2018-01-01" max="2030-12-31">
           </div>
+          <div class="form-group">
+            <label for="dataFinal">Data final</label>
+            <input type="date" id="dataFinal" min="2018-01-01" max="2030-12-31">
+          </div>
+          <button class="btn-gerar" onclick="window.gerarIndicadores()">🔄 Gerar Indicadores</button>
+        </form>
+
+        <!-- Área dos resultados -->
+        <div id="indicadores-content">
+          <div class="indicadores-loading">📊 Selecione um período e clique em Gerar Indicadores.</div>
         </div>
-      </div>
+
+      </div><!-- /cardIndicadores -->
 
     </div>
   </div><!-- /main-content -->
 
-  <!-- ══════════════ JAVASCRIPT (lógica 100% idêntica ao index.html) ══════════════ -->
+  <!-- ══════════════ JAVASCRIPT ══════════════ -->
   <script>
-    window.carregarIndicadores = function carregarIndicadores() {
-      const container = document.getElementById('indicadores-content');
-      if (!container) return;
+  (function () {
+    /* ── Utilidades de data ── */
+    function parseDMY(str) {
+      if (!str) return null;
+      var m = String(str).trim().match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{2,4})/);
+      if (!m) return null;
+      var d = parseInt(m[1], 10), mo = parseInt(m[2], 10), y = parseInt(m[3], 10);
+      if (y < 100) y += 2000;
+      if (d < 1 || d > 31 || mo < 1 || mo > 12) return null;
+      return new Date(y, mo - 1, d);
+    }
+    function isoToDate(iso) {
+      if (!iso) return null;
+      var p = iso.split('-');
+      if (p.length < 3) return null;
+      return new Date(parseInt(p[0],10), parseInt(p[1],10)-1, parseInt(p[2],10));
+    }
+    function fmtDate(d) {
+      if (!d) return '';
+      return d.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric'});
+    }
+    function inRange(date, start, end) {
+      if (!date) return false;
+      return date >= start && date <= end;
+    }
 
-      Papa.parse('data/inspecoes.csv', {
-        download: true,
-        header: true,
-        delimiter: ';',
-        skipEmptyLines: true,
-        complete: function(results) {
-          processarDados(results.data, container);
-        },
-        error: function() {
-          container.innerHTML = '<div class="indicadores-loading">⚠️ Erro: data/inspecoes.csv</div>';
-        }
+    /* ── Calcular default de período (mês atual ou anterior) ── */
+    function defaultPeriodo() {
+      // Antes do dia 15: usa o mês anterior (dados ainda incompletos no mês atual)
+      // A partir do dia 15: usa o mês atual
+      var MONTH_SWITCH_DAY = 15;
+      var hoje = new Date();
+      var dia = hoje.getDate();
+      var mes = hoje.getMonth() + 1;
+      var ano = hoje.getFullYear();
+      var y2, m2;
+      if (dia < MONTH_SWITCH_DAY) {
+        m2 = mes === 1 ? 12 : mes - 1;
+        y2 = mes === 1 ? ano - 1 : ano;
+      } else {
+        m2 = mes; y2 = ano;
+      }
+      function pad(n){ return String(n).padStart(2,'0'); }
+      var lastDay = new Date(y2, m2, 0).getDate();
+      return {
+        start: y2 + '-' + pad(m2) + '-01',
+        end:   y2 + '-' + pad(m2) + '-' + pad(lastDay)
+      };
+    }
+
+    /* ── Carregar CSV via PapaParse ── */
+    function loadCSV(path) {
+      return new Promise(function(resolve, reject) {
+        Papa.parse(path, {
+          download: true, header: true, delimiter: ';', skipEmptyLines: true,
+          complete: function(r){ resolve(r.data || []); },
+          error:    function(e){ reject(e); }
+        });
+      });
+    }
+
+    /* ── Inicializar campos de data com default ── */
+    function initDates() {
+      var def = defaultPeriodo();
+      var di = document.getElementById('dataInicial');
+      var df = document.getElementById('dataFinal');
+      if (di && !di.value) di.value = def.start;
+      if (df && !df.value) df.value = def.end;
+    }
+
+    /* ── Função principal ── */
+    window.gerarIndicadores = function gerarIndicadores() {
+      var di = document.getElementById('dataInicial');
+      var df = document.getElementById('dataFinal');
+      if (!di || !df || !di.value || !df.value) {
+        alert('Selecione o período inicial e final.');
+        return;
+      }
+      var start = isoToDate(di.value);
+      var end   = isoToDate(df.value);
+      if (start > end) { alert('Data inicial deve ser anterior à data final.'); return; }
+
+      var container = document.getElementById('indicadores-content');
+      container.innerHTML = '<div class="indicadores-loading">⏳ Carregando dados… aguarde.</div>';
+
+      Promise.all([
+        loadCSV('data/inspecoes.csv'),
+        loadCSV('data/oficio.csv'),
+        loadCSV('data/requerimento.csv'),
+        loadCSV('data/denuncia.csv'),
+        loadCSV('data/protocolo.csv'),
+        loadCSV('data/alvara.csv')
+      ]).then(function(results) {
+        var insp  = results[0];
+        var ofic  = results[1];
+        var req   = results[2];
+        var den   = results[3];
+        var prot  = results[4];
+        var alv   = results[5];
+        renderAll(container, start, end, insp, ofic, req, den, prot, alv);
+      }).catch(function(err) {
+        container.innerHTML = '<div class="indicadores-loading">⚠️ Erro ao carregar dados: ' + (err && err.message ? err.message : err) + '</div>';
       });
     };
 
-    function processarDados(data, container) {
-      const rows = data || [];
-      const mesesPt = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
-                       'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-      const pad2 = (n) => String(n).padStart(2, '0');
+    /* ══════════════════════════════════════════════════════
+       PROCESSAMENTO E RENDERIZAÇÃO
+    ══════════════════════════════════════════════════════ */
+    function renderAll(container, start, end, insp, ofic, req, den, prot, alv) {
+      var periodoLabel = fmtDate(start) + ' – ' + fmtDate(end);
 
-      function parseDMY(str) {
-        if (!str) return null;
-        const m = String(str).trim().match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{2,4})/);
-        if (!m) return null;
-        const day = parseInt(m[1], 10);
-        const month = parseInt(m[2], 10);
-        let year = parseInt(m[3], 10);
-        if (year < 100) year += 2000;
-        if (!(day >= 1 && day <= 31 && month >= 1 && month <= 12)) return null;
-        return { day, month, year };
+      /* ── INSPEÇÕES ── */
+      var inspeçõesPeriodo = insp.filter(function(r){ return inRange(parseDMY(r.DT_VISITA), start, end); });
+      var totalInsp = inspeçõesPeriodo.length;
+
+      var tipoMap = {};
+      inspeçõesPeriodo.forEach(function(r){
+        var t = (r.TIPO||'').trim();
+        if (t) tipoMap[t] = (tipoMap[t]||0) + 1;
+      });
+
+      var TI  = tipoMap['TERMO DE INTIMAÇÃO'] || 0;
+      var TN  = tipoMap['TERMO DE NOTIFICAÇÃO'] || 0;
+      var AI  = tipoMap['AUTO DE INFRAÇÃO'] || 0;
+      var AIT = tipoMap['AUTO DE IMPOSIÇÃO DE PENALIDADE'] || 0;
+      var outrosDocs = Object.entries(tipoMap)
+        .filter(function(e){ return !['TERMO DE INTIMAÇÃO','TERMO DE NOTIFICAÇÃO','AUTO DE INFRAÇÃO','AUTO DE IMPOSIÇÃO DE PENALIDADE'].includes(e[0]); })
+        .sort(function(a,b){ return b[1]-a[1]; })
+        .slice(0, 5);
+
+      var fiscaisSet = new Set();
+      inspeçõesPeriodo.forEach(function(r){
+        ['Fiscal1','Fiscal2','Fiscal3'].forEach(function(f){ if ((r[f]||'').trim()) fiscaisSet.add(r[f].trim()); });
+      });
+      var totalFiscais = fiscaisSet.size;
+      var mediaPorFiscal = totalFiscais > 0 ? (totalInsp / totalFiscais).toFixed(1) : 0;
+
+      var estabSet = new Set();
+      inspeçõesPeriodo.forEach(function(r){ if ((r.CODIGO||'').trim()) estabSet.add(r.CODIGO.trim()); });
+
+      /* ── OFÍCIOS ── */
+      var ofPer = ofic.filter(function(r){ return inRange(parseDMY(r.Data), start, end); });
+      var ofTotal = ofPer.length;
+      var ofInsp  = ofPer.filter(function(r){ return (r.Motivo||'').toUpperCase().includes('INSPEÇÃO'); }).length;
+      var ofRet   = ofPer.filter(function(r){ return (r.Motivo||'').toUpperCase() === 'RETORNO'; }).length;
+      var ofBusca = ofPer.filter(function(r){ return (r.Motivo||'').toUpperCase().includes('BUSCA ATIVA'); }).length;
+      var ofOutros = ofTotal - ofInsp - ofRet - ofBusca;
+
+      /* ── REQUERIMENTOS ── */
+      var reqPer    = req.filter(function(r){ return inRange(parseDMY(r.Dt_Req), start, end); });
+      var reqTotal  = reqPer.length;
+      var reqAb     = reqPer.filter(function(r){ return (r.Motivo||'').toLowerCase() === 'abertura'; }).length;
+      var reqRen    = reqPer.filter(function(r){ return (r.Motivo||'').toLowerCase() === 'renovação' || (r.Motivo||'').toLowerCase() === 'renovacao'; }).length;
+      var reqOutros = reqTotal - reqAb - reqRen;
+
+      /* ── DENÚNCIAS ── */
+      var denPer     = den.filter(function(r){ return inRange(parseDMY(r.Data), start, end); });
+      var denTotal   = denPer.length;
+      // Considerada "atendida" quando há data de encaminhamento ao fiscal OU fiscal registrado
+      var denAtend   = denPer.filter(function(r){ return (r.DtEncaminha||'').trim() !== '' || (r.FiscalAtend||'').trim() !== ''; }).length;
+      var denNaoAt   = denTotal - denAtend;
+      // "Atendida em atraso": DtEncaminha preenchida E posterior ao Prazo (só conta atendidas fora do prazo)
+      var denAtraso  = denPer.filter(function(r){
+        var prazo = parseDMY(r.Prazo);
+        var atend = parseDMY(r.DtEncaminha);
+        return prazo && atend && atend > prazo;
+      }).length;
+
+      /* ── PROTOCOLOS ── */
+      // Palavras-chave dos assuntos conforme cadastro no sistema
+      var KW_PROJ_ARQ = 'PROJETO ARQUITET';
+      var KW_PAS      = 'PROCESSO ADMIN';
+      // Carga indica etapa atual: "ARQUIVO" = concluído; "TURMA JULGADORA" ou similar = julgado
+      var KW_JULGADO  = 'JULGA';
+      var KW_ARQUIVO  = 'ARQUIVO';
+
+      var protPer   = prot.filter(function(r){ return inRange(parseDMY(r.Data), start, end); });
+      var protTotal = protPer.length;
+      var protProjArq = protPer.filter(function(r){ return (r.Assunto||'').toUpperCase().includes(KW_PROJ_ARQ); });
+      var protProj  = protProjArq.length;
+      var projArquivados = protProjArq.filter(function(r){ return (r.Carga||'').toUpperCase() === KW_ARQUIVO; }).length;
+      var projEmAtend    = protProj - projArquivados;
+      var protPASRows = protPer.filter(function(r){ return (r.Assunto||'').toUpperCase().includes(KW_PAS); });
+      var protPAS   = protPASRows.length;
+      var pasJulg   = protPASRows.filter(function(r){
+        var c = (r.Carga||'').toUpperCase();
+        // Julgados = passaram pela turma julgadora ou foram arquivados após julgamento
+        return c.includes(KW_JULGADO) || c === KW_ARQUIVO;
+      }).length;
+      var pasAbertos = protPAS - pasJulg;
+      var protOutros = protTotal - protProj - protPAS;
+
+      /* ── ALVARÁS LIBERADOS ── */
+      var alvLib = alv.filter(function(r){ return (r.Libera||'').trim() === 'True' && inRange(parseDMY(r.Dt_libera), start, end); });
+      var alvTotal = alvLib.length;
+
+      /* ══ RENDERIZAÇÃO ══ */
+      function row(label, val, cls, indent) {
+        return '<tr' + (cls ? ' class="'+cls+'"' : '') + '>' +
+               '<td class="'+(indent?'sub':'')+'">' + label + '</td>' +
+               '<td class="val">' + val + '</td></tr>';
       }
-      function labelMesAno(month, year) { return `${mesesPt[month - 1]} ${year}`; }
-      function prevMesAno(month, year)  { return month === 1 ? { month: 12, year: year - 1 } : { month: month - 1, year }; }
-      function keyMesAno(month, year)   { return `${pad2(month)}.${year}`; }
-
-      const hoje     = new Date();
-      const hojeDia  = hoje.getDate();
-      const mesAtual = hoje.getMonth() + 1;
-      const anoAtual = hoje.getFullYear();
-
-      const atualKey    = keyMesAno(mesAtual, anoAtual);
-      const anterior    = prevMesAno(mesAtual, anoAtual);
-      const anteriorKey = keyMesAno(anterior.month, anterior.year);
-
-      const rowsMesAtual    = rows.filter(row => row.DT_VISITA && String(row.DT_VISITA).includes(atualKey));
-      const rowsMesAnterior = rows.filter(row => row.DT_VISITA && String(row.DT_VISITA).includes(anteriorKey));
-
-      const existeDia15ouMaisNoMesAtual = rowsMesAtual.some(row => {
-        const dmy = parseDMY(row.DT_VISITA);
-        return dmy && dmy.year === anoAtual && dmy.month === mesAtual && dmy.day >= 15;
-      });
-
-      let inspecoesFiltradas, periodoTexto;
-
-      if (hojeDia < 15) {
-        inspecoesFiltradas = rowsMesAnterior;
-        periodoTexto = labelMesAno(anterior.month, anterior.year);
-      } else {
-        if (existeDia15ouMaisNoMesAtual) {
-          inspecoesFiltradas = rowsMesAtual;
-          periodoTexto = labelMesAno(mesAtual, anoAtual);
-        } else {
-          inspecoesFiltradas = rowsMesAnterior;
-          periodoTexto = labelMesAno(anterior.month, anterior.year);
-        }
-      }
-
-      if (!inspecoesFiltradas || inspecoesFiltradas.length === 0) {
-        inspecoesFiltradas = rows.slice(-1000);
-        periodoTexto = 'Últimos 1000';
-      }
-
-      const totalInspecoes = inspecoesFiltradas.length;
-      const autos = inspecoesFiltradas.filter(row => row.TIPO && row.TIPO.includes('AUTO DE INFRAÇÃO')).length;
-
-      const fiscaisSet = new Set();
-      inspecoesFiltradas.forEach(row => {
-        if (row.Fiscal1 && row.Fiscal1.trim()) fiscaisSet.add(row.Fiscal1.trim());
-        if (row.Fiscal2 && row.Fiscal2.trim()) fiscaisSet.add(row.Fiscal2.trim());
-        if (row.Fiscal3 && row.Fiscal3.trim()) fiscaisSet.add(row.Fiscal3.trim());
-      });
-      const totalFiscais = fiscaisSet.size;
-
-      const denuncias     = new Set();
-      const requerimentos = new Set();
-      const oficios       = new Set();
-      const protocolos    = new Set();
-
-      inspecoesFiltradas.forEach(row => {
-        if (row.Denuncia  && row.Denuncia.trim()  !== '') denuncias.add(row.Denuncia.trim());
-        if (row.OS        && row.OS.trim()        !== '') requerimentos.add(row.OS.trim());
-        if (row.Oficio    && row.Oficio.trim()    !== '') oficios.add(row.Oficio.trim());
-        if (row.Protocolo && row.Protocolo.trim() !== '') protocolos.add(row.Protocolo.trim());
-      });
-
-      const osDetalhadas = {
-        requerimentos: requerimentos.size,
-        oficios:       oficios.size,
-        denuncias:     denuncias.size,
-        protocolos:    protocolos.size,
-        total: requerimentos.size + oficios.size + denuncias.size + protocolos.size
-      };
-
-      const tiposDocumentos = {};
-      inspecoesFiltradas.forEach(row => {
-        if (row.TIPO && row.TIPO.trim())
-          tiposDocumentos[row.TIPO.trim()] = (tiposDocumentos[row.TIPO.trim()] || 0) + 1;
-      });
-
-      const topTipos       = Object.entries(tiposDocumentos).sort((a, b) => b[1] - a[1]).slice(0, 5);
-      const mediaPorFiscal = totalFiscais > 0 ? Math.round(totalInspecoes / totalFiscais) : 0;
-      const taxaAutos      = totalInspecoes > 0 ? ((autos / totalInspecoes) * 100).toFixed(1) : 0;
-
-      renderizarIndicadores(container, {
-        totalInspecoes, autos, totalFiscais, osDetalhadas,
-        mediaPorFiscal, taxaAutos, topTipos, periodoTexto
-      });
-    }
-
-    function renderizarIndicadores(container, dados) {
-      let html =
-        '<table style="width:100%;font-size:0.875rem;border-collapse:collapse;margin-bottom:8px;">' +
-        '<tr style="border-bottom:1px solid rgba(0,0,0,0.05);"><td style="padding:8px 4px;">🔍 Inspeções</td>' +
-        '<td style="text-align:right;font-weight:600;color:var(--primary, #2c5aa0);">' + dados.totalInspecoes +
-        ' <small style="color:var(--muted);font-weight:normal;">• Média ' + dados.mediaPorFiscal + '/fiscal</small></td></tr>' +
-        '<tr style="border-bottom:1px solid rgba(0,0,0,0.05);"><td style="padding:8px 4px;">📋 Autos</td>' +
-        '<td style="text-align:right;font-weight:600;color:var(--primary, #2c5aa0);">' + dados.autos +
-        ' <small style="color:var(--muted);font-weight:normal;">• Taxa ' + dados.taxaAutos + '%</small></td></tr>' +
-        '<tr><td style="padding:8px 4px;">👥 Fiscais Ativos</td>' +
-        '<td style="text-align:right;font-weight:600;color:var(--primary, #2c5aa0);">' + dados.totalFiscais + '</td></tr>' +
-        '</table>' +
-        '<div style="border-top:1px solid rgba(0,0,0,0.08);margin:20px 0 16px 0;"></div>' +
-        '<div>' +
-        '<h4 style="margin:0 0 12px 0;color:var(--primary, #2c5aa0);font-size:0.95rem;font-weight:600;">📝 Ordens de Serviço: <strong>' +
-        dados.osDetalhadas.total + '</strong> <small style="color:var(--muted);font-weight:normal;">Atendidas</small></h4>' +
-        '<table style="width:100%;font-size:0.875rem;border-collapse:collapse;">' +
-        '<tr style="border-bottom:1px solid rgba(0,0,0,0.05);"><td style="padding:8px 4px;">📄 Requerimento</td>' +
-        '<td style="text-align:right;font-weight:600;color:var(--primary, #2c5aa0);">' + dados.osDetalhadas.requerimentos + '</td></tr>' +
-        '<tr style="border-bottom:1px solid rgba(0,0,0,0.05);"><td style="padding:8px 4px;">📮 Ofício</td>' +
-        '<td style="text-align:right;font-weight:600;color:var(--primary, #2c5aa0);">' + dados.osDetalhadas.oficios + '</td></tr>' +
-        '<tr style="border-bottom:1px solid rgba(0,0,0,0.05);"><td style="padding:8px 4px;">🔔 Denúncia</td>' +
-        '<td style="text-align:right;font-weight:600;color:var(--primary, #2c5aa0);">' + dados.osDetalhadas.denuncias + '</td></tr>' +
-        '<tr><td style="padding:8px 4px;">📋 Protocolo</td>' +
-        '<td style="text-align:right;font-weight:600;color:var(--primary, #2c5aa0);">' + dados.osDetalhadas.protocolos + '</td></tr>' +
-        '</table></div>' +
-        '<div style="border-top:1px solid rgba(0,0,0,0.08);margin:20px 0 16px 0;"></div>' +
-        '<div>' +
-        '<h4 style="margin:0 0 12px 0;color:var(--primary, #2c5aa0);font-size:0.95rem;font-weight:600;">📄 Tipos de Documentos: <strong>' +
-        dados.totalInspecoes + '</strong> <small style="color:var(--muted);font-weight:normal;">Total</small></h4>' +
-        '<table style="width:100%;font-size:0.875rem;border-collapse:collapse;">';
-
-      function toTitleCase(str) {
-        var min = ['de','da','do','das','dos','e','em','a','o'];
-        return str.toLowerCase().split(' ').map(function(p, i) {
-          if (i === 0) return p.charAt(0).toUpperCase() + p.slice(1);
-          if (min.indexOf(p) > -1) return p;
-          return p.charAt(0).toUpperCase() + p.slice(1);
-        }).join(' ');
+      function card(title, tableRows) {
+        return '<div class="ind-card"><h4>' + title + '</h4>' +
+               '<table class="ind-table">' + tableRows + '</table></div>';
       }
 
-      function getIconeDocumento(tipo) {
-        var t = tipo.toLowerCase();
-        if (t.includes('intimaç') || t.includes('intimac')) return '⚠️';
-        if (t.includes('notificaç') || t.includes('notificac')) return '📢';
-        if (t.includes('certidão') || t.includes('certidao')) return '📜';
-        if (t.includes('análise') || t.includes('analise')) return '🔍';
-        if (t.includes('prorrogaç') || t.includes('prorrogac')) return '⏳';
-        if (t.includes('auto')) return '📋';
-        if (t.includes('alvar')) return '✅';
-        if (t.includes('relatório') || t.includes('relatorio')) return '📊';
-        if (t.includes('ofício') || t.includes('oficio')) return '📮';
-        return '📄';
+      var html = '';
+      html += '<div style="margin-bottom:16px;font-size:0.85rem;color:var(--muted);">📅 Período: <strong>' + periodoLabel + '</strong></div>';
+
+      /* Seção Inspeções */
+      html += '<h3 class="ind-section-title">🔍 Inspeções</h3>';
+      html += '<div class="ind-grid">';
+
+      var rowsInsp = '';
+      rowsInsp += row('Total de inspeções', totalInsp);
+      rowsInsp += row('Fiscais ativos', totalFiscais);
+      rowsInsp += row('Média por fiscal', mediaPorFiscal);
+      rowsInsp += row('Estabelecimentos inspecionados', estabSet.size);
+      html += card('📋 Resumo das Inspeções', rowsInsp);
+
+      var rowsDocs = '';
+      rowsDocs += row('TI – Termo de Intimação', TI);
+      rowsDocs += row('TN – Termo de Notificação', TN);
+      rowsDocs += row('AI – Auto de Infração', AI);
+      rowsDocs += row('AIT – Auto de Imposição de Penalidade', AIT);
+      if (outrosDocs.length > 0) {
+        rowsDocs += '<tr class="subtotal"><td colspan="2">Outros documentos</td></tr>';
+        outrosDocs.forEach(function(e){
+          var MAX_DOC_NAME = 36; // max chars before truncating document type names in table
+          var nome = e[0].length > MAX_DOC_NAME ? e[0].substring(0, MAX_DOC_NAME - 3)+'…' : e[0];
+          rowsDocs += row(nome, e[1], '', true);
+        });
       }
+      html += card('📄 Documentos por Tipo', rowsDocs);
+      html += '</div>';
 
-      dados.topTipos.forEach(function(item, index) {
-        var nome = toTitleCase(item[0]);
-        if (nome.length > 32) nome = nome.substring(0, 29) + '...';
-        var icone = getIconeDocumento(item[0]);
-        var borda = (index < dados.topTipos.length - 1) ? 'border-bottom:1px solid rgba(0,0,0,0.05);' : '';
-        html += '<tr style="' + borda + '"><td style="padding:8px 4px;">' + icone + ' ' + nome + '</td>' +
-                '<td style="text-align:right;font-weight:600;color:var(--primary, #2c5aa0);">' + item[1] + '</td></tr>';
-      });
+      /* Seção OS */
+      html += '<h3 class="ind-section-title">📝 Ordens de Serviço</h3>';
+      html += '<div class="ind-grid">';
 
-      html += '</table></div>';
+      var rowsOfic = '';
+      rowsOfic += row('Total de ofícios', ofTotal);
+      rowsOfic += '<tr class="subtotal"><td colspan="2">Por motivo</td></tr>';
+      rowsOfic += row('Inspeção Sanitária', ofInsp, '', true);
+      rowsOfic += row('Retorno', ofRet, '', true);
+      rowsOfic += row('Busca Ativa', ofBusca, '', true);
+      rowsOfic += row('Outros motivos', ofOutros, '', true);
+      html += card('📮 Ofícios', rowsOfic);
+
+      var rowsReq = '';
+      rowsReq += row('Total de requerimentos', reqTotal);
+      rowsReq += '<tr class="subtotal"><td colspan="2">Por motivo</td></tr>';
+      rowsReq += row('Abertura', reqAb, '', true);
+      rowsReq += row('Renovação', reqRen, '', true);
+      rowsReq += row('Outros motivos', reqOutros, '', true);
+      html += card('📄 Requerimentos', rowsReq);
+
+      var rowsDen = '';
+      rowsDen += row('Total de denúncias', denTotal);
+      rowsDen += '<tr class="subtotal"><td colspan="2">Por situação</td></tr>';
+      rowsDen += row('Atendidas', denAtend, '', true);
+      rowsDen += row('Atendidas em atraso', '<span class="badge-warn">⚠ ' + denAtraso + '</span>', '', true);
+      rowsDen += row('Não atendidas', '<span class="badge-warn">' + denNaoAt + '</span>', '', true);
+      html += card('🔔 Denúncias', rowsDen);
+
+      var rowsProt = '';
+      rowsProt += row('Total de protocolos', protTotal);
+      rowsProt += '<tr class="subtotal"><td colspan="2">Projeto Arquitetônico</td></tr>';
+      rowsProt += row('Total', protProj, '', true);
+      rowsProt += row('Concluídos/Arquivados', projArquivados, '', true);
+      rowsProt += row('Em andamento', projEmAtend, '', true);
+      rowsProt += '<tr class="subtotal"><td colspan="2">PAS – Proc. Administrativo Sanitário</td></tr>';
+      rowsProt += row('Total abertos', pasAbertos, '', true);
+      rowsProt += row('Julgados/Arquivados', pasJulg, '', true);
+      if (protOutros > 0) rowsProt += row('Outros assuntos', protOutros, '', true);
+      html += card('🗂️ Protocolos', rowsProt);
+
+      html += '</div>';
+
+      /* Seção Alvarás */
+      html += '<h3 class="ind-section-title">🏦 Alvarás e Estabelecimentos</h3>';
+      html += '<div class="ind-grid">';
+      var rowsAlv = '';
+      rowsAlv += row('Alvarás liberados no período', alvTotal);
+      html += card('✅ Alvarás Sanitários Liberados', rowsAlv);
+      html += '</div>';
+
       html += '<div style="margin-top:20px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.08);' +
-              'text-align:right;font-size:0.85rem;color:var(--muted);">📅 ' +
-              dados.periodoTexto + ' • 🔄 Atualizado</div>';
+              'text-align:right;font-size:0.8rem;color:var(--muted);">🔄 Dados gerados em ' +
+              new Date().toLocaleString('pt-BR') + '</div>';
+
       container.innerHTML = html;
     }
+
+    /* ── Inicializar ao carregar ── */
+    window.initIndicadores = function() { initDates(); };
+  })();
   </script>
 
   <!-- ══════════════ FIREBASE AUTH ══════════════ -->
@@ -451,9 +704,9 @@
         return;
       }
 
-      // Admin: mostra card e carrega dados
+      // Admin: mostra seletor de período e inicializa datas padrão
       document.getElementById('cardIndicadores').style.display = 'block';
-      window.carregarIndicadores();
+      if (typeof window.initIndicadores === 'function') window.initIndicadores();
     });
   </script>
 
