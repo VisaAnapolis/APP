@@ -334,21 +334,7 @@
       els.dSub.textContent = `${doc}${insc}`;
     }
 
-    /* Faixa de correspondência */
-    if (els.matchInfo) {
-      const csvDateHtml = simCsvDate
-        ? `<span class="csv-stamp">📅 SIM: ${esc(formatCsvDate(simCsvDate))}</span>`
-        : "";
-      if (matchMethod) {
-        els.matchInfo.innerHTML =
-          `🔗 Encontrado no SIM <span class="match-badge ${matchCls}">${esc(matchMethod)}</span>${csvDateHtml}`;
-      } else {
-        els.matchInfo.innerHTML =
-          `<span class="match-badge match-badge--err">⚠️ Contribuinte não encontrado no SIM (sem inscrição, CNPJ ou CPF correspondente)</span>${csvDateHtml}`;
-      }
-    }
-
-    /* ── Conjuntos para comparação ─────────────────────────── */
+    /* ── Conjuntos para comparação (necessário antes do matchInfo) ── */
     const cvsAtvs = Array.isArray(reg.atividades) ? reg.atividades : [];
 
     // Set normalizado de subclasses CVS → lookup rápido
@@ -363,6 +349,38 @@
       if (nc && !simNormSet.has(nc)) {
         simNormSet.add(nc);
         simUniq.push(r);
+      }
+    }
+
+    /* ── Verificação de divergência ─────────────────────────── */
+    // Divergência = existe CNAE que compete (está no visaSet) e está
+    // só em um lado (SÓ CVS ou SÓ SIM). "Não Compete" é ignorado.
+    const hasDivergence =
+      cvsAtvs.some((a) => {
+        const nc = normCnae(a.subclasse);
+        return visaSet.has(nc) && !simNormSet.has(nc);
+      }) ||
+      simUniq.some((r) => {
+        const nc = normCnae(r["CNAE"] || "");
+        return visaSet.has(nc) && !cvsNormSet.has(nc);
+      });
+
+    const divIcon = simRows === null ? "" :
+      hasDivergence
+        ? `<span class="div-icon div-icon--err" title="Há divergências entre SIM e CVS">✖</span>`
+        : `<span class="div-icon div-icon--ok"  title="Sem divergências entre SIM e CVS">✔</span>`;
+
+    /* Faixa de correspondência */
+    if (els.matchInfo) {
+      const csvDateHtml = simCsvDate
+        ? `<span class="csv-stamp">📅 SIM: ${esc(formatCsvDate(simCsvDate))}</span>`
+        : "";
+      if (matchMethod) {
+        els.matchInfo.innerHTML =
+          `🔗 Encontrado no SIM <span class="match-badge ${matchCls}">${esc(matchMethod)}</span>${divIcon}${csvDateHtml}`;
+      } else {
+        els.matchInfo.innerHTML =
+          `<span class="match-badge match-badge--err">⚠️ Contribuinte não encontrado no SIM (sem inscrição, CNPJ ou CPF correspondente)</span>${csvDateHtml}`;
       }
     }
 
