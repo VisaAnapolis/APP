@@ -177,7 +177,7 @@
 
     const [indexRoot, auxRows, regRows, cnaeRows, auxLastModified] = await Promise.all([
       fetchJson(`./data/index_regulados.json?${ts}`),
-      parseCSV(`./data/cnae_aux.csv?${ts}`,   ["INSCRICAO_ISS", "CNAE", "ATIVIDADE", "DOCUMENTO"], "windows-1252"),
+      parseCSV(`./data/cnae_aux.csv?${ts}`,   ["INSCRICAO_ISS", "CNAE", "ATIVIDADE", "DOCUMENTO", "IND_PRINCIPAL"]),
       parseCSV(`./data/regulados.csv?${ts}`,   ["CODIGO", "MUNICIPAL", "CGC", "CPF"]),
       parseCSV(`./data/cnae.csv?${ts}`,        ["Subclasse"]),
       fetchLastModified(`./data/cnae_aux.csv?${ts}`),
@@ -379,6 +379,7 @@
             descricao: a.atividade || "—",
             status:    inSim ? "AMBOS" : "SÓ CVS",
             compete:   inVisa,
+            principal: String(a.tipo || "").toLowerCase().startsWith("p"),
           };
         }),
         "Nenhuma atividade cadastrada no CVS."
@@ -397,11 +398,13 @@
             const nc     = normCnae(r["CNAE"] || "");
             const inCvs  = cvsNormSet.has(nc);
             const inVisa = visaSet.has(nc);
+            const ip     = String(r["IND_PRINCIPAL"] || "").toUpperCase().trim();
             return {
               subclasse: r["CNAE"]     || "—",
               descricao: r["ATIVIDADE"]|| "—",
               status:    inCvs ? "AMBOS" : "SÓ SIM",
               compete:   inVisa,
+              principal: ip === "S" || ip === "1" || ip.startsWith("P"),
             };
           }),
           "Nenhum CNAE ativo no SIM para este contribuinte."
@@ -416,7 +419,7 @@
 
   /**
    * Gera o HTML de uma tabela de comparação.
-   * @param {{ subclasse, descricao, status, compete }[]} rows
+   * @param {{ subclasse, descricao, status, compete, principal }[]} rows
    * @param {string} emptyMsg
    */
   function buildTable(rows, emptyMsg) {
@@ -425,11 +428,12 @@
     }
 
     const trRows = rows.map((r) => {
-      const badge = r.compete ? badgeHtml(r.status) : `<span class="badge badge--nao-comp">Não Compete</span>`;
+      const badge        = r.compete ? badgeHtml(r.status) : `<span class="badge badge--nao-comp">Não Compete</span>`;
+      const principalTag = r.principal ? `<span class="badge badge--principal" title="Atividade principal">★ Principal</span> ` : "";
       return `
         <tr>
           <td>${badge}</td>
-          <td style="white-space:nowrap"><span class="subclasse-code">${esc(r.subclasse)}</span></td>
+          <td style="white-space:nowrap">${principalTag}<span class="subclasse-code">${esc(r.subclasse)}</span></td>
           <td><span class="descricao-text">${esc(r.descricao)}</span></td>
         </tr>`;
     }).join("");
