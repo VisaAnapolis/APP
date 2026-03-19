@@ -227,6 +227,67 @@
     .badge-warn { color: #d97706; font-size: 0.75rem; margin-left: 4px; }
     .badge-ok   { color: #059669; font-size: 0.75rem; margin-left: 4px; }
 
+    /* ── SIA/SUS TABLE ── */
+    .sia-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding: 10px 12px;
+      background: var(--bg, #f8fafc);
+      border-radius: 8px;
+      border: 1px solid var(--line, #e2e8f0);
+      font-size: 0.82rem;
+      color: var(--muted, #64748b);
+    }
+    .sia-meta strong { color: var(--text, #1e293b); }
+    .sia-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .sia-table thead th {
+      background: var(--brand1, #2563eb);
+      color: #fff;
+      padding: 8px 8px;
+      text-align: left;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+    .sia-table thead th.qtd-col { text-align: right; width: 60px; }
+    .sia-table thead th.cod-col { width: 130px; }
+    .sia-table tbody tr td { padding: 6px 8px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+    .sia-table tbody tr:last-child td { border-bottom: none; }
+    .sia-table tbody tr:hover { background: rgba(37,99,235,0.04); }
+    .sia-table .cod-cell {
+      font-family: monospace;
+      font-size: 0.78rem;
+      color: var(--muted, #64748b);
+      white-space: nowrap;
+    }
+    .sia-table .qtd-cell {
+      text-align: right;
+      font-weight: 700;
+      color: var(--primary, #2c5aa0);
+      white-space: nowrap;
+    }
+    .sia-table .na-cell {
+      text-align: right;
+      color: var(--muted, #94a3b8);
+      font-size: 0.75rem;
+    }
+    .sia-table tfoot td {
+      padding: 8px 8px;
+      font-weight: 700;
+      border-top: 2px solid var(--line, #e2e8f0);
+      background: var(--bg, #f8fafc);
+    }
+    .sia-table tfoot .qtd-cell {
+      color: var(--primary, #2c5aa0);
+      font-size: 1rem;
+    }
+    @media (max-width: 600px) {
+      .sia-table .cod-cell { display: none; }
+      .sia-table thead th.cod-col { display: none; }
+    }
+
     @media (max-width: 600px) {
       .periodo-form { flex-direction: column; }
       .ind-grid { grid-template-columns: 1fr; }
@@ -357,6 +418,70 @@
         <div id="indicadores-content">
           <div class="indicadores-loading">📊 Selecione um período e clique em Gerar Indicadores.</div>
         </div>
+
+        <!-- ══ MAPA DE COLETA DE DADOS SIA/SUS ══ -->
+        <h3 class="ind-section-title">🗺️ Mapa de Coleta de Dados SIA/SUS</h3>
+        <div class="ind-card">
+          <div class="sia-meta">
+            <span><strong>Unidade:</strong> Vigilância Sanitária Municipal</span>
+            <span><strong>CNES:</strong> 2438380</span>
+            <span><strong>Período:</strong> Fevereiro / 2026</span>
+          </div>
+          <table class="sia-table">
+            <thead>
+              <tr>
+                <th class="cod-col">Código</th>
+                <th>Nome do Procedimento</th>
+                <th class="qtd-col">Qtd.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td class="cod-cell">01.02.01.050-1</td><td>Atividades educativas sobre a temática da dengue, realizadas para a população</td><td class="qtd-cell">0</td></tr>
+              <tr><td class="cod-cell">01.02.01.005-6</td><td>Atividades educativas para o setor regulado</td><td class="qtd-cell">1</td></tr>
+              <tr><td class="cod-cell">01.02.01.006-4</td><td>Análise de projetos básicos de arquitetura</td><td class="qtd-cell">23</td></tr>
+              <tr><td class="cod-cell">01.02.01.007-2</td><td>Cadastro de estabelecimentos sujeitos à Vigilância Sanitária (todos os estabelecimentos que não tenham código específico)</td><td class="qtd-cell">0</td></tr>
+              <tr><td class="cod-cell">01.02.01.014-5</td><td>Inspeção sanitária de hospital</td><td class="qtd-cell">13</td></tr>
+              <tr><td class="cod-cell">01.02.01.015-3</td><td>Investigação de eventos adversos e/ou queixas técnicas</td><td class="qtd-cell">0</td></tr>
+              <tr><td class="cod-cell">01.02.01.016-1</td><td>Exclusão de cadastro de estabelecimentos sujeitos à Vigilância Sanitária com atividades encerradas</td><td class="qtd-cell">0</td></tr>
+              <tr><td class="cod-cell">01.02.01.017-0</td><td>Inspeção dos estabelecimentos sujeitos à Vigilância Sanitária (todos os estabelecimentos que não tenham código específico)</td><td class="qtd-cell">555</td></tr>
+              <tr><td class="cod-cell">01.02.01.018-8</td><td>Licenciamento dos estabelecimentos sujeitos à Vigilância Sanitária (todos os estabelecimentos que não tenham código específico)</td><td class="qtd-cell">237</td></tr>
+              <tr><td class="cod-cell">01.02.01.019-6</td><td>Aprovação de projetos básicos de arquitetura</td><td class="qtd-cell">10</td></tr>
+              <tr><td class="cod-cell">01.02.01.020-0</td><td>Investigação de surtos de doenças transmitidas por alimentos</td><td class="qtd-cell">0</td></tr>
+              <tr><td class="cod-cell">01.02.01.021-8</td><td>Investigação de surtos por infecção em serviços de saúde</td><td class="na-cell">N/A</td></tr>
+              <tr><td class="cod-cell">01.02.01.022-6</td><td>Atividade educativa para a população</td><td class="qtd-cell">1</td></tr>
+              <tr><td class="cod-cell">01.02.01.023-4</td><td>Recebimento de denúncias/reclamações</td><td class="qtd-cell">27</td></tr>
+              <tr><td class="cod-cell">01.02.01.024-2</td><td>Atendimento a denúncias/reclamações</td><td class="qtd-cell">25</td></tr>
+              <tr><td class="cod-cell">01.02.01.025-0</td><td>Cadastro de hospital</td><td class="qtd-cell">0</td></tr>
+              <tr><td class="cod-cell">01.02.01.026-9</td><td>Licenciamento sanitário de hospital</td><td class="qtd-cell">0</td></tr>
+              <tr><td class="cod-cell">01.02.01.027-7</td><td>Cadastro de instituições de longa permanência para idosos</td><td class="qtd-cell">0</td></tr>
+              <tr><td class="cod-cell">01.02.01.028-5</td><td>Inspeção sanitária de instituições de longa permanência para idosos</td><td class="qtd-cell">1</td></tr>
+              <tr><td class="cod-cell">01.02.01.029-3</td><td>Licenciamento sanitário de instituições de longa permanência para idosos</td><td class="qtd-cell">0</td></tr>
+              <tr><td class="cod-cell">01.02.01.030-7</td><td>Cadastro de indústrias de medicamentos</td><td class="na-cell">N/A</td></tr>
+              <tr><td class="cod-cell">01.02.01.031-5</td><td>Inspeção sanitária de indústrias de medicamentos</td><td class="qtd-cell">0</td></tr>
+              <tr><td class="cod-cell">01.02.01.032-3</td><td>Licenciamento sanitário de indústrias de medicamentos</td><td class="na-cell">N/A</td></tr>
+              <tr><td class="cod-cell">01.02.01.033-1</td><td>Cadastro de serviços de diagnóstico e tratamento do câncer de colo de útero e mama</td><td class="qtd-cell">0</td></tr>
+              <tr><td class="cod-cell">01.02.01.034-0</td><td>Inspeção sanitária de serviços de diagnóstico e tratamento do câncer de colo de útero e mama</td><td class="qtd-cell">10</td></tr>
+              <tr><td class="cod-cell">01.02.01.036-6</td><td>Cadastro de serviços hospitalares de atenção ao parto e à criança</td><td class="qtd-cell">0</td></tr>
+              <tr><td class="cod-cell">01.02.01.037-4</td><td>Inspeção sanitária de serviços hospitalares de atenção ao parto e à criança</td><td class="qtd-cell">1</td></tr>
+              <tr><td class="cod-cell">01.02.01.038-2</td><td>Licenciamento sanitário de serviços hospitalares de atenção ao parto e à criança</td><td class="qtd-cell">0</td></tr>
+              <tr><td class="cod-cell">01.02.01.045-5</td><td>Cadastro de serviços de alimentação (restaurantes e similares, cozinha industrial, cantinas e serviços de alimentação em escolas e creches)</td><td class="qtd-cell">0</td></tr>
+              <tr><td class="cod-cell">01.02.01.046-3</td><td>Inspeção sanitária de serviços de alimentação</td><td class="qtd-cell">77</td></tr>
+              <tr><td class="cod-cell">01.02.01.047-1</td><td>Licenciamento sanitário de serviços de alimentação</td><td class="qtd-cell">22</td></tr>
+              <tr><td class="cod-cell">01.02.01.048-0</td><td>Inspeção sanitária de ambientes livres do tabaco</td><td class="qtd-cell">0</td></tr>
+              <tr><td class="cod-cell">01.02.01.049-8</td><td>Laudo de análise laboratorial do programa de monitoramento de alimentos recebidos pela Vigilância Sanitária</td><td class="qtd-cell">0</td></tr>
+              <tr><td class="cod-cell">01.02.01.051-0</td><td>Atividades educativas com relação ao consumo de sódio, açúcar e gorduras, realizadas para o setor regulado e a população</td><td class="qtd-cell">0</td></tr>
+              <tr><td class="cod-cell">01.02.01.052-8</td><td>Instauração de processo administrativo sanitário</td><td class="qtd-cell">15</td></tr>
+              <tr><td class="cod-cell">01.02.01.053-6</td><td>Conclusão de processo administrativo sanitário</td><td class="qtd-cell">10</td></tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td class="cod-cell"></td>
+                <td><strong>TOTAL</strong></td>
+                <td class="qtd-cell">1.028</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div><!-- /sia-sus card -->
 
       </div><!-- /cardIndicadores -->
 
