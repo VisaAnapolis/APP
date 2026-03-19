@@ -1246,7 +1246,7 @@
             id="q"
             class="search-input input input--big"
             type="search"
-            placeholder="Razão social, fantasia, CPF/CNPJ ou código..."
+            placeholder="Razão social, fantasia, CPF/CNPJ, código ou inscrição municipal..."
             autocomplete="off"
             inputmode="search"
           />
@@ -1282,7 +1282,7 @@
       <!-- Grid de Dados - usando classe original detailGrid -->
       <div class="detailGrid">
         <div class="kv">
-          <div class="kv__k">📋 Código</div>
+          <div class="kv__k" id="dCodigoLabel">🏛️ Insc. Municipal</div>
           <div class="kv__v" id="dCodigo">—</div>
 
           <div class="kv__k">📄 Documento</div>
@@ -1352,6 +1352,7 @@
   <!-- ========================================
        SCRIPTS - Mantém funcionalidade original
        ======================================== -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="./js/regulados1.js" defer></script>
 
 
