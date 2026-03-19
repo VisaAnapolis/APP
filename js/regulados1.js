@@ -5,7 +5,6 @@
   const pad5 = (n) => String(n ?? "").padStart(5, "0");
   const regPrefix = (codigo) => pad5(codigo).slice(0, 2);
   const hisBucket = (ndoc) => String((Number(ndoc) || 0) % 100).padStart(2, "0");
-
   function formatDateBR(dateStr) {
     if (!dateStr || dateStr === "—" || dateStr === "-") return "—";
     const str = String(dateStr).trim();
@@ -43,7 +42,12 @@
   }
 
   function normalize(s) {
-    return String(s || "").toLowerCase().trim();
+    return String(s || "").toLowerCase().trim()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function normMunicipal(s) {
+    return String(s || "").replace(/\D+/g, "");
   }
 
   function normTxt(v) {
@@ -68,6 +72,7 @@
     btnCloseDetail: byId("btnCloseDetail"),
     dTitle: byId("dTitle"),
     dSub: byId("dSub"),
+    dCodigoLabel: byId("dCodigoLabel"),
     dCodigo: byId("dCodigo"),
     dDoc: byId("dDoc"),
     dEnd: byId("dEnd"),
@@ -88,6 +93,8 @@
 
   let indexItems = [];
   let currentInspecaoInfo = null;
+  let municipalMap     = new Map(); // CODIGO (string) → MUNICIPAL raw (for display)
+  let municipalNormMap = new Map(); // CODIGO (string) → MUNICIPAL digits-only (for search)
 
   function showStatus(msg) { safeText(els.status, msg || ""); }
   function hideDetail() { if (els.detailPanel) els.detailPanel.hidden = true; }
@@ -106,6 +113,49 @@
     safeText(els.modalMemo, memo || "");
     if (els.modalBackdrop) els.modalBackdrop.hidden = false;
     if (els.modal) els.modal.hidden = false;
+  }
+
+  async function loadMunicipalData() {
+    try {
+      const url = `./data/regulados.csv?v=${Date.now()}`;
+      const r = await fetch(url, { cache: "no-store" });
+      if (!r.ok) return;
+      const text = await r.text();
+      if (typeof Papa === "undefined") {
+        // Fallback: manual semicolon-delimited CSV parsing
+        const lines = text.split(/\r?\n/);
+        if (lines.length < 2) return;
+        const headers = lines[0].split(";").map(h => h.trim().replace(/^"|"$/g, ""));
+        const codigoIdx = headers.indexOf("CODIGO");
+        const municipalIdx = headers.indexOf("MUNICIPAL");
+        if (codigoIdx < 0 || municipalIdx < 0) return;
+        for (let i = 1; i < lines.length; i++) {
+          const parts = lines[i].split(";").map(p => p.trim().replace(/^"|"$/g, ""));
+          const codigo = parts[codigoIdx] || "";
+          const municipal = parts[municipalIdx] || "";
+          if (codigo && municipal) {
+            municipalMap.set(codigo, municipal);
+            municipalNormMap.set(codigo, normMunicipal(municipal));
+          }
+        }
+      } else {
+        const result = Papa.parse(text, {
+          header: true,
+          delimiter: ";",
+          skipEmptyLines: true,
+        });
+        for (const row of result.data) {
+          const codigo = String(row["CODIGO"] || "").trim();
+          const municipal = String(row["MUNICIPAL"] || "").trim();
+          if (codigo && municipal) {
+            municipalMap.set(codigo, municipal);
+            municipalNormMap.set(codigo, normMunicipal(municipal));
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("Falha ao carregar inscrições municipais:", e);
+    }
   }
 
   function renderResults(list) {
@@ -152,7 +202,15 @@
   function renderDetail(reg) {
     safeText(els.dTitle, reg.razao || "—");
     safeText(els.dSub, reg.fantasia || "—");
-    safeText(els.dCodigo, reg.codigo);
+    const codigoStr = String(reg.codigo || "");
+    const municipal = municipalMap.get(codigoStr) || "";
+    if (municipal) {
+      safeText(els.dCodigo, municipal);
+      if (els.dCodigoLabel) els.dCodigoLabel.textContent = "🏛️ Insc. Municipal";
+    } else {
+      safeText(els.dCodigo, codigoStr || "—");
+      if (els.dCodigoLabel) els.dCodigoLabel.textContent = "📋 Código";
+    }
     const doc = reg.cnpj || reg.cpf || "—";
     safeText(els.dDoc, doc);
 
@@ -354,12 +412,23 @@
       return;
     }
     const qDigits = onlyDigits(q);
+    const qMunicipal = normMunicipal(q);
+    // Only search by municipal inscription when input is short (≤6 digits, not a CPF/CNPJ)
+    const tryMunicipal = qMunicipal.length >= 2 && qMunicipal.length <= 6 && municipalNormMap.size > 0;
     const out = [];
     for (const it of indexItems) {
-      const hay = `${it.razao || ""} ${it.fantasia || ""} ${it.documento || ""} ${it.codigo || ""}`.toLowerCase();
+      const codigoStr = String(it.codigo || "");
+      const hay = `${it.razao || ""} ${it.fantasia || ""} ${it.documento || ""} ${codigoStr}`.toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      if (tryMunicipal) {
+        const mNorm = municipalNormMap.get(codigoStr) || "";
+        if (mNorm && (mNorm === qMunicipal || (mNorm.startsWith(qMunicipal) && qMunicipal.length >= 3))) {
+          out.push(it); if (out.length >= 80) break; continue;
+        }
+      }
       if (hay.includes(q)) out.push(it);
       else if (qDigits && onlyDigits(it.documento || "").includes(qDigits)) out.push(it);
-      else if (qDigits && String(it.codigo || "").includes(qDigits)) out.push(it);
+      else if (qDigits && codigoStr.includes(qDigits)) out.push(it);
       if (out.length >= 80) break;
     }
     renderResults(out);
@@ -375,6 +444,9 @@
     indexItems = Array.isArray(root?.dados) ? root.dados : (Array.isArray(root) ? root : []);
     showStatus(`Índice carregado (${indexItems.length}).`);
     renderResults(indexItems.slice(0, 80));
+
+    // Carrega inscrições municipais em segundo plano (não bloqueia UI)
+    loadMunicipalData().catch(() => {});
 
     const urlParams = new URLSearchParams(window.location.search);
 
