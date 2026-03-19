@@ -604,9 +604,9 @@
       var pasAbertos = protPAS - pasJulg;
       var protOutros = protTotal - protProj - protPAS;
 
-      /* ── ALVARÁS LIBERADOS ── */
-      var alvLib = alv.filter(function(r){ return (r.Libera||'').trim() === 'True' && inRange(parseDMY(r.Dt_libera), start, end); });
-      var alvTotal = alvLib.length;
+      /* ── ALVARÁS EMITIDOS ── */
+      var alvEmit = alv.filter(function(r){ return inRange(parseDMY(r.Dt_emite), start, end); });
+      var alvTotal = alvEmit.length;
 
       /* ══ RENDERIZAÇÃO ══ */
       function row(label, val, cls, indent) {
@@ -715,8 +715,8 @@
       html += '<h3 class="ind-section-title">🏦 Alvarás e Estabelecimentos</h3>';
       html += '<div class="ind-grid">';
       var rowsAlv = '';
-      rowsAlv += row('Alvarás liberados no período', alvTotal);
-      html += card('✅ Alvarás Sanitários Liberados', rowsAlv);
+      rowsAlv += row('Alvarás emitidos no período', alvTotal);
+      html += card('✅ Alvarás Sanitários Emitidos', rowsAlv);
       html += '</div>';
 
       html += '<div style="margin-top:20px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.08);' +
