@@ -28,7 +28,7 @@
       line-height: 1.6;
     }
 
-    .main-content { display: none; }
+    .main-content { display: block; }
 
     /* ── USER INFO BAR ── */
     .user-info-bar { background: none; border: none; padding: 0; }
@@ -406,15 +406,8 @@
 
     <div class="container">
 
-      <!-- Acesso restrito -->
-      <div id="acessoNegado" class="acesso-negado" style="display:none;">
-        <span>🔒</span>
-        <strong>Acesso restrito.</strong><br>
-        Esta página está disponível apenas para Administradores.
-      </div>
-
       <!-- Filtro de período -->
-      <div id="cardIndicadores" style="display:none;">
+      <div id="cardIndicadores">
 
         <form class="periodo-form" id="formPeriodo" onsubmit="return false;">
           <div class="form-group">
@@ -1258,49 +1251,8 @@
   })();
   </script>
 
-  <!-- ══════════════ FIREBASE AUTH ══════════════ -->
-  <script type="module">
-    const firebaseConfig = {
-      apiKey: "AIzaSyDo473puJesZ9rr3IBoX5AWczCIMuKBTrg",
-      authDomain: "visam-3a30b.firebaseapp.com",
-      projectId: "visam-3a30b",
-      messagingSenderId: "308899251430",
-      appId: "1:308899251430:web:0053cdbd0bed7f0de76727"
-    };
-
-    import { protectPage } from './js/guard1.js';
-
-    protectPage(firebaseConfig, (user, auth, perfil) => {
-      window.perfilGlobal = perfil || null;
-
-      // User info bar
-      const userInfo = document.getElementById('userInfo');
-      if (userInfo && perfil) {
-        userInfo.innerHTML =
-          `<span class="user-name">${perfil.nome}</span>` +
-          `<span class="user-email">${user.email}</span>`;
-      }
-
-      // Remove overlay de auth caso exista
-      const overlay = document.getElementById('authOverlay');
-      if (overlay) overlay.remove();
-
-      // Mostra conteúdo
-      const mainContent = document.getElementById('mainContent');
-      if (mainContent) mainContent.style.display = 'block';
-
-      // Só Admin acessa
-      const isAdmin = perfil && perfil.grupo === 'Administrador';
-
-      if (!isAdmin) {
-        document.getElementById('acessoNegado').style.display = 'block';
-        return;
-      }
-
-      // Admin: mostra seletor de período e inicializa datas padrão
-      document.getElementById('cardIndicadores').style.display = 'block';
-      if (typeof window.initIndicadores === 'function') window.initIndicadores();
-    });
+  <script>
+    if (typeof window.initIndicadores === 'function') window.initIndicadores();
   </script>
 
       </main><!-- /.page-content -->
