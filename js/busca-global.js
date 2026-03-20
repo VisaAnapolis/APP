@@ -49,7 +49,7 @@ async function _carregarTudo() {
   const hoje = new Date().toISOString().slice(0, 10);
 
   const [reguladosJson, protocolos, tramitacoes, denunciasRaw,
-         requerimentosRaw, oficiosRaw, alvarasRaw] =
+         requerimentosRaw, oficiosRaw, alvarasRaw, reguladosMunicipalRaw] =
     await Promise.all([
       fetch(`data/index_regulados.json?d=${hoje}`).then(r => r.json()),
       parseCSV(`data/protocolo.csv?d=${hoje}`),
@@ -63,10 +63,21 @@ async function _carregarTudo() {
                 'Prazo', 'Fiscalencaminha', 'Cancela', 'Archive']),
       parseCSV(`data/alvara.csv?d=${hoje}`,
                ['Controle', 'Codigo', 'Numero', 'Exercicio',
-                'Dt_emite', 'Dt_validade', 'Autoridade', 'Cancela'])
+                'Dt_emite', 'Dt_validade', 'Autoridade', 'Cancela']),
+      parseCSV(`data/regulados.csv?d=${hoje}`, ['CODIGO', 'MUNICIPAL'])
     ]);
 
   const regulados = reguladosJson.dados || reguladosJson;
+
+  const mapaMunicipal = new Map();
+  for (const r of reguladosMunicipalRaw) {
+    const cod = (r.CODIGO || '').trim();
+    const mun = (r.MUNICIPAL || '').trim();
+    if (cod && mun) mapaMunicipal.set(cod, mun);
+  }
+  for (const r of regulados) {
+    r.municipal = mapaMunicipal.get(String(r.codigo)) || '';
+  }
 
   const denuncias = denunciasRaw;
 
@@ -261,7 +272,7 @@ function _buscarSincrono(dados, termoNorm) {
   }
 
   buscar(dados.regulados, 'regulados',
-    r => match(r.fantasia, termoNorm) || match(r.razao, termoNorm) || match(r.documento, termoNorm)
+    r => match(r.fantasia, termoNorm) || match(r.razao, termoNorm) || match(r.documento, termoNorm) || match(r.municipal, termoNorm)
   );
 
   buscar(dados.protocolos, 'protocolos',
@@ -316,7 +327,7 @@ function _buscarSincrono(dados, termoNorm) {
 async function _buscarInspecoes(dados, termoNorm) {
   const reguladosMatch = [];
   for (const r of dados.regulados) {
-    if (match(r.fantasia, termoNorm) || match(r.razao, termoNorm) || match(r.documento, termoNorm)) {
+    if (match(r.fantasia, termoNorm) || match(r.razao, termoNorm) || match(r.documento, termoNorm) || match(r.municipal, termoNorm)) {
       reguladosMatch.push(r);
       if (reguladosMatch.length >= MAX_FETCH_REG_JSON) break;
     }
