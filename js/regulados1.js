@@ -47,7 +47,9 @@
   }
 
   function normMunicipal(s) {
-    return String(s || "").replace(/\D+/g, "");
+    const digits = String(s || "").replace(/\D+/g, "");
+    const n = parseInt(digits, 10);
+    return isNaN(n) || n === 0 ? "" : String(n);
   }
 
   function normTxt(v) {
