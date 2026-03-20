@@ -380,7 +380,7 @@
       position: sticky;
       top: 0;
       z-index: 999;
-      background: rgba(244,246,250,.92);
+      background: rgba(var(--bg-primary-rgb, 244,246,250),.92);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--line, rgba(0,0,0,.08));
@@ -529,7 +529,7 @@
     }
 
     .search-input::placeholder {
-      color: #94a3b8;
+      color: var(--input-placeholder, #94a3b8);
     }
 
     /* Botão Limpar */
@@ -550,7 +550,7 @@
     }
 
     .btn-clear:hover {
-      background: #e2e8f0;
+      background: var(--surface-variant, #e2e8f0);
     }
 
     .btn-clear::before {
@@ -591,7 +591,7 @@
 
     .hint-text {
       font-size: 0.85em;
-      color: #64748b;
+      color: var(--muted, #64748b);
     }
 
     .hint-text::before {
@@ -625,7 +625,7 @@
     }
 
     .result-item:hover {
-      background: rgba(26, 58, 107, 0.04);
+      background: var(--hover-bg, rgba(26, 58, 107, 0.04));
       border-color: var(--brand1, #1a3a6b);
       transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
@@ -644,7 +644,7 @@
 
     .result-item__subtitle {
       font-size: 0.9em;
-      color: #64748b;
+      color: var(--muted, #64748b);
     }
 
     .result-item__meta {
@@ -652,7 +652,7 @@
       gap: 12px;
       flex-wrap: wrap;
       font-size: 0.85em;
-      color: #64748b;
+      color: var(--muted, #64748b);
       margin-top: 4px;
     }
 
@@ -692,7 +692,7 @@
     }
 
     .sub-card {
-      background: #f8fafc;
+      background: var(--surface-variant, #f8fafc);
       border-radius: 12px;
       padding: 16px;
       border: 1px solid var(--line, #e2e8f0);
@@ -962,7 +962,7 @@
       gap: 12px;
       padding: 16px 24px;
       border-top: 1px solid var(--line, #e2e8f0);
-      background: #f8fafc;
+      background: var(--surface-variant, #f8fafc);
     }
     
     /* Títulos no header do detalhe */
@@ -1069,7 +1069,14 @@
     }
 
     .muted {
-      color: #64748b;
+      color: var(--muted, #64748b);
+    }
+
+    .taxa-not-found {
+      color: var(--muted, #64748b);
+      font-style: italic;
+      margin: 0;
+      padding: 8px 0;
     }
 
     /* Botões originais - mantém compatibilidade */
@@ -1090,7 +1097,7 @@
     }
 
     .btn--light:hover {
-      background: #e2e8f0;
+      background: var(--surface-variant, #e2e8f0);
     }
 
     .btnPrimary {
@@ -1307,7 +1314,7 @@
 
       <!-- ═══ NOVO: Card da Taxa ═══ -->
       <div id="taxaCard" style="padding: 0 24px 16px; display:none;">
-        <div class="card" style="margin-bottom:0; background:#f8fafc;">
+        <div class="card" style="margin-bottom:0; background:var(--surface-variant,#f8fafc);">
           <div class="card__title" style="border-left-color:#d97706;">
             💰 Taxa de Vigilância Sanitária 2026
           </div>
