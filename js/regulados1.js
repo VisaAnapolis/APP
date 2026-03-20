@@ -180,12 +180,12 @@
         if (!im) continue;
         const obs = String(row["Observação"] || row["Observacao"] || "");
         const matchAtividade = obs.match(/Atividade:\s*(.+?)\.?\s*(?:\*|$)/);
-        const matchArea = obs.match(/Área:\s*(.+?)\.?\s*$/m);
+        const matchArea = obs.match(/Área:\s*([^*\r\n]+)/);
         taxaMap.set(im, {
           valor: String(row["Valor"] || "").trim(),
           situacao: String(row["Sit. da conta"] || "").trim(),
           atividade: matchAtividade ? matchAtividade[1].trim() : "",
-          area: matchArea ? matchArea[1].trim() : "",
+          area: matchArea ? matchArea[1].trim().replace(/\.?\s*$/, "") : "",
           vencimento: String(row["Dt. Vencimento"] || "").trim(),
           exercicio: String(row["Exercício"] || row["Exercicio"] || "").trim(),
         });
@@ -332,9 +332,28 @@
         sitSpan.textContent = `● ${taxa.situacao || "—"}`;
         vSit.appendChild(sitSpan);
 
-        taxaKv.append(kValor, vValor, kAtiv, vAtiv, kArea, vArea, kSit, vSit);
+        const kVenc = document.createElement("div");
+        kVenc.className = "kv__k";
+        kVenc.textContent = "📅 Vencimento";
+        const vVenc = document.createElement("div");
+        vVenc.className = "kv__v";
+        vVenc.textContent = formatDateBR(taxa.vencimento) || "—";
+
+        const kExerc = document.createElement("div");
+        kExerc.className = "kv__k";
+        kExerc.textContent = "📆 Exercício";
+        const vExerc = document.createElement("div");
+        vExerc.className = "kv__v";
+        vExerc.textContent = taxa.exercicio || "—";
+
+        taxaKv.append(kValor, vValor, kAtiv, vAtiv, kArea, vArea, kVenc, vVenc, kExerc, vExerc, kSit, vSit);
       } else {
-        taxaCard.style.display = "none";
+        taxaCard.style.display = "";
+        taxaKv.innerHTML = "";
+        const msg = document.createElement("p");
+        msg.className = "taxa-not-found";
+        msg.textContent = "Taxa não encontrada para esta inscrição municipal.";
+        taxaKv.appendChild(msg);
       }
     }
 
