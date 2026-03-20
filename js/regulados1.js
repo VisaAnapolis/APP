@@ -169,7 +169,10 @@
       const r = await fetch(url, { cache: "no-store" });
       if (!r.ok) return;
       const buf = await r.arrayBuffer();
-      const text = new TextDecoder("iso-8859-1").decode(buf);
+      const rawText = new TextDecoder("iso-8859-1").decode(buf);
+      // Join "* Área:" continuation lines to their parent row so Papa.parse
+      // treats them as part of the same Observação field.
+      const text = rawText.replace(/\r?\n(\* Área:)/g, "$1");
       const result = Papa.parse(text, {
         header: true,
         delimiter: ";",
