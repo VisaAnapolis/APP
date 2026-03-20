@@ -168,14 +168,15 @@
       const url = `./data/taxa.csv?v=${Date.now()}`;
       const r = await fetch(url, { cache: "no-store" });
       if (!r.ok) return;
-      const text = await r.text();
+      const buf = await r.arrayBuffer();
+      const text = new TextDecoder("iso-8859-1").decode(buf);
       const result = Papa.parse(text, {
         header: true,
         delimiter: ";",
         skipEmptyLines: true,
       });
       for (const row of result.data) {
-        const im = String(row["Inscrição Municipal"] || "").trim();
+        const im = normMunicipal(String(row["Inscrição Municipal"] || "").trim());
         if (!im) continue;
         const obs = String(row["Observação"] || row["Observacao"] || "");
         const matchAtividade = obs.match(/Atividade:\s*(.+?)\.?\s*(?:\*|$)/);
@@ -286,7 +287,7 @@
     const taxaCard = byId("taxaCard");
     const taxaKv = byId("taxaKv");
     if (taxaCard && taxaKv) {
-      const im = municipal || "";
+      const im = normMunicipal(municipal || "");
       const taxa = taxaMap.get(im);
       if (taxa) {
         taxaCard.style.display = "";
