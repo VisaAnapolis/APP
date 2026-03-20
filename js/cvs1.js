@@ -103,6 +103,9 @@
     dAlvEx: byId("dAlvEx"),
     dAlvVal: byId("dAlvVal"),
 
+    taxaCard: byId("taxaCard"),
+    taxaKv: byId("taxaKv"),
+
     btnAtividades: byId("btnAtividades"),
     btnInspecoes: byId("btnInspecoes"),
     atividadesList: byId("atividadesList"),
@@ -116,6 +119,8 @@
   };
 
   let indexItems = [];
+
+  const COMPLEX_MAP = { ALTA: "Alto Risco", MÉDIA: "Médio Risco", BAIXA: "Baixo Risco" };
 
   // ============================
   // Modal
@@ -349,9 +354,40 @@
     // Listas
     const atvs = Array.isArray(reg.atividades) ? reg.atividades : [];
     renderAtividades(atvs);
+    renderTaxa(atvs);
 
     const insps = Array.isArray(reg.inspecoes) ? reg.inspecoes : [];
     renderInspecoes(insps);
+  }
+
+  // ============================
+  // Taxa de Vigilância Sanitária
+  // ============================
+  function renderTaxa(atvs) {
+    if (!els.taxaCard || !els.taxaKv) return;
+
+    if (!atvs || !atvs.length) {
+      els.taxaCard.style.display = "none";
+      return;
+    }
+
+    const complexMap = COMPLEX_MAP;
+
+    const rows = atvs.map((a) => {
+      const cnae  = normTxt(a.subclasse ?? a.cnae ?? a.CNAE);
+      const desc  = normTxt(a.atividade ?? a.descricao ?? a.DESCRICAO ?? a.desc);
+      const tipo  = normTxt(a.tipo ?? a.TIPO);
+      const comp  = normTxt(a.complexidade ?? a.COMPLEXIDADE);
+      const label = complexMap[comp.toUpperCase()] ?? comp ?? "—";
+
+      return `
+        <div class="kv__k">${tipo ? tipo + " — " : ""}${cnae || "—"}</div>
+        <div class="kv__v">${desc ? desc + " · " : ""}${label}</div>
+      `;
+    }).join("");
+
+    els.taxaKv.innerHTML = rows;
+    els.taxaCard.style.display = "";
   }
 
   // ============================

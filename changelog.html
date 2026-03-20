@@ -183,6 +183,16 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.5.4 — 20/03/2026 (Horário de Brasília – UTC−3)</h3>
+  <strong>🐛 Correção: Card de Taxa de Vigilância Sanitária 2026 não aparecia em cvs.html</strong>
+  <ul>
+    <li><strong>JS ausente para exibição do card:</strong> o elemento <code>#taxaCard</code> estava com <code>display:none</code> mas nunca era referenciado em <code>js/cvs1.js</code> — nem no objeto <code>els</code>, nem em <code>renderDetail()</code>. Adicionados <code>taxaCard</code> e <code>taxaKv</code> ao <code>els</code> e criada a função <code>renderTaxa()</code>, chamada a partir de <code>renderDetail()</code>, que popula o card com as atividades e complexidades do regulado e torna o card visível.</li>
+    <li><strong>Invalidação de cache:</strong> CACHE_NAME do service worker bumped de <code>visa-v2.5.3</code> para <code>visa-v2.5.4</code>, forçando todos os dispositivos a descartar o cache antigo e baixar a versão atualizada de <code>cvs.html</code> e <code>js/cvs1.js</code>.</li>
+  </ul>
+  <p><strong>Arquivos modificados:</strong> <code>js/cvs1.js</code> — objeto <code>els</code> + função <code>renderTaxa()</code> + chamada em <code>renderDetail()</code>; <code>js/version.js</code> — APP_VERSION 2.5.4; <code>service-worker.js</code> — CACHE_NAME visa-v2.5.4; <code>changelog.html</code> — esta entrada.</p>
+</div>
+
+<div class="section">
   <h3>v2.5.3 — 15/03/2026 0:31 (Horário de Brasília – UTC−3)</h3>
   <strong>✨ Nova página: CNAEs SIM × CVS — comparação de atividades econômicas</strong>
   <ul>
