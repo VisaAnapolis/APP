@@ -183,7 +183,7 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
-  <h3>v2.5.4 — 20/03/2026 (Horário de Brasília – UTC−3)</h3>
+  <h3>v2.5.4 v.2.5.5 — 20/03/2026 05:30 (Horário de Brasília – UTC−3)</h3>
   <strong>🐛 Correção: Card de Taxa de Vigilância Sanitária 2026 não aparecia em cvs.html</strong>
   <ul>
     <li><strong>JS ausente para exibição do card:</strong> o elemento <code>#taxaCard</code> estava com <code>display:none</code> mas nunca era referenciado em <code>js/cvs1.js</code> — nem no objeto <code>els</code>, nem em <code>renderDetail()</code>. Adicionados <code>taxaCard</code> e <code>taxaKv</code> ao <code>els</code> e criada a função <code>renderTaxa()</code>, chamada a partir de <code>renderDetail()</code>, que popula o card com as atividades e complexidades do regulado e torna o card visível.</li>
