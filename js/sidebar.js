@@ -84,7 +84,7 @@ function sidebarSetUserAnon() {
 /* ── Permissões de links por perfil ─────────────────────────────────────── */
 // Links restritos por grupo (identificados pelo href, sem precisar de IDs)
 var _RESTR_FISCAL_ADMIN = ['rmpf.html', 'inspecoes.html', 'comply.html'];
-var _RESTR_APENAS_ADMIN  = ['admin.html', 'indicadores.html'];
+var _RESTR_APENAS_ADMIN  = ['admin.html'];
 
 function _sidebarLink(href) {
   return document.querySelector('.sidebar .visa-nav-item[href="' + href + '"]');
