@@ -95,9 +95,14 @@
   let currentInspecaoInfo = null;
   let municipalMap     = new Map(); // CODIGO (string) → MUNICIPAL raw (for display)
   let municipalNormMap = new Map(); // CODIGO (string) → MUNICIPAL digits-only (for search)
+  let taxaMap          = new Map(); // Inscrição Municipal (string) → dados da taxa
 
   function showStatus(msg) { safeText(els.status, msg || ""); }
-  function hideDetail() { if (els.detailPanel) els.detailPanel.hidden = true; }
+  function hideDetail() {
+    if (els.detailPanel) els.detailPanel.hidden = true;
+    const taxaCard = byId("taxaCard");
+    if (taxaCard) taxaCard.style.display = "none";
+  }
   function showDetail() { if (els.detailPanel) els.detailPanel.hidden = false; }
 
   function closeModal() {
@@ -155,6 +160,37 @@
       }
     } catch (e) {
       console.warn("Falha ao carregar inscrições municipais:", e);
+    }
+  }
+
+  async function loadTaxaData() {
+    try {
+      const url = `./data/taxa.csv?v=${Date.now()}`;
+      const r = await fetch(url, { cache: "no-store" });
+      if (!r.ok) return;
+      const text = await r.text();
+      const result = Papa.parse(text, {
+        header: true,
+        delimiter: ";",
+        skipEmptyLines: true,
+      });
+      for (const row of result.data) {
+        const im = String(row["Inscrição Municipal"] || "").trim();
+        if (!im) continue;
+        const obs = String(row["Observação"] || row["Observacao"] || "");
+        const matchAtividade = obs.match(/Atividade:\s*(.+?)\.?\s*(?:\*|$)/);
+        const matchArea = obs.match(/Área:\s*(.+?)\.?\s*$/m);
+        taxaMap.set(im, {
+          valor: String(row["Valor"] || "").trim(),
+          situacao: String(row["Sit. da conta"] || "").trim(),
+          atividade: matchAtividade ? matchAtividade[1].trim() : "",
+          area: matchArea ? matchArea[1].trim() : "",
+          vencimento: String(row["Dt. Vencimento"] || "").trim(),
+          exercicio: String(row["Exercício"] || row["Exercicio"] || "").trim(),
+        });
+      }
+    } catch (e) {
+      console.warn("Falha ao carregar taxa.csv:", e);
     }
   }
 
@@ -244,6 +280,61 @@
     } else {
       safeText(els.dAlvEx, "—");
       safeText(els.dAlvVal, "—");
+    }
+
+    // Taxa de Vigilância Sanitária
+    const taxaCard = byId("taxaCard");
+    const taxaKv = byId("taxaKv");
+    if (taxaCard && taxaKv) {
+      const im = municipal || "";
+      const taxa = taxaMap.get(im);
+      if (taxa) {
+        taxaCard.style.display = "";
+        taxaKv.innerHTML = "";
+
+        const kValor = document.createElement("div");
+        kValor.className = "kv__k";
+        kValor.textContent = "💲 Valor";
+        const vValor = document.createElement("div");
+        vValor.className = "kv__v";
+        vValor.textContent = taxa.valor ? `R$ ${taxa.valor}` : "—";
+
+        const kAtiv = document.createElement("div");
+        kAtiv.className = "kv__k";
+        kAtiv.textContent = "🏷️ Atividade";
+        const vAtiv = document.createElement("div");
+        vAtiv.className = "kv__v";
+        vAtiv.textContent = taxa.atividade || "—";
+
+        const kArea = document.createElement("div");
+        kArea.className = "kv__k";
+        kArea.textContent = "📐 Área";
+        const vArea = document.createElement("div");
+        vArea.className = "kv__v";
+        vArea.textContent = taxa.area || "—";
+
+        const kSit = document.createElement("div");
+        kSit.className = "kv__k";
+        kSit.textContent = "📌 Situação";
+        const vSit = document.createElement("div");
+        vSit.className = "kv__v";
+        const sitLower = (taxa.situacao || "").toLowerCase();
+        let sitColor = "inherit";
+        if (sitLower.includes("pago")) {
+          sitColor = "#10b981";
+        } else if (sitLower.includes("dívida") || sitLower.includes("divida")) {
+          sitColor = "#ef4444";
+        }
+        const sitSpan = document.createElement("span");
+        sitSpan.style.color = sitColor;
+        sitSpan.style.fontWeight = "700";
+        sitSpan.textContent = `● ${taxa.situacao || "—"}`;
+        vSit.appendChild(sitSpan);
+
+        taxaKv.append(kValor, vValor, kAtiv, vAtiv, kArea, vArea, kSit, vSit);
+      } else {
+        taxaCard.style.display = "none";
+      }
     }
 
     // Atividades
@@ -447,6 +538,7 @@
 
     // Carrega inscrições municipais em segundo plano (não bloqueia UI)
     loadMunicipalData().catch(() => {});
+    loadTaxaData().catch(() => {});
 
     const urlParams = new URLSearchParams(window.location.search);
 
