@@ -1,11 +1,12 @@
 /**
  * BUSCA-GLOBAL.JS — Pesquisa Global Unificada
- * VISA Anápolis — v1.2.2
+ * VISA Anápolis — v1.2.3
  *
  * Módulo ES6 que implementa busca unificada no Dashboard.
  * Consulta: regulados (JSON), protocolos, denúncias, requerimentos,
  * ofícios, alvarás via CSVs e inspeções via JSONs individuais
  * (data/reg/XX/CODIGO.json) com cache em memória e lazy loading.
+ * Inclui busca inteligente por palavras-chave para navegação rápida.
  *
  * Exporta: initBuscaGlobal(), limparCacheBusca()
  */
@@ -16,6 +17,56 @@ const MAX_INSPECOES_VISITA = 5;
 const MAX_FETCH_REG_JSON   = 20;
 const DEBOUNCE_MS          = 400;
 const MIN_CHARS            = 3;
+
+/* ── Mapa de páginas para busca por palavras-chave ──────────────────────── */
+const _MAPA_PAGINAS = [
+  { url: 'index.html',                    icone: '🗂️',  titulo: 'Dashboard',
+    keywords: ['DASHBOARD','INICIO','PAINEL','HOME','RESUMO','VISAO GERAL'] },
+  { url: 'os.html',                       icone: '📋',  titulo: 'OS',
+    keywords: ['OS','ORDENS','SERVICO','ORDEM SERVICO','ORDEM DE SERVICO'] },
+  { url: 'alvara.html',                   icone: '🏦',  titulo: 'Alvarás',
+    keywords: ['ALVARA','ALVARAS','LICENCA','LICENCAS','CEDULA','HABILITACAO'] },
+  { url: 'cvs.html',                      icone: '🏪',  titulo: 'Regulados',
+    keywords: ['REGULADO','REGULADOS','ESTABELECIMENTO','ESTABELECIMENTOS','CVS','EMPRESA','EMPRESAS','CADASTRO'] },
+  { url: 'protocolo.html',                icone: '🔍',  titulo: 'Protocolos',
+    keywords: ['PROTOCOLO','PROTOCOLOS','SOLICITACAO','SOLICITACOES','PEDIDO'] },
+  { url: 'rmpf.html',                     icone: '📚',  titulo: 'RMPF',
+    keywords: ['RMPF','RELATORIO MENSAL','PRODUCAO','MENSAL','PRODUCAO FISCAL'] },
+  { url: 'inspecoes.html',                icone: '👁️',  titulo: 'Inspeções',
+    keywords: ['INSPECAO','INSPECOES','VISTORIA','VISTORIAS','FISCALIZACAO','VISITA','VISITAS'] },
+  { url: 'relatorio_plantao_fiscal.html', icone: '📈',  titulo: 'Ocorrências',
+    keywords: ['OCORRENCIA','OCORRENCIAS','RELATORIO PLANTAO','OCORRENCIA PLANTAO','RELATORIO OCORRENCIA'] },
+  { url: 'indicadores.html',              icone: '📊',  titulo: 'Indicadores',
+    keywords: ['INDICADOR','INDICADORES','METRICAS','GRAFICO','GRAFICOS','DESEMPENHO','ESTATISTICA'] },
+  { url: 'comply.html',                   icone: '🛡️',  titulo: 'Compliance',
+    keywords: ['COMPLIANCE','CONFORMIDADE','AUDITORIA','ADEQUACAO'] },
+  { url: 'simxcvs.html',                  icone: '🔀',  titulo: 'CNAEs SIM×CVS',
+    keywords: ['SIMXCVS','SIM CVS','CNAE SIM','PRODUCAO','CNAES SIM','SIM X CVS'] },
+  { url: 'plantao.html',                  icone: '📅',  titulo: 'Plantão Fiscal',
+    keywords: ['PLANTAO','ESCALA','ESCALA FISCAL','TURNO','PLANTAO FISCAL','SERVICO PLANTAO'] },
+  { url: 'veiculos.html',                 icone: '🚗',  titulo: 'Veículos',
+    keywords: ['VEICULO','VEICULOS','CARRO','CARROS','FROTA','TRANSPORTE','VIATURA','VIATURAS'] },
+  { url: 'ferias.html',                   icone: '🏖️',  titulo: 'Férias',
+    keywords: ['FERIAS','FOLGA','AUSENCIA','RECESSO','LICENCA FERIAS'] },
+  { url: 'legislacao.html',               icone: '📜',  titulo: 'Legislação',
+    keywords: ['LEGISLACAO','LEI','LEIS','NORMA','NORMAS','DECRETO','DECRETOS','RESOLUCAO','PORTARIA','PORTARIAS','REGULAMENTO'] },
+  { url: 'pop.html',                      icone: '🎯',  titulo: 'POPs da VISA',
+    keywords: ['POP','POPS','PROCEDIMENTO','PROCEDIMENTOS','OPERACIONAL','PROCEDIMENTO OPERACIONAL','INSTRUCAO'] },
+  { url: 'check.html',                    icone: '✅',  titulo: 'Check Lists',
+    keywords: ['CHECKLIST','CHECKLISTS','CHECK','LISTA VERIFICACAO','VERIFICACAO','ROTEIRO'] },
+  { url: 'areas.html',                    icone: '🧩',  titulo: 'Áreas',
+    keywords: ['AREA','AREAS','ZONA','TERRITORIO','REGIAO','DISTRIBUICAO','SETOR'] },
+  { url: 'cnae.html',                     icone: '👥',  titulo: 'CNAEs',
+    keywords: ['CNAE','CNAES','CLASSIFICACAO','ATIVIDADE','ATIVIDADES','ATIVIDADE ECONOMICA','CODIGO ATIVIDADE'] },
+  { url: 'total.html',                    icone: '🧮',  titulo: 'Totalização',
+    keywords: ['TOTALIZACAO','TOTAL','SOMA','CONTAGEM','QUANTITATIVO','TOTAIS'] },
+  { url: 'admin.html',                    icone: '⚙️',  titulo: 'Painel Admin',
+    keywords: ['ADMIN','ADMINISTRACAO','CONFIGURACAO','PAINEL ADMIN','SISTEMA','GERENCIAR'] },
+  { url: 'changelog.html',               icone: '📌',  titulo: 'Novidades da versão',
+    keywords: ['NOVIDADE','NOVIDADES','ATUALIZACAO','CHANGELOG','VERSAO','LANCAMENTO'] },
+  { url: 'readme.html',                   icone: '📄',  titulo: 'Aviso Institucional',
+    keywords: ['AVISO','INSTITUCIONAL','README','INFORMACOES','SOBRE'] },
+];
 
 /* ── Cache em memória (singleton por sessão/aba) ────────────────────────── */
 let _cacheBusca          = null;
@@ -252,6 +303,17 @@ function norm(s) {
 
 function match(campo, termoNorm) { return norm(campo).includes(termoNorm); }
 
+/**
+ * Busca páginas do menu cujas palavras-chave coincidem com o termo.
+ * Usa correspondência bidirecional: keyword contém termo OU termo contém keyword.
+ */
+function _buscarPaginas(termoNorm) {
+  if (!termoNorm || termoNorm.length < MIN_CHARS) return [];
+  return _MAPA_PAGINAS.filter(p =>
+    p.keywords.some(kw => kw.includes(termoNorm) || termoNorm.includes(kw))
+  );
+}
+
 /* ══════════════════════════════════════════════════════════════════════════
    SEÇÃO 3 — BUSCA EM TODAS AS FONTES
    ══════════════════════════════════════════════════════════════════════════ */
@@ -421,12 +483,12 @@ function _isoParaExibicao(iso) {
   return `${p[2]}/${p[1]}/${p[0]}`;
 }
 
-function renderizarResultados(resultados, contagens, inspecoes, totalInspecoes, termoOriginal) {
+function renderizarResultados(resultados, contagens, inspecoes, totalInspecoes, termoOriginal, paginas = []) {
   const painel = document.getElementById('buscaResultado');
   if (!painel) return;
 
   const totalExibido = Object.values(resultados).reduce((s, arr) => s + arr.length, 0)
-                     + inspecoes.length;
+                     + inspecoes.length + paginas.length;
   if (totalExibido === 0) {
     painel.innerHTML = '<div class="busca-vazio">Nenhum resultado encontrado</div>';
     painel.hidden = false;
@@ -437,6 +499,22 @@ function renderizarResultados(resultados, contagens, inspecoes, totalInspecoes, 
   const q = encodeURIComponent(termoOriginal);
   let idxGlobal = 0;
   function itemId() { return `busca-opt-${idxGlobal++}`; }
+
+  // ── Páginas / Navegação ──
+  if (paginas.length > 0) {
+    html += '<div class="busca-grupo-titulo" aria-hidden="true">Ir para</div>';
+    for (const p of paginas) {
+      const id = itemId();
+      html += `<a id="${id}" class="busca-item" href="${p.url}" role="option">
+        <span class="busca-item-icon" aria-hidden="true">${p.icone}</span>
+        <div>
+          <span class="busca-item-nome">${_esc(p.titulo)}</span>
+          <span class="busca-item-sub">Abrir página</span>
+        </div>
+        <span class="busca-item-badge badge-pagina">Página</span>
+      </a>`;
+    }
+  }
 
   // ── Regulados ──
   if (resultados.regulados.length > 0) {
@@ -727,12 +805,14 @@ export function initBuscaGlobal() {
     if (container && !container.contains(e.target)) fecharPainel();
   });
 
-  console.log('[BuscaGlobal] Inicializado v1.2.2');
+  console.log('[BuscaGlobal] Inicializado v1.2.3');
 }
 
 async function _executarBuscaUI(termo) {
   const termoNorm = norm(termo);
   if (!termoNorm || termoNorm.length < MIN_CHARS) { fecharPainel(); return; }
+
+  const paginas = _buscarPaginas(termoNorm);
 
   if (!_cacheBusca) mostrarLoading();
 
@@ -749,13 +829,13 @@ async function _executarBuscaUI(termo) {
   const { resultados, contagens } = _buscarSincrono(dados, termoNorm);
 
   _indiceSelecionado = -1;
-  renderizarResultados(resultados, contagens, [], 0, termo);
+  renderizarResultados(resultados, contagens, [], 0, termo, paginas);
 
   const { lista: inspecoes, total: totalInsp } = await _buscarInspecoes(dados, termoNorm);
 
   if (campoAtual && campoAtual.value.trim() !== termo) return;
 
-  renderizarResultados(resultados, contagens, inspecoes, totalInsp, termo);
+  renderizarResultados(resultados, contagens, inspecoes, totalInsp, termo, paginas);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
