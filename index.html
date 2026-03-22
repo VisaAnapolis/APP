@@ -739,13 +739,15 @@
     }
     .busca-global-input::placeholder { color: var(--muted, #94a3b8); }
     .busca-global-input::-webkit-search-cancel-button { display: none; }
-    .busca-btn-buscar {
-      flex-shrink: 0; padding: 6px 14px; font-size: 0.88rem; font-weight: 600;
-      background: var(--brand1, #2c5aa0); color: #fff; border: none;
-      border-radius: 8px; cursor: pointer; transition: opacity 0.15s;
+    .busca-btn-limpar {
+      flex-shrink: 0; width: 28px; height: 28px; display: flex; align-items: center;
+      justify-content: center; font-size: 1rem; line-height: 1;
+      background: transparent; color: var(--muted, #94a3b8); border: none;
+      border-radius: 50%; cursor: pointer; transition: background 0.15s, color 0.15s;
+      visibility: hidden;
     }
-    .busca-btn-buscar:hover { opacity: 0.9; }
-    .busca-btn-buscar:active { opacity: 0.8; }
+    .busca-btn-limpar.visivel { visibility: visible; }
+    .busca-btn-limpar:hover { background: var(--line, #e2e8f0); color: var(--text, #1a1a2e); }
     .busca-kbd {
       font-size: 0.68rem; color: var(--muted, #94a3b8);
       background: var(--bg, #f4f6f9); border: 1px solid var(--line, #e2e8f0);
@@ -1320,9 +1322,7 @@
                     aria-autocomplete="list"
                     aria-controls="buscaResultado"
                   />
-                  <button id="buscaBtnBuscar" class="busca-btn-buscar" title="Buscar (Enter)" aria-label="Executar busca">
-                    Buscar
-                  </button>
+                  <button id="buscaBtnLimpar" class="busca-btn-limpar" title="Limpar pesquisa" aria-label="Limpar pesquisa">&#x2715;</button>
                   <kbd class="busca-kbd">Ctrl K</kbd>
                 </div>
 
