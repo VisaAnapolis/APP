@@ -793,7 +793,14 @@ export function initBuscaGlobal() {
   const btnBuscar = document.getElementById('buscaBtnBuscar');
   if (btnBuscar) btnBuscar.addEventListener('click', executarBusca);
 
-  campo.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); executarBusca(); } });
+  campo.addEventListener('input', () => {
+    clearTimeout(_timerDebounce);
+    const termo = campo.value.trim();
+    if (termo.length < MIN_CHARS) { fecharPainel(); return; }
+    _timerDebounce = setTimeout(executarBusca, DEBOUNCE_MS);
+  });
+
+  campo.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); clearTimeout(_timerDebounce); executarBusca(); } });
   campo.addEventListener('keydown', _onKeyDown);
 
   document.addEventListener('keydown', (e) => {
