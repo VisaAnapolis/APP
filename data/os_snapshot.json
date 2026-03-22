@@ -34963,7 +34963,7 @@
     "atendida": false,
     "cancelada": false,
     "notif_5d": false,
-    "notif_recuperacao": false,
+    "notif_recuperacao": true,
     "notif_amanha": false,
     "notif_hoje": false
   },
@@ -37339,7 +37339,7 @@
     "atendida": false,
     "cancelada": false,
     "notif_5d": false,
-    "notif_recuperacao": false,
+    "notif_recuperacao": true,
     "notif_amanha": false,
     "notif_hoje": false
   },
@@ -37363,7 +37363,7 @@
     "atendida": false,
     "cancelada": false,
     "notif_5d": false,
-    "notif_recuperacao": false,
+    "notif_recuperacao": true,
     "notif_amanha": false,
     "notif_hoje": false
   },
@@ -37387,7 +37387,7 @@
     "atendida": false,
     "cancelada": false,
     "notif_5d": false,
-    "notif_recuperacao": false,
+    "notif_recuperacao": true,
     "notif_amanha": false,
     "notif_hoje": false
   },
@@ -39138,7 +39138,7 @@
     "descricao": "",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -39234,7 +39234,7 @@
     "descricao": "",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -39282,7 +39282,7 @@
     "descricao": "",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -42331,7 +42331,7 @@
     "atendida": false,
     "cancelada": false,
     "notif_5d": false,
-    "notif_recuperacao": false,
+    "notif_recuperacao": true,
     "notif_amanha": false,
     "notif_hoje": false
   },
@@ -42355,7 +42355,7 @@
     "atendida": false,
     "cancelada": false,
     "notif_5d": false,
-    "notif_recuperacao": false,
+    "notif_recuperacao": true,
     "notif_amanha": false,
     "notif_hoje": false
   },
