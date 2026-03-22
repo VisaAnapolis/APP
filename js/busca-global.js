@@ -790,11 +790,17 @@ export function initBuscaGlobal() {
     _executarBuscaUI(termo);
   };
 
-  const btnBuscar = document.getElementById('buscaBtnBuscar');
-  if (btnBuscar) btnBuscar.addEventListener('click', executarBusca);
+  const btnLimpar = document.getElementById('buscaBtnLimpar');
+  if (btnLimpar) btnLimpar.addEventListener('click', () => {
+    campo.value = '';
+    btnLimpar.classList.remove('visivel');
+    fecharPainel();
+    campo.focus();
+  });
 
   campo.addEventListener('input', () => {
     clearTimeout(_timerDebounce);
+    if (btnLimpar) btnLimpar.classList.toggle('visivel', campo.value.length > 0);
     const termo = campo.value.trim();
     if (termo.length < MIN_CHARS) { fecharPainel(); return; }
     _timerDebounce = setTimeout(executarBusca, DEBOUNCE_MS);
