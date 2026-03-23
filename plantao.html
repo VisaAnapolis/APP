@@ -1463,6 +1463,42 @@ function init(){
       }
     }
   });
+
+  // URL param: ?fiscal=NOME — pré-seleciona fiscal e busca mês atual
+  const _urlP = new URLSearchParams(window.location.search);
+  const _fiscalUrlParam = _urlP.get('fiscal');
+  if (_fiscalUrlParam) {
+    const sel = document.getElementById("fiscalRef");
+    if (sel) {
+      const normParam = _fiscalUrlParam.trim().toUpperCase();
+      let found = false;
+      for (const opt of sel.options) {
+        if (opt.value.toUpperCase() === normParam) {
+          sel.value = opt.value;
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        // tenta match parcial (primeiro nome)
+        for (const opt of sel.options) {
+          if (opt.value.toUpperCase().startsWith(normParam.split(' ')[0])) {
+            sel.value = opt.value;
+            found = true;
+            break;
+          }
+        }
+      }
+      if (found) {
+        const mesInput = document.getElementById("mesRef");
+        if (mesInput && !mesInput.value) {
+          const now = new Date();
+          mesInput.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+        }
+        setTimeout(() => doBuscar(), 300);
+      }
+    }
+  }
 }
 
 

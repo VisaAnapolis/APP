@@ -2547,7 +2547,7 @@ function obterDataPrazo(os) {
             const fiscalParam = urlParams.get('fiscal');
             const qParam      = urlParams.get('q');
             const numeroParam = urlParams.get('numero');
-            if (tipoParam || qParam || numeroParam) {
+            if (tipoParam || qParam || numeroParam || fiscalParam) {
                 window.__buscaViaDashboard = true;
                 if (tipoParam)   $('#filterTipo').val(tipoParam);
                 if (fiscalParam) $('#filterFiscal').val(fiscalParam);

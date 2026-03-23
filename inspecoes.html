@@ -945,8 +945,20 @@
                 const qParam      = urlAutoParams.get('q');
                 const dataParam   = urlAutoParams.get('data');
                 const numeroParam = urlAutoParams.get('numero');
-                if (numeroParam || qParam || dataParam) {
+                const fiscalParam = urlAutoParams.get('fiscal');
+                const periodoParam = urlAutoParams.get('periodo');
+                if (fiscalParam || numeroParam || qParam || dataParam) {
                     setTimeout(function() {
+                        if (fiscalParam) {
+                            $('#fiscal').val(fiscalParam);
+                            if (periodoParam === '30') {
+                                const hoje = new Date();
+                                const fim = hoje.toISOString().slice(0, 10);
+                                const ini = new Date(hoje.getTime() - 30 * 86400000).toISOString().slice(0, 10);
+                                $('#dataInicial').val(ini);
+                                $('#dataFinal').val(fim);
+                            }
+                        }
                         if (numeroParam) $('#filtroNumDoc').val(numeroParam);
                         else if (qParam) $('#filtroRegulado').val(qParam);
                         if (dataParam) { $('#dataInicial').val(dataParam); $('#dataFinal').val(dataParam); }
