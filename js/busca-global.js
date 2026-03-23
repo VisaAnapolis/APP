@@ -60,6 +60,8 @@ const _MAPA_PAGINAS = [
     keywords: ['CNAE','CNAES','CLASSIFICACAO','ATIVIDADE','ATIVIDADES','ATIVIDADE ECONOMICA','CODIGO ATIVIDADE'] },
   { url: 'total.html',                    icone: '🧮',  titulo: 'Totalização',
     keywords: ['TOTALIZACAO','TOTAL','SOMA','CONTAGEM','QUANTITATIVO','TOTAIS'] },
+  { url: 'analise.html',                  icone: '🔬',  titulo: 'Análise Detalhada',
+    keywords: ['ANALISE','ANALITICA','DETALHE','DETALHES','REGULADO DETALHE','LISTA REGULADOS','ALTA COMPLEXIDADE'] },
   { url: 'admin.html',                    icone: '⚙️',  titulo: 'Painel Admin',
     keywords: ['ADMIN','ADMINISTRACAO','CONFIGURACAO','PAINEL ADMIN','SISTEMA','GERENCIAR'] },
   { url: 'changelog.html',               icone: '📌',  titulo: 'Novidades da versão',
