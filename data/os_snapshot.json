@@ -24093,8 +24093,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20250628": {
     "tipo": "Denúncia",
@@ -24142,8 +24141,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20250644": {
     "tipo": "Requerimento",
@@ -24215,8 +24213,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20250657": {
     "tipo": "Requerimento",
@@ -34968,8 +34965,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255034": {
     "tipo": "Requerimento",
@@ -37225,8 +37221,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260109": {
     "tipo": "Denúncia",
@@ -37250,8 +37245,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260110": {
     "tipo": "Denúncia",
@@ -37275,8 +37269,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260111": {
     "tipo": "Requerimento",
@@ -37324,8 +37317,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260118": {
     "tipo": "Denúncia",
@@ -37349,8 +37341,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260120": {
     "tipo": "Denúncia",
@@ -37374,8 +37365,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260122": {
     "tipo": "Denúncia",
@@ -37399,8 +37389,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260124": {
     "tipo": "Denúncia",
@@ -37424,8 +37413,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260125": {
     "tipo": "Requerimento",
@@ -37497,8 +37485,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260130": {
     "tipo": "Denúncia",
@@ -38074,8 +38061,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260184": {
     "tipo": "Ofício",
@@ -38363,8 +38349,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260215": {
     "tipo": "Requerimento",
@@ -39156,8 +39141,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260276": {
     "tipo": "Ofício",
@@ -39253,8 +39237,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260282": {
     "tipo": "Ofício",
@@ -39302,8 +39285,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260284": {
     "tipo": "Ofício",
@@ -39447,8 +39429,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260295": {
     "tipo": "Ofício",
@@ -42352,8 +42333,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260469": {
     "tipo": "Ofício",
@@ -42377,8 +42357,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260470": {
     "tipo": "Requerimento",
@@ -43581,21 +43560,21 @@
     "notif_hoje": false
   },
   "20260531": {
-    "tipo": "Requerimento",
-    "fiscal": "JULIANA KÊNIA MARTINS DA SILVA",
-    "motivo": "Abertura",
-    "prazo": "20.04.2026",
-    "dataReq": "2026-02-19",
-    "razao": "SUSHI JTNA LTDA",
-    "fantasia": "SUSHILOKO",
-    "logradouro": "PC. BARTOLOMEU DE GUSMÃO Nº. 312",
-    "complemento": "QD. 48 LT. 14",
-    "bairro": "BAIRRO JUNDIAI",
-    "cnpj": "64.145.370/0001-08",
+    "tipo": "Ofício",
+    "fiscal": "ANA PAULA RODRIGUES CORRÊA GUIMARÃES",
+    "motivo": "INSPEÇÃO SANITÁRIA",
+    "prazo": "31.03.2026",
+    "dataReq": "2026-03-22",
+    "razao": "FBM INDUSTRIA FARMACEUTICA LTDA",
+    "fantasia": "FBM FARMA INDUSTRIA FARMACEUTICA",
+    "logradouro": "RUA VP 3D, QD.08-B, LT.9/21",
+    "complemento": "",
+    "bairro": "DISTRITO AGROINDUSTRIAL DE ANAPOLIS",
+    "cnpj": "02.060.549/0001-05",
     "cpf": "",
-    "complexidade": "MÉDIA",
-    "cnaeCode": "5611-2/01",
-    "cnaeDesc": "Restaurantes e similares",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
