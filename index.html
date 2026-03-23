@@ -794,6 +794,13 @@
     .badge-aberto  { background: rgba(44,90,160,.08); color: #2c5aa0; border: 1px solid rgba(44,90,160,.2); }
     .badge-pagina  { background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe; }
     .badge-fiscal  { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+    .badge-doc     { background: #faf5ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+
+    .busca-dica {
+      font-size: 0.71rem; color: var(--muted, #94a3b8);
+      margin: 5px 2px 0; letter-spacing: 0.01em;
+    }
+    @media (max-width: 480px) { .busca-dica { display: none; } }
 
     @media (prefers-color-scheme: dark) {
       .badge-ok      { background: rgba(22,163,74,.15); color: #4ade80; border-color: rgba(74,222,128,.25); }
@@ -802,6 +809,7 @@
       .badge-aberto  { background: rgba(107,154,212,.12); color: #93bbef; border-color: rgba(107,154,212,.25); }
       .badge-pagina  { background: rgba(124,58,237,.15); color: #c4b5fd; border-color: rgba(196,181,253,.25); }
       .badge-fiscal  { background: rgba(6,95,70,.2); color: #6ee7b7; border-color: rgba(110,231,183,.25); }
+      .badge-doc     { background: rgba(124,58,237,.15); color: #c4b5fd; border-color: rgba(196,181,253,.25); }
     }
 
     .busca-ver-todos {
@@ -1317,7 +1325,7 @@
                     type="search"
                     id="buscaGlobal"
                     class="busca-global-input"
-                    placeholder="Regulado OS Protocolo Alvará..."
+                    placeholder="Pesquisar..."
                     autocomplete="off"
                     spellcheck="false"
                     aria-label="Pesquisa global"
@@ -1327,6 +1335,7 @@
                   <button id="buscaBtnLimpar" class="busca-btn-limpar" title="Limpar pesquisa" aria-label="Limpar pesquisa">&#x2715;</button>
                   <kbd class="busca-kbd">Ctrl K</kbd>
                 </div>
+                <p class="busca-dica">Regulado &middot; OS &middot; Protocolo &middot; Documento &middot; Fiscal</p>
 
                 <div
                   id="buscaResultado"
