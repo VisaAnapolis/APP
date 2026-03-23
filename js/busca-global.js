@@ -552,7 +552,7 @@ function renderizarResultados(resultados, contagens, inspecoes, totalInspecoes, 
   }
 
   // ── Documento (busca numérica) ──
-  if (numDoc.length > 0) {
+  if (numDoc.length > 0 && resultados.regulados.length > 0) {
     const id = itemId();
     html += '<div class="busca-grupo-titulo" aria-hidden="true">Documento</div>';
     html += `<a id="${id}" class="busca-item" href="cvs.html?q=${encodeURIComponent(termoOriginal)}" role="option">
