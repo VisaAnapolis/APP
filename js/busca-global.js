@@ -518,12 +518,12 @@ function _isoParaExibicao(iso) {
   return `${p[2]}/${p[1]}/${p[0]}`;
 }
 
-function renderizarResultados(resultados, contagens, inspecoes, totalInspecoes, termoOriginal, paginas = [], fiscais = []) {
+function renderizarResultados(resultados, contagens, inspecoes, totalInspecoes, termoOriginal, paginas = [], fiscais = [], numDoc = []) {
   const painel = document.getElementById('buscaResultado');
   if (!painel) return;
 
   const totalExibido = Object.values(resultados).reduce((s, arr) => s + arr.length, 0)
-                     + inspecoes.length + paginas.length + fiscais.length;
+                     + inspecoes.length + paginas.length + fiscais.length + numDoc.length;
   if (totalExibido === 0) {
     painel.innerHTML = '<div class="busca-vazio">Nenhum resultado encontrado</div>';
     painel.hidden = false;
@@ -549,6 +549,20 @@ function renderizarResultados(resultados, contagens, inspecoes, totalInspecoes, 
         <span class="busca-item-badge badge-pagina">Página</span>
       </a>`;
     }
+  }
+
+  // ── Documento (busca numérica) ──
+  if (numDoc.length > 0) {
+    const id = itemId();
+    html += '<div class="busca-grupo-titulo" aria-hidden="true">Documento</div>';
+    html += `<a id="${id}" class="busca-item" href="cvs.html?q=${encodeURIComponent(termoOriginal)}" role="option">
+      <span class="busca-item-icon" aria-hidden="true">🔢</span>
+      <div>
+        <span class="busca-item-nome">Ver documento nº ${_esc(termoOriginal)}</span>
+        <span class="busca-item-sub">Buscar em Regulados</span>
+      </div>
+      <span class="busca-item-badge badge-doc">Documento</span>
+    </a>`;
   }
 
   // ── Fiscais ──
@@ -889,6 +903,7 @@ async function _executarBuscaUI(termo) {
 
   const paginas  = _buscarPaginas(termoNorm);
   const fiscais  = _buscarFiscal(termoNorm);
+  const numDoc   = /^\d{4,}$/.test(termo.trim()) ? [termo.trim()] : [];
 
   if (!_cacheBusca) mostrarLoading();
 
@@ -905,13 +920,13 @@ async function _executarBuscaUI(termo) {
   const { resultados, contagens } = _buscarSincrono(dados, termoNorm);
 
   _indiceSelecionado = -1;
-  renderizarResultados(resultados, contagens, [], 0, termo, paginas, fiscais);
+  renderizarResultados(resultados, contagens, [], 0, termo, paginas, fiscais, numDoc);
 
   const { lista: inspecoes, total: totalInsp } = await _buscarInspecoes(dados, termoNorm);
 
   if (campoAtual && campoAtual.value.trim() !== termo) return;
 
-  renderizarResultados(resultados, contagens, inspecoes, totalInsp, termo, paginas, fiscais);
+  renderizarResultados(resultados, contagens, inspecoes, totalInsp, termo, paginas, fiscais, numDoc);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
