@@ -24093,8 +24093,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20250628": {
     "tipo": "Denúncia",
@@ -24119,31 +24118,6 @@
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
-  },
-  "20250643": {
-    "tipo": "Denúncia",
-    "fiscal": "JULIANA KÊNIA MARTINS DA SILVA",
-    "motivo": "- [ ] PRODUTOS ALIMENTÍCIOS - COMÉRCIO",
-    "prazo": "24.03.2026",
-    "dataReq": "2025-12-29",
-    "razao": "PIZZARIA DONATELO",
-    "fantasia": "",
-    "logradouro": "AV. PRESIDENTE WILSON",
-    "complemento": "QUADRA 11, LOTE 16",
-    "bairro": "BAIRRO JUNDIAI",
-    "cnpj": "",
-    "cpf": "",
-    "complexidade": "",
-    "cnaeCode": "",
-    "cnaeDesc": "",
-    "descricao": "Contrbuinte relata encontrar barata na pizza.",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": true,
-    "notif_recuperacao": false,
-    "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
   },
   "20250644": {
     "tipo": "Requerimento",
@@ -24215,8 +24189,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20250657": {
     "tipo": "Requerimento",
@@ -34968,8 +34941,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255034": {
     "tipo": "Requerimento",
@@ -37201,8 +37173,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260109": {
     "tipo": "Denúncia",
@@ -37226,8 +37197,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260110": {
     "tipo": "Denúncia",
@@ -37251,8 +37221,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260111": {
     "tipo": "Requerimento",
@@ -37300,8 +37269,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260118": {
     "tipo": "Denúncia",
@@ -37325,8 +37293,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260120": {
     "tipo": "Denúncia",
@@ -37350,8 +37317,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260122": {
     "tipo": "Denúncia",
@@ -37375,33 +37341,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
-  },
-  "20260124": {
-    "tipo": "Denúncia",
-    "fiscal": "TATHIANE PESSOA DE SOUZA",
-    "motivo": "- [ ] SERVIÇOS DE ALIMENTAÇÃO",
-    "prazo": "28.03.2026",
-    "dataReq": "2026-03-12",
-    "razao": "CHILESVAN RODRIGUES VIEIRA LTDA.",
-    "fantasia": "",
-    "logradouro": "RUA BARAO DE COTEGIPE, Nº 119",
-    "complemento": "PRÓXIMO AO SALAO CABELIM CABELÃO",
-    "bairro": "CENTRO",
-    "cnpj": "38.411.931/0001-55",
-    "cpf": "",
-    "complexidade": "",
-    "cnaeCode": "",
-    "cnaeDesc": "",
-    "descricao": "AUSÈNCIA DE BOAS PRÁTICAS DE MANIPULAÇÃO POR PARTE DOS SERVIÇOS PRESTADOS DE BUFFET PELO ESTABELECIMENTO. ALIMENTOS COM PRESENÇA OU VESTÍGIOS DE INSETOS (BARATAS)",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": true,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260125": {
     "tipo": "Requerimento",
@@ -37473,8 +37413,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260130": {
     "tipo": "Denúncia",
@@ -37884,6 +37823,30 @@
     "notif_amanha": true,
     "notif_hoje": false
   },
+  "20260153": {
+    "tipo": "Denúncia",
+    "fiscal": "",
+    "motivo": "- [ ] PRODUTOS ALIMENTÍCIOS - COMÉRCIO",
+    "prazo": "",
+    "dataReq": "2026-03-23",
+    "razao": "MERCADO GOIANÃO",
+    "fantasia": "",
+    "logradouro": "AV. VILMAR ADAIR GOMES",
+    "complemento": "n° 120",
+    "bairro": "BAIRRO SANTOS DUMONT",
+    "cnpj": "",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
+    "descricao": "A EMPRESA ESTÁ COLOCANDO VENENO DE RATOS NO LOCAL DE ARMAZENAMENTO DE ARROZ, FEIJÃO E MACARRÃO. O LOCAL TEM COCÔ DE RATO E VENENO ESPARRAMADO. A CARNE NÃO É ARMAZENADA CORRETAMENTE.",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
   "20260160": {
     "tipo": "Ofício",
     "fiscal": "LUCIANA CONSOLAÇÃO DOS SANTOS",
@@ -38050,8 +38013,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260184": {
     "tipo": "Ofício",
@@ -38339,8 +38301,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260215": {
     "tipo": "Requerimento",
@@ -39108,8 +39069,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260276": {
     "tipo": "Ofício",
@@ -39205,8 +39165,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260282": {
     "tipo": "Ofício",
@@ -39254,8 +39213,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260284": {
     "tipo": "Ofício",
@@ -39399,8 +39357,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260295": {
     "tipo": "Ofício",
@@ -42304,8 +42261,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260469": {
     "tipo": "Ofício",
@@ -42329,8 +42285,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260470": {
     "tipo": "Requerimento",
@@ -47516,30 +47471,6 @@
     "notif_amanha": false,
     "notif_hoje": false
   },
-  "20260864": {
-    "tipo": "Requerimento",
-    "fiscal": "JOÃO BATISTA LUCAS DA SILVA REIS",
-    "motivo": "Abertura",
-    "prazo": "10.05.2026",
-    "dataReq": "2026-03-11",
-    "razao": "ATACADAO DOS GELADOS LTDA",
-    "fantasia": "ATACADAO DO PICOLE",
-    "logradouro": "AVENIDA COMERCIAL, Nº 567",
-    "complemento": "Quadra 39, Lote 06",
-    "bairro": "PARQUE BRASILIA II ETAPA",
-    "cnpj": "65.284.478/0001-36",
-    "cpf": "",
-    "complexidade": "MÉDIA",
-    "cnaeCode": "4637-1/06",
-    "cnaeDesc": "Comercio atacadista de sorvetes",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false
-  },
   "20260865": {
     "tipo": "Requerimento",
     "fiscal": "LUCIANA CONSOLAÇÃO DOS SANTOS",
@@ -49052,30 +48983,6 @@
     "notif_amanha": false,
     "notif_hoje": false
   },
-  "20260954": {
-    "tipo": "Requerimento",
-    "fiscal": "JULIANA KÊNIA MARTINS DA SILVA",
-    "motivo": "Abertura",
-    "prazo": "17.05.2026",
-    "dataReq": "2026-03-18",
-    "razao": "RESTAURANTE OLIVEIRAS LTDA",
-    "fantasia": "RESTAURANTE OLIVEIRAS",
-    "logradouro": "RUA 9 DE JULHO",
-    "complemento": "QD.06, LT.18",
-    "bairro": "VILA SANTANA",
-    "cnpj": "62.308.365/0001-35",
-    "cpf": "",
-    "complexidade": "MÉDIA",
-    "cnaeCode": "5611-2/01",
-    "cnaeDesc": "Restaurantes e similares",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false
-  },
   "20260955": {
     "tipo": "Requerimento",
     "fiscal": "CLÓVIS RAFAEL BORGES FERREIRA",
@@ -50072,6 +49979,30 @@
     "complemento": "QD 27 LT 07",
     "bairro": "BAIRRO SAO JOAO",
     "cnpj": "54.028.106/0001-22",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20261010": {
+    "tipo": "Requerimento",
+    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "motivo": "Renovação",
+    "prazo": "",
+    "dataReq": "2026-03-23",
+    "razao": "LAVEST LAVANDERIA E ESTERILIZACAO LTDA",
+    "fantasia": "LAVEST",
+    "logradouro": "AV. AYRTON SENNA",
+    "complemento": "Q 02 LT 03",
+    "bairro": "PARQUE BRASILIA I ETAPA",
+    "cnpj": "26.068.396/0001-00",
     "cpf": "",
     "complexidade": "",
     "cnaeCode": "",
