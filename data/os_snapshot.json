@@ -24092,7 +24092,7 @@
     "cancelada": false,
     "notif_5d": true,
     "notif_recuperacao": false,
-    "notif_amanha": false,
+    "notif_amanha": true,
     "notif_hoje": false
   },
   "20250628": {
@@ -24140,7 +24140,7 @@
     "cancelada": false,
     "notif_5d": true,
     "notif_recuperacao": false,
-    "notif_amanha": false,
+    "notif_amanha": true,
     "notif_hoje": false
   },
   "20250644": {
@@ -24212,7 +24212,7 @@
     "cancelada": false,
     "notif_5d": true,
     "notif_recuperacao": false,
-    "notif_amanha": false,
+    "notif_amanha": true,
     "notif_hoje": false
   },
   "20250657": {
@@ -37220,7 +37220,7 @@
     "cancelada": false,
     "notif_5d": true,
     "notif_recuperacao": false,
-    "notif_amanha": false,
+    "notif_amanha": true,
     "notif_hoje": false
   },
   "20260109": {
@@ -37244,7 +37244,7 @@
     "cancelada": false,
     "notif_5d": true,
     "notif_recuperacao": false,
-    "notif_amanha": false,
+    "notif_amanha": true,
     "notif_hoje": false
   },
   "20260110": {
@@ -37268,7 +37268,7 @@
     "cancelada": false,
     "notif_5d": true,
     "notif_recuperacao": false,
-    "notif_amanha": false,
+    "notif_amanha": true,
     "notif_hoje": false
   },
   "20260111": {
@@ -37316,7 +37316,7 @@
     "cancelada": false,
     "notif_5d": true,
     "notif_recuperacao": false,
-    "notif_amanha": false,
+    "notif_amanha": true,
     "notif_hoje": false
   },
   "20260118": {
@@ -37410,7 +37410,7 @@
     "descricao": "AUSÈNCIA DE BOAS PRÁTICAS DE MANIPULAÇÃO POR PARTE DOS SERVIÇOS PRESTADOS DE BUFFET PELO ESTABELECIMENTO. ALIMENTOS COM PRESENÇA OU VESTÍGIOS DE INSETOS (BARATAS)",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -37482,7 +37482,7 @@
     "descricao": "PROCESSO SEI Nº 01120.00000658/2026-92 - ÁGUA SERVIDA COM DEJETOS.",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -38058,7 +38058,7 @@
     "descricao": "",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -38346,7 +38346,7 @@
     "descricao": "",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -39426,7 +39426,7 @@
     "descricao": "",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
