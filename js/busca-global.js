@@ -68,6 +68,41 @@ const _MAPA_PAGINAS = [
     keywords: ['AVISO','INSTITUCIONAL','README','INFORMACOES','SOBRE'] },
 ];
 
+/* ── Fiscais oficiais para detecção na busca ────────────────────────────── */
+const _MIN_CHARS_FISCAL   = 5;  // mínimo para evitar falsos positivos
+const _MAX_FISCAIS_MATCH  = 3;  // se > 3 batem, termo é ambíguo — omite sugestão
+const _FISCAIS_BUSCA = [
+  "ACADIA DE SOUZA VIEIRA SILVA","ADRIANA CRHISTINA DE REZENDE CARNEIRO",
+  "ADRIANE PEREIRA GUIMARÃES","ALINE CASTRO DAMASIO",
+  "ANA PAULA RODRIGUES CORRÊA GUIMARÃES","ANGELA RIBEIRO NEVES",
+  "ARIANNE FERREIRA VIEIRA","CÉSIO MALAQUIAS",
+  "CLÁUDIO NASCIMENTO SILVA","CLÓVIS RAFAEL BORGES FERREIRA",
+  "DANIEL SOARES BARBOSA","DANIELA DE ALMEIDA CASTRO",
+  "EDSON ARANTES FARIA FILHO","EDUARDO LUCAS MAGALHÃES CASTRO",
+  "FABÍOLA PEDROSA PEIXOTO MARQUES","GERALDO EDSON ROSA",
+  "GLEICIANE MARIA JOSÉ DA SILVA","GÚBIO DIAS PEREIRA",
+  "JOÃO BATISTA LUCAS DA SILVA REIS","JOSE LUIZ RIBEIRO",
+  "JULIANA FERREIRA VITURINO","JULIANA KÊNIA MARTINS DA SILVA",
+  "JULIO CÉSAR TELES SPINDOLA","KAMILLA CHRYSTINE ROLIM D. SANTOS GARCÊS",
+  "LIDIANE SIMÕES","LIVIA BRITO",
+  "LUCIANA CONSOLAÇÃO DOS SANTOS","LUCIANA SANTANA DA ROCHA",
+  "LUCIENE DE SOUZA BARBOSA GOMES SILVA","MARCIO HENRIQUE GOMES RODOVALHO",
+  "MARIA EDWIGES PINHEIRO DE SOUZA CHAVES","MARINA PERILLO NAVARRETE LAVERS",
+  "PATRÍCIA CORDEIRO DE MORAES E SOUZA","PEDRO HENRIQUE AIRES RIBEIRO",
+  "RODRIGO ALESSANDRO TÔGO SANTOS","RÚBIA MARA DE FREITAS",
+  "SILVIA MARQUES NAVES DA MOTA SOUZA","SIMONE DUARTE GROSSI",
+  "TATHIANE PESSOA DE SOUZA","THIAGO GOMES GOBO",
+  "VANESSA SANTANA","VIVIANE MANOEL DA SILVA BORGES",
+  "VIVIANE MIYADA","WANESSA DE BRITO JORGE"
+];
+
+function _buscarFiscal(termoNorm) {
+  if (!termoNorm || termoNorm.length < _MIN_CHARS_FISCAL) return [];
+  const matches = _FISCAIS_BUSCA.filter(f => norm(f).includes(termoNorm));
+  if (matches.length === 0 || matches.length > _MAX_FISCAIS_MATCH) return [];
+  return matches;
+}
+
 /* ── Cache em memória (singleton por sessão/aba) ────────────────────────── */
 let _cacheBusca          = null;
 let _promiseCarregamento = null;
@@ -483,12 +518,12 @@ function _isoParaExibicao(iso) {
   return `${p[2]}/${p[1]}/${p[0]}`;
 }
 
-function renderizarResultados(resultados, contagens, inspecoes, totalInspecoes, termoOriginal, paginas = []) {
+function renderizarResultados(resultados, contagens, inspecoes, totalInspecoes, termoOriginal, paginas = [], fiscais = []) {
   const painel = document.getElementById('buscaResultado');
   if (!painel) return;
 
   const totalExibido = Object.values(resultados).reduce((s, arr) => s + arr.length, 0)
-                     + inspecoes.length + paginas.length;
+                     + inspecoes.length + paginas.length + fiscais.length;
   if (totalExibido === 0) {
     painel.innerHTML = '<div class="busca-vazio">Nenhum resultado encontrado</div>';
     painel.hidden = false;
@@ -513,6 +548,33 @@ function renderizarResultados(resultados, contagens, inspecoes, totalInspecoes, 
         </div>
         <span class="busca-item-badge badge-pagina">Página</span>
       </a>`;
+    }
+  }
+
+  // ── Fiscais ──
+  if (fiscais.length > 0) {
+    const _pgsFiscal = [
+      { url: 'inspecoes.html', param: 'fiscal', extra: '&periodo=30', icone: '👁️', label: 'Inspeções (últ. 30 dias)' },
+      { url: 'plantao.html',  param: 'fiscal', extra: '',             icone: '📅', label: 'Plantão' },
+      { url: 'os.html',       param: 'fiscal', extra: '',             icone: '📋', label: 'OS' },
+      { url: 'ferias.html',   param: 'fiscal', extra: '',             icone: '🏖️', label: 'Férias' },
+      { url: 'veiculos.html', param: 'fiscal', extra: '',             icone: '🚗', label: 'Veículos' },
+    ];
+    html += '<div class="busca-grupo-titulo" aria-hidden="true">Fiscal</div>';
+    for (const fiscal of fiscais) {
+      const qF = encodeURIComponent(fiscal);
+      const primeiroNome = fiscal.split(' ')[0];
+      for (const pg of _pgsFiscal) {
+        const id = itemId();
+        html += `<a id="${id}" class="busca-item" href="${pg.url}?${pg.param}=${qF}${pg.extra}" role="option">
+          <span class="busca-item-icon" aria-hidden="true">${pg.icone}</span>
+          <div>
+            <span class="busca-item-nome">${_esc(primeiroNome)} · ${pg.label}</span>
+            <span class="busca-item-sub">${_esc(fiscal)}</span>
+          </div>
+          <span class="busca-item-badge badge-fiscal">Fiscal</span>
+        </a>`;
+      }
     }
   }
 
@@ -825,7 +887,8 @@ async function _executarBuscaUI(termo) {
   const termoNorm = norm(termo);
   if (!termoNorm || termoNorm.length < MIN_CHARS) { fecharPainel(); return; }
 
-  const paginas = _buscarPaginas(termoNorm);
+  const paginas  = _buscarPaginas(termoNorm);
+  const fiscais  = _buscarFiscal(termoNorm);
 
   if (!_cacheBusca) mostrarLoading();
 
@@ -842,13 +905,13 @@ async function _executarBuscaUI(termo) {
   const { resultados, contagens } = _buscarSincrono(dados, termoNorm);
 
   _indiceSelecionado = -1;
-  renderizarResultados(resultados, contagens, [], 0, termo, paginas);
+  renderizarResultados(resultados, contagens, [], 0, termo, paginas, fiscais);
 
   const { lista: inspecoes, total: totalInsp } = await _buscarInspecoes(dados, termoNorm);
 
   if (campoAtual && campoAtual.value.trim() !== termo) return;
 
-  renderizarResultados(resultados, contagens, inspecoes, totalInsp, termo, paginas);
+  renderizarResultados(resultados, contagens, inspecoes, totalInsp, termo, paginas, fiscais);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════

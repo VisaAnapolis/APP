@@ -708,6 +708,8 @@ const pontosFacultativos = [
     initMesAno();
     carregarTabela();
     await carregarFeriasDeHTML();   // ✅ fonte única
+    const _fpV = new URLSearchParams(window.location.search).get('fiscal');
+    if (_fpV) document.getElementById("fFiscal").value = _fpV;
     aplicarFiltros();               // mês corrente
   });
 </script>

@@ -368,6 +368,8 @@
   document.addEventListener('DOMContentLoaded',()=>{
     initMesAno();
     carregarTabela();
+    const _fpF = new URLSearchParams(window.location.search).get('fiscal');
+    if (_fpF) document.getElementById('fFiscal').value = _fpF;
     aplicarFiltros();
   });
 </script>
