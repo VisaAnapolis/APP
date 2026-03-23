@@ -7,25 +7,40 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Relatório Oficial – Regulados (Alta Complexidade) por Área</title>
+  <title>Análise Detalhada – Regulados Alta Complexidade</title>
 
   <meta name="theme-color" content="#1a3a6b" />
 
-  <style>
-    /* Header agora usa header-component.css */
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/header-component.css">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/layouts.css">
+  <link rel="stylesheet" href="./css/sidebar.css">
 
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"
+          integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g="
+          crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"
+          integrity="sha256-kkb0EAGPiMjrGHAE+sC6K4n8dL/CVKqsJN0a3VXPF4="
+          crossorigin="anonymous"></script>
+
+  <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, -apple-system, "Segoe UI", Arial; background: var(--bg-primary); color: var(--text-primary); }
-    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px 28px; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 0 16px 28px; }
+
     .card {
       background: var(--card, #ffffff); border-radius:16px; padding: 18px; margin-bottom: 16px;
       box-shadow: var(--shadow2); border: 1px solid var(--line, #e2e8f0);
     }
     .grid { display: grid; gap: 12px; grid-template-columns: repeat(12, 1fr); }
     .col-12 { grid-column: span 12; }
-    .col-6 { grid-column: span 6; }
-    .col-4 { grid-column: span 4; }
-    .col-3 { grid-column: span 3; }
+    .col-6  { grid-column: span 6; }
+    .col-4  { grid-column: span 4; }
+    .col-3  { grid-column: span 3; }
 
     .title { font-weight: 950; font-size: 1.08rem; }
     .sub { color:var(--text-secondary); font-weight: 650; line-height: 1.45; }
@@ -46,42 +61,14 @@
     .btn-clear { background:#eef2ff; color: var(--text-primary, #1a202c); border:1px solid #c7d2fe; font-weight:900; cursor:pointer; }
 
     .status {
-      font-weight: 900;
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: var(--surface-variant);
-      border: 1px solid rgba(44,90,160,.25);
+      font-weight: 900; padding: 10px 12px; border-radius: 12px;
+      background: var(--surface-variant); border: 1px solid rgba(44,90,160,.25);
     }
-    .status.ok { background: #ecfdf5; border-color: rgba(16,185,129,.25); }
+    .status.ok   { background: #ecfdf5; border-color: rgba(16,185,129,.25); }
     .status.warn { background: #fffbeb; border-color: rgba(245,158,11,.35); }
-    .status.err { background: #fef2f2; border-color: rgba(239,68,68,.35); }
+    .status.err  { background: #fef2f2; border-color: rgba(239,68,68,.35); }
 
-    .table-wrapper { overflow:auto; border-radius: 12px; border: 1px solid rgba(15,23,42,.10); margin-top: 12px; }
-    table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--card, #ffffff); }
-    thead th {
-      position: sticky; top: 0;
-      background:var(--brand1, #2c5aa0); color:#fff; padding: 12px 16px; text-align:left; white-space: nowrap;
-      z-index: 2;
-    }
-    tbody td { padding: 12px 16px; border-bottom: 1px solid var(--line, #e5e7eb); vertical-align: top; }
-    tbody tr:hover td { background: var(--surface-variant); }
-
-    .footer {
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px dashed rgba(15,23,42,.18);
-      color: var(--text-secondary);
-      font-weight: 650;
-      font-size: .92rem;
-      line-height: 1.45;
-    }
-
-    @media (max-width: 900px){
-      .col-6, .col-4, .col-3 { grid-column: span 12; }
-      header { padding-right: 72px; }
-    }
-
-    /* Tooltip para concorrência */
+    /* Tooltip for concorrência */
     .help-icon {
       display: inline-block; width: 17px; height: 17px; border-radius: 50%;
       background: rgba(26,58,107,.14); color: var(--text-primary, #1a202c);
@@ -96,23 +83,45 @@
     }
     .help-icon:hover .tooltip { display: block; }
 
+    /* Progress */
+    .progress-wrap { display:none; margin-top:10px; }
+    .progress-bar-bg { height:12px; background:rgba(0,0,0,.08); border-radius:999px; overflow:hidden; margin-top:6px; }
+    .progress-bar { height:100%; width:0%; background:#1e88e5; transition:width .15s linear; }
+
+    /* DataTable wrapper */
+    .dt-wrap { overflow: auto; border-radius: 12px; border: 1px solid rgba(15,23,42,.10); margin-top: 12px; }
+    #tabelaAnalise { width:100%; }
+    #tabelaAnalise thead th { background: var(--brand1, #2c5aa0); color:#fff; white-space: nowrap; }
+    #tabelaAnalise tbody td { vertical-align: top; padding: 10px 14px; font-size: .93rem; }
+    #tabelaAnalise tbody tr:nth-child(even) td { background: rgba(26,58,107,.04); }
+
+    .badge {
+      display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: .8rem;
+      font-weight: 900; background: rgba(26,58,107,.12); color: var(--text-primary, #1a202c);
+    }
+    .badge-alta { background: rgba(239,68,68,.14); color: #b91c1c; }
+    .badge-ok   { background: rgba(16,185,129,.14); color: #047857; }
+
+    .footer {
+      margin-top: 10px; padding-top: 10px;
+      border-top: 1px dashed rgba(15,23,42,.18);
+      color: var(--text-secondary); font-weight: 650; font-size: .92rem; line-height: 1.45;
+    }
+
+    @media (max-width: 900px){
+      .col-6, .col-4, .col-3 { grid-column: span 12; }
+    }
+
     @media (prefers-color-scheme: dark) {
       .pill { background: rgba(107,154,212,.15); }
       .btn-clear { background: rgba(107,154,212,.12); border-color: rgba(107,154,212,.3); }
       input { border-color: var(--border-primary); }
       input:focus { box-shadow: 0 0 0 3px rgba(107,154,212,.2); }
-      .status.ok { background: rgba(74,222,128,.08); border-color: rgba(74,222,128,.25); }
-      .status.erro { background: rgba(248,113,113,.08); border-color: rgba(248,113,113,.25); }
+      .status.ok  { background: rgba(74,222,128,.08); border-color: rgba(74,222,128,.25); }
+      .status.err { background: rgba(248,113,113,.08); border-color: rgba(248,113,113,.25); }
+      #tabelaAnalise tbody tr:nth-child(even) td { background: rgba(107,154,212,.06); }
     }
   </style>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="./css/design-tokens.css">
-  <link rel="stylesheet" href="./css/header-component.css">
-  <link rel="stylesheet" href="./css/base.css">
-  <link rel="stylesheet" href="./css/components.css">
-  <link rel="stylesheet" href="./css/layouts.css">
-  <link rel="stylesheet" href="./css/sidebar.css">
 </head>
 
 <body class="with-sidebar">
@@ -154,8 +163,8 @@
         <div class="nav-section-label">Distribuição</div>
         <a class="visa-nav-item" href="areas.html"><span class="nav-icon">🧩</span> Áreas</a>
         <a class="visa-nav-item" href="cnae.html"><span class="nav-icon">👥</span> CNAEs</a>
-        <a class="visa-nav-item active" href="total.html"><span class="nav-icon">🧮</span> Totalização</a>
-        <a class="visa-nav-item" href="analise.html"><span class="nav-icon">🔬</span> Análise Detalhada</a>
+        <a class="visa-nav-item" href="total.html"><span class="nav-icon">🧮</span> Totalização</a>
+        <a class="visa-nav-item active" href="analise.html"><span class="nav-icon">🔬</span> Análise Detalhada</a>
         <div class="nav-section-label">Sistema</div>
         <a class="visa-nav-item" href="admin.html"><span class="nav-icon">⚙️</span> Painel Admin</a>
         <a class="visa-nav-item" href="mailto:visa@anapolis.go.gov.br"><span class="nav-icon">💡</span> Sugestões</a>
@@ -186,56 +195,35 @@
             <line x1="3" y1="18" x2="21" y2="18"/>
           </svg>
         </button>
-        <span class="topbar__title">Totalização</span>
+        <span class="topbar__title">Análise Detalhada</span>
       </header>
 
       <main class="page-content">
         <div class="page-header">
-          <h1 class="page-title">🧮 Relatório Oficial – Regulados por Área</h1>
-          <p class="page-subtitle">Estabelecimentos de alta complexidade distribuídos por área de atuação.</p>
+          <h1 class="page-title">🔬 Análise Detalhada – Regulados Alta Complexidade</h1>
+          <p class="page-subtitle">Lista individual de todos os estabelecimentos classificados como Alta Complexidade, com atividades, área e histórico de inspeções.</p>
         </div>
 
 <div class="wrap">
 
+  <!-- 1) Fonte e Critérios -->
   <div class="card">
-    <div class="title">1) Identificação e Escopo</div>
+    <div class="title">1) Fonte de Dados e Critérios</div>
     <div class="sub small" style="margin-top:8px;">
-      Este relatório contabiliza a quantidade de <b>Regulados</b> classificados como <span class="pill">Alta Complexidade</span>
-      por <b>Área de Atuação</b>, a partir de arquivos JSON hospedados em repositório institucional (GitHub Pages).
+      Esta página carrega os mesmos dados que a <a href="total.html">Totalização</a>, porém exibe cada
+      regulado individualmente — com razão social, fantasia, CNPJ/CPF, bairro, atividade(s) de
+      <span class="pill">Alta Complexidade</span>, área de atuação, alvará e última inspeção.
       <br><br>
-      <b>Premissa institucional:</b> todos os registros listados no <span class="mono">index_regulados.json</span> são considerados <b>ativos</b>
-      (logo, não há filtro de status).
+      <b>Critério de inclusão:</b> o regulado deve ter ao menos uma atividade com
+      <span class="mono">complexidade = "ALTA"</span>. A área exibida segue a prioridade institucional:
+      <b>Medicamentos → Produtos para Saúde → Cosméticos e Saneantes → Serviços de Saúde → Indústrias Alimentícias</b>.
     </div>
   </div>
 
-  <div class="card">
-    <div class="title">2) Fonte de Dados e Regras de Cálculo (Auditável)</div>
-    <div class="sub small" style="margin-top:8px;">
-      <b>2.1 Fonte primária:</b> <span class="mono">data/index_regulados.json</span> (estrutura <span class="mono">{ meta, dados[] }</span>, com <span class="mono">dados[].codigo</span>).
-      <br>
-      <b>2.2 Fonte detalhada:</b> <span class="mono">reg/00..43/&lt;codigo5&gt;.json</span>, onde a pasta é formada pelos <b>dois primeiros dígitos</b> do código
-      (ex.: <span class="mono">13022 → reg/13/13022.json</span>).
-      <br><br>
-
-      <b>2.3 Critério “Alta Complexidade”:</b> considera somente itens em <span class="mono">atividades[]</span> cujo campo
-      <span class="mono">complexidade</span> seja exatamente <b>“ALTA”</b>.
-      <br>
-      Se o regulado não possuir nenhuma atividade com “ALTA”, é <b>descartado</b> do universo deste relatório.
-      <br><br>
-
-      <b>2.4 Regra de contagem única por regulado:</b> cada regulado é contabilizado <b>apenas uma vez</b>, sendo classificado em uma única área.
-      <br>
-      <b>2.5 Prioridade de área (ordem fixa):</b>
-      <b>Medicamentos → Produtos para Saúde → Saneantes → Serviços de Saúde → Indústria de Alimentos</b>.
-      <br>
-      <b>2.6 Fallback:</b> quando nenhuma atividade “ALTA” estiver em uma das áreas acima, o regulado é atribuído a <b>qualquer uma</b> das áreas
-      remanescentes presentes nos seus CNAEs “ALTA” (seleção aleatória).
-    </div>
-  </div>
-
+  <!-- 2) Execução -->
   <div class="card">
     <div class="grid">
-      <div class="col-12 title">3) Execução</div>
+      <div class="col-12 title">2) Execução</div>
 
       <div class="col-6">
         <label>Index (regulados)</label>
@@ -254,7 +242,7 @@
           Concorrência (fetch)
           <span class="help-icon" tabindex="0" aria-label="O que é concorrência?">?
             <span class="tooltip">
-              Número de requisições HTTP feitas <b>simultaneamente</b> ao servidor.
+              Número de requisições HTTP simultâneas feitas ao servidor.
               Valores maiores (ex.: 16) aceleram o carregamento de milhares de arquivos,
               mas aumentam a carga no servidor. Valores menores (ex.: 6) são mais conservadores.
               Padrão recomendado: 10.
@@ -269,89 +257,81 @@
       </div>
 
       <div class="col-4">
-        <label>Gráfico</label>
-        <select id="withChart">
-          <option value="yes" selected>Sim</option>
-          <option value="no">Não</option>
+        <label>Filtrar por área</label>
+        <select id="filtroArea">
+          <option value="">Todas as áreas</option>
         </select>
       </div>
 
       <div class="col-4">
         <label>&nbsp;</label>
-        <button id="btnRun" class="btn" type="button">Gerar relatório</button>
+        <button id="btnRun" class="btn" type="button">Gerar análise</button>
       </div>
 
       <div class="col-12">
         <div id="statusBox" class="status warn">Aguardando execução…</div>
       </div>
 
-      <div class="col-12" id="progressWrap" style="display:none; margin-top:10px;">
+      <div class="col-12 progress-wrap" id="progressWrap">
         <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
           <div style="font-weight:800;">Progresso</div>
           <div id="progressText" style="font-variant-numeric: tabular-nums;">0/0 (0%)</div>
         </div>
-        <div style="height:12px; background:rgba(0,0,0,.08); border-radius:999px; overflow:hidden; margin-top:6px;">
-          <div id="progressBar" style="height:100%; width:0%; background:#1e88e5; transition:width .15s linear;"></div>
+        <div class="progress-bar-bg">
+          <div id="progressBar" class="progress-bar"></div>
         </div>
       </div>
-
     </div>
   </div>
 
+  <!-- 3) Resumo -->
   <div class="card" id="summaryCard" hidden>
     <div class="grid">
-      <div class="col-12 title">4) Resumo Estatístico</div>
-
+      <div class="col-12 title">3) Resumo</div>
       <div class="col-3"><div class="status ok"><div>Total no index</div><div id="sTotal" style="font-size:1.25rem;">0</div></div></div>
       <div class="col-3"><div class="status warn"><div>Descartados (sem ALTA)</div><div id="sNoAlta" style="font-size:1.25rem;">0</div></div></div>
       <div class="col-3"><div class="status warn"><div>Fora do range 00..43</div><div id="sForaRange" style="font-size:1.25rem;">0</div></div></div>
-      <div class="col-3"><div class="status ok"><div>Contabilizados</div><div id="sCounted" style="font-size:1.25rem;">0</div></div></div>
-
+      <div class="col-3"><div class="status ok"><div>Contabilizados (ALTA)</div><div id="sCounted" style="font-size:1.25rem;">0</div></div></div>
       <div class="col-12 footer" id="footerMeta"></div>
     </div>
   </div>
 
+  <!-- 4) Tabela analítica -->
   <div class="card" id="tableCard" hidden>
-    <div style="display:flex; align-items:center; justify-content:space-between; gap: 10px; flex-wrap: wrap;">
-      <div class="title">5) Consolidado por Área</div>
-      <div style="display:flex; gap: 10px; flex-wrap: wrap;">
-        <a href="analise.html" class="btn-clear" style="padding:12px; border-radius:12px; text-decoration:none; font-weight:900; font-size:1rem; display:inline-block;">🔬 Ver detalhes individuais</a>
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+      <div class="title">4) Regulados com Alta Complexidade</div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
         <button id="btnCsv" class="btn-clear" type="button">Exportar CSV</button>
       </div>
     </div>
 
-    <div class="table-wrapper">
-      <table>
+    <div class="dt-wrap" style="margin-top:12px;">
+      <table id="tabelaAnalise" class="display nowrap" style="width:100%">
         <thead>
           <tr>
+            <th>Código</th>
+            <th>Razão Social</th>
+            <th>Fantasia</th>
+            <th>CNPJ/CPF</th>
+            <th>Bairro</th>
             <th>Área</th>
-            <th>Sigla (referência)</th>
-            <th>Quantidade (Regulados ALTA)</th>
-            <th>%</th>
-          
-      <th>Fiscais</th>
-    </tr>
+            <th>Atividade (ALTA)</th>
+            <th>CNAE</th>
+            <th>Alvará válido até</th>
+            <th>Última inspeção</th>
+          </tr>
         </thead>
         <tbody id="tbody"></tbody>
       </table>
     </div>
-
-    <div class="muted small" style="margin-top: 10px;" id="notes"></div>
+    <div class="muted small" style="margin-top:10px;" id="notes"></div>
   </div>
 
-  <div class="card" id="chartCard" hidden>
-    <div class="title">6) Gráfico (barras)</div>
-    <div class="muted small" style="margin-top:6px;">Distribuição dos regulados (Alta Complexidade) por área.</div>
-    <canvas id="chart" height="120" style="margin-top:12px;"></canvas>
-  </div>
-
-</div>
+</div><!-- /.wrap -->
 
 <script>
 /* =========================================================
-   Mapeamentos (institucionais)
-   - Para priorização por área, mapeamos siglas/equipe para
-     as 5 áreas fixas. Siglas fora disso permanecem pelo nome.
+   Mapeamentos (idêntico a total.html)
 ========================================================= */
 const SIGLA_TO_NOME = {
   "IA": "Indústrias Alimentícias",
@@ -380,31 +360,6 @@ const PRIORITY = [
   "Indústrias Alimentícias"
 ];
 
-function siglaToCanonical(sigla){
-  let s = String(sigla || "").trim().toUpperCase().replace(/\s+/g, " ");
-  if(!s) return null;
-
-  // Normaliza padrão do bairros.csv: "EA PS" -> "PS"
-  s = s.replace(/^EA\s+/, "");
-
-  // Compatibiliza variações encontradas nos JSONs: "PS" deve ser tratado como "OS"
-  if(s === "PS") s = "OS";
-
-  // Retorna o nome institucional conforme areas.html (SIGLA_TO_NOME)
-  return SIGLA_TO_NOME[s] || s;
-}
-
-function canonicalToSiglaHint(areaCanon){
-  switch(areaCanon){
-    case "Medicamentos": return "MD/DR";
-    case "Produtos para Saúde": return "OS";
-    case "Saneantes": return "CS";
-    case "Serviços de Saúde": return "SS/LP";
-    case "Indústria de Alimentos": return "IA";
-    default: return "—";
-  }
-}
-
 /* =========================================================
    Utilitários
 ========================================================= */
@@ -422,10 +377,17 @@ function norm(s){
     .replace(/[\u0300-\u036f]/g, "");
 }
 
-// regra FIXA: pasta = 2 primeiros dígitos do CÓDIGO PADRONIZADO (5 dígitos), range 00..43
+function siglaToCanonical(sigla){
+  let s = String(sigla || "").trim().toUpperCase().replace(/\s+/g, " ");
+  if(!s) return null;
+  s = s.replace(/^EA\s+/, "");
+  if(s === "PS") s = "OS";
+  return SIGLA_TO_NOME[s] || s;
+}
+
 function shardFolderPrefix2(code){
-  const cod5 = String(code).trim().padStart(5, "0"); // ex.: 25 -> 00025
-  const folder = cod5.slice(0,2);                    // ex.: 00025 -> 00
+  const cod5 = String(code).trim().padStart(5, "0");
+  const folder = cod5.slice(0,2);
   const n = Number(folder);
   if(!Number.isFinite(n)) return { ok:false, folder, reason:"NAO_NUMERICO" };
   if(n < 0 || n > 43) return { ok:false, folder, reason:"FORA_DO_RANGE_00_43" };
@@ -446,85 +408,6 @@ async function fetchJson(url){
   const res = await fetch(url, { cache: "no-store" });
   if(!res.ok) throw new Error(`HTTP ${res.status} em ${url}`);
   return await res.json();
-}
-
-
-/* =========================================================
-   Fiscais por área (data/bairros.csv)
-   - Formato: cada linha = bairro; colunas IA/AG/ED/OS/SS/OD/CS/AM/VT/BI/LP/AO/TR/DR/MD trazem o fiscal daquela área no bairro.
-   - Objetivo: obter lista ÚNICA (deduplicada) de fiscais por área, para exibição no consolidado.
-========================================================= */
-const BAIRROS_URL = "./data/bairros.csv";
-
-// Parser simples para CSV com separador ";" e aspas duplas
-function parseCSVSemicolon(text){
-  // remove BOM se houver
-  text = String(text || "").replace(/^\uFEFF/, "").replace(/^\ufeff/, "");
-
-  const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
-  if(!lines.length) return { header: [], rows: [] };
-
-  const parseLine = (line) => {
-    const out = [];
-    let cur = "", inQ = false;
-    for(let i=0; i<line.length; i++){
-      const ch = line[i];
-      if(ch === '"'){
-        if(inQ && line[i+1] === '"'){ cur += '"'; i++; }
-        else inQ = !inQ;
-      } else if(ch === ";" && !inQ){
-        out.push(cur);
-        cur = "";
-      } else {
-        cur += ch;
-      }
-    }
-    out.push(cur);
-    return out.map(v => v.trim());
-  };
-
-  const header = parseLine(lines[0]).map(h => h.replace(/^"|"$/g, "").trim());
-  const rows = lines.slice(1).map(l => parseLine(l).map(v => v.replace(/^"|"$/g, "").trim()));
-  return { header, rows };
-}
-
-async function loadFiscaisPorArea(){
-  const res = await fetch(BAIRROS_URL, { cache: "no-store" });
-  if(!res.ok) throw new Error(`HTTP ${res.status} em ${BAIRROS_URL}`);
-  const text = await res.text();
-
-  const { header, rows } = parseCSVSemicolon(text);
-
-  // Siglas válidas: as que existem no SIGLA_TO_NOME (FU é ignorado: não consta no areas.html e você pediu sem heurística)
-  const siglasValidas = Object.keys(SIGLA_TO_NOME).filter(s => s !== "FU");
-
-  // Índice de cada coluna no CSV
-  const colIndex = {};
-  for(const s of siglasValidas){
-    const idx = header.indexOf(s);
-    if(idx >= 0) colIndex[s] = idx;
-  }
-
-  // Sets por área (nome canônico)
-  const sets = {};
-  for(const s of Object.keys(colIndex)){
-    const areaName = SIGLA_TO_NOME[s];
-    if(!sets[areaName]) sets[areaName] = new Set();
-  }
-
-  for(const r of rows){
-    for(const s of Object.keys(colIndex)){
-      const idx = colIndex[s];
-      const name = (r[idx] || "").trim();
-      if(name) sets[SIGLA_TO_NOME[s]].add(name);
-    }
-  }
-
-  const out = {};
-  for(const [area, set] of Object.entries(sets)){
-    out[area] = Array.from(set).sort((a,b) => a.localeCompare(b, "pt-BR"));
-  }
-  return out;
 }
 
 async function runWithConcurrency(items, worker, limit){
@@ -548,11 +431,7 @@ async function runWithConcurrency(items, worker, limit){
 }
 
 /* =========================================================
-   Classificação (SEM heurística de status)
-   - Filtra CNAEs ALTA
-   - Mapeia para áreas
-   - Prioridade fixa
-   - Fallback aleatório puro
+   Classificação (idêntico a total.html)
 ========================================================= */
 function classifyRegulado(reg){
   const atvs = Array.isArray(reg.atividades) ? reg.atividades : [];
@@ -570,141 +449,183 @@ function classifyRegulado(reg){
   if(!uniq.length) return { ok:false, reason:"SEM_AREA_MAPEADA" };
 
   for(const p of PRIORITY){
-    if(uniq.includes(p)) return { ok:true, area: p, pickedBy:"PRIORIDADE" };
+    if(uniq.includes(p)) return { ok:true, area: p, pickedBy:"PRIORIDADE", altas };
   }
 
-  // fallback: qualquer uma
   const pick = uniq[Math.floor(Math.random() * uniq.length)];
-  return { ok:true, area: pick, pickedBy:"ALEATORIO" };
+  return { ok:true, area: pick, pickedBy:"ALEATORIO", altas };
 }
 
 /* =========================================================
-   Render
+   Progresso / Status
 ========================================================= */
-let chartInstance = null;
-
 function setStatus(msg, kind="warn"){
   const box = $("statusBox");
   box.className = "status " + kind;
   box.textContent = msg;
 }
-// Barra de progresso (0–100) – atualiza de forma "throttled" para não travar o DOM
+
 function progressInit(total){
   const wrap = $("progressWrap");
   const bar  = $("progressBar");
   const txt  = $("progressText");
-  if(!wrap || !bar || !txt) return;
   wrap.style.display = "block";
   bar.style.width = "0%";
   txt.textContent = `0/${total} (0%)`;
 }
 
-let _lastProgressPaint = 0;
+let _lastPaint = 0;
 function progressUpdate(done, total, force=false){
   const now = Date.now();
-  if(!force && (now - _lastProgressPaint) < 120) return; // ~8 updates/seg
-  _lastProgressPaint = now;
-
-  const bar = $("progressBar");
-  const txt = $("progressText");
-  if(!bar || !txt) return;
-
+  if(!force && (now - _lastPaint) < 120) return;
+  _lastPaint = now;
   const pct = total ? Math.min(100, Math.round((done/total)*100)) : 0;
-  bar.style.width = pct + "%";
-  txt.textContent = `${done}/${total} (${pct}%)`;
+  $("progressBar").style.width = pct + "%";
+  $("progressText").textContent = `${done}/${total} (${pct}%)`;
 }
 
-// Aviso e retorno ao index se estiver em tela de celular (mesma lógica do index: max-width 768px)
-function mobileGuardOrRedirect(){
-  const isMobile = window.matchMedia('(max-width: 768px)').matches;
-  if(!isMobile) return false;
+/* =========================================================
+   DataTable instance
+========================================================= */
+let dtInstance = null;
 
-  alert("⚠️ Aviso: este relatório processa milhares de registros e pode demorar/parecer travado no celular. Recomendamos executar no computador.");
-  window.location.href = "./index.html";
-  return true;
+/* =========================================================
+   Render
+========================================================= */
+function esc(s){ return String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function fmtDate(s){
+  if(!s) return "—";
+  // YYYY-MM-DD -> DD/MM/YYYY
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s);
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : esc(s);
 }
 
-function renderTable(counts, totalCounted, fiscaisPorArea){
-  const rows = Object.entries(counts)
-    .map(([area, n]) => ({ area, n }))
-    .sort((a,b) => b.n - a.n);
+function renderTable(registros, filtroArea){
+  if(dtInstance){ dtInstance.destroy(); dtInstance = null; }
 
-  $("tbody").innerHTML = rows.map(r => {
-    const pct = totalCounted ? ((r.n / totalCounted) * 100).toFixed(1) : "0.0";
+  let lista = registros;
+  if(filtroArea) lista = registros.filter(r => r.area === filtroArea);
 
-    const fiscais = (fiscaisPorArea && fiscaisPorArea[r.area]) ? fiscaisPorArea[r.area] : [];
-    const qtdF = fiscais.length;
+  $("tbody").innerHTML = lista.map(r => {
+    const atvsAlta = (r.altas || [])
+      .map(a => `<span class="badge badge-alta">${esc(a.atividade || a.subclasse || "—")}</span>`)
+      .join(" ");
 
-    const fiscaisHTML = qtdF
-      ? `<details>
-           <summary style="cursor:pointer; font-weight:900;">👥 ${qtdF} fiscal(is)</summary>
-           <div style="margin-top:8px; line-height:1.45;">
-             ${fiscais.map(n => `${n}`).join("<br>")}
-           </div>
-         </details>`
+    const cnaes = (r.altas || [])
+      .map(a => `<span class="badge">${esc(a.subclasse || "—")}</span>`)
+      .join(" ");
+
+    const alvaraValidade = r.alvara_ultimo?.dt_validade
+      ? (() => {
+          const hoje = new Date().toISOString().slice(0,10);
+          const venc = r.alvara_ultimo.dt_validade;
+          const ok = venc >= hoje;
+          return `<span class="badge ${ok ? 'badge-ok' : 'badge-alta'}">${fmtDate(venc)}</span>`;
+        })()
       : `<span class="muted">—</span>`;
+
+    const ultimaInsp = r.inspecoes && r.inspecoes.length
+      ? (() => {
+          const sorted = [...r.inspecoes].sort((a,b) => (b.dt_visita||"").localeCompare(a.dt_visita||""));
+          const last = sorted[0];
+          return `${fmtDate(last.dt_visita)}<br><span class="muted small">${esc(last.tipo || "")}</span>`;
+        })()
+      : `<span class="muted">—</span>`;
+
+    const doc = esc(r.cnpj || r.cpf || "—");
+    const bairro = esc(r.bairro?.nome || "—");
 
     return `
       <tr>
-        <td><b>${r.area}</b></td>
-        <td>${canonicalToSiglaHint(r.area)}</td>
-        <td>${r.n}</td>
-        <td>${pct}%</td>
-        <td>${fiscaisHTML}</td>
-      </tr>
-    `;
+        <td class="mono">${esc(r.codigo)}</td>
+        <td><b>${esc(r.razao || "—")}</b></td>
+        <td>${esc(r.fantasia || "—")}</td>
+        <td class="mono small">${doc}</td>
+        <td>${bairro}</td>
+        <td><span class="badge">${esc(r.area)}</span></td>
+        <td>${atvsAlta}</td>
+        <td>${cnaes}</td>
+        <td>${alvaraValidade}</td>
+        <td>${ultimaInsp}</td>
+      </tr>`;
   }).join("");
 
+  dtInstance = $("#tabelaAnalise").DataTable({
+    language: {
+      url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json"
+    },
+    pageLength: 25,
+    order: [[5, "asc"], [1, "asc"]],
+    columnDefs: [
+      { orderable: false, targets: [6, 7, 9] }
+    ]
+  });
+
   $("notes").textContent =
-    "Observação: (1) somente regulados com CNAE/atividade de Alta Complexidade são contabilizados; (2) cada regulado é contado uma única vez, conforme prioridade institucional; (3) quando os CNAEs (ALTA) não se enquadram nas áreas priorizadas, a classificação é atribuída a uma das áreas remanescentes, por seleção aleatória (fallback); (4) os fiscais por área são apurados a partir de data/bairros.csv (colunas por sigla de área), com deduplicação por área (um fiscal não se repete por bairro).";
+    "Observações: (1) Somente regulados com ao menos uma atividade de Alta Complexidade são exibidos. " +
+    "(2) A área exibida segue a prioridade institucional (Medicamentos → Produtos para Saúde → Cosméticos e Saneantes → Serviços de Saúde → Indústrias Alimentícias); " +
+    "quando nenhuma atividade se enquadra nessas áreas, é feita seleção aleatória (fallback). " +
+    "(3) Atividades e CNAEs listados são apenas os de Alta Complexidade.";
 }
 
-function renderChart(counts){
-  const labels = Object.keys(counts);
-  const data = Object.values(counts);
+/* =========================================================
+   CSV export
+========================================================= */
+function toCsv(registros, filtroArea){
+  let lista = registros;
+  if(filtroArea) lista = registros.filter(r => r.area === filtroArea);
 
-  const ctx = $("chart").getContext("2d");
-  if(chartInstance) chartInstance.destroy();
-
-  chartInstance = new Chart(ctx, {
-    type: "bar",
-    data: { labels, datasets: [{ label: "Regulados (ALTA) por área", data }] },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: true } },
-      scales: { y: { beginAtZero: true, precision: 0 } }
-    }
+  const header = "CODIGO;RAZAO_SOCIAL;FANTASIA;DOCUMENTO;BAIRRO;AREA;ATIVIDADES_ALTA;CNAES_ALTA;ALVARA_VALIDADE;ULTIMA_INSPECAO";
+  const rows = lista.map(r => {
+    const atvsAlta = (r.altas||[]).map(a => a.atividade||a.subclasse||"").join(" | ");
+    const cnaes    = (r.altas||[]).map(a => a.subclasse||"").join(" | ");
+    const alvara   = r.alvara_ultimo?.dt_validade || "";
+    const ultimaInsp = r.inspecoes && r.inspecoes.length
+      ? [...r.inspecoes].sort((a,b)=>(b.dt_visita||"").localeCompare(a.dt_visita||""))[0].dt_visita
+      : "";
+    return [
+      r.codigo, r.razao||"", r.fantasia||"", r.cnpj||r.cpf||"",
+      r.bairro?.nome||"", r.area,
+      atvsAlta, cnaes, alvara, ultimaInsp
+    ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(";");
   });
-}
-
-function toCsv(counts, totalCounted){
-  const rows = Object.entries(counts).map(([area, n]) => {
-    const pct = totalCounted ? ((n/totalCounted)*100).toFixed(2) : "0.00";
-    return [area, canonicalToSiglaHint(area), n, pct].join(";");
-  });
-  return ["AREA;SIGLA_HINT;QUANTIDADE;PERCENTUAL", ...rows].join("\n");
+  return [header, ...rows].join("\n");
 }
 
 function downloadText(filename, text){
-  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  const blob = new Blob(["\uFEFF" + text], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
   URL.revokeObjectURL(url);
 }
 
 /* =========================================================
-   Execução principal (PARSE CORRETO do index: indexData.dados[])
+   Preenche filtro de área
 ========================================================= */
+function populateFiltroArea(registros){
+  const areas = Array.from(new Set(registros.map(r => r.area))).sort((a,b) => a.localeCompare(b,"pt-BR"));
+  const sel = $("filtroArea");
+  // Remove opções antigas (exceto "Todas")
+  while(sel.options.length > 1) sel.remove(1);
+  areas.forEach(a => {
+    const opt = document.createElement("option");
+    opt.value = a; opt.textContent = a;
+    sel.appendChild(opt);
+  });
+}
+
+/* =========================================================
+   Execução principal
+========================================================= */
+let _registros = [];
+
 async function generate(){
   const INDEX_URL = $("indexUrl").value.trim();
-  const REG_DIR = $("regDir").value.trim().replace(/\/+$/,"");
-  const conc = Number($("concurrency").value) || 10;
-  const withChart = $("withChart").value === "yes";
+  const REG_DIR   = $("regDir").value.trim().replace(/\/+$/,"");
+  const conc      = Number($("concurrency").value) || 10;
 
   $("btnRun").disabled = true;
   setStatus("Carregando index de regulados…", "warn");
@@ -712,19 +633,15 @@ async function generate(){
   let indexData;
   try {
     indexData = await fetchJson(INDEX_URL);
-  } catch (e){
+  } catch(e){
     $("btnRun").disabled = false;
     setStatus("Falha ao carregar o index. Verifique o caminho e a publicação no GitHub Pages.", "err");
     console.error(e);
     return;
   }
 
-  // ✅ SEU FORMATO REAL
   const items = (indexData && Array.isArray(indexData.dados)) ? indexData.dados : [];
   const codes = items.map(extractCode).filter(Boolean);
-
-  progressInit(codes.length);
-  let done = 0;
 
   if(!codes.length){
     $("btnRun").disabled = false;
@@ -733,94 +650,101 @@ async function generate(){
     return;
   }
 
-    // Carrega fiscais por área (deduplicado) – não interfere na contagem, apenas na coluna informativa
-  setStatus("Carregando fiscais por área (data/bairros.csv)…", "warn");
-
-  let fiscaisPorArea = {};
-  try {
-    fiscaisPorArea = await loadFiscaisPorArea();
-  } catch(e){
-    console.warn("Falha ao carregar bairros.csv (seguindo sem coluna de fiscais):", e);
-    fiscaisPorArea = {};
-  }
-
-setStatus(`Index OK: ${codes.length} códigos. Lendo regulados em reg/00..43 (prefixo)…`, "warn");
-
+  progressInit(codes.length);
+  let done = 0;
   let total = 0, descartNoAlta = 0, descartForaRange = 0, counted = 0;
-  const counts = {};
+  const registros = [];
   const errors = [];
+
+  setStatus(`Index OK: ${codes.length} códigos. Lendo regulados em reg/00..43 (prefixo)…`, "warn");
 
   await runWithConcurrency(codes, async (code) => {
     try {
       total++;
-
       const shard = shardFolderPrefix2(code);
-    if(!shard.ok){
-      descartForaRange++;
-      return;
-    }
+      if(!shard.ok){ descartForaRange++; return; }
 
-    const url = `${REG_DIR}/${shard.folder}/${shard.cod5}.json`;
+      const url = `${REG_DIR}/${shard.folder}/${shard.cod5}.json`;
+      let reg;
+      try {
+        reg = await fetchJson(url);
+      } catch(e){
+        errors.push({ code, url, err: String(e?.message||e) });
+        return;
+      }
 
-    let reg;
-    try{
-      reg = await fetchJson(url);
-    } catch(e){
-      errors.push({ code, url, err: String(e?.message || e) });
-      return;
-    }
+      const classified = classifyRegulado(reg);
+      if(!classified.ok){ descartNoAlta++; return; }
 
-    const classified = classifyRegulado(reg);
-    if(!classified.ok){
-      descartNoAlta++;
-      return;
-    }
-
-    counted++;
-    counts[classified.area] = (counts[classified.area] || 0) + 1;
-
+      counted++;
+      registros.push({
+        codigo:         reg.codigo ?? code,
+        razao:          reg.razao || "",
+        fantasia:       reg.fantasia || "",
+        cnpj:           reg.cnpj || null,
+        cpf:            reg.cpf  || null,
+        bairro:         reg.bairro || {},
+        area:           classified.area,
+        pickedBy:       classified.pickedBy,
+        altas:          classified.altas || [],
+        alvara_ultimo:  reg.alvara_ultimo || null,
+        inspecoes:      Array.isArray(reg.inspecoes) ? reg.inspecoes : []
+      });
     } finally {
       done++;
       progressUpdate(done, codes.length);
     }
   }, conc);
-  progressUpdate(codes.length, codes.length, true);
-$("summaryCard").hidden = false;
-  $("tableCard").hidden = false;
-  $("chartCard").hidden = !withChart;
 
-  $("sTotal").textContent = total;
-  $("sNoAlta").textContent = descartNoAlta;
+  progressUpdate(codes.length, codes.length, true);
+
+  _registros = registros;
+
+  // Preenche filtro de áreas com as encontradas
+  populateFiltroArea(_registros);
+
+  $("sTotal").textContent     = total;
+  $("sNoAlta").textContent    = descartNoAlta;
   $("sForaRange").textContent = descartForaRange;
-  $("sCounted").textContent = counted;
+  $("sCounted").textContent   = counted;
 
   const now = new Date();
-  const dt = now.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
+  const dt  = now.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
 
   $("footerMeta").innerHTML = `
     <b>Parâmetros de execução:</b>
     <span class="mono">${INDEX_URL}</span> + <span class="mono">${REG_DIR}/00..43/&lt;codigo5&gt;.json</span>
     <br>
-    <b>Shard:</b> 2 primeiros dígitos do código (00..43) &nbsp;|&nbsp;
-    <b>Concorrência:</b> ${conc} &nbsp;|&nbsp;
+    <b>Concorrência:</b> ${conc} requisições paralelas &nbsp;|&nbsp;
     <b>Gerado em:</b> ${dt} (Horário de Brasília – UTC−3)
-    ${errors.length ? `<br><b>Avisos:</b> ${errors.length} arquivos não puderam ser lidos (ver console).` : ""}
+    ${errors.length ? `<br><b>Avisos:</b> ${errors.length} arquivo(s) não puderam ser lidos (ver console).` : ""}
   `;
 
-  renderTable(counts, counted, fiscaisPorArea);
-  if(withChart) renderChart(counts);
+  $("summaryCard").hidden = false;
+  $("tableCard").hidden   = false;
 
-  setStatus(`Concluído: ${counted} regulados (ALTA) contabilizados.`, errors.length ? "warn" : "ok");
+  renderTable(_registros, $("filtroArea").value);
+
+  setStatus(`Concluído: ${counted} regulados (ALTA) carregados.`, errors.length ? "warn" : "ok");
 
   $("btnCsv").onclick = () => {
-    const csv = toCsv(counts, counted);
-    downloadText("relatorio_regulados_alta_por_area.csv", csv);
+    const csv = toCsv(_registros, $("filtroArea").value);
+    downloadText("analise_regulados_alta.csv", csv);
   };
 
   $("btnRun").disabled = false;
 }
 
-  if (mobileGuardOrRedirect()) { /* redirected */ }
+/* Filtro de área sem recarregar dados */
+$("filtroArea").addEventListener("change", () => {
+  if(!_registros.length) return;
+  renderTable(_registros, $("filtroArea").value);
+  $("btnCsv").onclick = () => {
+    const csv = toCsv(_registros, $("filtroArea").value);
+    downloadText("analise_regulados_alta.csv", csv);
+  };
+});
+
 $("btnRun").addEventListener("click", generate);
 </script>
 
@@ -829,7 +753,6 @@ $("btnRun").addEventListener("click", generate);
   </div><!-- /.app-layout -->
 
   <script src="./js/sidebar.js"></script>
-
   <script src="./js/version.js"></script>
 
 </body>
