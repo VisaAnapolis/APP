@@ -1709,8 +1709,6 @@ function _montarPDF(mesKey, mesTitulo, diasComPlantao, brasaoData, dataEmissao) 
 // =============================
 document.addEventListener('DOMContentLoaded', () => {
   init();
-  // perfilGlobal não definido: botão OS permanece desabilitado para usuários não autenticados
-  window.perfilGlobal = null;
 });
 
 </script>
@@ -1720,6 +1718,27 @@ document.addEventListener('DOMContentLoaded', () => {
   </div><!-- /.app-layout -->
 
   <script src="./js/sidebar.js"></script>
+
+  <script>
+    // Intercepta sidebarAplicarPermissoes para habilitar o botão OS para Administradores
+    (function() {
+      var _orig = window.sidebarAplicarPermissoes;
+      window.sidebarAplicarPermissoes = function(grupo) {
+        if (_orig) _orig(grupo);
+        window.perfilGlobal = window.perfilGlobal || {};
+        window.perfilGlobal.grupo = grupo;
+        var btn = document.getElementById('btnGerarOS');
+        if (!btn) return;
+        if (grupo === 'Administrador') {
+          btn.classList.remove('btn-os--disabled');
+          btn.title = 'Gerar Ordem de Serviço';
+        } else {
+          btn.classList.add('btn-os--disabled');
+          btn.title = 'Gerar Ordem de Serviço (somente Administradores)';
+        }
+      };
+    })();
+  </script>
 
   <script src="./js/version.js"></script>
 
