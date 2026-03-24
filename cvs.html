@@ -1319,6 +1319,18 @@
         <button id="btnInspecoes" class="btn btnPrimary" type="button">📝 Inspeções</button>
       </div>
 
+      <!-- ═══ Card da Taxa ═══ -->
+      <div id="taxaCard" style="padding: 0 24px 16px; display:none;">
+        <div class="card" style="margin-bottom:0; background:var(--surface-variant,#f8fafc);">
+          <div class="card__title">
+            Taxa de Vigilância Sanitária
+          </div>
+          <div class="kv" id="taxaKv">
+            <!-- Preenchido via JS -->
+          </div>
+        </div>
+      </div>
+
       <!-- Cards de Atividades e Inspeções - usando classe original grid -->
       <div class="grid">
         <div class="card card--full">
@@ -1329,18 +1341,6 @@
         <div class="card card--full">
           <div class="card__title">Inspeções</div>
           <div id="inspecoesList" class="list"></div>
-        </div>
-      </div>
-
-      <!-- ═══ Card da Taxa ═══ -->
-      <div id="taxaCard" style="padding: 0 24px 16px; display:none;">
-        <div class="card" style="margin-bottom:0; background:var(--surface-variant,#f8fafc);">
-          <div class="card__title">
-            Taxa de Vigilância Sanitária
-          </div>
-          <div class="kv" id="taxaKv">
-            <!-- Preenchido via JS -->
-          </div>
         </div>
       </div>
     </aside>
