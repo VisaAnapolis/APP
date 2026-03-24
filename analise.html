@@ -23,9 +23,7 @@
   <script src="https://code.jquery.com/jquery-3.7.0.min.js"
           integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g="
           crossorigin="anonymous"></script>
-  <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"
-          integrity="sha256-kkb0EAGPiMjrGHAE+sC6K4n8dL/CVKqsJN0a3VXPF4="
-          crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
   <!-- SheetJS para exportação XLSX -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -576,7 +574,7 @@ function renderTable(registros, filtroArea){
       </tr>`;
   }).join("");
 
-  dtInstance = $("#tabelaAnalise").DataTable({
+  dtInstance = jQuery("#tabelaAnalise").DataTable({
     language: {
       url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json"
     },
@@ -592,7 +590,7 @@ function renderTable(registros, filtroArea){
         if (!cell) return;
         const input = cell.querySelector('input');
         if (!input) return;
-        $(input).on('keyup change clear', function() {
+        jQuery(input).on('keyup change clear', function() {
           if (col.search() !== this.value) col.search(this.value).draw();
         });
       });
