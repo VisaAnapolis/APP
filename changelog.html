@@ -184,6 +184,16 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.5.7 — 24/03/2026 (Horário de Brasília – UTC−3)</h3>
+  <strong>✨ Nova página: Análise Detalhada de Regulados de Alta Complexidade</strong>
+  <ul>
+    <li><strong>Análise Detalhada (<code>analise.html</code>):</strong> nova página no menu Relatórios que exibe tabela interativa com todos os regulados classificados como Alta Complexidade. Permite filtrar por área de atuação, aplicar filtros por coluna diretamente na tabela, ordenar por qualquer coluna (incluindo data da última inspeção) e exportar os dados em três formatos: CSV (com BOM UTF-8), XLS (via SheetJS, com cabeçalho colorido) e HTML autossuficiente para arquivamento.</li>
+    <li><strong>Aviso de acesso mobile:</strong> a página detecta dispositivos com tela ≤ 768 px, exibe alerta e redireciona para o Dashboard, pois o processamento de milhares de registros pode travar em celular. Padrão idêntico ao adotado em <code>total.html</code>.</li>
+  </ul>
+  <p><strong>Arquivos criados/modificados:</strong> <code>analise.html</code> — nova página com DataTables, SheetJS e exportações; <code>index.html</code> — novidade no dashboard (remoção entrada antiga); <code>changelog.html</code> — esta entrada. <em>APP_VERSION não alterada — aguardando aprovação manual.</em></p>
+</div>
+
+<div class="section">
   <h3>v2.5.6 — 22/03/2026 20:45 (Horário de Brasília – UTC−3)</h3>
   <strong>✨ Boletim de Produção Ambulatorial Consolidado (BPA-C) em Indicadores</strong>
   <ul>
@@ -311,17 +321,6 @@
   </ul>
   <p><strong>Afeta páginas:</strong> cvs, legislacao, check, changelog, readme, relatorio_plantao_fiscal, cnae, indicadores, inspecoes, rmpf, total e index (dashboard).</p>
   <p><strong>Arquivos modificados:</strong> <code>css/sidebar.css</code> — fallback de cor, dark mode iOS, z-index e scroll-padding; <code>css/components.css</code> — background iOS, altura mínima do topbar, display flex; <code>index.html</code> — fallback de cor, padding-top com !important, height mínimo; <code>indicadores.html</code>, <code>inspecoes.html</code>, <code>rmpf.html</code>, <code>total.html</code> — fallback de cor corrigido; <code>APP_VERSION</code> 2.4.5.</p>
-</div>
-
-<div class="section">
-  <h3>v2.4.4 — 01/03/2026 10:30 (Horário de Brasília – UTC−3)</h3>
-  <strong>Padronização de estilos, dark mode e layout em todas as páginas</strong>
-  <ul>
-    <li><strong>Padronização de dark mode:</strong> adicionadas variáveis CSS faltantes no <code>design-tokens.css</code> e removidos overrides redundantes, garantindo consistência visual no modo escuro em toda a aplicação.</li>
-    <li><strong>Padronização de estilos e fontes:</strong> aplicados estilos unificados, tipografia consistente e largura de tabelas padronizada em 17 páginas — admin, alvará, áreas, check lists, CNAE, férias, indicadores, inspeções, legislação, OS, plantão fiscal, POPs, leiame, RMPF, totalização, veículos e regulados (CVS).</li>
-    <li><strong>Dashboard refinado:</strong> título do dashboard agora exibe ícone e subtítulo dinâmico que varia conforme o perfil de acesso (Administrador, Fiscal ou Administrativo), melhorando a identificação visual e contextualização para cada usuário.</li>
-  </ul>
-  <p><strong>Arquivos modificados:</strong> <code>css/design-tokens.css</code> — variáveis dark mode; <code>index.html</code> — título dinâmico com ícone e subtítulo; 17 páginas do sistema — estilos e tabelas; <code>changelog.html</code> — entrada v2.4.4; <code>APP_VERSION</code> 2.4.4.</p>
 </div>
 
     </section>
