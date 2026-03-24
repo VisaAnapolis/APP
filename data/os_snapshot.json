@@ -24093,8 +24093,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20250628": {
     "tipo": "Denúncia",
@@ -34918,8 +34917,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20255034": {
     "tipo": "Requerimento",
@@ -36887,8 +36885,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260079": {
     "tipo": "Ofício",
@@ -37080,8 +37077,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260104": {
     "tipo": "Requerimento",
@@ -37153,8 +37149,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260110": {
     "tipo": "Denúncia",
@@ -37178,8 +37173,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260111": {
     "tipo": "Requerimento",
@@ -37227,8 +37221,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260118": {
     "tipo": "Denúncia",
@@ -37252,8 +37245,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260120": {
     "tipo": "Denúncia",
@@ -37277,8 +37269,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260122": {
     "tipo": "Denúncia",
@@ -37302,8 +37293,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260125": {
     "tipo": "Requerimento",
@@ -37375,8 +37365,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260130": {
     "tipo": "Denúncia",
@@ -37976,8 +37965,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260184": {
     "tipo": "Ofício",
@@ -38049,8 +38037,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260191": {
     "tipo": "Ofício",
@@ -38074,8 +38061,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260192": {
     "tipo": "Ofício",
@@ -38267,8 +38253,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260215": {
     "tipo": "Requerimento",
@@ -39012,8 +38997,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260276": {
     "tipo": "Ofício",
@@ -39109,8 +39093,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260282": {
     "tipo": "Ofício",
@@ -39158,8 +39141,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260284": {
     "tipo": "Ofício",
@@ -39303,8 +39285,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260295": {
     "tipo": "Ofício",
@@ -40888,8 +40869,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260395": {
     "tipo": "Ofício",
@@ -40913,8 +40893,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260396": {
     "tipo": "Ofício",
@@ -42210,8 +42189,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260469": {
     "tipo": "Ofício",
@@ -42235,8 +42213,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260470": {
     "tipo": "Requerimento",
@@ -43556,33 +43533,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
-  },
-  "20260539": {
-    "tipo": "Ofício",
-    "fiscal": "MARINA PERILLO NAVARRETE LAVERS",
-    "motivo": "TREINAMENTO/REUNIÃO",
-    "prazo": "27.03.2026",
-    "dataReq": "2026-03-23",
-    "razao": "SECRETARIA DE ESTADO DA SAÚDE-SES",
-    "fantasia": "SUVISA - 23/03/2026",
-    "logradouro": "SINDHOESG - RUA 24, Nº 202, SETOR CENTRAL, GOIÂNIA",
-    "complemento": "",
-    "bairro": "ANASHOPPING",
-    "cnpj": "",
-    "cpf": "",
-    "complexidade": "",
-    "cnaeCode": "",
-    "cnaeDesc": "",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": true,
-    "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260540": {
     "tipo": "Ofício",
@@ -43606,8 +43557,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260541": {
     "tipo": "Requerimento",
@@ -49851,9 +49801,9 @@
   },
   "20261005": {
     "tipo": "Requerimento",
-    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "fiscal": "RODRIGO ALESSANDRO TÔGO SANTOS",
     "motivo": "Renovação",
-    "prazo": "",
+    "prazo": "22.06.2026",
     "dataReq": "2026-03-23",
     "razao": "ACCITO DIAGNOSTICO LIMITADA",
     "fantasia": "LABORATORIO ACCITO DIAGNOSTICO",
@@ -49862,9 +49812,9 @@
     "bairro": "BAIRRO DE LOURDES",
     "cnpj": "46.743.473/0001-80",
     "cpf": "",
-    "complexidade": "",
-    "cnaeCode": "",
-    "cnaeDesc": "",
+    "complexidade": "MÉDIA",
+    "cnaeCode": "8640-2/02",
+    "cnaeDesc": "Laboratorios clinicos",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -49875,9 +49825,9 @@
   },
   "20261006": {
     "tipo": "Requerimento",
-    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "fiscal": "VIVIANE MIYADA",
     "motivo": "Renovação",
-    "prazo": "",
+    "prazo": "22.06.2026",
     "dataReq": "2026-03-23",
     "razao": "CLINICA DE SERVICOS MEDICOS S/S LTDA",
     "fantasia": "CLISEME",
@@ -49886,9 +49836,9 @@
     "bairro": "VILA GOIS",
     "cnpj": "08.917.470/0001-26",
     "cpf": "",
-    "complexidade": "",
-    "cnaeCode": "",
-    "cnaeDesc": "",
+    "complexidade": "ALTA",
+    "cnaeCode": "8660-7/00",
+    "cnaeDesc": "Atividades de Apoio à Gestão de Saúde",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -49899,9 +49849,9 @@
   },
   "20261007": {
     "tipo": "Requerimento",
-    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "fiscal": "VIVIANE MIYADA",
     "motivo": "Renovação",
-    "prazo": "",
+    "prazo": "22.06.2026",
     "dataReq": "2026-03-23",
     "razao": "CENTRO MEDICO VILA GOIS LTDA",
     "fantasia": "CENTRO MEDICO VILA GOIS",
@@ -49910,9 +49860,9 @@
     "bairro": "VILA GOIS",
     "cnpj": "10.569.856/0001-36",
     "cpf": "",
-    "complexidade": "",
-    "cnaeCode": "",
-    "cnaeDesc": "",
+    "complexidade": "MÉDIA",
+    "cnaeCode": "8630-5/03",
+    "cnaeDesc": "Atividade medica ambulatorial restrita a consultas",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -49923,9 +49873,9 @@
   },
   "20261008": {
     "tipo": "Requerimento",
-    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "fiscal": "JULIANA FERREIRA VITURINO",
     "motivo": "Renovação",
-    "prazo": "",
+    "prazo": "22.06.2026",
     "dataReq": "2026-03-23",
     "razao": "TQI COMERCIO E SERV. DE EQUIP. DE MEDICAO LTDA ME",
     "fantasia": "TEKNOPAR",
@@ -49934,9 +49884,9 @@
     "bairro": "BAIRRO DE LOURDES",
     "cnpj": "15.551.480/0001-56",
     "cpf": "",
-    "complexidade": "",
-    "cnaeCode": "",
-    "cnaeDesc": "",
+    "complexidade": "ALTA",
+    "cnaeCode": "7120-1/00",
+    "cnaeDesc": "Testes e Análises Técnicas",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -49947,9 +49897,9 @@
   },
   "20261009": {
     "tipo": "Requerimento",
-    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "fiscal": "WANESSA DE BRITO JORGE",
     "motivo": "Abertura",
-    "prazo": "",
+    "prazo": "23.05.2026",
     "dataReq": "2026-03-23",
     "razao": "TRANSPORTADORA DE LEITE M&A LTDA",
     "fantasia": "M&A TRANSPORTES",
@@ -49958,9 +49908,9 @@
     "bairro": "BAIRRO SAO JOAO",
     "cnpj": "54.028.106/0001-22",
     "cpf": "",
-    "complexidade": "",
-    "cnaeCode": "",
-    "cnaeDesc": "",
+    "complexidade": "MÉDIA",
+    "cnaeCode": "4930-2/02",
+    "cnaeDesc": "Transporte rodoviario de carga, exceto produtos perigosos e mudancas, intermunicipal, interestadual e internacional",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -49971,7 +49921,7 @@
   },
   "20261010": {
     "tipo": "Requerimento",
-    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "fiscal": "LIVIA BRITO",
     "motivo": "Renovação",
     "prazo": "",
     "dataReq": "2026-03-23",
@@ -49982,9 +49932,9 @@
     "bairro": "PARQUE BRASILIA I ETAPA",
     "cnpj": "26.068.396/0001-00",
     "cpf": "",
-    "complexidade": "",
-    "cnaeCode": "",
-    "cnaeDesc": "",
+    "complexidade": "BAIXA",
+    "cnaeCode": "9601-7/01",
+    "cnaeDesc": "Lavanderias",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -49995,9 +49945,9 @@
   },
   "20261012": {
     "tipo": "Requerimento",
-    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "fiscal": "LUCIANA CONSOLAÇÃO DOS SANTOS",
     "motivo": "Renovação",
-    "prazo": "",
+    "prazo": "22.06.2026",
     "dataReq": "2026-03-23",
     "razao": "PREFEITURA MUNICIPAL DE ANAPOLIS",
     "fantasia": "EM WALTER BEZZE",
@@ -50006,9 +49956,9 @@
     "bairro": "BAIRRO SAO LOURENCO",
     "cnpj": "00.699.617/0001-47",
     "cpf": "",
-    "complexidade": "",
-    "cnaeCode": "",
-    "cnaeDesc": "",
+    "complexidade": "MÉDIA",
+    "cnaeCode": "8513-9/00",
+    "cnaeDesc": "Ensino fundamental",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -50211,9 +50161,9 @@
   },
   "20261022": {
     "tipo": "Requerimento",
-    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "fiscal": "GLEICIANE MARIA JOSÉ DA SILVA",
     "motivo": "Renovação",
-    "prazo": "",
+    "prazo": "22.06.2026",
     "dataReq": "2026-03-23",
     "razao": "SC DISTRIBUICAO LTDA",
     "fantasia": "GRUPO SC",
@@ -50222,9 +50172,9 @@
     "bairro": "FAZENDA BARREIRO DO MEIO",
     "cnpj": "01.206.820/0015-00",
     "cpf": "",
-    "complexidade": "",
-    "cnaeCode": "",
-    "cnaeDesc": "",
+    "complexidade": "ALTA",
+    "cnaeCode": "4644-3/01",
+    "cnaeDesc": "Comercio atacadista de medicamentos e drogas de uso humano",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -50249,6 +50199,30 @@
     "complexidade": "MÉDIA",
     "cnaeCode": "8630-5/04",
     "cnaeDesc": "Atividade odontológica",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20261026": {
+    "tipo": "Requerimento",
+    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "motivo": "Renovação",
+    "prazo": "",
+    "dataReq": "2026-03-24",
+    "razao": "DEDETIZADORA LS LTDA",
+    "fantasia": "DEDETIZADORA  LS",
+    "logradouro": "AV ANA JACINTA",
+    "complemento": "QD.S LT.12",
+    "bairro": "VILA SANTA MARIA DE NAZARETH",
+    "cnpj": "09.089.564/0001-17",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
