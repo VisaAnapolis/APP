@@ -616,10 +616,12 @@
     els.btnCloseModal?.addEventListener("click", closeModal);
     els.modalBackdrop?.addEventListener("click", closeModal);
     els.btnAtividades?.addEventListener("click", () => {
-      els.atividadesList?.scrollIntoView?.({ behavior: "smooth", block: "start" });
+      (els.atividadesList?.closest(".card") ?? els.atividadesList)
+        ?.scrollIntoView?.({ behavior: "smooth", block: "start" });
     });
     els.btnInspecoes?.addEventListener("click", () => {
-      els.inspecoesList?.scrollIntoView?.({ behavior: "smooth", block: "start" });
+      (els.inspecoesList?.closest(".card") ?? els.inspecoesList)
+        ?.scrollIntoView?.({ behavior: "smooth", block: "start" });
     });
   }
 
