@@ -26,6 +26,8 @@
   <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"
           integrity="sha256-kkb0EAGPiMjrGHAE+sC6K4n8dL/CVKqsJN0a3VXPF4="
           crossorigin="anonymous"></script>
+  <!-- SheetJS para exportação XLSX -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -94,6 +96,11 @@
     #tabelaAnalise thead th { background: var(--brand1, #2c5aa0); color:#fff; white-space: nowrap; }
     #tabelaAnalise tbody td { vertical-align: top; padding: 10px 14px; font-size: .93rem; }
     #tabelaAnalise tbody tr:nth-child(even) td { background: rgba(26,58,107,.04); }
+    #tabelaAnalise tfoot th { background: #f1f5f9; padding: 6px 8px; }
+    #tabelaAnalise tfoot input {
+      width: 100%; padding: 4px 6px; font-size: .82rem;
+      border-radius: 6px; border: 1px solid #cfd3da; background: #fff;
+    }
 
     .badge {
       display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: .8rem;
@@ -301,7 +308,9 @@
     <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
       <div class="title">4) Regulados com Alta Complexidade</div>
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <button id="btnCsv" class="btn-clear" type="button">Exportar CSV</button>
+        <button id="btnCsv"  class="btn-clear" type="button">⬇ Exportar CSV</button>
+        <button id="btnXls"  class="btn-clear" type="button" style="background:#1d6f42;color:#fff;border-color:#1d6f42;">⬇ Exportar XLS</button>
+        <button id="btnHtml" class="btn-clear" type="button" style="background:#5856d6;color:#fff;border-color:#5856d6;">⬇ Exportar HTML</button>
       </div>
     </div>
 
@@ -322,6 +331,20 @@
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
+        <tfoot>
+          <tr>
+            <th><input type="text" placeholder="Código"></th>
+            <th><input type="text" placeholder="Razão Social"></th>
+            <th><input type="text" placeholder="Fantasia"></th>
+            <th><input type="text" placeholder="CNPJ/CPF"></th>
+            <th><input type="text" placeholder="Bairro"></th>
+            <th><input type="text" placeholder="Área"></th>
+            <th><input type="text" placeholder="Atividade"></th>
+            <th><input type="text" placeholder="CNAE"></th>
+            <th><input type="text" placeholder="Alvará"></th>
+            <th><input type="text" placeholder="Última inspeção"></th>
+          </tr>
+        </tfoot>
       </table>
     </div>
     <div class="muted small" style="margin-top:10px;" id="notes"></div>
@@ -525,13 +548,15 @@ function renderTable(registros, filtroArea){
         })()
       : `<span class="muted">—</span>`;
 
-    const ultimaInsp = r.inspecoes && r.inspecoes.length
-      ? (() => {
-          const sorted = [...r.inspecoes].sort((a,b) => (b.dt_visita||"").localeCompare(a.dt_visita||""));
-          const last = sorted[0];
-          return `${fmtDate(last.dt_visita)}<br><span class="muted small">${esc(last.tipo || "")}</span>`;
-        })()
-      : `<span class="muted">—</span>`;
+    let ultimaInspHtml, ultimaInspOrder = "";
+    if (r.inspecoes && r.inspecoes.length) {
+      const sorted = [...r.inspecoes].sort((a,b) => (b.dt_visita||"").localeCompare(a.dt_visita||""));
+      const last = sorted[0];
+      ultimaInspOrder = last.dt_visita || "";
+      ultimaInspHtml = `${fmtDate(last.dt_visita)}<br><span class="muted small">${esc(last.tipo || "")}</span>`;
+    } else {
+      ultimaInspHtml = `<span class="muted">—</span>`;
+    }
 
     const doc = esc(r.cnpj || r.cpf || "—");
     const bairro = esc(r.bairro?.nome || "—");
@@ -547,7 +572,7 @@ function renderTable(registros, filtroArea){
         <td>${atvsAlta}</td>
         <td>${cnaes}</td>
         <td>${alvaraValidade}</td>
-        <td>${ultimaInsp}</td>
+        <td data-order="${ultimaInspOrder}">${ultimaInspHtml}</td>
       </tr>`;
   }).join("");
 
@@ -558,8 +583,20 @@ function renderTable(registros, filtroArea){
     pageLength: 25,
     order: [[5, "asc"], [1, "asc"]],
     columnDefs: [
-      { orderable: false, targets: [6, 7, 9] }
-    ]
+      { orderable: false, targets: [6, 7] }
+    ],
+    initComplete: function() {
+      this.api().columns().every(function() {
+        const col = this;
+        const cell = col.footer();
+        if (!cell) return;
+        const input = cell.querySelector('input');
+        if (!input) return;
+        $(input).on('keyup change clear', function() {
+          if (col.search() !== this.value) col.search(this.value).draw();
+        });
+      });
+    }
   });
 
   $("notes").textContent =
@@ -598,6 +635,135 @@ function downloadText(filename, text){
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+/* =========================================================
+   XLS export (SheetJS)
+========================================================= */
+function toXlsx(registros, filtroArea){
+  let lista = filtroArea ? registros.filter(r => r.area === filtroArea) : registros;
+
+  const headers = [
+    "CODIGO","RAZAO_SOCIAL","FANTASIA","DOCUMENTO","BAIRRO",
+    "AREA","ATIVIDADES_ALTA","CNAES_ALTA","ALVARA_VALIDADE","ULTIMA_INSPECAO"
+  ];
+
+  const rows = lista.map(r => {
+    const atvsAlta  = (r.altas||[]).map(a => a.atividade||a.subclasse||"").join(" | ");
+    const cnaes     = (r.altas||[]).map(a => a.subclasse||"").join(" | ");
+    const alvara    = r.alvara_ultimo?.dt_validade || "";
+    const ultimaInsp = r.inspecoes && r.inspecoes.length
+      ? [...r.inspecoes].sort((a,b)=>(b.dt_visita||"").localeCompare(a.dt_visita||""))[0].dt_visita
+      : "";
+    return [
+      r.codigo, r.razao||"", r.fantasia||"", r.cnpj||r.cpf||"",
+      r.bairro?.nome||"", r.area, atvsAlta, cnaes, alvara, ultimaInsp
+    ];
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+
+  // Estilo do cabeçalho
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  for (let C = range.s.c; C <= range.e.c; C++) {
+    const addr = XLSX.utils.encode_cell({r: 0, c: C});
+    if (!ws[addr]) continue;
+    ws[addr].s = {
+      font: { bold: true, color: { rgb: "FFFFFF" } },
+      fill: { fgColor: { rgb: "003366" } },
+      alignment: { horizontal: "center" }
+    };
+  }
+
+  // Larguras de colunas
+  ws['!cols'] = [
+    {wch:10},{wch:40},{wch:30},{wch:20},{wch:20},
+    {wch:22},{wch:50},{wch:20},{wch:15},{wch:15}
+  ];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Alta Complexidade");
+  const hoje = new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb, `analise_regulados_alta_${hoje}.xlsx`);
+}
+
+/* =========================================================
+   HTML export
+========================================================= */
+function toHtmlFile(registros, filtroArea){
+  let lista = filtroArea ? registros.filter(r => r.area === filtroArea) : registros;
+
+  const geradoEm = new Date().toLocaleString("pt-BR");
+  const filtroLabel = filtroArea ? `Área: ${filtroArea}` : "Todas as áreas";
+
+  const headerRow = [
+    "Código","Razão Social","Fantasia","CNPJ/CPF","Bairro",
+    "Área","Atividades (ALTA)","CNAEs (ALTA)","Alvará válido até","Última inspeção"
+  ].map(h => `<th>${h}</th>`).join("");
+
+  const dataRows = lista.map(r => {
+    const atvsAlta  = (r.altas||[]).map(a => a.atividade||a.subclasse||"—").join("<br>");
+    const cnaes     = (r.altas||[]).map(a => a.subclasse||"—").join("<br>");
+    const alvara    = r.alvara_ultimo?.dt_validade
+      ? (() => {
+          const hoje = new Date().toISOString().slice(0,10);
+          const venc = r.alvara_ultimo.dt_validade;
+          const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(venc);
+          const fmt = m ? `${m[3]}/${m[2]}/${m[1]}` : venc;
+          return `<span style="color:${venc >= hoje ? '#047857' : '#b91c1c'}">${fmt}</span>`;
+        })()
+      : "—";
+    const ultimaInsp = r.inspecoes && r.inspecoes.length
+      ? (() => {
+          const last = [...r.inspecoes].sort((a,b)=>(b.dt_visita||"").localeCompare(a.dt_visita||""))[0];
+          const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(last.dt_visita||"");
+          return (m ? `${m[3]}/${m[2]}/${m[1]}` : "—") + (last.tipo ? `<br><small>${last.tipo}</small>` : "");
+        })()
+      : "—";
+    const doc    = (r.cnpj || r.cpf || "—").replace(/&/g,"&amp;").replace(/</g,"&lt;");
+    const bairro = (r.bairro?.nome || "—").replace(/&/g,"&amp;").replace(/</g,"&lt;");
+    const razao  = (r.razao  || "—").replace(/&/g,"&amp;").replace(/</g,"&lt;");
+    const fantasia = (r.fantasia || "—").replace(/&/g,"&amp;").replace(/</g,"&lt;");
+    const area   = (r.area   || "—").replace(/&/g,"&amp;").replace(/</g,"&lt;");
+    return `<tr><td>${r.codigo}</td><td><b>${razao}</b></td><td>${fantasia}</td><td>${doc}</td><td>${bairro}</td><td>${area}</td><td>${atvsAlta}</td><td>${cnaes}</td><td>${alvara}</td><td>${ultimaInsp}</td></tr>`;
+  }).join("\n");
+
+  const html = `<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Regulados Alta Complexidade</title>
+<style>
+  body { font-family: system-ui, Arial, sans-serif; font-size: 13px; color: #1a202c; margin: 24px; }
+  h1 { font-size: 1.25rem; color: #1a3a6b; margin-bottom: 4px; }
+  .meta { color: #64748b; font-size: .85rem; margin-bottom: 16px; }
+  table { border-collapse: collapse; width: 100%; }
+  th { background: #2c5aa0; color: #fff; padding: 8px 10px; text-align: left; white-space: nowrap; font-size: .82rem; }
+  td { padding: 7px 10px; border-bottom: 1px solid #e2e8f0; vertical-align: top; font-size: .82rem; }
+  tr:nth-child(even) td { background: #f8fafc; }
+  tr:hover td { background: #eff6ff; }
+  small { color: #64748b; }
+  @media print { body { margin: 8px; } }
+</style>
+</head>
+<body>
+<h1>Regulados Alta Complexidade</h1>
+<div class="meta">Gerado em: ${geradoEm} &nbsp;|&nbsp; Filtro: ${filtroLabel} &nbsp;|&nbsp; Total: ${lista.length} registros</div>
+<table>
+<thead><tr>${headerRow}</tr></thead>
+<tbody>
+${dataRows}
+</tbody>
+</table>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a");
+  a.href = url; a.download = "analise_regulados_alta.html";
   document.body.appendChild(a); a.click(); a.remove();
   URL.revokeObjectURL(url);
 }
@@ -727,22 +893,25 @@ async function generate(){
 
   setStatus(`Concluído: ${counted} regulados (ALTA) carregados.`, errors.length ? "warn" : "ok");
 
-  $("btnCsv").onclick = () => {
-    const csv = toCsv(_registros, $("filtroArea").value);
-    downloadText("analise_regulados_alta.csv", csv);
-  };
+  bindExportButtons($("filtroArea").value);
 
   $("btnRun").disabled = false;
+}
+
+function bindExportButtons(filtroArea){
+  $("btnCsv").onclick = () => {
+    const csv = toCsv(_registros, filtroArea);
+    downloadText("analise_regulados_alta.csv", csv);
+  };
+  $("btnXls").onclick = () => toXlsx(_registros, filtroArea);
+  $("btnHtml").onclick = () => toHtmlFile(_registros, filtroArea);
 }
 
 /* Filtro de área sem recarregar dados */
 $("filtroArea").addEventListener("change", () => {
   if(!_registros.length) return;
   renderTable(_registros, $("filtroArea").value);
-  $("btnCsv").onclick = () => {
-    const csv = toCsv(_registros, $("filtroArea").value);
-    downloadText("analise_regulados_alta.csv", csv);
-  };
+  bindExportButtons($("filtroArea").value);
 });
 
 $("btnRun").addEventListener("click", generate);
