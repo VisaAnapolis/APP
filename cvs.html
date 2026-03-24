@@ -1313,11 +1313,17 @@
         </div>
       </div>
 
-      <!-- ═══ NOVO: Card da Taxa ═══ -->
+      <!-- Botões de Ação - usando classe original detailBtns -->
+      <div class="detailBtns">
+        <button id="btnAtividades" class="btn btnPrimary" type="button">📋 Atividades</button>
+        <button id="btnInspecoes" class="btn btnPrimary" type="button">📝 Inspeções</button>
+      </div>
+
+      <!-- ═══ Card da Taxa ═══ -->
       <div id="taxaCard" style="padding: 0 24px 16px; display:none;">
         <div class="card" style="margin-bottom:0; background:var(--surface-variant,#f8fafc);">
-          <div class="card__title" style="border-left-color:#d97706;">
-        Taxa de Vigilância Sanitária
+          <div class="card__title">
+            Taxa de Vigilância Sanitária
           </div>
           <div class="kv" id="taxaKv">
             <!-- Preenchido via JS -->
@@ -1325,20 +1331,14 @@
         </div>
       </div>
 
-      <!-- Botões de Ação - usando classe original detailBtns -->
-      <div class="detailBtns">
-        <button id="btnAtividades" class="btn btnPrimary" type="button">📋 Atividades</button>
-        <button id="btnInspecoes" class="btn btnPrimary" type="button">📝 Inspeções</button>
-      </div>
-
       <!-- Cards de Atividades e Inspeções - usando classe original grid -->
       <div class="grid">
-        <div class="card card--full">
+        <div id="atividadesCard" class="card card--full">
           <div class="card__title">Atividades (CNAE)</div>
           <div id="atividadesList" class="list"></div>
         </div>
 
-        <div class="card card--full">
+        <div id="inspecoesCard" class="card card--full">
           <div class="card__title">Inspeções</div>
           <div id="inspecoesList" class="list"></div>
         </div>

@@ -84,6 +84,8 @@
     dAlvVal: byId("dAlvVal"),
     btnAtividades: byId("btnAtividades"),
     btnInspecoes: byId("btnInspecoes"),
+    atividadesCard: byId("atividadesCard"),
+    inspecoesCard: byId("inspecoesCard"),
     atividadesList: byId("atividadesList"),
     inspecoesList: byId("inspecoesList"),
     modalBackdrop: byId("modalBackdrop"),
@@ -616,10 +618,10 @@
     els.btnCloseModal?.addEventListener("click", closeModal);
     els.modalBackdrop?.addEventListener("click", closeModal);
     els.btnAtividades?.addEventListener("click", () => {
-      els.atividadesList?.scrollIntoView?.({ behavior: "smooth", block: "start" });
+      els.atividadesCard?.scrollIntoView?.({ behavior: "smooth", block: "start" });
     });
     els.btnInspecoes?.addEventListener("click", () => {
-      els.inspecoesList?.scrollIntoView?.({ behavior: "smooth", block: "start" });
+      els.inspecoesCard?.scrollIntoView?.({ behavior: "smooth", block: "start" });
     });
   }
 
