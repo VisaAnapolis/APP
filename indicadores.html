@@ -554,10 +554,11 @@
 
         /* ── Buscar JSONs individuais para obter complexidade/CNAE ── */
         var jsonPromises = regPeriodo.map(function(r) {
-          var area = (r.AREA || '').trim();
-          var cod  = (r.CODIGO || '').trim();
-          if (!area || !cod) return Promise.resolve(null);
-          return fetch('data/reg/' + area + '/' + cod + '.json')
+          var cod = (r.CODIGO || '').trim();
+          if (!cod) return Promise.resolve(null);
+          var padded = String(cod).padStart(5, '0');
+          var prefix = padded.slice(0, 2);
+          return fetch('data/reg/' + prefix + '/' + padded + '.json')
             .then(function(res) { return res.ok ? res.json() : null; })
             .catch(function() { return null; });
         });
