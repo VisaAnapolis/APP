@@ -36789,8 +36789,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260079": {
     "tipo": "Ofício",
@@ -36814,8 +36813,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": true,
-    "email_notif_5d": true
+    "notif_hoje": true
   },
   "20260084": {
     "tipo": "Requerimento",
@@ -36959,8 +36957,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260104": {
     "tipo": "Requerimento",
@@ -37104,8 +37101,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260120": {
     "tipo": "Denúncia",
@@ -37129,8 +37125,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260122": {
     "tipo": "Denúncia",
@@ -37154,8 +37149,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260125": {
     "tipo": "Requerimento",
@@ -37227,8 +37221,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260130": {
     "tipo": "Denúncia",
@@ -37638,6 +37631,30 @@
     "notif_amanha": false,
     "notif_hoje": false
   },
+  "20260154": {
+    "tipo": "Denúncia",
+    "fiscal": "SILVIA MARQUES NAVES DA MOTA SOUZA",
+    "motivo": "- [ ] SERVIÇOS DE SAÚDE",
+    "prazo": "09.04.2026",
+    "dataReq": "2026-03-25",
+    "razao": "INSTITUTO RADIOLOGICO DE ANAPOLIS LTDA",
+    "fantasia": "",
+    "logradouro": "RUA LEOPOLDO DE BULHÕES",
+    "complemento": "Nº 522",
+    "bairro": "CENTRO",
+    "cnpj": "02.353.753/0001-06",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
+    "descricao": "Relato completo do denunciante na Denúncia 369981: Possível fechamento do estabelecimento, averiguar a existência de equipamentos radioativos...",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
   "20260160": {
     "tipo": "Ofício",
     "fiscal": "LUCIANA CONSOLAÇÃO DOS SANTOS",
@@ -37804,8 +37821,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260184": {
     "tipo": "Ofício",
@@ -37877,8 +37893,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260191": {
     "tipo": "Ofício",
@@ -37902,8 +37917,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260192": {
     "tipo": "Ofício",
@@ -37927,8 +37941,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260194": {
     "tipo": "Requerimento",
@@ -38096,8 +38109,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260215": {
     "tipo": "Requerimento",
@@ -38817,8 +38829,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260276": {
     "tipo": "Ofício",
@@ -38914,8 +38925,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260282": {
     "tipo": "Ofício",
@@ -38963,8 +38973,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260284": {
     "tipo": "Ofício",
@@ -39108,8 +39117,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260295": {
     "tipo": "Ofício",
@@ -39517,8 +39525,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260321": {
     "tipo": "Ofício",
@@ -40286,8 +40293,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260378": {
     "tipo": "Ofício",
@@ -40671,8 +40677,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260395": {
     "tipo": "Ofício",
@@ -40696,8 +40701,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260396": {
     "tipo": "Ofício",
@@ -40793,8 +40797,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260401": {
     "tipo": "Ofício",
@@ -41058,8 +41061,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260418": {
     "tipo": "Ofício",
@@ -41083,8 +41085,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260420": {
     "tipo": "Requerimento",
@@ -41156,8 +41157,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260424": {
     "tipo": "Ofício",
@@ -41181,8 +41181,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260426": {
     "tipo": "Ofício",
@@ -41206,8 +41205,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260427": {
     "tipo": "Ofício",
@@ -41231,8 +41229,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260428": {
     "tipo": "Ofício",
@@ -42000,8 +41997,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260469": {
     "tipo": "Ofício",
@@ -42025,8 +42021,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260470": {
     "tipo": "Requerimento",
@@ -43034,8 +43029,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260528": {
     "tipo": "Requerimento",
@@ -43299,8 +43293,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260544": {
     "tipo": "Ofício",
@@ -50323,6 +50316,30 @@
     "bairro": "CENTRO",
     "cnpj": "",
     "cpf": "359.636.201-63",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20261054": {
+    "tipo": "Requerimento",
+    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "motivo": "Renovação",
+    "prazo": "",
+    "dataReq": "2026-03-25",
+    "razao": "BIO INSTINTO INDUST. E COMERCIO DE COSMETICOS LTDA",
+    "fantasia": "BIO INSTINTO",
+    "logradouro": "AV. COLOMBO BAIOCCHI FILHO",
+    "complemento": "QD 11 LT 13",
+    "bairro": "RESIDENCIAL MONTE SINAI",
+    "cnpj": "07.882.964/0001-50",
+    "cpf": "",
     "complexidade": "",
     "cnaeCode": "",
     "cnaeDesc": "",
