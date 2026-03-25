@@ -566,7 +566,7 @@
           var jsonsReg = settled.map(function(r) {
             return r.status === 'fulfilled' ? r.value : null;
           });
-          renderAll(container, start, end, insp, ofic, req, den, prot, alv, cnae, totalRegCad, totalRegExcluido, jsonsReg);
+          renderAll(container, start, end, insp, ofic, req, den, prot, alv, cnae, totalRegCad, totalRegExcluido, jsonsReg, regPeriodo);
         });
       }).catch(function(err) {
         container.innerHTML = '<div class="indicadores-loading">⚠️ Erro ao carregar dados: ' + (err && err.message ? err.message : err) + '</div>';
@@ -576,7 +576,7 @@
     /* ══════════════════════════════════════════════════════
        PROCESSAMENTO E RENDERIZAÇÃO
     ══════════════════════════════════════════════════════ */
-    function renderAll(container, start, end, insp, ofic, req, den, prot, alv, cnae, totalRegCad, totalRegExcluido, jsonsReg) {
+    function renderAll(container, start, end, insp, ofic, req, den, prot, alv, cnae, totalRegCad, totalRegExcluido, jsonsReg, regPeriodo) {
       var periodoLabel = fmtDate(start) + ' – ' + fmtDate(end);
 
       /* ── MAPA DE COMPLEXIDADE (CNAE) ── */
@@ -733,26 +733,39 @@
         'Alimentos em Geral'
       ];
 
+      var COMP_PRIORITY = ['ALTA', 'MÉDIA', 'BAIXA'];
       var COMP_REG_SEM = 'Não classificado';
       var regCompCount = { 'ALTA': 0, 'MÉDIA': 0, 'BAIXA': 0 };
       regCompCount[COMP_REG_SEM] = 0;
       var regCnaeMap = { hospital: 0, ilpi: 0, alimentacao: 0 };
 
-      (jsonsReg || []).forEach(function(json) {
+      /* jsonsReg e regPeriodo são paralelos: ambos derivam de regPeriodo.map() → Promise.allSettled */
+      (jsonsReg || []).forEach(function(json, idx) {
+        /* Considerar somente os ativos */
+        var reg = (regPeriodo || [])[idx];
+        if (reg) {
+          var inatividade = (reg.INATIVIDADE || '').trim().toLowerCase();
+          if (inatividade === 'true' || inatividade === '1') return;
+        }
+
         if (!json || !json.atividades || !json.atividades.length) {
           regCompCount[COMP_REG_SEM]++;
           return;
         }
         var atvs = json.atividades;
 
-        /* Complexidade: usa atividade principal */
-        var principal = atvs.find(function(a) { return (a.tipo || '') === 'Principal'; }) || atvs[0];
-        var comp = (principal.complexidade || '').trim();
-        if (Object.prototype.hasOwnProperty.call(regCompCount, comp)) {
-          regCompCount[comp]++;
-        } else {
-          regCompCount[COMP_REG_SEM]++;
-        }
+        /* Complexidade: maior entre todos os CNAEs consultados em mapaCNAE */
+        var highestComp = null;
+        atvs.forEach(function(a) {
+          var sub = (a.subclasse || '').trim();
+          var c = mapaCNAE.get(sub) || null;
+          if (!c) return;
+          if (!highestComp || COMP_PRIORITY.indexOf(c) < COMP_PRIORITY.indexOf(highestComp)) {
+            highestComp = c;
+          }
+        });
+        var comp = highestComp || COMP_REG_SEM;
+        regCompCount[comp]++;
 
         /* Mapa SIA/SUS: regra de prioridade — conta só uma vez pela área de maior relevância */
         var areaNomes = atvs.map(function(a) {
@@ -968,7 +981,7 @@
       var rowsReg = '';
       rowsReg += row('Cadastrados no período', totalRegCad);
       rowsReg += row('Exclusões no período', totalRegExcluido);
-      rowsReg += '<tr class="subtotal"><td colspan="2">Cadastros por complexidade</td></tr>';
+      rowsReg += '<tr class="subtotal"><td colspan="2">Por complexidade (ativos)</td></tr>';
       rowsReg += row('Alta complexidade',  regCompCount['ALTA'],  '', true);
       rowsReg += row('Média complexidade', regCompCount['MÉDIA'], '', true);
       rowsReg += row('Baixa complexidade', regCompCount['BAIXA'], '', true);
@@ -1282,7 +1295,7 @@
           [
             {label: 'Cadastrados no per\u00edodo',  value: d.totalRegCad},
             {label: 'Exclus\u00f5es no per\u00edodo', value: d.totalRegExcluido},
-            {label: 'Por complexidade',              subtotal: true},
+            {label: 'Por complexidade (ativos)',    subtotal: true},
             {label: 'Alta complexidade',             value: d.regCompCount['ALTA'],  indent: true},
             {label: 'M\u00e9dia complexidade',       value: d.regCompCount['M\u00c9DIA'], indent: true},
             {label: 'Baixa complexidade',            value: d.regCompCount['BAIXA'], indent: true}
