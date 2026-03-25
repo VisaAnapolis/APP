@@ -605,6 +605,36 @@
         if (sub) mapaCNAE.set(sub, (c.Complexidade || '').trim());
       });
 
+      /* ── Resolução de complexidade: JSON → mapa exato → mapa por prefixo CNAE ── */
+      function resolveComplexidade(a) {
+        // 1) Campo complexidade já embutido no JSON (mesma fonte de total.html)
+        var c = (a.complexidade || '').trim();
+        if (c && COMP_PRIORITY.indexOf(c) !== -1) return c;
+        // 2) Busca exata no mapa CNAE (mesma lógica de regulados cadastrados)
+        var sub = (a.subclasse || '').trim();
+        c = mapaCNAE.get(sub) || null;
+        if (c && COMP_PRIORITY.indexOf(c) !== -1) return c;
+        // 3) Prefixo de classe CNAE (ex.: "5611-2/" para "5611-2/02"), como cnaeMatch no mapa
+        if (sub) {
+          var slashIdx = sub.lastIndexOf('/');
+          if (slashIdx > 0) {
+            var pfx = sub.slice(0, slashIdx + 1);
+            var best = null;
+            for (var entry of mapaCNAE) {
+              var key = entry[0], comp = entry[1];
+              if (key.startsWith(pfx) && COMP_PRIORITY.indexOf(comp) !== -1) {
+                if (!best || COMP_PRIORITY.indexOf(comp) < COMP_PRIORITY.indexOf(best)) {
+                  best = comp;
+                  if (best === COMP_PRIORITY[0]) break; // já é ALTA, não há melhor
+                }
+              }
+            }
+            if (best) return best;
+          }
+        }
+        return null;
+      }
+
       /* ── INSPEÇÕES ── */
       var inspeçõesPeriodo = insp.filter(function(r){ return inRange(parseDMY(r.DT_VISITA), start, end); });
       var totalInsp = inspeçõesPeriodo.length;
@@ -773,11 +803,10 @@
         }
         var atvs = json.atividades;
 
-        /* Complexidade: maior entre todos os CNAEs consultados em mapaCNAE */
+        /* Complexidade: maior entre todos os CNAEs — JSON direto, mapa exato ou prefixo */
         var highestComp = null;
         atvs.forEach(function(a) {
-          var sub = (a.subclasse || '').trim();
-          var c = mapaCNAE.get(sub) || null;
+          var c = resolveComplexidade(a);
           if (!c) return;
           if (!highestComp || COMP_PRIORITY.indexOf(c) < COMP_PRIORITY.indexOf(highestComp)) {
             highestComp = c;
@@ -834,8 +863,7 @@
         var atvs = json.atividades;
         var highestComp = null;
         atvs.forEach(function(a) {
-          var sub = (a.subclasse || '').trim();
-          var c = mapaCNAE.get(sub) || null;
+          var c = resolveComplexidade(a);
           if (!c) return;
           if (!highestComp || COMP_PRIORITY.indexOf(c) < COMP_PRIORITY.indexOf(highestComp)) {
             highestComp = c;
