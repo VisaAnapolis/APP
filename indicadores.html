@@ -552,6 +552,12 @@
                  inRange(parseDMY(r.Dt_alter), start, end);
         }).length;
 
+        /* ── Total de regulados ativos (independente do período) ── */
+        var totalRegAtivos = regulados.filter(function(r) {
+          var inativo = (r.INATIVIDADE || '').trim().toLowerCase();
+          return inativo !== 'true' && inativo !== '1';
+        }).length;
+
         /* ── Buscar JSONs individuais para obter complexidade/CNAE ── */
         var jsonPromises = regPeriodo.map(function(r) {
           var cod = (r.CODIGO || '').trim();
@@ -567,7 +573,7 @@
           var jsonsReg = settled.map(function(r) {
             return r.status === 'fulfilled' ? r.value : null;
           });
-          renderAll(container, start, end, insp, ofic, req, den, prot, alv, cnae, totalRegCad, totalRegExcluido, jsonsReg, regPeriodo);
+          renderAll(container, start, end, insp, ofic, req, den, prot, alv, cnae, totalRegCad, totalRegExcluido, jsonsReg, regPeriodo, totalRegAtivos);
         });
       }).catch(function(err) {
         container.innerHTML = '<div class="indicadores-loading">⚠️ Erro ao carregar dados: ' + (err && err.message ? err.message : err) + '</div>';
@@ -577,7 +583,7 @@
     /* ══════════════════════════════════════════════════════
        PROCESSAMENTO E RENDERIZAÇÃO
     ══════════════════════════════════════════════════════ */
-    function renderAll(container, start, end, insp, ofic, req, den, prot, alv, cnae, totalRegCad, totalRegExcluido, jsonsReg, regPeriodo) {
+    function renderAll(container, start, end, insp, ofic, req, den, prot, alv, cnae, totalRegCad, totalRegExcluido, jsonsReg, regPeriodo, totalRegAtivos) {
       var periodoLabel = fmtDate(start) + ' – ' + fmtDate(end);
 
       /* ── MAPA DE COMPLEXIDADE (CNAE) ── */
@@ -990,6 +996,10 @@
         rowsReg += row('Sem classificação CNAE', regCompCount[COMP_REG_SEM], '', true);
       html += card('🏢 Regulados Cadastrados', rowsReg);
 
+      var rowsRegAtivos = '';
+      rowsRegAtivos += row('Total de regulados ativos', totalRegAtivos);
+      html += card('📊 Total de Regulados Ativos', rowsRegAtivos);
+
       html += '</div>';
 
       /* Seção Mapa SIA/SUS */
@@ -1049,6 +1059,7 @@
         alvTotal: alvTotal,
         totalRegCad: totalRegCad,
         totalRegExcluido: totalRegExcluido,
+        totalRegAtivos: totalRegAtivos,
         regCompCount: regCompCount,
         COMP_REG_SEM: COMP_REG_SEM,
         regCnaeMap: regCnaeMap,
@@ -1303,6 +1314,12 @@
           ].concat(d.regCompCount[d.COMP_REG_SEM] > 0
             ? [{label: 'Sem classifica\u00e7\u00e3o CNAE', value: d.regCompCount[d.COMP_REG_SEM], indent: true}]
             : [])
+        );
+        drawCard(
+          'Total de Regulados Ativos',
+          [
+            {label: 'Total de regulados ativos (independente do per\u00edodo)', value: d.totalRegAtivos}
+          ]
         );
 
         /* ── Mapa SIA/SUS ── */
