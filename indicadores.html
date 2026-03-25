@@ -527,16 +527,47 @@
         loadCSV('data/denuncia.csv'),
         loadCSV('data/protocolo.csv'),
         loadCSV('data/alvara.csv'),
-        loadCSV('data/cnae.csv')
+        loadCSV('data/cnae.csv'),
+        loadCSV('data/regulados.csv')
       ]).then(function(results) {
-        var insp  = results[0];
-        var ofic  = results[1];
-        var req   = results[2];
-        var den   = results[3];
-        var prot  = results[4];
-        var alv   = results[5];
-        var cnae  = results[6];
-        renderAll(container, start, end, insp, ofic, req, den, prot, alv, cnae);
+        var insp      = results[0];
+        var ofic      = results[1];
+        var req       = results[2];
+        var den       = results[3];
+        var prot      = results[4];
+        var alv       = results[5];
+        var cnae      = results[6];
+        var regulados = results[7];
+
+        /* ── Filtrar regulados cadastrados no período ── */
+        var regPeriodo = regulados.filter(function(r) {
+          return inRange(parseDMY(r.Dt_cadastro), start, end);
+        });
+        var totalRegCad = regPeriodo.length;
+
+        /* ── Exclusões: inativos cuja Dt_alter está no período ── */
+        var totalRegExcluido = regulados.filter(function(r) {
+          var inativo = (r.INATIVIDADE || '').trim().toLowerCase();
+          return (inativo === 'true' || inativo === '1') &&
+                 inRange(parseDMY(r.Dt_alter), start, end);
+        }).length;
+
+        /* ── Buscar JSONs individuais para obter complexidade/CNAE ── */
+        var jsonPromises = regPeriodo.map(function(r) {
+          var area = (r.AREA || '').trim();
+          var cod  = (r.CODIGO || '').trim();
+          if (!area || !cod) return Promise.resolve(null);
+          return fetch('data/reg/' + area + '/' + cod + '.json')
+            .then(function(res) { return res.ok ? res.json() : null; })
+            .catch(function() { return null; });
+        });
+
+        Promise.allSettled(jsonPromises).then(function(settled) {
+          var jsonsReg = settled.map(function(r) {
+            return r.status === 'fulfilled' ? r.value : null;
+          });
+          renderAll(container, start, end, insp, ofic, req, den, prot, alv, cnae, totalRegCad, totalRegExcluido, jsonsReg);
+        });
       }).catch(function(err) {
         container.innerHTML = '<div class="indicadores-loading">⚠️ Erro ao carregar dados: ' + (err && err.message ? err.message : err) + '</div>';
       });
@@ -545,7 +576,7 @@
     /* ══════════════════════════════════════════════════════
        PROCESSAMENTO E RENDERIZAÇÃO
     ══════════════════════════════════════════════════════ */
-    function renderAll(container, start, end, insp, ofic, req, den, prot, alv, cnae) {
+    function renderAll(container, start, end, insp, ofic, req, den, prot, alv, cnae, totalRegCad, totalRegExcluido, jsonsReg) {
       var periodoLabel = fmtDate(start) + ' – ' + fmtDate(end);
 
       /* ── MAPA DE COMPLEXIDADE (CNAE) ── */
@@ -678,6 +709,87 @@
       var alvEmit = alv.filter(function(r){ return inRange(parseDMY(r.Dt_emite), start, end); });
       var alvTotal = alvEmit.length;
 
+      /* ── REGULADOS CADASTRADOS — complexidade e Mapa SIA/SUS ── */
+      // Mapeamento sigla de equipe → área canônica (mesmo de total.html)
+      var SIGLA_AREA = {
+        'MD': 'Medicamentos',
+        'DR': 'Comércio varejista de Medicamentos',
+        'OS': 'Produtos para Saúde',
+        'PS': 'Produtos para Saúde', // alias encontrado nos JSONs
+        'CS': 'Cosméticos e Saneantes',
+        'SS': 'Serviços de Saúde',
+        'LP': 'Serviços de Saúde', // Estabelecimentos Assistenciais
+        'IA': 'Indústrias Alimentícias',
+        'AG': 'Alimentos em Geral'
+      };
+      // Ordem de prioridade fixa (mesma de total.html)
+      var REG_PRIORITY = [
+        'Medicamentos',
+        'Comércio varejista de Medicamentos',
+        'Produtos para Saúde',
+        'Cosméticos e Saneantes',
+        'Serviços de Saúde',
+        'Indústrias Alimentícias',
+        'Alimentos em Geral'
+      ];
+
+      var COMP_REG_SEM = 'Não classificado';
+      var regCompCount = { 'ALTA': 0, 'MÉDIA': 0, 'BAIXA': 0 };
+      regCompCount[COMP_REG_SEM] = 0;
+      var regCnaeMap = { hospital: 0, ilpi: 0, alimentacao: 0 };
+
+      (jsonsReg || []).forEach(function(json) {
+        if (!json || !json.atividades || !json.atividades.length) {
+          regCompCount[COMP_REG_SEM]++;
+          return;
+        }
+        var atvs = json.atividades;
+
+        /* Complexidade: usa atividade principal */
+        var principal = atvs.find(function(a) { return (a.tipo || '') === 'Principal'; }) || atvs[0];
+        var comp = (principal.complexidade || '').trim();
+        if (Object.prototype.hasOwnProperty.call(regCompCount, comp)) {
+          regCompCount[comp]++;
+        } else {
+          regCompCount[COMP_REG_SEM]++;
+        }
+
+        /* Mapa SIA/SUS: regra de prioridade — conta só uma vez pela área de maior relevância */
+        var areaNomes = atvs.map(function(a) {
+          var sig = (a.equipe || '').trim().toUpperCase();
+          if (sig === 'PS') sig = 'OS'; // normaliza alias
+          return SIGLA_AREA[sig] || null;
+        }).filter(Boolean);
+
+        var topArea = null;
+        for (var pi = 0; pi < REG_PRIORITY.length; pi++) {
+          if (areaNomes.indexOf(REG_PRIORITY[pi]) !== -1) {
+            topArea = REG_PRIORITY[pi];
+            break;
+          }
+        }
+
+        if (topArea === 'Serviços de Saúde') {
+          // Dentro de SS, distingue hospital vs ILPI pela subclasse
+          var ssAtvs = atvs.filter(function(a) {
+            var sig = (a.equipe || '').trim().toUpperCase();
+            if (sig === 'PS') sig = 'OS';
+            return SIGLA_AREA[sig] === 'Serviços de Saúde';
+          });
+          var temHosp = ssAtvs.some(function(a) { return (a.subclasse || '').startsWith('8610-1'); });
+          var temILPI = ssAtvs.some(function(a) {
+            var s = a.subclasse || '';
+            return s.startsWith('8711-5') || s.startsWith('8731-1');
+          });
+          if (temHosp) regCnaeMap.hospital++;
+          else if (temILPI) regCnaeMap.ilpi++;
+          // SS mas sem código específico → conta só no genérico 01.02.01.007-2
+        } else if (topArea === 'Indústrias Alimentícias' || topArea === 'Alimentos em Geral') {
+          regCnaeMap.alimentacao++;
+        }
+        // Demais áreas (MD, DR, OS, CS…) → apenas no genérico 01.02.01.007-2
+      });
+
       /* ── SIA/SUS: inspeções por tipo de estabelecimento (CNAE) ── */
       function cnaeMatch(cnaeStr, prefixes) {
         var c = (cnaeStr || '').trim();
@@ -707,10 +819,10 @@
         ['01.02.01.050-1', 'Atividades educativas sobre a temática da dengue, realizadas para a população', 0],
         ['01.02.01.005-6', 'Atividades educativas para o setor regulado', 0],
         ['01.02.01.006-4', 'Análise de projetos básicos de arquitetura', protProj],
-        ['01.02.01.007-2', 'Cadastro de estabelecimentos sujeitos à Vigilância Sanitária (todos os estabelecimentos que não tenham código específico)', 0],
+        ['01.02.01.007-2', 'Cadastro de estabelecimentos sujeitos à Vigilância Sanitária (todos os estabelecimentos que não tenham código específico)', totalRegCad],
         ['01.02.01.014-5', 'Inspeção sanitária de hospital', siaInspHosp],
         ['01.02.01.015-3', 'Investigação de eventos adversos e/ou queixas técnicas', 0],
-        ['01.02.01.016-1', 'Exclusão de cadastro de estabelecimentos sujeitos à Vigilância Sanitária com atividades encerradas', 0],
+        ['01.02.01.016-1', 'Exclusão de cadastro de estabelecimentos sujeitos à Vigilância Sanitária com atividades encerradas', totalRegExcluido],
         ['01.02.01.017-0', 'Inspeção dos estabelecimentos sujeitos à Vigilância Sanitária (todos os estabelecimentos que não tenham código específico)', totalInsp],
         ['01.02.01.018-8', 'Licenciamento dos estabelecimentos sujeitos à Vigilância Sanitária (todos os estabelecimentos que não tenham código específico)', alvTotal],
         ['01.02.01.019-6', 'Aprovação de projetos básicos de arquitetura', projArquivados],
@@ -719,9 +831,9 @@
         ['01.02.01.022-6', 'Atividade educativa para a população', 0],
         ['01.02.01.023-4', 'Recebimento de denúncias/reclamações', denTotal],
         ['01.02.01.024-2', 'Atendimento a denúncias/reclamações', denAtend],
-        ['01.02.01.025-0', 'Cadastro de hospital', 0],
+        ['01.02.01.025-0', 'Cadastro de hospital', regCnaeMap.hospital],
         ['01.02.01.026-9', 'Licenciamento sanitário de hospital', 0],
-        ['01.02.01.027-7', 'Cadastro de instituições de longa permanência para idosos', 0],
+        ['01.02.01.027-7', 'Cadastro de instituições de longa permanência para idosos', regCnaeMap.ilpi],
         ['01.02.01.028-5', 'Inspeção sanitária de instituições de longa permanência para idosos', siaInspILPI],
         ['01.02.01.029-3', 'Licenciamento sanitário de instituições de longa permanência para idosos', 0],
         ['01.02.01.030-7', 'Cadastro de indústrias de medicamentos', null],
@@ -732,7 +844,7 @@
         ['01.02.01.036-6', 'Cadastro de serviços hospitalares de atenção ao parto e à criança', 0],
         ['01.02.01.037-4', 'Inspeção sanitária de serviços hospitalares de atenção ao parto e à criança', siaInspParto],
         ['01.02.01.038-2', 'Licenciamento sanitário de serviços hospitalares de atenção ao parto e à criança', 0],
-        ['01.02.01.045-5', 'Cadastro de serviços de alimentação (restaurantes e similares, cozinha industrial, cantinas e serviços de alimentação em escolas e creches)', 0],
+        ['01.02.01.045-5', 'Cadastro de serviços de alimentação (restaurantes e similares, cozinha industrial, cantinas e serviços de alimentação em escolas e creches)', regCnaeMap.alimentacao],
         ['01.02.01.046-3', 'Inspeção sanitária de serviços de alimentação', siaInspAlim],
         ['01.02.01.047-1', 'Licenciamento sanitário de serviços de alimentação', 0],
         ['01.02.01.048-0', 'Inspeção sanitária de ambientes livres do tabaco', 0],
@@ -852,6 +964,18 @@
       var rowsAlv = '';
       rowsAlv += row('Alvarás emitidos no período', alvTotal);
       html += card('✅ Alvarás Sanitários Emitidos', rowsAlv);
+
+      var rowsReg = '';
+      rowsReg += row('Cadastrados no período', totalRegCad);
+      rowsReg += row('Exclusões no período', totalRegExcluido);
+      rowsReg += '<tr class="subtotal"><td colspan="2">Cadastros por complexidade</td></tr>';
+      rowsReg += row('Alta complexidade',  regCompCount['ALTA'],  '', true);
+      rowsReg += row('Média complexidade', regCompCount['MÉDIA'], '', true);
+      rowsReg += row('Baixa complexidade', regCompCount['BAIXA'], '', true);
+      if (regCompCount[COMP_REG_SEM] > 0)
+        rowsReg += row('Sem classificação CNAE', regCompCount[COMP_REG_SEM], '', true);
+      html += card('🏢 Regulados Cadastrados', rowsReg);
+
       html += '</div>';
 
       /* Seção Mapa SIA/SUS */
@@ -909,6 +1033,11 @@
         protTotal: protTotal, protProj: protProj, projArquivados: projArquivados, projEmAtend: projEmAtend,
         protPAS: protPAS, pasAbertos: pasAbertos, pasJulg: pasJulg, protOutros: protOutros,
         alvTotal: alvTotal,
+        totalRegCad: totalRegCad,
+        totalRegExcluido: totalRegExcluido,
+        regCompCount: regCompCount,
+        COMP_REG_SEM: COMP_REG_SEM,
+        regCnaeMap: regCnaeMap,
         siaProcedures: siaProcedures,
         siaTotal: siaTotal,
         siaPeriodoLabel: siaPeriodoLabel
@@ -1142,11 +1271,25 @@
             : [])
         );
 
-        /* ── Alvarás ── */
+        /* ── Alvarás e Regulados ── */
         sectionTitle('ALVAR\u00c1S E ESTABELECIMENTOS');
-        drawCard('Alvar\u00e1s Sanit\u00e1rios Emitidos', [
-          {label: 'Alvar\u00e1s emitidos no per\u00edodo', value: d.alvTotal}
-        ]);
+        drawTwoCards(
+          'Alvar\u00e1s Sanit\u00e1rios Emitidos',
+          [
+            {label: 'Alvar\u00e1s emitidos no per\u00edodo', value: d.alvTotal}
+          ],
+          'Regulados Cadastrados',
+          [
+            {label: 'Cadastrados no per\u00edodo',  value: d.totalRegCad},
+            {label: 'Exclus\u00f5es no per\u00edodo', value: d.totalRegExcluido},
+            {label: 'Por complexidade',              subtotal: true},
+            {label: 'Alta complexidade',             value: d.regCompCount['ALTA'],  indent: true},
+            {label: 'M\u00e9dia complexidade',       value: d.regCompCount['M\u00c9DIA'], indent: true},
+            {label: 'Baixa complexidade',            value: d.regCompCount['BAIXA'], indent: true}
+          ].concat(d.regCompCount[d.COMP_REG_SEM] > 0
+            ? [{label: 'Sem classifica\u00e7\u00e3o CNAE', value: d.regCompCount[d.COMP_REG_SEM], indent: true}]
+            : [])
+        );
 
         /* ── Mapa SIA/SUS ── */
         sectionTitle('MAPA DE COLETA DE DADOS SIA/SUS');
