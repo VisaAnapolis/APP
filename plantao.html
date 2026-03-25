@@ -951,6 +951,51 @@
    Dados / Configurações
 ========================= */
 
+/* =========================
+   REGRAS DE ESCALAÇÃO
+   (atualizar conforme aprimoramentos)
+=========================
+
+  REGRA 0 — Férias e Afastamentos
+  Antes de elaborar a escala de qualquer mês, consultar ferias.html
+  e verificar quais fiscais estão de férias ou afastados naquele período.
+  Nunca escalar um fiscal em dias que coincidam com suas férias ou afastamento.
+
+  REGRA 1 — Veículos
+  Antes de elaborar a escala de qualquer mês, consultar veiculos.html
+  e verificar em quais dias da semana cada fiscal está escalado para uso de veículo oficial.
+  Não escalar o fiscal em plantão no mesmo dia em que ele utiliza veículo.
+
+  REGRA 2 — Compatibilidade de Áreas
+  Não escalar dois fiscais da mesma área técnica no mesmo dia de plantão,
+  EXCETO fiscais da área de Alimentos (podem ser escalados juntos).
+  Exceção permitida em caso de extrema necessidade ou falta de efetivo.
+
+  Áreas e seus fiscais:
+    • Alimentos (exceção — podem coincidir):
+        Acádia, Angela, Geraldo, João Batista, José Luiz, Juliana Kênia,
+        Luciene, Rúbia, Tathiane, Thiago, Wanessa Brito.
+    • Medicamentos: Daniela, Edson, Eduardo, Gleiciane, Juliana Viturino, Márcio.
+    • Saneantes  : Adriane, Kamilla, Luciana Santana, Patrícia.
+    • Serviços de Saúde: Aline, Arianne, Marina, Simone.
+    • Odontologia: Júlio, Maria Edwiges, Sílvia.
+    • ILP        : Clóvis, Rodrigo, Viviane Miyada.
+    • Ambiental  : Lívia Brito, Pedro, Vanessa Santana.
+    • Ind. Alimentos: Fabíola, Lidiane.
+    • Produtos   : Ana Paula, Gúbio.
+    • Educação   : Luciana Consolação, Viviane Manoel, Adriana.
+
+  REGRA 3 — Restrições de Dias da Semana
+    • Não escalar às Sextas-feiras:
+        Maria Edwiges, Gleiciane, Simone, Lidiane.
+    • Não escalar às Segundas-feiras (Reunião Grupo Garantia):
+        Rúbia, Gúbio, Viviane Manoel, Vanessa Santana, Patrícia,
+        Luciana Consolação, Aline, Fabíola, Simone.
+    • Não escalar às Terças e Quintas (Reunião Plano Diretor):
+        Clóvis.
+
+========================= */
+
 // Formato ISO: YYYY-MM-DD
 const feriadosMunicipais = [];
 const pontosFacultativosExtras = [];
