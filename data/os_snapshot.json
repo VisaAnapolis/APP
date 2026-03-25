@@ -31016,7 +31016,7 @@
     "razao": "INSTITUTO MATEUS NEIVA FER. DE ODONTOLOGIA LTDA",
     "fantasia": "INSTITUTO MATEUS NEIVA FERNANDES",
     "logradouro": "R.BENEDITO BORGES DE ALMEIDA",
-    "complemento": "Nº119 QD F LT 2A",
+    "complemento": "Nº.119 QD.F LT.20A",
     "bairro": "BAIRRO JUNDIAI",
     "cnpj": "57.394.982/0001-60",
     "cpf": "",
@@ -36128,7 +36128,7 @@
     "razao": "INSTITUTO MATEUS NEIVA FER. DE ODONTOLOGIA LTDA",
     "fantasia": "INSTITUTO MATEUS NEIVA FERNANDES",
     "logradouro": "R.BENEDITO BORGES DE ALMEIDA",
-    "complemento": "Nº119 QD F LT 2A",
+    "complemento": "Nº.119 QD.F LT.20A",
     "bairro": "BAIRRO JUNDIAI",
     "cnpj": "57.394.982/0001-60",
     "cpf": "",
@@ -36765,8 +36765,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260079": {
     "tipo": "Ofício",
@@ -36790,8 +36789,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": true,
-    "email_notif_5d": true
+    "notif_hoje": true
   },
   "20260084": {
     "tipo": "Requerimento",
@@ -36935,8 +36933,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260104": {
     "tipo": "Requerimento",
@@ -37080,33 +37077,31 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260120": {
-    "tipo": "Denúncia",
-    "fiscal": "CLÓVIS RAFAEL BORGES FERREIRA",
-    "motivo": "- [ ] SERVIÇOS DE SAÚDE",
-    "prazo": "26.03.2026",
-    "dataReq": "2026-03-10",
-    "razao": "DARLI JOSE DOS ANJOS",
+    "tipo": "Ofício",
+    "fiscal": "JOSE LUIZ RIBEIRO",
+    "motivo": "RETORNO",
+    "prazo": "04.04.2026",
+    "dataReq": "2026-01-20",
+    "razao": "RESTAURANTE + SABOR LTDA",
     "fantasia": "",
-    "logradouro": "RUA 07 DE SETEMBRO",
-    "complemento": "Nº 27 SL 3",
-    "bairro": "CENTRO",
-    "cnpj": "50.234.451/0001-61",
+    "logradouro": "RUA 25",
+    "complemento": "",
+    "bairro": "PARQUE RESIDENCIAL DAS FLORES",
+    "cnpj": "13.958.346/0001-49",
     "cpf": "",
     "complexidade": "",
     "cnaeCode": "",
     "cnaeDesc": "",
-    "descricao": "venda casada de oculos com consulta medica grátis  clinica alto astral perto da saída do terminal",
+    "descricao": "",
     "atendida": false,
     "cancelada": false,
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260122": {
     "tipo": "Denúncia",
@@ -37130,8 +37125,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260125": {
     "tipo": "Requerimento",
@@ -37203,8 +37197,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260130": {
     "tipo": "Denúncia",
@@ -37876,8 +37869,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260184": {
     "tipo": "Ofício",
@@ -37949,8 +37941,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260191": {
     "tipo": "Ofício",
@@ -37974,8 +37965,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260192": {
     "tipo": "Ofício",
@@ -37999,8 +37989,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260194": {
     "tipo": "Requerimento",
@@ -38168,8 +38157,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260215": {
     "tipo": "Requerimento",
@@ -38889,8 +38877,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260276": {
     "tipo": "Ofício",
@@ -38986,8 +38973,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260282": {
     "tipo": "Ofício",
@@ -39035,8 +39021,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260284": {
     "tipo": "Ofício",
@@ -39180,8 +39165,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260295": {
     "tipo": "Ofício",
@@ -39589,8 +39573,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260321": {
     "tipo": "Ofício",
@@ -40358,8 +40341,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260378": {
     "tipo": "Ofício",
@@ -40743,8 +40725,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260395": {
     "tipo": "Ofício",
@@ -40768,8 +40749,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260396": {
     "tipo": "Ofício",
@@ -40865,8 +40845,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260401": {
     "tipo": "Ofício",
@@ -41130,8 +41109,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260418": {
     "tipo": "Ofício",
@@ -41155,8 +41133,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260420": {
     "tipo": "Requerimento",
@@ -41228,8 +41205,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260424": {
     "tipo": "Ofício",
@@ -41253,8 +41229,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260426": {
     "tipo": "Ofício",
@@ -41278,8 +41253,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260427": {
     "tipo": "Ofício",
@@ -41303,8 +41277,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260428": {
     "tipo": "Ofício",
@@ -42072,8 +42045,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260469": {
     "tipo": "Ofício",
@@ -42097,8 +42069,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260470": {
     "tipo": "Requerimento",
@@ -43082,8 +43053,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260528": {
     "tipo": "Requerimento",
@@ -43347,8 +43317,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260544": {
     "tipo": "Ofício",
@@ -47158,30 +47127,6 @@
     "complexidade": "MÉDIA",
     "cnaeCode": "4633-8/01",
     "cnaeDesc": "Comercio atacadista de frutas, verduras, raizes, tuberculos, hortalicas e legumes frescos",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false
-  },
-  "20260871": {
-    "tipo": "Requerimento",
-    "fiscal": "CLÓVIS RAFAEL BORGES FERREIRA",
-    "motivo": "Abertura",
-    "prazo": "09.06.2026",
-    "dataReq": "2026-03-11",
-    "razao": "RECINTO PSICANALITICO LTDA",
-    "fantasia": "",
-    "logradouro": "RUA BARAO DO RIO BRANCO",
-    "complemento": "Nº 1481, SL.02",
-    "bairro": "CENTRO",
-    "cnpj": "65.357.256/0001-04",
-    "cpf": "",
-    "complexidade": "ALTA",
-    "cnaeCode": "8720-4/01",
-    "cnaeDesc": "Atividades de centros de assistencia psicossocial",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
