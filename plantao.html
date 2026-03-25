@@ -999,6 +999,14 @@
   deve ter pelo menos 1 plantão no mês.
   Nenhum fiscal pode ter mais de 2 plantões no mesmo mês.
 
+  REGRA 5 — Rotatividade nos Plantões Duplos
+  Ao definir quais fiscais receberão 2 plantões no mês, consultar
+  os dois meses anteriores em escalaPorMes e dar preferência a
+  fiscais que tiveram apenas 1 plantão (ou nenhum) nesses meses.
+  Fiscais que já tiveram 2 plantões em qualquer um dos dois meses
+  anteriores devem ser os últimos a receber plantão duplo no mês
+  atual, salvo falta de efetivo disponível.
+
 ========================= */
 
 // Formato ISO: YYYY-MM-DD
