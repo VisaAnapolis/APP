@@ -36810,7 +36810,7 @@
     "descricao": "",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": true
@@ -37100,7 +37100,7 @@
     "cancelada": false,
     "notif_5d": false,
     "notif_recuperacao": true,
-    "notif_amanha": false,
+    "notif_amanha": true,
     "notif_hoje": false
   },
   "20260120": {
@@ -37124,7 +37124,7 @@
     "cancelada": false,
     "notif_5d": false,
     "notif_recuperacao": true,
-    "notif_amanha": false,
+    "notif_amanha": true,
     "notif_hoje": false
   },
   "20260122": {
@@ -37148,7 +37148,7 @@
     "cancelada": false,
     "notif_5d": false,
     "notif_recuperacao": true,
-    "notif_amanha": false,
+    "notif_amanha": true,
     "notif_hoje": false
   },
   "20260125": {
@@ -37914,7 +37914,7 @@
     "descricao": "",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -39498,7 +39498,7 @@
     "descricao": "",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -40266,7 +40266,7 @@
     "descricao": "",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -40770,7 +40770,7 @@
     "descricao": "",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -41034,7 +41034,7 @@
     "descricao": "",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -41058,7 +41058,7 @@
     "descricao": "",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -41130,7 +41130,7 @@
     "descricao": "",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -41154,7 +41154,7 @@
     "descricao": "",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -41178,7 +41178,7 @@
     "descricao": "",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -41202,7 +41202,7 @@
     "descricao": "",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -41972,7 +41972,7 @@
     "cancelada": false,
     "notif_5d": false,
     "notif_recuperacao": true,
-    "notif_amanha": false,
+    "notif_amanha": true,
     "notif_hoje": false
   },
   "20260469": {
@@ -41996,7 +41996,7 @@
     "cancelada": false,
     "notif_5d": false,
     "notif_recuperacao": true,
-    "notif_amanha": false,
+    "notif_amanha": true,
     "notif_hoje": false
   },
   "20260470": {
@@ -43002,7 +43002,7 @@
     "descricao": "",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -43268,7 +43268,7 @@
     "cancelada": false,
     "notif_5d": false,
     "notif_recuperacao": true,
-    "notif_amanha": false,
+    "notif_amanha": true,
     "notif_hoje": false
   },
   "20260543": {
@@ -43292,7 +43292,7 @@
     "cancelada": false,
     "notif_5d": false,
     "notif_recuperacao": true,
-    "notif_amanha": false,
+    "notif_amanha": true,
     "notif_hoje": false
   },
   "20260548": {
@@ -45183,30 +45183,6 @@
     "complexidade": "MÉDIA",
     "cnaeCode": "9602-5/02",
     "cnaeDesc": "Atividades de estética e outros serviços de cuidados com a beleza",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false
-  },
-  "20260730": {
-    "tipo": "Requerimento",
-    "fiscal": "CLÓVIS RAFAEL BORGES FERREIRA",
-    "motivo": "Renovação",
-    "prazo": "01.06.2026",
-    "dataReq": "2026-03-02",
-    "razao": "ASSOCIACAO MISSIONARIA ESPERANCA",
-    "fantasia": "PROJETO ESPERANCA (UNIDADE FEMININA)",
-    "logradouro": "RUA NASCIMENTO ESCOBAR",
-    "complemento": "QD 10 LT 16",
-    "bairro": "CHACARAS VALE DAS ANTAS",
-    "cnpj": "13.767.151/0004-64",
-    "cpf": "",
-    "complexidade": "ALTA",
-    "cnaeCode": "8720-4/01",
-    "cnaeDesc": "Atividades de centros de assistencia psicossocial",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
