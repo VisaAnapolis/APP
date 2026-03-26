@@ -545,8 +545,13 @@
       table-layout: fixed !important;
     }
 
-    /* Coluna 40h: permite quebra de linha para exibir um fiscal por linha */
-    td.col-f40 {
+    /* As 3 colunas de fiscais dividem o espaço igualmente e permitem quebra */
+    #tabelaPlantao th:nth-child(3),
+    #tabelaPlantao th:nth-child(4),
+    #tabelaPlantao th:nth-child(5),
+    #tabelaPlantao td:nth-child(3),
+    #tabelaPlantao td:nth-child(4),
+    #tabelaPlantao td:nth-child(5) {
       white-space: normal !important;
       line-height: 1.5;
     }
@@ -924,9 +929,9 @@
                     <colgroup>
                         <col style="width:85px">
                         <col style="width:40px">
-                        <col style="width:100px">
-                        <col style="width:100px">
-                        <col style="width:auto">
+                        <col>
+                        <col>
+                        <col>
                     </colgroup>
                     <thead>
                         <tr>
@@ -1355,9 +1360,9 @@ function renderPlantao(rows){
     columns: [
       { width: "85px" },
       { width: "40px" },
-      { width: "90px" },
-      { width: "90px" },
-      { width: "220px", className: "col-f40" }
+      {},
+      {},
+      { className: "col-f40" }
     ]
   });
 
