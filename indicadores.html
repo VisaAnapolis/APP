@@ -605,16 +605,13 @@
         if (sub) mapaCNAE.set(sub, (c.Complexidade || '').trim());
       });
 
-      /* ── Resolução de complexidade: JSON → mapa exato → mapa por prefixo CNAE ── */
+      /* ── Resolução de complexidade: cnae.csv (fonte de verdade) → prefixo → JSON embutido ── */
       function resolveComplexidade(a) {
-        // 1) Campo complexidade já embutido no JSON (mesma fonte de total.html)
-        var c = (a.complexidade || '').trim();
-        if (c && COMP_PRIORITY.indexOf(c) !== -1) return c;
-        // 2) Busca exata no mapa CNAE (mesma lógica de regulados cadastrados)
+        // 1) Busca exata na subclasse do cnae.csv (fonte de verdade)
         var sub = (a.subclasse || '').trim();
-        c = mapaCNAE.get(sub) || null;
+        var c = sub ? (mapaCNAE.get(sub) || null) : null;
         if (c && COMP_PRIORITY.indexOf(c) !== -1) return c;
-        // 3) Prefixo de classe CNAE (ex.: "5611-2/" para "5611-2/02"), como cnaeMatch no mapa
+        // 2) Prefixo de classe CNAE (ex.: "5611-2/" para "5611-2/02"), como cnaeMatch no mapa
         if (sub) {
           var slashIdx = sub.lastIndexOf('/');
           if (slashIdx > 0) {
@@ -632,6 +629,9 @@
             if (best) return best;
           }
         }
+        // 3) Fallback: campo complexidade embutido no JSON (para CNAEs fora do cnae.csv)
+        c = (a.complexidade || '').trim();
+        if (c && COMP_PRIORITY.indexOf(c) !== -1) return c;
         return null;
       }
 
