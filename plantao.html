@@ -540,6 +540,12 @@
        DARK MODE — overrides DataTables e linhas sem plantão
        ===================================================== */
 
+    /* Coluna 40h: permite quebra de linha para exibir um fiscal por linha */
+    td.col-f40 {
+      white-space: normal !important;
+      line-height: 1.5;
+    }
+
     /* Linha sem plantão: usa classe CSS (dark mode safe) */
     tr.row-no-plantao td {
       opacity: 0.45;
@@ -1314,7 +1320,7 @@ function renderPlantao(rows){
     const tr = document.createElement("tr");
     if(r.noPlantao) tr.classList.add("row-no-plantao");
 
-    const f40txt = r.f40.length ? r.f40.join(", ") : "—";
+    const f40txt = r.f40.length ? r.f40.join("<br>") : "—";
 
     tr.innerHTML = `
       <td>${r.dataBR}</td>
@@ -1334,7 +1340,11 @@ function renderPlantao(rows){
     language: {
       url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json"
     },
-    scrollX: true
+    scrollX: true,
+    columnDefs: [
+      { targets: [2, 3], width: "120px" },
+      { targets: [4], className: "col-f40" }
+    ]
   });
 
   // Renderiza versão mobile
