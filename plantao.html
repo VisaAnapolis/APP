@@ -540,18 +540,15 @@
        DARK MODE — overrides DataTables e linhas sem plantão
        ===================================================== */
 
+    /* Força a tabela de plantão a respeitar as larguras do colgroup */
+    #tabelaPlantao {
+      table-layout: fixed !important;
+    }
+
     /* Coluna 40h: permite quebra de linha para exibir um fiscal por linha */
     td.col-f40 {
       white-space: normal !important;
       line-height: 1.5;
-      min-width: 220px;
-    }
-    #tabelaPlantao th:nth-child(5) {
-      min-width: 220px;
-    }
-    #tabelaPlantao th:nth-child(3),
-    #tabelaPlantao th:nth-child(4) {
-      max-width: 100px;
     }
 
     /* Linha sem plantão: usa classe CSS (dark mode safe) */
@@ -924,6 +921,13 @@
 
             <div class="table-container desktopOnly">
                 <table id="tabelaPlantao" class="display nowrap" style="width:100%">
+                    <colgroup>
+                        <col style="width:85px">
+                        <col style="width:40px">
+                        <col style="width:100px">
+                        <col style="width:100px">
+                        <col style="width:auto">
+                    </colgroup>
                     <thead>
                         <tr>
                             <th>Data</th>
