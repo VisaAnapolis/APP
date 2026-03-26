@@ -36405,8 +36405,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260027": {
     "tipo": "Requerimento",
@@ -36526,8 +36525,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260054": {
     "tipo": "Ofício",
@@ -36695,8 +36693,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260079": {
     "tipo": "Ofício",
@@ -36720,8 +36717,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": true,
-    "email_notif_recuperacao": true
+    "notif_hoje": true
   },
   "20260084": {
     "tipo": "Requerimento",
@@ -36817,8 +36813,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260100": {
     "tipo": "Ofício",
@@ -36842,8 +36837,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260104": {
     "tipo": "Requerimento",
@@ -36987,8 +36981,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260120": {
     "tipo": "Ofício",
@@ -37036,8 +37029,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260125": {
     "tipo": "Requerimento",
@@ -37109,8 +37101,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260130": {
     "tipo": "Denúncia",
@@ -37782,8 +37773,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260184": {
     "tipo": "Ofício",
@@ -37855,8 +37845,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260191": {
     "tipo": "Ofício",
@@ -37880,8 +37869,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260192": {
     "tipo": "Ofício",
@@ -37905,8 +37893,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260197": {
     "tipo": "Ofício",
@@ -38050,8 +38037,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260215": {
     "tipo": "Requerimento",
@@ -38123,8 +38109,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260218": {
     "tipo": "Ofício",
@@ -38148,8 +38133,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260220": {
     "tipo": "Ofício",
@@ -38173,8 +38157,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260221": {
     "tipo": "Requerimento",
@@ -38774,8 +38757,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260276": {
     "tipo": "Ofício",
@@ -38871,8 +38853,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260282": {
     "tipo": "Ofício",
@@ -38920,8 +38901,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260284": {
     "tipo": "Ofício",
@@ -39065,8 +39045,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260295": {
     "tipo": "Ofício",
@@ -39474,8 +39453,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260321": {
     "tipo": "Ofício",
@@ -40243,8 +40221,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260378": {
     "tipo": "Ofício",
@@ -40628,8 +40605,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260395": {
     "tipo": "Ofício",
@@ -40653,8 +40629,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260396": {
     "tipo": "Ofício",
@@ -40750,8 +40725,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260401": {
     "tipo": "Ofício",
@@ -41015,8 +40989,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260418": {
     "tipo": "Ofício",
@@ -41040,8 +41013,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260420": {
     "tipo": "Requerimento",
@@ -41113,8 +41085,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260424": {
     "tipo": "Ofício",
@@ -41138,8 +41109,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260426": {
     "tipo": "Ofício",
@@ -41163,8 +41133,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260427": {
     "tipo": "Ofício",
@@ -41188,8 +41157,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260428": {
     "tipo": "Ofício",
@@ -41957,8 +41925,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260469": {
     "tipo": "Ofício",
@@ -41982,8 +41949,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260470": {
     "tipo": "Requerimento",
@@ -42967,8 +42933,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260528": {
     "tipo": "Requerimento",
@@ -43232,8 +43197,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260544": {
     "tipo": "Ofício",
@@ -43355,18 +43319,18 @@
     "notif_amanha": false,
     "notif_hoje": false
   },
-  "20260552": {
+  "20260553": {
     "tipo": "Ofício",
-    "fiscal": "ANA PAULA RODRIGUES CORRÊA GUIMARÃES",
+    "fiscal": "LUCIANA CONSOLAÇÃO DOS SANTOS",
     "motivo": "RETORNO",
-    "prazo": "24.04.2026",
-    "dataReq": "2026-03-25",
-    "razao": "BIOLINE FIOS CIRURGICOS LTDA",
+    "prazo": "08.06.2026",
+    "dataReq": "2026-03-26",
+    "razao": "PREFEITURA MUNICIPAL DE ANAPOLIS",
     "fantasia": "",
-    "logradouro": "R. ISRAEL PINHEIRO",
+    "logradouro": "RUA DOM EMANUEL",
     "complemento": "",
-    "bairro": "JARDIM ALVORADA",
-    "cnpj": "37.844.479/0002-33",
+    "bairro": "BAIRRO SAO LOURENCO",
+    "cnpj": "01.067.479/0001-46",
     "cpf": "",
     "complexidade": "",
     "cnaeCode": "",
@@ -43379,22 +43343,22 @@
     "notif_amanha": false,
     "notif_hoje": false
   },
-  "20260553": {
-    "tipo": "Requerimento",
-    "fiscal": "JOÃO BATISTA LUCAS DA SILVA REIS",
-    "motivo": "Abertura",
-    "prazo": "21.04.2026",
-    "dataReq": "2026-02-19",
-    "razao": "MERCADO SAFRA LTDA",
-    "fantasia": "MERCADO SAFRA",
-    "logradouro": "R.BOA  VISTA QD.B LT.10",
-    "complemento": "VILA N. SRA. DOS ANJOS",
-    "bairro": "DISTRITO DE JOANAPOLIS",
-    "cnpj": "49.386.404/0001-54",
+  "20260554": {
+    "tipo": "Ofício",
+    "fiscal": "ANA PAULA RODRIGUES CORRÊA GUIMARÃES",
+    "motivo": "RETORNO",
+    "prazo": "25.04.2026",
+    "dataReq": "2026-03-26",
+    "razao": "BIOLINE FIOS CIRURGICOS LTDA",
+    "fantasia": "",
+    "logradouro": "R. ISRAEL PINHEIRO",
+    "complemento": "",
+    "bairro": "JARDIM ALVORADA",
+    "cnpj": "37.844.479/0002-33",
     "cpf": "",
-    "complexidade": "MÉDIA",
-    "cnaeCode": "4722-9/01",
-    "cnaeDesc": "Comercio varejista de carnes - acougues",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -49467,30 +49431,6 @@
     "complexidade": "BAIXA",
     "cnaeCode": "9601-7/01",
     "cnaeDesc": "Lavanderias",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false
-  },
-  "20261012": {
-    "tipo": "Requerimento",
-    "fiscal": "LUCIANA CONSOLAÇÃO DOS SANTOS",
-    "motivo": "Renovação",
-    "prazo": "22.06.2026",
-    "dataReq": "2026-03-23",
-    "razao": "PREFEITURA MUNICIPAL DE ANAPOLIS",
-    "fantasia": "EM WALTER BEZZE",
-    "logradouro": "RUA DOM EMANUEL",
-    "complemento": "q. 24",
-    "bairro": "BAIRRO SAO LOURENCO",
-    "cnpj": "00.699.617/0001-47",
-    "cpf": "",
-    "complexidade": "MÉDIA",
-    "cnaeCode": "8513-9/00",
-    "cnaeDesc": "Ensino fundamental",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
