@@ -36381,8 +36381,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260027": {
     "tipo": "Requerimento",
@@ -36502,8 +36501,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260054": {
     "tipo": "Ofício",
@@ -36647,8 +36645,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260079": {
     "tipo": "Ofício",
@@ -36672,8 +36669,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": true,
-    "email_notif_recuperacao": true
+    "notif_hoje": true
   },
   "20260084": {
     "tipo": "Requerimento",
@@ -36769,8 +36765,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260100": {
     "tipo": "Ofício",
@@ -36794,8 +36789,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260104": {
     "tipo": "Requerimento",
@@ -36915,8 +36909,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260120": {
     "tipo": "Ofício",
@@ -36964,8 +36957,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260125": {
     "tipo": "Requerimento",
@@ -37037,8 +37029,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260130": {
     "tipo": "Denúncia",
@@ -37710,8 +37701,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260184": {
     "tipo": "Ofício",
@@ -37783,8 +37773,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260191": {
     "tipo": "Ofício",
@@ -37808,8 +37797,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260192": {
     "tipo": "Ofício",
@@ -37833,8 +37821,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260197": {
     "tipo": "Ofício",
@@ -37978,8 +37965,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260215": {
     "tipo": "Requerimento",
@@ -38051,8 +38037,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260218": {
     "tipo": "Ofício",
@@ -38076,8 +38061,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260220": {
     "tipo": "Ofício",
@@ -38101,8 +38085,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260221": {
     "tipo": "Requerimento",
@@ -38702,8 +38685,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260276": {
     "tipo": "Ofício",
@@ -38799,8 +38781,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260282": {
     "tipo": "Ofício",
@@ -38848,8 +38829,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260284": {
     "tipo": "Ofício",
@@ -38993,8 +38973,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260295": {
     "tipo": "Ofício",
@@ -39402,8 +39381,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260321": {
     "tipo": "Ofício",
@@ -40147,8 +40125,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260378": {
     "tipo": "Ofício",
@@ -40532,8 +40509,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260395": {
     "tipo": "Ofício",
@@ -40557,8 +40533,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260396": {
     "tipo": "Ofício",
@@ -40654,8 +40629,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260401": {
     "tipo": "Ofício",
@@ -40919,8 +40893,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260418": {
     "tipo": "Ofício",
@@ -40944,8 +40917,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260420": {
     "tipo": "Requerimento",
@@ -41017,8 +40989,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260424": {
     "tipo": "Ofício",
@@ -41042,8 +41013,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260426": {
     "tipo": "Ofício",
@@ -41067,8 +41037,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260427": {
     "tipo": "Ofício",
@@ -41092,8 +41061,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260428": {
     "tipo": "Ofício",
@@ -41861,8 +41829,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260469": {
     "tipo": "Ofício",
@@ -41886,8 +41853,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260470": {
     "tipo": "Requerimento",
@@ -42847,8 +42813,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260528": {
     "tipo": "Requerimento",
@@ -43112,8 +43077,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260544": {
     "tipo": "Ofício",
@@ -51339,6 +51303,270 @@
     "complexidade": "ALTA",
     "cnaeCode": "1099-6/05",
     "cnaeDesc": "Fabricacao de produtos para infusao (cha, mate, etc.)",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20261125": {
+    "tipo": "Requerimento",
+    "fiscal": "GERALDO EDSON ROSA",
+    "motivo": "Renovação",
+    "prazo": "24.06.2026",
+    "dataReq": "2026-03-26",
+    "razao": "COMERCIO E REPRESENTACOES MVJ LTDA",
+    "fantasia": "COMERCIAL DO TRIGO",
+    "logradouro": "R: AMADEU BITTENCOURT",
+    "complemento": "QD 56 LT 13 LJ 02",
+    "bairro": "SETOR VIVIAN PARQUE",
+    "cnpj": "27.080.801/0001-60",
+    "cpf": "",
+    "complexidade": "ALTA",
+    "cnaeCode": "1091-1/01",
+    "cnaeDesc": "Fabricação de produtos de panificação industrial",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20261126": {
+    "tipo": "Requerimento",
+    "fiscal": "GERALDO EDSON ROSA",
+    "motivo": "Renovação",
+    "prazo": "24.06.2026",
+    "dataReq": "2026-03-26",
+    "razao": "ROSIMEIRE DE OLIVEIRA SOUTO",
+    "fantasia": "FINO SABOR PAES E CIA",
+    "logradouro": "RUA Y 15 QD 06",
+    "complemento": "LT 01",
+    "bairro": "SETOR VIVIAN PARQUE II ETAPA",
+    "cnpj": "33.056.366/0001-31",
+    "cpf": "",
+    "complexidade": "ALTA",
+    "cnaeCode": "1091-1/00",
+    "cnaeDesc": "Fabricacao de produtos de panificacao",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20261127": {
+    "tipo": "Requerimento",
+    "fiscal": "TATHIANE PESSOA DE SOUZA",
+    "motivo": "Renovação",
+    "prazo": "24.06.2026",
+    "dataReq": "2026-03-26",
+    "razao": "38.826.457  FABIANA MARIA DE MELO SANTOS",
+    "fantasia": "ARTE DOCES E SALGADOS",
+    "logradouro": "RUA QUINTINO BOCAIUVA Nº 1888",
+    "complemento": "QD 01 LT 156",
+    "bairro": "VILA SANTA TEREZINHA",
+    "cnpj": "38.826.457/0001-22",
+    "cpf": "",
+    "complexidade": "ALTA",
+    "cnaeCode": "5620-1/04",
+    "cnaeDesc": "Fornecimento de alimentos preparados preponderantemente para consumo domiciliar",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20261128": {
+    "tipo": "Requerimento",
+    "fiscal": "GERALDO EDSON ROSA",
+    "motivo": "Renovação",
+    "prazo": "24.06.2026",
+    "dataReq": "2026-03-26",
+    "razao": "MARINALVA ELIZIARIO DOS SANTOS",
+    "fantasia": "MAWY PANIFICADORA E SORVETERIA",
+    "logradouro": "AV.CACHOEIRA DOURADA S/N",
+    "complemento": "QD.21 LT.6-A CASA-02",
+    "bairro": "VILA SAO JOAQUIM",
+    "cnpj": "21.438.044/0001-78",
+    "cpf": "",
+    "complexidade": "ALTA",
+    "cnaeCode": "1091-1/00",
+    "cnaeDesc": "Fabricacao de produtos de panificacao",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20261129": {
+    "tipo": "Requerimento",
+    "fiscal": "GÚBIO DIAS PEREIRA",
+    "motivo": "Renovação",
+    "prazo": "24.06.2026",
+    "dataReq": "2026-03-26",
+    "razao": "NAITE ALVES MOREIRA SILVA",
+    "fantasia": "",
+    "logradouro": "AV. CENTRAL",
+    "complemento": "QD 36, LT 18",
+    "bairro": "BAIRRO MARACANA",
+    "cnpj": "29.367.511/0001-28",
+    "cpf": "",
+    "complexidade": "ALTA",
+    "cnaeCode": "1099-6/99",
+    "cnaeDesc": "Fabricacao de outros produtos alimenticios nao especificados anteriormente",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20261130": {
+    "tipo": "Requerimento",
+    "fiscal": "GÚBIO DIAS PEREIRA",
+    "motivo": "Renovação",
+    "prazo": "24.06.2026",
+    "dataReq": "2026-03-26",
+    "razao": "A1 COMERCIO IMPORTACAO E EXP. DE ALIMENTOS LTDA",
+    "fantasia": "A1",
+    "logradouro": "AV. DOM  BOSCO Nº 315",
+    "complemento": "QD 46 LT 34",
+    "bairro": "BAIRRO MARACANA",
+    "cnpj": "42.913.371/0001-04",
+    "cpf": "",
+    "complexidade": "ALTA",
+    "cnaeCode": "4711-3/01",
+    "cnaeDesc": "Comercio varejista de mercadorias em geral, com predominancia de produtos alimenticios - hipermercados",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20261131": {
+    "tipo": "Requerimento",
+    "fiscal": "GÚBIO DIAS PEREIRA",
+    "motivo": "Renovação",
+    "prazo": "24.06.2026",
+    "dataReq": "2026-03-26",
+    "razao": "ALESSANDRO MELLO SILVA",
+    "fantasia": "DIALI ALIMENTOS",
+    "logradouro": "AVENIDA DOM EMANUEL",
+    "complemento": "QD.47, LT.17",
+    "bairro": "BAIRRO MARACANA",
+    "cnpj": "",
+    "cpf": "707.381.571-04",
+    "complexidade": "ALTA",
+    "cnaeCode": "1095-3/00",
+    "cnaeDesc": "Fabricacao de especiarias, molhos, temperos e condimentos",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20261134": {
+    "tipo": "Requerimento",
+    "fiscal": "GÚBIO DIAS PEREIRA",
+    "motivo": "Renovação",
+    "prazo": "24.06.2026",
+    "dataReq": "2026-03-26",
+    "razao": "NATALIA CRISTINA TEODORO MARTINS PINHEIRO MI",
+    "fantasia": "CANTINHO MINEIRO",
+    "logradouro": "AV. 10",
+    "complemento": "qd. 06 lt. 14",
+    "bairro": "JARDIM PROGRESSO",
+    "cnpj": "20.526.298/0001-85",
+    "cpf": "",
+    "complexidade": "ALTA",
+    "cnaeCode": "1091-1/00",
+    "cnaeDesc": "Fabricacao de produtos de panificacao",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20261135": {
+    "tipo": "Requerimento",
+    "fiscal": "GÚBIO DIAS PEREIRA",
+    "motivo": "Renovação",
+    "prazo": "24.06.2026",
+    "dataReq": "2026-03-26",
+    "razao": "DANIEL SEBASTIAO PEIXOTO31506364187",
+    "fantasia": "PETI PIMENTA",
+    "logradouro": "AV.10 ESQ. C/ P51  SL-02",
+    "complemento": "QD. 18  N.480",
+    "bairro": "JARDIM PROGRESSO",
+    "cnpj": "29.895.688/0001-05",
+    "cpf": "",
+    "complexidade": "ALTA",
+    "cnaeCode": "1095-3/00",
+    "cnaeDesc": "Fabricacao de especiarias, molhos, temperos e condimentos",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20261136": {
+    "tipo": "Requerimento",
+    "fiscal": "GÚBIO DIAS PEREIRA",
+    "motivo": "Renovação",
+    "prazo": "24.06.2026",
+    "dataReq": "2026-03-26",
+    "razao": "TIAGO LIMA GONCALVES",
+    "fantasia": "COCADA CASEIRA",
+    "logradouro": "AV. QUAICURUS",
+    "complemento": "qd 32 lt 5",
+    "bairro": "PARQUE IRACEMA",
+    "cnpj": "",
+    "cpf": "014.960.381-93",
+    "complexidade": "ALTA",
+    "cnaeCode": "1099-6/99",
+    "cnaeDesc": "Fabricacao de outros produtos alimenticios nao especificados anteriormente",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20261137": {
+    "tipo": "Requerimento",
+    "fiscal": "GÚBIO DIAS PEREIRA",
+    "motivo": "Renovação",
+    "prazo": "24.06.2026",
+    "dataReq": "2026-03-26",
+    "razao": "JHENYFER MONIQUE RODREGUES MARTINS 49.050.851",
+    "fantasia": "QUENTINHO FOOD",
+    "logradouro": "R. SANTA CRUZ",
+    "complemento": "QD 09 LT02",
+    "bairro": "PARQUE IRACEMA",
+    "cnpj": "49.050.851/0001-38",
+    "cpf": "",
+    "complexidade": "ALTA",
+    "cnaeCode": "5620-1/01",
+    "cnaeDesc": "Fornecimento de alimentos preparados preponderantemente para empresas",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
