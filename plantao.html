@@ -923,7 +923,6 @@
                             <th>Matutino (30h)</th>
                             <th>Vespertino (30h)</th>
                             <th>Dia Todo (40h)</th>
-                            <th>Obs.</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -1328,7 +1327,6 @@ function renderPlantao(rows){
       <td>${r.mat30 || "—"}</td>
       <td>${r.vesp30 || "—"}</td>
       <td>${f40txt}</td>
-      <td>${r.note || (r.noPlantao ? "—" : "")}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -1342,8 +1340,8 @@ function renderPlantao(rows){
     },
     scrollX: true,
     columnDefs: [
-      { targets: [2, 3], width: "120px" },
-      { targets: [4], className: "col-f40" }
+      { targets: [2, 3], width: "90px" },
+      { targets: [4], width: "220px", className: "col-f40" }
     ]
   });
 
