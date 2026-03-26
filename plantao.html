@@ -1347,9 +1347,13 @@ function renderPlantao(rows){
       url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json"
     },
     scrollX: true,
-    columnDefs: [
-      { targets: [2, 3], width: "90px" },
-      { targets: [4], width: "220px", className: "col-f40" }
+    autoWidth: false,
+    columns: [
+      { width: "85px" },
+      { width: "40px" },
+      { width: "90px" },
+      { width: "90px" },
+      { width: "220px", className: "col-f40" }
     ]
   });
 
