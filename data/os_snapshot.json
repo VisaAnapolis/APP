@@ -36381,8 +36381,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260027": {
     "tipo": "Requerimento",
@@ -36502,8 +36501,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260054": {
     "tipo": "Ofício",
@@ -36647,8 +36645,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260079": {
     "tipo": "Ofício",
@@ -36672,8 +36669,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": true,
-    "email_notif_recuperacao": true
+    "notif_hoje": true
   },
   "20260084": {
     "tipo": "Requerimento",
@@ -36769,8 +36765,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260100": {
     "tipo": "Ofício",
@@ -36794,8 +36789,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260104": {
     "tipo": "Requerimento",
@@ -36844,30 +36838,6 @@
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
-  },
-  "20260109": {
-    "tipo": "Denúncia",
-    "fiscal": "GERALDO EDSON ROSA",
-    "motivo": "- [ ] PRODUTOS ALIMENTÍCIOS - COMÉRCIO",
-    "prazo": "24.03.2026",
-    "dataReq": "2026-03-05",
-    "razao": "RESTAURANTE DO PAULO",
-    "fantasia": "",
-    "logradouro": "R. VP 6",
-    "complemento": "QD. 11 MOD. 5 - QUIOSQUE",
-    "bairro": "DISTRITO AGROINDUSTRIAL DE ANAPOLIS",
-    "cnpj": "",
-    "cpf": "",
-    "complexidade": "",
-    "cnaeCode": "",
-    "cnaeDesc": "",
-    "descricao": "SEM ALVARÁ E HIGIENE. DENUNCIANTE TEVE VÔMITO E DIARREIA E FOI HOSPITALIZADO APÓS CONSUMO NO LOCAL.",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": true,
-    "notif_recuperacao": false,
-    "notif_amanha": true,
-    "notif_hoje": true
   },
   "20260110": {
     "tipo": "Denúncia",
@@ -36939,8 +36909,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260120": {
     "tipo": "Ofício",
@@ -36988,8 +36957,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260125": {
     "tipo": "Requerimento",
@@ -37061,8 +37029,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260130": {
     "tipo": "Denúncia",
@@ -37710,8 +37677,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260184": {
     "tipo": "Ofício",
@@ -37783,8 +37749,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260191": {
     "tipo": "Ofício",
@@ -37808,8 +37773,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260192": {
     "tipo": "Ofício",
@@ -37833,8 +37797,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260197": {
     "tipo": "Ofício",
@@ -37978,8 +37941,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260215": {
     "tipo": "Requerimento",
@@ -38051,8 +38013,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260218": {
     "tipo": "Ofício",
@@ -38076,8 +38037,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260220": {
     "tipo": "Ofício",
@@ -38101,8 +38061,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_5d": true
+    "notif_hoje": false
   },
   "20260221": {
     "tipo": "Requerimento",
@@ -38846,8 +38805,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false,
-    "email_notif_amanha": true
+    "notif_hoje": false
   },
   "20260284": {
     "tipo": "Ofício",
@@ -38991,8 +38949,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260295": {
     "tipo": "Ofício",
@@ -40144,8 +40101,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260378": {
     "tipo": "Ofício",
@@ -40529,8 +40485,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260395": {
     "tipo": "Ofício",
@@ -40554,8 +40509,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260396": {
     "tipo": "Ofício",
@@ -40651,8 +40605,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260401": {
     "tipo": "Ofício",
@@ -40916,8 +40869,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260418": {
     "tipo": "Ofício",
@@ -40941,8 +40893,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260420": {
     "tipo": "Requerimento",
@@ -41014,8 +40965,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260424": {
     "tipo": "Ofício",
@@ -41039,8 +40989,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260426": {
     "tipo": "Ofício",
@@ -41064,8 +41013,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260427": {
     "tipo": "Ofício",
@@ -41089,8 +41037,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260428": {
     "tipo": "Ofício",
@@ -42842,8 +42789,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
-    "notif_hoje": false,
-    "email_notif_recuperacao": true
+    "notif_hoje": false
   },
   "20260528": {
     "tipo": "Requerimento",
@@ -43107,8 +43053,7 @@
     "notif_5d": false,
     "notif_recuperacao": true,
     "notif_amanha": true,
-    "notif_hoje": true,
-    "email_notif_hoje": true
+    "notif_hoje": true
   },
   "20260544": {
     "tipo": "Ofício",
@@ -43279,21 +43224,21 @@
     "notif_hoje": false
   },
   "20260555": {
-    "tipo": "Requerimento",
-    "fiscal": "PEDRO HENRIQUE AIRES RIBEIRO",
-    "motivo": "Renovação",
-    "prazo": "21.05.2026",
-    "dataReq": "2026-02-19",
-    "razao": "CERRADO COMERCIO LTDA",
-    "fantasia": "AUTO POSTO CERRADO",
-    "logradouro": "ROD BR 060 KM 82",
-    "complemento": "CHACARA 92",
-    "bairro": "CHACARA BOA VISTA",
-    "cnpj": "07.826.959/0001-20",
+    "tipo": "Ofício",
+    "fiscal": "JOÃO BATISTA LUCAS DA SILVA REIS",
+    "motivo": "RETORNO",
+    "prazo": "14.05.2026",
+    "dataReq": "2026-03-26",
+    "razao": "45.047.820 PEDRO HENRIQUE ALVES DAMASCENO",
+    "fantasia": "",
+    "logradouro": "R. BRASILIENSE",
+    "complemento": "",
+    "bairro": "BAIRRO CALIXTOLANDIA",
+    "cnpj": "45.047.820/0001-77",
     "cpf": "",
-    "complexidade": "MÉDIA",
-    "cnaeCode": "4731-8/00",
-    "cnaeDesc": "Comércio varejista de combustíveis para veículos automotores",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -44110,30 +44055,6 @@
     "complexidade": "MÉDIA",
     "cnaeCode": "4771-7/01",
     "cnaeDesc": "Comercio varejista de produtos farmaceuticos, sem manipulacao de formulas",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false
-  },
-  "20260646": {
-    "tipo": "Requerimento",
-    "fiscal": "GERALDO EDSON ROSA",
-    "motivo": "Renovação",
-    "prazo": "27.05.2026",
-    "dataReq": "2026-02-26",
-    "razao": "PEROLA DISTRIBUICAO E LOGISTICA  S/A",
-    "fantasia": "PEROLA  DISTRIBUICAO",
-    "logradouro": "RUA LUZIANIA",
-    "complemento": "QD 36 LT 01",
-    "bairro": "PARQUE CALIXTOPOLIS",
-    "cnpj": "06.204.131/0014-91",
-    "cpf": "",
-    "complexidade": "ALTA",
-    "cnaeCode": "4711-3/02",
-    "cnaeDesc": "Comercio varejista de mercadorias em geral, com predominancia de produtos alimenticios - supermercados",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
@@ -48982,30 +48903,6 @@
     "complexidade": "MÉDIA",
     "cnaeCode": "4771-7/01",
     "cnaeDesc": "Comercio varejista de produtos farmaceuticos, sem manipulacao de formulas",
-    "descricao": "",
-    "atendida": false,
-    "cancelada": false,
-    "notif_5d": false,
-    "notif_recuperacao": false,
-    "notif_amanha": false,
-    "notif_hoje": false
-  },
-  "20260999": {
-    "tipo": "Requerimento",
-    "fiscal": "JOÃO BATISTA LUCAS DA SILVA REIS",
-    "motivo": "Renovação",
-    "prazo": "22.06.2026",
-    "dataReq": "2026-03-23",
-    "razao": "45.047.820 PEDRO HENRIQUE ALVES DAMASCENO",
-    "fantasia": "",
-    "logradouro": "R. BRASILIENSE",
-    "complemento": "Nº 225",
-    "bairro": "BAIRRO CALIXTOLANDIA",
-    "cnpj": "45.047.820/0001-77",
-    "cpf": "",
-    "complexidade": "MÉDIA",
-    "cnaeCode": "5590-6/99",
-    "cnaeDesc": "Outros alojamentos nao especificados anteriormente",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
