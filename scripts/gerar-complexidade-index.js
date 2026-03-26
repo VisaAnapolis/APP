@@ -137,6 +137,7 @@ function main() {
       try {
         data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
       } catch (e) {
+        console.warn('  ⚠ Erro ao ler ' + filePath + ': ' + e.message);
         continue;
       }
 
