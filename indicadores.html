@@ -528,7 +528,8 @@
         loadCSV('data/protocolo.csv'),
         loadCSV('data/alvara.csv'),
         loadCSV('data/cnae.csv'),
-        loadCSV('data/regulados.csv')
+        loadCSV('data/regulados.csv'),
+        fetch('data/complexidade_regulados.json').then(function(r){ return r.json(); })
       ]).then(function(results) {
         var insp      = results[0];
         var ofic      = results[1];
@@ -538,6 +539,7 @@
         var alv       = results[5];
         var cnae      = results[6];
         var regulados = results[7];
+        var compIndex = results[8]; // índice pré-computado de complexidade
 
         /* ── Filtrar regulados cadastrados no período ── */
         var regPeriodo = regulados.filter(function(r) {
@@ -559,34 +561,7 @@
         });
         var totalRegAtivos = regAtivos.length;
 
-        function buildJsonPromises(list) {
-          return list.map(function(r) {
-            var cod = (r.CODIGO || '').trim();
-            if (!cod) return Promise.resolve(null);
-            var padded = String(cod).padStart(5, '0');
-            var prefix = padded.slice(0, 2);
-            return fetch('data/reg/' + prefix + '/' + padded + '.json')
-              .then(function(res) { return res.ok ? res.json() : null; })
-              .catch(function() { return null; });
-          });
-        }
-
-        /* ── Buscar JSONs individuais para obter complexidade/CNAE ── */
-        var jsonPromises = buildJsonPromises(regPeriodo);
-        var jsonPromisesAtivos = buildJsonPromises(regAtivos);
-
-        Promise.all([
-          Promise.allSettled(jsonPromises),
-          Promise.allSettled(jsonPromisesAtivos)
-        ]).then(function(allSettled) {
-          var jsonsReg = allSettled[0].map(function(r) {
-            return r.status === 'fulfilled' ? r.value : null;
-          });
-          var jsonsRegAtivos = allSettled[1].map(function(r) {
-            return r.status === 'fulfilled' ? r.value : null;
-          });
-          renderAll(container, start, end, insp, ofic, req, den, prot, alv, cnae, totalRegCad, totalRegExcluido, jsonsReg, regPeriodo, totalRegAtivos, jsonsRegAtivos);
-        });
+        renderAll(container, start, end, insp, ofic, req, den, prot, alv, cnae, totalRegCad, totalRegExcluido, regPeriodo, totalRegAtivos, regAtivos, compIndex);
       }).catch(function(err) {
         container.innerHTML = '<div class="indicadores-loading">⚠️ Erro ao carregar dados: ' + (err && err.message ? err.message : err) + '</div>';
       });
@@ -595,7 +570,7 @@
     /* ══════════════════════════════════════════════════════
        PROCESSAMENTO E RENDERIZAÇÃO
     ══════════════════════════════════════════════════════ */
-    function renderAll(container, start, end, insp, ofic, req, den, prot, alv, cnae, totalRegCad, totalRegExcluido, jsonsReg, regPeriodo, totalRegAtivos, jsonsRegAtivos) {
+    function renderAll(container, start, end, insp, ofic, req, den, prot, alv, cnae, totalRegCad, totalRegExcluido, regPeriodo, totalRegAtivos, regAtivos, compIndex) {
       var periodoLabel = fmtDate(start) + ' – ' + fmtDate(end);
 
       /* ── MAPA DE COMPLEXIDADE (CNAE) ── */
@@ -604,36 +579,6 @@
         var sub = (c.Subclasse || '').trim();
         if (sub) mapaCNAE.set(sub, (c.Complexidade || '').trim());
       });
-
-      /* ── Resolução de complexidade: cnae.csv (fonte de verdade) → prefixo → JSON embutido ── */
-      function resolveComplexidade(a) {
-        // 1) Busca exata na subclasse do cnae.csv (fonte de verdade)
-        var sub = (a.subclasse || '').trim();
-        var c = sub ? (mapaCNAE.get(sub) || null) : null;
-        if (c && COMP_PRIORITY.indexOf(c) !== -1) return c;
-        // 2) Prefixo de classe CNAE (ex.: "5611-2/" para "5611-2/02"), como cnaeMatch no mapa
-        if (sub) {
-          var slashIdx = sub.lastIndexOf('/');
-          if (slashIdx > 0) {
-            var pfx = sub.slice(0, slashIdx + 1);
-            var best = null;
-            for (var entry of mapaCNAE) {
-              var key = entry[0], comp = entry[1];
-              if (key.startsWith(pfx) && COMP_PRIORITY.indexOf(comp) !== -1) {
-                if (!best || COMP_PRIORITY.indexOf(comp) < COMP_PRIORITY.indexOf(best)) {
-                  best = comp;
-                  if (best === COMP_PRIORITY[0]) break; // já é ALTA, não há melhor
-                }
-              }
-            }
-            if (best) return best;
-          }
-        }
-        // 3) Fallback: campo complexidade embutido no JSON (para CNAEs fora do cnae.csv)
-        c = (a.complexidade || '').trim();
-        if (c && COMP_PRIORITY.indexOf(c) !== -1) return c;
-        return null;
-      }
 
       /* ── INSPEÇÕES ── */
       var inspeçõesPeriodo = insp.filter(function(r){ return inRange(parseDMY(r.DT_VISITA), start, end); });
@@ -759,118 +704,44 @@
       var alvTotal = alvEmit.length;
 
       /* ── REGULADOS CADASTRADOS — complexidade e Mapa SIA/SUS ── */
-      // Mapeamento sigla de equipe → área canônica (mesmo de total.html)
-      var SIGLA_AREA = {
-        'MD': 'Medicamentos',
-        'DR': 'Comércio varejista de Medicamentos',
-        'OS': 'Produtos para Saúde',
-        'PS': 'Produtos para Saúde', // alias encontrado nos JSONs
-        'CS': 'Cosméticos e Saneantes',
-        'SS': 'Serviços de Saúde',
-        'LP': 'Serviços de Saúde', // Estabelecimentos Assistenciais
-        'IA': 'Indústrias Alimentícias',
-        'AG': 'Alimentos em Geral'
-      };
-      // Ordem de prioridade fixa (mesma de total.html)
-      var REG_PRIORITY = [
-        'Medicamentos',
-        'Comércio varejista de Medicamentos',
-        'Produtos para Saúde',
-        'Cosméticos e Saneantes',
-        'Serviços de Saúde',
-        'Indústrias Alimentícias',
-        'Alimentos em Geral'
-      ];
-
       var COMP_PRIORITY = ['ALTA', 'MÉDIA', 'BAIXA'];
       var COMP_REG_SEM = 'Não classificado';
       var regCompCount = { 'ALTA': 0, 'MÉDIA': 0, 'BAIXA': 0 };
       regCompCount[COMP_REG_SEM] = 0;
       var regCnaeMap = { hospital: 0, ilpi: 0, alimentacao: 0 };
 
-      /* jsonsReg e regPeriodo são paralelos: ambos derivam de regPeriodo.map() → Promise.allSettled */
-      (jsonsReg || []).forEach(function(json, idx) {
+      /* Índice pré-computado: complexidade_regulados.json
+         dados[codigo] = { comp: "ALTA"|"MÉDIA"|"BAIXA"|null, hospital, ilpi, alimentacao } */
+      var compDados = (compIndex && compIndex.dados) || {};
+
+      /* ── Regulados cadastrados no período: complexidade e Mapa SIA/SUS ── */
+      (regPeriodo || []).forEach(function(reg) {
         /* Considerar somente os ativos */
-        var reg = (regPeriodo || [])[idx];
-        if (reg) {
-          var inatividade = (reg.INATIVIDADE || '').trim().toLowerCase();
-          if (inatividade === 'true' || inatividade === '1') return;
+        var inatividade = (reg.INATIVIDADE || '').trim().toLowerCase();
+        if (inatividade === 'true' || inatividade === '1') return;
+
+        var cod = (reg.CODIGO || '').trim();
+        var entry = cod ? compDados[cod] : null;
+        var comp = (entry && entry.comp) ? entry.comp : COMP_REG_SEM;
+        regCompCount[comp] = (regCompCount[comp] || 0) + 1;
+
+        /* Mapa SIA/SUS: contadores de cadastro por tipo */
+        if (entry) {
+          if (entry.hospital) regCnaeMap.hospital++;
+          else if (entry.ilpi) regCnaeMap.ilpi++;
+          if (entry.alimentacao) regCnaeMap.alimentacao++;
         }
-
-        if (!json || !json.atividades || !json.atividades.length) {
-          regCompCount[COMP_REG_SEM]++;
-          return;
-        }
-        var atvs = json.atividades;
-
-        /* Complexidade: maior entre todos os CNAEs — JSON direto, mapa exato ou prefixo */
-        var highestComp = null;
-        atvs.forEach(function(a) {
-          var c = resolveComplexidade(a);
-          if (!c) return;
-          if (!highestComp || COMP_PRIORITY.indexOf(c) < COMP_PRIORITY.indexOf(highestComp)) {
-            highestComp = c;
-          }
-        });
-        var comp = highestComp || COMP_REG_SEM;
-        regCompCount[comp]++;
-
-        /* Mapa SIA/SUS: regra de prioridade — conta só uma vez pela área de maior relevância */
-        var areaNomes = atvs.map(function(a) {
-          var sig = (a.equipe || '').trim().toUpperCase();
-          if (sig === 'PS') sig = 'OS'; // normaliza alias
-          return SIGLA_AREA[sig] || null;
-        }).filter(Boolean);
-
-        var topArea = null;
-        for (var pi = 0; pi < REG_PRIORITY.length; pi++) {
-          if (areaNomes.indexOf(REG_PRIORITY[pi]) !== -1) {
-            topArea = REG_PRIORITY[pi];
-            break;
-          }
-        }
-
-        if (topArea === 'Serviços de Saúde') {
-          // Dentro de SS, distingue hospital vs ILPI pela subclasse
-          var ssAtvs = atvs.filter(function(a) {
-            var sig = (a.equipe || '').trim().toUpperCase();
-            if (sig === 'PS') sig = 'OS';
-            return SIGLA_AREA[sig] === 'Serviços de Saúde';
-          });
-          var temHosp = ssAtvs.some(function(a) { return (a.subclasse || '').startsWith('8610-1'); });
-          var temILPI = ssAtvs.some(function(a) {
-            var s = a.subclasse || '';
-            return s.startsWith('8711-5') || s.startsWith('8731-1');
-          });
-          if (temHosp) regCnaeMap.hospital++;
-          else if (temILPI) regCnaeMap.ilpi++;
-          // SS mas sem código específico → conta só no genérico 01.02.01.007-2
-        } else if (topArea === 'Indústrias Alimentícias' || topArea === 'Alimentos em Geral') {
-          regCnaeMap.alimentacao++;
-        }
-        // Demais áreas (MD, DR, OS, CS…) → apenas no genérico 01.02.01.007-2
       });
 
       /* ── Complexidade de todos os regulados ativos ── */
       var regAtivosCompCount = { 'ALTA': 0, 'MÉDIA': 0, 'BAIXA': 0 };
       regAtivosCompCount[COMP_REG_SEM] = 0;
 
-      (jsonsRegAtivos || []).forEach(function(json) {
-        if (!json || !json.atividades || !json.atividades.length) {
-          regAtivosCompCount[COMP_REG_SEM]++;
-          return;
-        }
-        var atvs = json.atividades;
-        var highestComp = null;
-        atvs.forEach(function(a) {
-          var c = resolveComplexidade(a);
-          if (!c) return;
-          if (!highestComp || COMP_PRIORITY.indexOf(c) < COMP_PRIORITY.indexOf(highestComp)) {
-            highestComp = c;
-          }
-        });
-        var comp = highestComp || COMP_REG_SEM;
-        regAtivosCompCount[comp]++;
+      (regAtivos || []).forEach(function(reg) {
+        var cod = (reg.CODIGO || '').trim();
+        var entry = cod ? compDados[cod] : null;
+        var comp = (entry && entry.comp) ? entry.comp : COMP_REG_SEM;
+        regAtivosCompCount[comp] = (regAtivosCompCount[comp] || 0) + 1;
       });
 
       /* ── SIA/SUS: inspeções por tipo de estabelecimento (CNAE) ── */
