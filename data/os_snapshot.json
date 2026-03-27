@@ -37002,7 +37002,7 @@
     "descricao": "O estabelecimento apresenta indícios de falta de higiene nas instalações, o que pode comprometer as condições sanitárias para armazenamento e comercialização de alimentos.",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -37028,7 +37028,7 @@
     "cancelada": false,
     "notif_5d": true,
     "notif_recuperacao": false,
-    "notif_amanha": false,
+    "notif_amanha": true,
     "notif_hoje": false
   },
   "20260130": {
@@ -37050,7 +37050,7 @@
     "descricao": "HAMBURGUERIA NÃO REGULARIZADA, POSSUI UMA COZINHA IMPROVISADA EM QUE A EXAUSTÃO DA CHAPA SAI PARA CASA DOS VIZINHOS. A COZINHA NÃO TEM RALO, EMPOÇA NA RUA E NA LATERAL DO MURO. SÓ ABRE A NOITE.",
     "atendida": false,
     "cancelada": false,
-    "notif_5d": false,
+    "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": false,
     "notif_hoje": false
@@ -37700,7 +37700,7 @@
     "cancelada": false,
     "notif_5d": true,
     "notif_recuperacao": false,
-    "notif_amanha": false,
+    "notif_amanha": true,
     "notif_hoje": false
   },
   "20260184": {
@@ -37964,7 +37964,7 @@
     "cancelada": false,
     "notif_5d": true,
     "notif_recuperacao": false,
-    "notif_amanha": false,
+    "notif_amanha": true,
     "notif_hoje": false
   },
   "20260215": {
@@ -38685,7 +38685,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false
+    "notif_hoje": true
   },
   "20260276": {
     "tipo": "Ofício",
@@ -38781,7 +38781,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false
+    "notif_hoje": true
   },
   "20260282": {
     "tipo": "Ofício",
@@ -38829,7 +38829,7 @@
     "notif_5d": true,
     "notif_recuperacao": false,
     "notif_amanha": true,
-    "notif_hoje": false
+    "notif_hoje": true
   },
   "20260284": {
     "tipo": "Ofício",
@@ -38972,7 +38972,7 @@
     "cancelada": false,
     "notif_5d": true,
     "notif_recuperacao": false,
-    "notif_amanha": false,
+    "notif_amanha": true,
     "notif_hoje": false
   },
   "20260295": {
@@ -51567,6 +51567,30 @@
     "complexidade": "ALTA",
     "cnaeCode": "5620-1/01",
     "cnaeDesc": "Fornecimento de alimentos preparados preponderantemente para empresas",
+    "descricao": "",
+    "atendida": false,
+    "cancelada": false,
+    "notif_5d": false,
+    "notif_recuperacao": false,
+    "notif_amanha": false,
+    "notif_hoje": false
+  },
+  "20261138": {
+    "tipo": "Requerimento",
+    "fiscal": "GERENTE DE VIGILÂNCIA SANITÁRIA",
+    "motivo": "Renovação",
+    "prazo": "",
+    "dataReq": "2026-03-26",
+    "razao": "COMERCIAL MAGALHAES DE HORTIFRUTIGRANJEIROS",
+    "fantasia": "COMERCIAL MAGALHAES",
+    "logradouro": "RUA ADIB MIGUEL",
+    "complemento": "Quadra 42, Lote 18 n 403",
+    "bairro": "SETOR SUL JAMIL MIGUEL",
+    "cnpj": "65.211.207/0001-50",
+    "cpf": "",
+    "complexidade": "",
+    "cnaeCode": "",
+    "cnaeDesc": "",
     "descricao": "",
     "atendida": false,
     "cancelada": false,
