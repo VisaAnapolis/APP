@@ -54,10 +54,16 @@
     return r.json();
   }
 
-  async function fetchLastModified(url) {
+  async function fetchGitCommitTime(filePath) {
     try {
-      const r = await fetch(url, { method: "HEAD", cache: "no-store" });
-      return r.headers.get("Last-Modified") || null;
+      const url = `https://api.github.com/repos/garrado/VISA/commits?path=${encodeURIComponent(filePath)}&per_page=1`;
+      const r = await fetch(url);
+      if (!r.ok) return null;
+      const data = await r.json();
+      if (Array.isArray(data) && data[0]?.commit?.author?.date) {
+        return data[0].commit.author.date;
+      }
+      return null;
     } catch { return null; }
   }
 
@@ -180,7 +186,7 @@
       parseCSV(`./data/cnae_aux.csv?${ts}`,   ["INSCRICAO_ISS", "CNAE", "ATIVIDADE", "DOCUMENTO", "IND_PRINCIPAL"]),
       parseCSV(`./data/regulados.csv?${ts}`,   ["CODIGO", "MUNICIPAL", "CGC", "CPF"]),
       parseCSV(`./data/cnae.csv?${ts}`,        ["Subclasse"]),
-      fetchLastModified(`./data/cnae_aux.csv?${ts}`),
+      fetchGitCommitTime('data/cnae_aux.csv'),
     ]);
     simCsvDate = auxLastModified;
 
