@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Taxa de Vigilância Sanitária — Anápolis</title>
+  <meta name="theme-color" content="#1a3a6b">
+
+  <!-- Sistema de Design - VISA Anápolis -->
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/header-component.css">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/layouts.css">
+  <link rel="stylesheet" href="./css/sidebar.css">
+
+  <style>
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .card {
+      background: var(--card, #ffffff);
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      border: 1px solid var(--line, #e2e8f0);
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    .section-title {
+      color: var(--brand1, #1a3a6b);
+      font-size: 1.05em;
+      font-weight: 700;
+      margin: 0 0 16px 0;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, rgba(26,58,107,0.08), rgba(44,90,160,0.05));
+      border-left: 4px solid var(--brand1, #1a3a6b);
+      border-radius: 0 8px 8px 0;
+    }
+
+    .indice-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(44,90,160,0.10);
+      color: var(--brand1, #1a3a6b);
+      font-size: 0.82em;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+    }
+
+    /* ── TABELA ── */
+    .taxa-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92em;
+    }
+    .taxa-table thead tr {
+      background: var(--brand1, #1a3a6b);
+      color: #fff;
+    }
+    .taxa-table thead th {
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .taxa-table thead th:not(:first-child) {
+      text-align: center;
+    }
+    .taxa-table tbody tr {
+      border-bottom: 1px solid var(--line, #e2e8f0);
+    }
+    .taxa-table tbody tr:last-child {
+      border-bottom: none;
+    }
+    .taxa-table tbody tr:hover {
+      background: rgba(44,90,160,0.04);
+    }
+    .taxa-table td {
+      padding: 10px 14px;
+      color: var(--text, #1a202c);
+    }
+    .taxa-table td:not(:first-child) {
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+    .taxa-table td.val-2025 {
+      color: var(--muted, #64748b);
+    }
+    .taxa-table td.val-2026 {
+      color: var(--brand1, #1a3a6b);
+      font-weight: 700;
+    }
+
+    /* linha única (Veicular / Expediente) */
+    .taxa-table td.label-center {
+      text-align: center;
+      color: var(--muted, #64748b);
+      font-style: italic;
+    }
+
+    @media (max-width: 600px) {
+      .card { padding: 14px 12px; border-radius: 12px; }
+      .taxa-table { font-size: 0.82em; }
+      .taxa-table thead th,
+      .taxa-table td { padding: 8px 8px; }
+      .section-title { font-size: 0.95em; padding: 10px 12px; }
+    }
+  </style>
+</head>
+
+<body class="with-sidebar">
+  <div class="app-layout">
+
+    <!-- ════════════ SIDEBAR ════════════ -->
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Menu principal">
+      <a class="sidebar__header" href="index.html">
+        <div class="sidebar__logo" style="background:none;">
+          <img src="icons/visa.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;" alt="VISA">
+        </div>
+        <div>
+          <div class="sidebar__app-name">Vigilância Sanitária</div>
+          <div class="sidebar__app-sub">Anápolis – GO</div>
+        </div>
+      </a>
+      <nav class="sidebar__nav">
+        <a class="visa-nav-item" href="index.html"><span class="nav-icon">🗂️</span> Dashboard</a>
+        <div class="nav-section-label">Operacional</div>
+        <a class="visa-nav-item" href="os.html"><span class="nav-icon">📋</span> OS</a>
+        <a class="visa-nav-item" href="alvara.html"><span class="nav-icon">🏦</span> Alvarás</a>
+        <a class="visa-nav-item" href="cvs.html"><span class="nav-icon">🏪</span> Regulados</a>
+        <a class="visa-nav-item" href="protocolo.html"><span class="nav-icon">🔍</span> Protocolos</a>
+        <div class="nav-section-label">Relatórios</div>
+        <a class="visa-nav-item" href="rmpf.html"><span class="nav-icon">📚</span> RMPF</a>
+        <a class="visa-nav-item" href="inspecoes.html"><span class="nav-icon">👁️</span> Inspeções</a>
+        <a class="visa-nav-item" href="relatorio_plantao_fiscal.html"><span class="nav-icon">📈</span> Ocorrências</a>
+        <a class="visa-nav-item" href="indicadores.html"><span class="nav-icon">📊</span> Indicadores</a>
+        <a class="visa-nav-item" href="comply.html"><span class="nav-icon">🛡️</span> Compliance</a>
+        <a class="visa-nav-item" href="simxcvs.html"><span class="nav-icon">🔀</span> CNAEs SIM×CVS</a>
+        <div class="nav-section-label">Escala</div>
+        <a class="visa-nav-item" href="plantao.html"><span class="nav-icon">📅</span> Plantão Fiscal</a>
+        <a class="visa-nav-item" href="veiculos.html"><span class="nav-icon">🚗</span> Veículos</a>
+        <a class="visa-nav-item" href="ferias.html"><span class="nav-icon">🏖️</span> Férias</a>
+        <div class="nav-section-label">Referência</div>
+        <a class="visa-nav-item" href="legislacao.html"><span class="nav-icon">📜</span> Legislação</a>
+        <a class="visa-nav-item" href="pop.html"><span class="nav-icon">🎯</span> POPs da VISA</a>
+        <a class="visa-nav-item" href="check.html"><span class="nav-icon">✅</span> Check Lists</a>
+        <a class="visa-nav-item active" href="taxa.html"><span class="nav-icon">💰</span> Taxa</a>
+        <div class="nav-section-label">Distribuição</div>
+        <a class="visa-nav-item" href="areas.html"><span class="nav-icon">🧩</span> Áreas</a>
+        <a class="visa-nav-item" href="cnae.html"><span class="nav-icon">👥</span> CNAEs</a>
+        <a class="visa-nav-item" href="total.html"><span class="nav-icon">🧮</span> Totalização</a>
+        <a class="visa-nav-item" href="analise.html"><span class="nav-icon">🔬</span> Análise Detalhada</a>
+        <div class="nav-section-label">Sistema</div>
+        <a class="visa-nav-item" href="admin.html"><span class="nav-icon">⚙️</span> Painel Admin</a>
+        <a class="visa-nav-item" href="mailto:visa@anapolis.go.gov.br"><span class="nav-icon">💡</span> Sugestões</a>
+        <a class="visa-nav-item" href="changelog.html"><span class="nav-icon">📌</span> Novidades da versão</a>
+        <a class="visa-nav-item" href="readme.html"><span class="nav-icon">📄</span> Aviso Institucional</a>
+      </nav>
+      <div class="sidebar__footer">
+        <div class="sidebar__version">
+          <span class="version-badge">v<span id="appVersion"></span></span>
+          <span class="version-date">fev/2026</span>
+        </div>
+        <div id="userInfo" class="user-info-bar" style="padding:6px 0 8px;background:none;border:none;"></div>
+        <button class="btn-logout-text" onclick="sidebarLogout()">↩ Encerrar sessão</button>
+      </div>
+    </aside>
+    <!-- ════ FIM SIDEBAR ════ -->
+
+    <!-- Overlay mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- ════════════ MAIN AREA ════════════ -->
+    <div class="main-area">
+
+      <!-- TOPBAR (mobile only) -->
+      <header class="topbar">
+        <button class="btn-hamburger" onclick="toggleSidebar()" aria-label="Abrir menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="3" y1="6"  x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <span class="topbar__title">Taxa de Vigilância Sanitária</span>
+      </header>
+
+      <!-- CONTEÚDO -->
+      <main class="page-content">
+        <div class="page-header">
+          <h1 class="page-title">💰 Taxa de Vigilância Sanitária</h1>
+          <p class="page-subtitle">Valores vigentes por categoria de atividade — Anápolis – GO</p>
+        </div>
+
+        <div class="container">
+
+          <!-- ── BAIXA COMPLEXIDADE ── -->
+          <section class="card">
+            <h2 class="section-title">🟢 Atividades de Baixa Complexidade</h2>
+            <div class="indice-badge">📈 Índice de Correção: 4,41%</div>
+            <table class="taxa-table">
+              <thead>
+                <tr>
+                  <th>Área</th>
+                  <th>Valor 2025</th>
+                  <th>Valor 2026</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Até 100 m²</td>
+                  <td class="val-2025">R$ 138,89</td>
+                  <td class="val-2026">R$ 145,02</td>
+                </tr>
+                <tr>
+                  <td>De 101 m² a 400 m²</td>
+                  <td class="val-2025">R$ 277,74</td>
+                  <td class="val-2026">R$ 289,99</td>
+                </tr>
+                <tr>
+                  <td>De 401 m² a 800 m²</td>
+                  <td class="val-2025">R$ 555,48</td>
+                  <td class="val-2026">R$ 579,98</td>
+                </tr>
+                <tr>
+                  <td>Acima de 800 m²</td>
+                  <td class="val-2025">R$ 1.110,96</td>
+                  <td class="val-2026">R$ 1.159,95</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <!-- ── MÉDIA COMPLEXIDADE ── -->
+          <section class="card">
+            <h2 class="section-title">🟡 Atividades de Média Complexidade</h2>
+            <div class="indice-badge">📈 Índice de Correção: 4,41%</div>
+            <table class="taxa-table">
+              <thead>
+                <tr>
+                  <th>Área</th>
+                  <th>Valor 2025</th>
+                  <th>Valor 2026</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Até 100 m²</td>
+                  <td class="val-2025">R$ 416,62</td>
+                  <td class="val-2026">R$ 434,99</td>
+                </tr>
+                <tr>
+                  <td>De 101 m² a 400 m²</td>
+                  <td class="val-2025">R$ 694,36</td>
+                  <td class="val-2026">R$ 724,98</td>
+                </tr>
+                <tr>
+                  <td>De 401 m² a 800 m²</td>
+                  <td class="val-2025">R$ 1.249,84</td>
+                  <td class="val-2026">R$ 1.304,96</td>
+                </tr>
+                <tr>
+                  <td>Acima de 800 m²</td>
+                  <td class="val-2025">R$ 2.221,94</td>
+                  <td class="val-2026">R$ 2.319,93</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <!-- ── ALTA COMPLEXIDADE ── -->
+          <section class="card">
+            <h2 class="section-title">🔴 Atividades de Alta Complexidade</h2>
+            <div class="indice-badge">📈 Índice de Correção: 4,41%</div>
+            <table class="taxa-table">
+              <thead>
+                <tr>
+                  <th>Área</th>
+                  <th>Valor 2025</th>
+                  <th>Valor 2026</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Até 100 m²</td>
+                  <td class="val-2025">R$ 694,36</td>
+                  <td class="val-2026">R$ 724,98</td>
+                </tr>
+                <tr>
+                  <td>De 101 m² a 400 m²</td>
+                  <td class="val-2025">R$ 1.110,96</td>
+                  <td class="val-2026">R$ 1.159,95</td>
+                </tr>
+                <tr>
+                  <td>De 401 m² a 800 m²</td>
+                  <td class="val-2025">R$ 1.944,20</td>
+                  <td class="val-2026">R$ 2.029,94</td>
+                </tr>
+                <tr>
+                  <td>Acima de 800 m²</td>
+                  <td class="val-2025">R$ 3.332,90</td>
+                  <td class="val-2026">R$ 3.479,88</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <!-- ── VEICULAR ── -->
+          <section class="card">
+            <h2 class="section-title">🚐 Veicular</h2>
+            <div class="indice-badge">📈 Índice de Correção: 4,41%</div>
+            <table class="taxa-table">
+              <thead>
+                <tr>
+                  <th>Categoria</th>
+                  <th>Valor 2025</th>
+                  <th>Valor 2026</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="label-center">Por veículo</td>
+                  <td class="val-2025">R$ 208,31</td>
+                  <td class="val-2026">R$ 217,50</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <!-- ── EVENTOS ── -->
+          <section class="card">
+            <h2 class="section-title">🎪 Eventos</h2>
+            <div class="indice-badge">📈 Índice de Correção: 4,41%</div>
+            <table class="taxa-table">
+              <thead>
+                <tr>
+                  <th>Complexidade</th>
+                  <th>Valor 2025</th>
+                  <th>Valor 2026</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Baixa</td>
+                  <td class="val-2025">R$ 139,23</td>
+                  <td class="val-2026">R$ 145,37</td>
+                </tr>
+                <tr>
+                  <td>Média</td>
+                  <td class="val-2025">R$ 416,62</td>
+                  <td class="val-2026">R$ 434,99</td>
+                </tr>
+                <tr>
+                  <td>Alta</td>
+                  <td class="val-2025">R$ 694,36</td>
+                  <td class="val-2026">R$ 724,98</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <!-- ── EXPEDIENTE ── -->
+          <section class="card">
+            <h2 class="section-title">📄 Expediente</h2>
+            <div class="indice-badge">📈 Índice de Correção: 4,41%</div>
+            <table class="taxa-table">
+              <thead>
+                <tr>
+                  <th>Categoria</th>
+                  <th>Valor 2025</th>
+                  <th>Valor 2026</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="label-center">Por ato</td>
+                  <td class="val-2025">R$ 41,67</td>
+                  <td class="val-2026">R$ 43,51</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+        </div><!-- /.container -->
+      </main><!-- /.page-content -->
+    </div><!-- /.main-area -->
+  </div><!-- /.app-layout -->
+
+  <script src="./js/platform-detector.js"></script>
+  <script src="./js/sidebar.js"></script>
+  <script src="./js/version.js"></script>
+
+</body>
+</html>
