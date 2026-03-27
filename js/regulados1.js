@@ -65,6 +65,19 @@
     return r.json();
   }
 
+  async function fetchGitCommitTime(filePath) {
+    try {
+      const url = `https://api.github.com/repos/garrado/VISA/commits?path=${encodeURIComponent(filePath)}&per_page=1`;
+      const r = await fetch(url);
+      if (!r.ok) return null;
+      const data = await r.json();
+      if (Array.isArray(data) && data[0]?.commit?.author?.date) {
+        return data[0].commit.author.date;
+      }
+      return null;
+    } catch { return null; }
+  }
+
   const els = {
     q: byId("q"),
     btnClear: byId("btnClear"),
@@ -171,11 +184,13 @@
   async function loadTaxaData() {
     try {
       const url = `./data/taxa.csv?v=${Date.now()}`;
-      const r = await fetch(url, { cache: "no-store" });
+      const [r, gitDate] = await Promise.all([
+        fetch(url, { cache: "no-store" }),
+        fetchGitCommitTime('data/taxa.csv'),
+      ]);
       if (!r.ok) return;
-      const lastMod = r.headers.get("Last-Modified");
-      if (lastMod) {
-        const d = new Date(lastMod);
+      if (gitDate) {
+        const d = new Date(gitDate);
         const hh = String(d.getHours()).padStart(2, "0");
         const mm = String(d.getMinutes()).padStart(2, "0");
         const dd = String(d.getDate()).padStart(2, "0");
