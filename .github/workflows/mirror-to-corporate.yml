@@ -10,6 +10,7 @@ jobs:
   mirror:
     name: Mirror to VisaAnapolis/APP
     runs-on: ubuntu-latest
+    if: github.repository == 'garrado/VISA'
 
     steps:
       - name: Clone bare repository
