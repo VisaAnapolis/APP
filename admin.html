@@ -629,6 +629,11 @@
           <div class="version-grid" id="versionGrid"></div>
         </div>
 
+        <div style="margin-top:10px; padding-top:10px; border-top:1px solid var(--line, #e2e8f0);">
+          <div style="font-size:.88rem; font-weight:700; color:var(--muted); margin-bottom:8px;">🖥️ Dispositivos por Site</div>
+          <div id="siteOrigemGrid" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+        </div>
+
       </div>
 
       <!-- Auditoria -->
@@ -797,6 +802,15 @@
       return `${horaStr} • ${dataStr}`;
     }
 
+    const COR_SITE_ORIGEM = { garrado: '#0078d4', visaanapolis: '#107c10', localhost: '#b45309' };
+
+    function formatSiteOrigemBadge(siteOrigem) {
+      const site = safeVal(siteOrigem);
+      if (!site) return '';
+      const cor = COR_SITE_ORIGEM[site] || '#666';
+      return `<span style="background:${cor};color:#fff;padding:1px 8px;border-radius:10px;font-size:.75rem;font-weight:700;">${site}</span>`;
+    }
+
     function safeVal(v){
       if(v === undefined || v === null) return "";
       if(typeof v === "string"){
@@ -839,6 +853,11 @@
         rows.push(`<div class="row"><span class="k">📶</span><span>${tipoConexao}</span></div>`);
       }
       rows.push(`<div class="row"><span class="k">🔑</span><span>${modoAcesso}</span></div>`);
+
+      const siteOrigem = safeVal(d.siteOrigem);
+      if (siteOrigem) {
+        rows.push(`<div class="row"><span class="k">🖥️</span>${formatSiteOrigemBadge(siteOrigem)}</div>`);
+      }
 
       if(coletadoEm){
         rows.push(`<div class="row"><span class="k">🕒</span><span>${coletadoEm}</span></div>`);
@@ -1104,6 +1123,31 @@ function renderizarUsuarios(usuarios){
           return `<span class="version-pill${isLatest ? ' latest' : ''}">v${v} <span class="vp-count">${n}</span></span>`;
         }).join('');
       }
+
+      // Dispositivos por siteOrigem
+      const siteContagem = {};
+      usuarios.forEach(u => {
+        const disps2 = u.dispositivos ? Object.values(u.dispositivos) : [];
+        if (disps2.length > 0) {
+          disps2.forEach(d => {
+            const s = (d.siteOrigem || '').trim() || 'não registrado';
+            siteContagem[s] = (siteContagem[s] || 0) + 1;
+          });
+        }
+      });
+
+      const siteGrid = document.getElementById('siteOrigemGrid');
+      if (siteGrid) {
+        const siteEntries = Object.entries(siteContagem).sort((a, b) => b[1] - a[1]);
+        if (siteEntries.length === 0) {
+          siteGrid.innerHTML = '<span style="color:var(--muted);font-size:.82rem;">Nenhum dado registrado ainda.</span>';
+        } else {
+          siteGrid.innerHTML = siteEntries.map(([site, n]) => {
+            const cor = COR_SITE_ORIGEM[site] || '#666';
+            return `<span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:.82rem;font-weight:700;background:${cor}22;color:${cor};border:1px solid ${cor}55;">🖥️ ${site} <span style="font-weight:900;font-size:.95rem;">${n}</span></span>`;
+          }).join('');
+        }
+      }
       
     }
 
@@ -1339,6 +1383,8 @@ function renderizarUsuarios(usuarios){
       if(resolucao) parts.push(`📐 ${resolucao}`);
       if(tipoConexao) parts.push(`📶 ${tipoConexao}`);
       parts.push(`🔑 ${modo}`);
+      const siteOrigemTexto = safeVal(d.siteOrigem);
+      if (siteOrigemTexto) parts.push(`🖥️ ${siteOrigemTexto}`);
       if(coletado) parts.push(`🕒 ${coletado}`);
       return parts.join("<br>");
     }
@@ -1493,6 +1539,7 @@ function renderizarUsuarios(usuarios){
             ${nav ? `<div class="dm-row"><span class="k">🌐</span>${nav}</div>` : ''}
             ${res ? `<div class="dm-row"><span class="k">📏</span>${res}</div>` : ''}
             <div class="dm-row"><span class="k">🔑</span>${modo}</div>
+            ${formatSiteOrigemBadge(d.siteOrigem) ? `<div class="dm-row"><span class="k">🖥️</span>${formatSiteOrigemBadge(d.siteOrigem)}</div>` : ''}
             ${ver ? `<div class="dm-row"><span class="k">🧩</span><span class="dm-ver">v${ver}</span>${pag ? ` &nbsp;<span style="color:var(--muted);font-size:.8rem;">${pag}</span>` : ''}</div>` : ''}
             ${dt ? `<div class="dm-row"><span class="k">🕒</span>${dt}</div>` : ''}
             <div class="dm-row"><span class="k">Push</span>${temToken
