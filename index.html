@@ -1644,7 +1644,7 @@
     // Único ponto de verdade: apenas o APP_VERSION no index.html precisa ser alterado.
     async function checkVersionUpdate() {
       try {
-        const resp = await fetch('/VISA/index.html?t=' + Date.now());
+        const resp = await fetch('./index.html?t=' + Date.now());
         if (!resp.ok) return;
         const html = await resp.text();
         const match = html.match(/APP_VERSION\s*=\s*'([\d.]+)'/);
