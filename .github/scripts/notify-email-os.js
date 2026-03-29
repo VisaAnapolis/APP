@@ -367,6 +367,7 @@ async function buscarEmailsPorFiscal() {
 // ────────────────────────────────────────────────────────────
 
 function labelPrazo(dias) {
+  if (dias < 0)               return { emoji: '❗', label: 'VENCEU NO FDS', cor: '#7d3c98', bgCor: '#f4ecf7' };
   if (dias === 0)              return { emoji: '🔴', label: 'VENCE HOJE',   cor: '#c0392b', bgCor: '#fdecea' };
   if (dias === 1)              return { emoji: '🟠', label: 'VENCE AMANHÃ', cor: '#e67e22', bgCor: '#fef3e2' };
   if (dias >= 2 && dias <= 4) return { emoji: '⚠️',  label: `${dias} DIAS`,  cor: '#d4a000', bgCor: '#fffbea' };
@@ -523,7 +524,7 @@ async function main() {
   // 4. E-mails dos fiscais
   const emailsPorFiscal = await buscarEmailsPorFiscal();
   const novoSnapshot    = { ...snapshot };
-  const alertas = { VENCE_HOJE: 0, PRAZO_5D: 0, RECUPERACAO: 0, AMANHA: 0 };
+  const alertas = { VENCE_HOJE: 0, PRAZO_5D: 0, RECUPERACAO: 0, AMANHA: 0, VENCEU_FDS: 0 };
   const alertasPorFiscal = {};
 
   for (const [numero, os] of Object.entries(osAtuais)) {
@@ -532,13 +533,17 @@ async function main() {
     if (!novoSnapshot[numero]) novoSnapshot[numero] = { ...os };
     if (dias === null || !os.fiscal) continue;
 
-    const fiscalKey = os.fiscal.toUpperCase().trim();
+    const fiscalKey   = os.fiscal.toUpperCase().trim();
+    const prazoData   = converterData(os.prazo);
+    const diaSemana   = prazoData ? prazoData.getDay() : -1;
+    const venceuNoFDS = diaSemana === 0 || diaSemana === 6;
 
     let gatilho = '', flagKey = '';
     if      (dias === 0 && !anterior.email_notif_hoje)                                                { gatilho = 'VENCE_HOJE';  flagKey = 'email_notif_hoje'; }
     else if (dias === 1 && !anterior.email_notif_amanha)                                              { gatilho = 'AMANHA';      flagKey = 'email_notif_amanha'; }
     else if (dias >= 2 && dias <= 4 && !anterior.email_notif_5d && !anterior.email_notif_recuperacao) { gatilho = 'RECUPERACAO'; flagKey = 'email_notif_recuperacao'; }
     else if (dias === 5 && !anterior.email_notif_5d)                                                  { gatilho = 'PRAZO_5D';    flagKey = 'email_notif_5d'; }
+    else if (dias < 0 && dias >= -2 && venceuNoFDS && !anterior.email_notif_hoje && !anterior.email_notif_venceu_fds) { gatilho = 'VENCEU_FDS'; flagKey = 'email_notif_venceu_fds'; }
 
     if (!gatilho) continue;
     alertas[gatilho]++;
@@ -588,6 +593,7 @@ async function main() {
   console.log(`   AMANHÃ      : ${alertas.AMANHA}`);
   console.log(`   RECUPERAÇÃO : ${alertas.RECUPERACAO}`);
   console.log(`   PRAZO_5D    : ${alertas.PRAZO_5D}`);
+  console.log(`   VENCEU_FDS  : ${alertas.VENCEU_FDS}`);
   console.log(`📧 Enviados: ${totalEnviados} | Erros: ${totalErros}`);
 
   fs.writeFileSync(SNAPSHOT_FILE, JSON.stringify(novoSnapshot, null, 2), 'utf8');

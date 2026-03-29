@@ -523,6 +523,7 @@ async function enviarNotificacaoFiscal(tokens, numero, tipo, motivo, diasParaPra
   if      (diasParaPrazo === 0)                          texto = `OS ${numero} — ${motivo}, VENCE HOJE`;
   else if (diasParaPrazo === 1)                          texto = `OS ${numero} — ${motivo}, prazo amanhã`;
   else if (diasParaPrazo >= 2 && diasParaPrazo <= 5)     texto = `OS ${numero} — ${motivo}, prazo ${diasParaPrazo} dias`;
+  else if (diasParaPrazo < 0)                            texto = `OS ${numero} — ${motivo}, VENCEU NO FDS`;
   else return { enviados: 0, erros: 0 };
 
   const mensagem = {
@@ -597,6 +598,7 @@ async function removerTokensInvalidos(tokensInvalidos) {
  * Retorna o emoji/cor/label de acordo com os dias para o prazo.
  */
 function labelPrazo(dias) {
+  if (dias < 0)               return { emoji: '❗', label: 'VENCEU NO FDS',   cor: '#7d3c98', bgCor: '#f4ecf7' };
   if (dias === 0)              return { emoji: '🔴', label: 'VENCE HOJE',      cor: '#c0392b', bgCor: '#fdecea' };
   if (dias === 1)              return { emoji: '🟠', label: 'VENCE AMANHÃ',    cor: '#e67e22', bgCor: '#fef3e2' };
   if (dias >= 2 && dias <= 4) return { emoji: '⚠️',  label: `${dias} DIAS`,    cor: '#d4a000', bgCor: '#fffbea' };
@@ -948,10 +950,17 @@ async function main() {
 
     novoSnapshot[numero] = {
       ...osAtual,
-      notif_5d:          osAnterior.notif_5d          || false,
-      notif_recuperacao: osAnterior.notif_recuperacao || false,
-      notif_amanha:      osAnterior.notif_amanha      || false,
-      notif_hoje:        osAnterior.notif_hoje        || false
+      notif_5d:               osAnterior.notif_5d               || false,
+      notif_recuperacao:      osAnterior.notif_recuperacao      || false,
+      notif_amanha:           osAnterior.notif_amanha           || false,
+      notif_hoje:             osAnterior.notif_hoje             || false,
+      notif_venceu_fds:       osAnterior.notif_venceu_fds       || false,
+      // Preserva flags de e-mail para não sobrescrever quando notify-email-os.js salvar depois
+      email_notif_5d:               osAnterior.email_notif_5d               || false,
+      email_notif_recuperacao:      osAnterior.email_notif_recuperacao      || false,
+      email_notif_amanha:           osAnterior.email_notif_amanha           || false,
+      email_notif_hoje:             osAnterior.email_notif_hoje             || false,
+      email_notif_venceu_fds:       osAnterior.email_notif_venceu_fds       || false,
     };
 
     if (diasParaPrazo === null || !osAtual.fiscal) continue;
@@ -964,6 +973,10 @@ async function main() {
     let disparar = false;
     let gatilho  = '';
 
+    const prazoDate  = osAtual.prazo ? converterData(osAtual.prazo) : null;
+    const diaSemana  = prazoDate ? prazoDate.getDay() : -1;
+    const venceuNoFDS = diaSemana === 0 || diaSemana === 6;
+
     if (diasParaPrazo === 0 && !osAnterior.notif_hoje) {
       disparar = true; gatilho = 'VENCE_HOJE'; alertas.VENCE_HOJE++;
     } else if (diasParaPrazo === 5 && !osAnterior.notif_5d) {
@@ -972,6 +985,8 @@ async function main() {
       disparar = true; gatilho = 'RECUPERACAO'; alertas.RECUPERACAO++;
     } else if (diasParaPrazo === 1 && !osAnterior.notif_amanha) {
       disparar = true; gatilho = 'AMANHA'; alertas.AMANHA++;
+    } else if (diasParaPrazo < 0 && diasParaPrazo >= -2 && venceuNoFDS && !osAnterior.notif_hoje && !osAnterior.notif_venceu_fds) {
+      disparar = true; gatilho = 'VENCEU_FDS'; alertas.VENCEU_FDS = (alertas.VENCEU_FDS || 0) + 1;
     }
 
     if (!disparar) continue;
@@ -989,10 +1004,14 @@ async function main() {
     }
 
     // ── Atualiza flag no snapshot ─────────────────────────────
-    if (gatilho === 'VENCE_HOJE')   novoSnapshot[numero].notif_hoje        = true;
-    if (gatilho === 'PRAZO_5D')     novoSnapshot[numero].notif_5d          = true;
-    if (gatilho === 'RECUPERACAO')  novoSnapshot[numero].notif_recuperacao = true;
-    if (gatilho === 'AMANHA')       novoSnapshot[numero].notif_amanha      = true;
+    const hoje      = new Date();
+    const isWeekend = hoje.getDay() === 0 || hoje.getDay() === 6;
+
+    if (gatilho === 'VENCE_HOJE')  { novoSnapshot[numero].notif_hoje        = true; if (isWeekend) novoSnapshot[numero].email_notif_hoje        = true; }
+    if (gatilho === 'PRAZO_5D')    { novoSnapshot[numero].notif_5d          = true; if (isWeekend) novoSnapshot[numero].email_notif_5d          = true; }
+    if (gatilho === 'RECUPERACAO') { novoSnapshot[numero].notif_recuperacao = true; if (isWeekend) novoSnapshot[numero].email_notif_recuperacao = true; }
+    if (gatilho === 'AMANHA')      { novoSnapshot[numero].notif_amanha      = true; if (isWeekend) novoSnapshot[numero].email_notif_amanha      = true; }
+    if (gatilho === 'VENCEU_FDS')  { novoSnapshot[numero].notif_venceu_fds  = true; if (isWeekend) novoSnapshot[numero].email_notif_venceu_fds  = true; }
 
     // ── Acumula para o e-mail rico consolidado ────────────────
     if (!alertasPorFiscal[fiscalUpper]) alertasPorFiscal[fiscalUpper] = [];
@@ -1007,12 +1026,13 @@ async function main() {
   }
 
   // 7. Log dos resultados
-  const totalAlertas = alertas.VENCE_HOJE + alertas.PRAZO_5D + alertas.RECUPERACAO + alertas.AMANHA;
+  const totalAlertas = alertas.VENCE_HOJE + alertas.PRAZO_5D + alertas.RECUPERACAO + alertas.AMANHA + (alertas.VENCEU_FDS || 0);
   console.log(`\n🔔 Alertas detectados: ${totalAlertas}`);
   console.log(`   VENCE_HOJE:  ${alertas.VENCE_HOJE}`);
   console.log(`   AMANHA:      ${alertas.AMANHA}`);
   console.log(`   RECUPERACAO: ${alertas.RECUPERACAO}`);
   console.log(`   PRAZO_5D:    ${alertas.PRAZO_5D}`);
+  console.log(`   VENCEU_FDS:  ${alertas.VENCEU_FDS || 0}`);
   console.log(`📤 FCM: ${totalEnviadosFCM} enviado(s), ${totalErrosFCM} erro(s).`);
 
   // 8. Salva novo snapshot
