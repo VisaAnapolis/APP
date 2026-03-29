@@ -35,6 +35,7 @@ on:
 jobs:
   notify:
     name: Detectar e Notificar Novas OSs
+    if: github.repository == 'garrado/VISA'
     runs-on: ubuntu-latest
     # Permissões necessárias para fazer commit do snapshot atualizado
     permissions:

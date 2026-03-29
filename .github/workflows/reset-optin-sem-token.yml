@@ -27,6 +27,7 @@ on:
 jobs:
   reset-optin:
     name: Reset optIn sem token FCM
+    if: github.repository == 'garrado/VISA'
     runs-on: ubuntu-latest
 
     steps:

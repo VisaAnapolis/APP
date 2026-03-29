@@ -26,6 +26,7 @@ on:
 jobs:
   notify-email:
     name: Detectar e Notificar OSs por E-mail
+    if: github.repository == 'garrado/VISA'
     runs-on: ubuntu-latest
     permissions:
       contents: write
