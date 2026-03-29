@@ -24,10 +24,19 @@ const db = admin.firestore();
 const SMTP_USER = process.env.SMTP_USER;
 const SMTP_PASS = process.env.SMTP_PASSWORD;
 
+// ── Parâmetros do formulário (workflow_dispatch inputs) ────────
+const CUSTOM_SUBJECT    = (process.env.CUSTOM_SUBJECT    || '').trim();
+const CUSTOM_BODY       = (process.env.CUSTOM_BODY       || '').trim();
+const RECIPIENT_FILTER  = (process.env.RECIPIENT_FILTER  || 'todos').trim();
+const CUSTOM_EMAIL      = (process.env.CUSTOM_EMAIL      || '').trim();
+const PREVIEW_ONLY      = process.env.PREVIEW_ONLY === 'true';
+
 // ── Função principal ──────────────────────────────────────────
 async function enviarEmailTeste() {
-  console.log('🚀 VISA Test E-mail Notifier — iniciando...');
+  console.log('🚀 VISA E-mail Notifier — iniciando...');
   console.log(`📅 ${new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}`);
+  console.log(`🎯 Filtro de destinatários : ${RECIPIENT_FILTER}`);
+  if (PREVIEW_ONLY) console.log('👁  PREVIEW_ONLY ativado — nenhum e-mail será enviado.');
 
   if (!SMTP_USER || !SMTP_PASS) {
     console.error('❌ SMTP_USER ou SMTP_PASSWORD não configurados nos secrets.');
@@ -41,61 +50,82 @@ async function enviarEmailTeste() {
   });
 
   // Verifica conectividade SMTP antes de continuar
-  try {
-    await transporter.verify();
-    console.log('✅ Conexão SMTP verificada com sucesso.');
-  } catch (err) {
-    console.error('❌ Falha na conexão SMTP:', err.message);
-    process.exit(1);
+  if (!PREVIEW_ONLY) {
+    try {
+      await transporter.verify();
+      console.log('✅ Conexão SMTP verificada com sucesso.');
+    } catch (err) {
+      console.error('❌ Falha na conexão SMTP:', err.message);
+      process.exit(1);
+    }
   }
 
-  // Busca todos os usuários ativos com e-mail
-  let snap;
-  try {
-    snap = await db.collection('usuarios').get();
-  } catch (err) {
-    console.error('❌ Erro ao acessar Firestore:', err.message);
-    process.exit(1);
-  }
+  // ── Monta lista de destinatários ──────────────────────────────
+  let destinatarios = [];
 
-  if (snap.empty) {
-    console.log('Nenhum usuário encontrado no Firestore.');
-    return;
-  }
+  if (RECIPIENT_FILTER === 'email_especifico') {
+    // Envia apenas para o e-mail informado no formulário
+    if (!CUSTOM_EMAIL) {
+      console.error('❌ Filtro "email_especifico" selecionado mas nenhum e-mail foi informado.');
+      process.exit(1);
+    }
+    destinatarios = [{ email: CUSTOM_EMAIL, nome: CUSTOM_EMAIL }];
+  } else {
+    // Busca todos os usuários ativos com e-mail no Firestore
+    let snap;
+    try {
+      snap = await db.collection('usuarios').get();
+    } catch (err) {
+      console.error('❌ Erro ao acessar Firestore:', err.message);
+      process.exit(1);
+    }
 
-  const destinatarios = [];
-  snap.forEach(doc => {
-    const d = doc.data();
-    if (d.ativo === false) return;
-    const email = (d.email || '').trim();
-    const nome  = (d.nome  || doc.id).trim();
-    if (email) destinatarios.push({ email, nome });
-  });
+    if (snap.empty) {
+      console.log('Nenhum usuário encontrado no Firestore.');
+      return;
+    }
+
+    snap.forEach(doc => {
+      const d = doc.data();
+      if (d.ativo === false) return;
+      const email = (d.email || '').trim();
+      const nome  = (d.nome  || doc.id).trim();
+      if (email) destinatarios.push({ email, nome });
+    });
+  }
 
   if (destinatarios.length === 0) {
-    console.log('Nenhum usuário ativo com e-mail encontrado.');
+    console.log('Nenhum destinatário encontrado.');
     return;
   }
 
-  console.log(`\n👥 ${destinatarios.length} destinatário(s) encontrado(s):`);
+  console.log(`\n👥 ${destinatarios.length} destinatário(s):`);
   destinatarios.forEach(d => console.log(`  📧 ${d.nome} — ${d.email}`));
   console.log('');
 
+  if (PREVIEW_ONLY) {
+    console.log('👁  Preview concluído. Nenhum e-mail enviado.');
+    return;
+  }
+
+  // ── Monta assunto e corpo ─────────────────────────────────────
   const dataHora = new Date().toLocaleString('pt-BR', {
     timeZone: 'America/Sao_Paulo',
     day: '2-digit', month: '2-digit', year: 'numeric',
     hour: '2-digit', minute: '2-digit'
   });
 
+  const assunto = CUSTOM_SUBJECT
+    ? CUSTOM_SUBJECT
+    : `🔔 E-mail de Teste — Sistema VISA | ${dataHora}`;
+
   let totalSucesso = 0, totalErros = 0;
 
   for (const dest of destinatarios) {
-    try {
-      await transporter.sendMail({
-        from:    `"Gerência de Vigilância Sanitária" <${SMTP_USER}>`,
-        to:      dest.email,
-        subject: `🔔 E-mail de Teste — Sistema VISA | ${dataHora}`,
-        html: `
+    // Corpo personalizado: substitui {NOME} pelo nome do destinatário
+    const corpoHtml = CUSTOM_BODY
+      ? CUSTOM_BODY.replace(/\{NOME\}/g, dest.nome)
+      : `
 <html><body style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto">
   <div style="background:#004aad;padding:14px 20px;border-radius:6px 6px 0 0">
     <h2 style="color:#fff;margin:0;font-size:18px">
@@ -120,7 +150,14 @@ async function enviarEmailTeste() {
       Não responda este e-mail.
     </p>
   </div>
-</body></html>`
+</body></html>`;
+
+    try {
+      await transporter.sendMail({
+        from:    `"Gerência de Vigilância Sanitária" <${SMTP_USER}>`,
+        to:      dest.email,
+        subject: assunto,
+        html:    corpoHtml
       });
 
       totalSucesso++;

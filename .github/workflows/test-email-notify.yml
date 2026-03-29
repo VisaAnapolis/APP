@@ -1,16 +1,45 @@
 # ============================================================
 # test-email-notify.yml  —  GitHub Actions Workflow
-# Envia um e-mail de teste para todos os usuários ativos
-# registrados no Firestore, validando conectividade SMTP.
+# Envia e-mail institucional ou de teste para usuários ativos
+# registrados no Firestore, via SMTP Gmail.
 #
 # Dispara: apenas manualmente pelo painel do GitHub Actions.
-# Análogo ao test-notify.yml (FCM), mas para o canal e-mail.
+# Preencha os campos abaixo para personalizar a mensagem.
 # ============================================================
 
 name: 📧 Enviar E-mail de Teste
 
 on:
   workflow_dispatch:
+    inputs:
+      assunto:
+        description: 'Assunto do e-mail (deixe vazio para usar padrão de teste)'
+        required: false
+        type: string
+      mensagem:
+        description: 'Corpo da mensagem em HTML (deixe vazio para usar template padrão)'
+        required: false
+        type: string
+      destinatarios:
+        description: 'Quem deve receber o e-mail'
+        required: true
+        default: 'todos'
+        type: choice
+        options:
+          - todos
+          - email_especifico
+      email_especifico:
+        description: 'E-mail específico (somente se destinatários = email_especifico)'
+        required: false
+        type: string
+      somente_preview:
+        description: 'Somente listar destinatários sem enviar?'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
 
 jobs:
   test-email-notify:
@@ -43,8 +72,14 @@ jobs:
           SMTP_USER:                     ${{ secrets.SMTP_USER }}
           SMTP_PASSWORD:                 ${{ secrets.SMTP_PASSWORD }}
           FIREBASE_SERVICE_ACCOUNT_PATH: service-account.json
+          CUSTOM_SUBJECT:                ${{ github.event.inputs.assunto }}
+          CUSTOM_BODY:                   ${{ github.event.inputs.mensagem }}
+          RECIPIENT_FILTER:              ${{ github.event.inputs.destinatarios }}
+          CUSTOM_EMAIL:                  ${{ github.event.inputs.email_especifico }}
+          PREVIEW_ONLY:                  ${{ github.event.inputs.somente_preview }}
         run: node test-email-notify.js
 
       - name: Remover Service Account
         if: always()
         run: rm -f .github/scripts/service-account.json
+
