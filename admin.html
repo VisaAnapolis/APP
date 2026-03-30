@@ -621,6 +621,10 @@
           <div class="stat-card"><div class="stat-icon">⏱️</div><div class="stat-info"><div class="stat-number" id="last24hUsers">0</div><div class="stat-label">Acessos (últimas 24h)</div></div></div>
           <div class="stat-card"><div class="stat-icon">🔔</div><div class="stat-info"><div class="stat-number" id="fcmDispositivos">0</div><div class="stat-label">Dispositivos Push</div></div></div>
           <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-info"><div class="stat-number" id="fiscaisComToken">0</div><div class="stat-label">Usuários com Alerta Ligado</div></div></div>
+          <div class="stat-card"><div class="stat-icon">🏛️</div><div class="stat-info"><div class="stat-number" id="siteGarrado">0</div><div class="stat-label">Acesso via garrado.github.io</div></div></div>
+          <div class="stat-card"><div class="stat-icon">🏢</div><div class="stat-info"><div class="stat-number" id="siteVisaanapolis">0</div><div class="stat-label">Acesso via visaanapolis.github.io</div></div></div>
+          <div class="stat-card"><div class="stat-icon">📲</div><div class="stat-info"><div class="stat-number" id="pwaAcessos">0</div><div class="stat-label">Acessos via PWA</div></div></div>
+          <div class="stat-card"><div class="stat-icon">🌐</div><div class="stat-info"><div class="stat-number" id="navegadorAcessos">0</div><div class="stat-label">Acessos via Navegador</div></div></div>
 
         </div>
 
@@ -852,7 +856,9 @@
       if(tipoConexao){
         rows.push(`<div class="row"><span class="k">📶</span><span>${tipoConexao}</span></div>`);
       }
-      rows.push(`<div class="row"><span class="k">🔑</span><span>${modoAcesso}</span></div>`);
+      const siteLabel = safeVal(d.site);
+      const modoLabel = siteLabel ? `${modoAcesso} · ${siteLabel}` : modoAcesso;
+      rows.push(`<div class="row"><span class="k">🔑</span><span>${modoLabel}</span></div>`);
 
       const siteOrigem = safeVal(d.siteOrigem);
       if (siteOrigem) {
