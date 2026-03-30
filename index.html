@@ -1972,7 +1972,13 @@ function coletarDadosDispositivo() {
         modelo: modelo || 'Desconhecido',
         isPWA: isPWA,
         modoAcesso: isPWA ? 'PWA' : 'Navegador',
-        site: site,
+        siteOrigem: (() => {
+          const _h = window.location.hostname;
+          if (_h.includes('visaanapolis')) return 'visaanapolis';
+          if (_h.includes('garrado')) return 'garrado';
+          if (_h === 'localhost' || _h === '127.0.0.1') return 'localhost';
+          return _h || 'desconhecido';
+        })(),
         resolucao: `${screen.width}x${screen.height}`,
         tipoConexao: navigator.connection?.effectiveType || 'Desconhecida',
         coletadoEm: new Date().toISOString(),

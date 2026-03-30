@@ -21,3 +21,10 @@ jobs:
         run: |
           cd repo-mirror
           git push --mirror https://x-access-token:${{ secrets.PAT_CORPORATIVO }}@github.com/VisaAnapolis/APP.git
+
+      - name: Trigger Pages rebuild on VisaAnapolis/APP
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" -X POST \
+            -H "Authorization: token ${{ secrets.PAT_CORPORATIVO }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/VisaAnapolis/APP/pages/builds
