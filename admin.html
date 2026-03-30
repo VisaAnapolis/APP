@@ -621,6 +621,10 @@
           <div class="stat-card"><div class="stat-icon">⏱️</div><div class="stat-info"><div class="stat-number" id="last24hUsers">0</div><div class="stat-label">Acessos (últimas 24h)</div></div></div>
           <div class="stat-card"><div class="stat-icon">🔔</div><div class="stat-info"><div class="stat-number" id="fcmDispositivos">0</div><div class="stat-label">Dispositivos Push</div></div></div>
           <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-info"><div class="stat-number" id="fiscaisComToken">0</div><div class="stat-label">Usuários com Alerta Ligado</div></div></div>
+          <div class="stat-card"><div class="stat-icon">🏛️</div><div class="stat-info"><div class="stat-number" id="siteGarrado">0</div><div class="stat-label">Acesso via garrado.github.io</div></div></div>
+          <div class="stat-card"><div class="stat-icon">🏢</div><div class="stat-info"><div class="stat-number" id="siteVisaanapolis">0</div><div class="stat-label">Acesso via visaanapolis.github.io</div></div></div>
+          <div class="stat-card"><div class="stat-icon">📲</div><div class="stat-info"><div class="stat-number" id="pwaAcessos">0</div><div class="stat-label">Acessos via PWA</div></div></div>
+          <div class="stat-card"><div class="stat-icon">🌐</div><div class="stat-info"><div class="stat-number" id="navegadorAcessos">0</div><div class="stat-label">Acessos via Navegador</div></div></div>
 
         </div>
 
@@ -838,7 +842,9 @@
       if(tipoConexao){
         rows.push(`<div class="row"><span class="k">📶</span><span>${tipoConexao}</span></div>`);
       }
-      rows.push(`<div class="row"><span class="k">🔑</span><span>${modoAcesso}</span></div>`);
+      const siteLabel = safeVal(d.site);
+      const modoLabel = siteLabel ? `${modoAcesso} · ${siteLabel}` : modoAcesso;
+      rows.push(`<div class="row"><span class="k">🔑</span><span>${modoLabel}</span></div>`);
 
       if(coletadoEm){
         rows.push(`<div class="row"><span class="k">🕒</span><span>${coletadoEm}</span></div>`);
@@ -1104,7 +1110,30 @@ function renderizarUsuarios(usuarios){
           return `<span class="version-pill${isLatest ? ' latest' : ''}">v${v} <span class="vp-count">${n}</span></span>`;
         }).join('');
       }
-      
+
+      // Contagem por site e modo de acesso
+      let countGarrado = 0, countVisaanapolis = 0;
+      let countPWA = 0, countNavegador = 0;
+      usuarios.forEach(u => {
+        const disps = u.dispositivos ? Object.values(u.dispositivos) : [];
+        disps.forEach(d => {
+          const s = (d.site || '').toLowerCase();
+          if (s === 'garrado')            countGarrado++;
+          else if (s === 'visaanapolis')  countVisaanapolis++;
+          const m = (d.modoAcesso || '').toLowerCase();
+          if (m === 'pwa')                countPWA++;
+          else if (m === 'navegador')     countNavegador++;
+        });
+      });
+      const elG = document.getElementById('siteGarrado');
+      if (elG) elG.textContent = countGarrado;
+      const elV = document.getElementById('siteVisaanapolis');
+      if (elV) elV.textContent = countVisaanapolis;
+      const elP = document.getElementById('pwaAcessos');
+      if (elP) elP.textContent = countPWA;
+      const elN = document.getElementById('navegadorAcessos');
+      if (elN) elN.textContent = countNavegador;
+
     }
 
     // ===== AUDITORIA =====

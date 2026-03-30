@@ -1958,6 +1958,11 @@ function coletarDadosDispositivo() {
         if (modelMatch) modelo = modelMatch[1].replace(/Build.*/, '').trim();
       }
 
+      const _hostname = window.location.hostname;
+      let site = 'local';
+      if (_hostname === 'garrado.github.io')          site = 'garrado';
+      else if (_hostname === 'visaanapolis.github.io') site = 'visaanapolis';
+
       return {
         sistemaOperacional: so,
         versaoSO: versaoSO,
@@ -1967,6 +1972,7 @@ function coletarDadosDispositivo() {
         modelo: modelo || 'Desconhecido',
         isPWA: isPWA,
         modoAcesso: isPWA ? 'PWA' : 'Navegador',
+        site: site,
         resolucao: `${screen.width}x${screen.height}`,
         tipoConexao: navigator.connection?.effectiveType || 'Desconhecida',
         coletadoEm: new Date().toISOString(),
@@ -2813,6 +2819,7 @@ try {
               fabricante: dadosDispositivo.fabricante || '',
               modelo: dadosDispositivo.modelo || '',
               modoAcesso: dadosDispositivo.modoAcesso || '',
+              site: dadosDispositivo.site || '',
               resolucao: dadosDispositivo.resolucao || '',
               tipoConexao: dadosDispositivo.tipoConexao || '',
               fcmToken: fcmTokenAtual
@@ -2826,6 +2833,7 @@ try {
               ultimoAcesso: serverTimestamp(),
               appVersionLast: registroDispositivo.appVersionLast,
               pageLast: registroDispositivo.pageLast,
+              siteLast: registroDispositivo.site,
               [`dispositivos.${chaveDispositivo}`]: registroDispositivo
             };
             if (fcmTokenAtual) {
