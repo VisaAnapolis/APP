@@ -774,6 +774,13 @@
                 </div>
 
                 <div class="filter-group">
+                    <label for="filterMotivo">Motivo / Assunto:</label>
+                    <select id="filterMotivo">
+                        <option value="">-- Todos --</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
                     <button class="btn-search">🔍 Buscar</button>
                 </div>
             </div>
@@ -1346,7 +1353,8 @@ function buscarInfoProtocolo(numeroProtocolo) {
                 atendida: $('#filterAtendido').val(),
                 cancelado: $('#filterCancelado').val(),
                 dataReqIni: $('#filterDataReqIni').val(),
-                dataReqFim: $('#filterDataReqFim').val()
+                dataReqFim: $('#filterDataReqFim').val(),
+                motivo: $('#filterMotivo').val()
             };
             
             console.log('🔎 Filtros aplicados:', filtros);
@@ -1638,6 +1646,8 @@ function converterData(dataStr) {
                             return;
                         }
                         
+                        if (filtros.motivo && normalizarTexto(r.Motivo || '') !== normalizarTexto(filtros.motivo)) return;
+                        
                         // Buscar dados do regulado
                         const codigoRegulado = r.Codigo || r.CODIGO || r.Cd_Regulado || r.CD_REGULADO || '';
                         const regulado = buscarRegulado(codigoRegulado);
@@ -1729,6 +1739,8 @@ function converterData(dataStr) {
                         const cancelado = processarBool(o.Cancela) ? 'Sim' : 'Não';
                         if (filtros.cancelado && cancelado !== filtros.cancelado) return;
                         
+                        if (filtros.motivo && normalizarTexto(o.Motivo || '') !== normalizarTexto(filtros.motivo)) return;
+                        
                         const razaoSocial = o.Regulado || '';
                         if (!matchRegulado(filtros.regulado, razaoSocial, o.Fantasia || '', o.Cnpj || '', o.Cpf || '')) return;
                         
@@ -1766,7 +1778,8 @@ function converterData(dataStr) {
                 
                 // Processar DENÚNCIAS
                 if (dadosDenuncia && dadosDenuncia.length > 0 &&
-                    (!filtros.tipo || filtros.tipo === 'Denúncia')) {
+                    (!filtros.tipo || filtros.tipo === 'Denúncia') &&
+                    !filtros.motivo) {
                     
                     console.log(`📦 Processando ${dadosDenuncia.length} denúncias...`);
                     let contadorDenuncias = 0;
@@ -1889,6 +1902,8 @@ function converterData(dataStr) {
                         // Protocolo não tem Cancelado - sempre "Não"
                         const cancelado = 'Não';
                         if (filtros.cancelado && cancelado !== filtros.cancelado) return;
+                        
+                        if (filtros.motivo && normalizarTexto(p.Assunto || '') !== normalizarTexto(filtros.motivo)) return;
                         
                         // Buscar razão social em regulados via Codigo
                         const codigoRegulado = p.Codigo || p.CODIGO || p.Cd_Regulado || p.CD_REGULADO || '';
@@ -2525,6 +2540,88 @@ function obterDataPrazo(os) {
             
             // Mostrar mensagem de boas-vindas
             mostrarInfo('✨ Sistema pronto! Use os filtros e clique em <strong>Buscar</strong> para consultar ordens de serviço.', 'success');
+
+            // Filtrar opções do dropdown de motivo conforme tipo selecionado
+            const motivosPorTipo = {
+                'Requerimento': [
+                    { v: 'Abertura',                    l: 'Abertura' },
+                    { v: 'AFE Cosméticos/Saneantes',    l: 'AFE Cosméticos/Saneantes' },
+                    { v: 'AFE Medicamentos',             l: 'AFE Medicamentos' },
+                    { v: 'AFE Produtos para Saúde',     l: 'AFE Produtos para Saúde' },
+                    { v: 'Alteração de Atividade',      l: 'Alteração de Atividade' },
+                    { v: 'Alvará Veicular',              l: 'Alvará Veicular' },
+                    { v: 'Autorização Temporária',      l: 'Autorização Temporária' },
+                    { v: 'CBPx Medicamentos',            l: 'CBPx Medicamentos' },
+                    { v: 'CIFA',                         l: 'CIFA' },
+                    { v: 'Encaminhada pela Chefia',      l: 'Encaminhada pela Chefia' },
+                    { v: 'Evento',                       l: 'Evento' },
+                    { v: 'Inclusão de Atividade',       l: 'Inclusão de Atividade' },
+                    { v: 'Inclusão de Serviço',         l: 'Inclusão de Serviço' },
+                    { v: 'Orientação Sanitária',        l: 'Orientação Sanitária' },
+                    { v: 'Origem Interna',               l: 'Origem Interna' },
+                    { v: 'Outros',                       l: 'Outros' },
+                    { v: 'Relatório para AE',            l: 'Relatório para AE' },
+                    { v: 'Relatório para AFE',           l: 'Relatório para AFE' },
+                    { v: 'Relatório para CBPx',         l: 'Relatório para CBPx' },
+                    { v: 'Ren. Medicamentos',            l: 'Ren. Medicamentos' },
+                    { v: 'Renovação',                    l: 'Renovação' },
+                    { v: 'Retorno',                      l: 'Retorno' }
+                ],
+                'Ofício': [
+                    { v: 'BUSCA ATIVA',                  l: 'Busca Ativa' },
+                    { v: 'INSPEÇÃO SANITÁRIA',           l: 'Inspeção Sanitária' },
+                    { v: 'OPERAÇÃO FISCAL',              l: 'Operação Fiscal' },
+                    { v: 'OUTRAS',                       l: 'Outras' },
+                    { v: 'OUTROS',                       l: 'Outros' },
+                    { v: 'PLANTÃO FISCAL',               l: 'Plantão Fiscal' },
+                    { v: 'RETORNO',                      l: 'Retorno' },
+                    { v: 'SERVIÇO TÉCNICO',              l: 'Serviço Técnico' },
+                    { v: 'SERVIÇOS TÉCNICOS',           l: 'Serviços Técnicos' },
+                    { v: 'SOLICITAÇÃO SNVS',             l: 'Solicitação SNVS' },
+                    { v: 'SOLICITAÇÃO ÓRGÃO EXTERNO',   l: 'Solicitação Órgão Externo' },
+                    { v: 'SOLITAÇÃO ÓRGÃOS EXTERNOS',   l: 'Solitação Órgãos Externos' },
+                    { v: 'TREINAMENTO/REUNIÃO',          l: 'Treinamento/Reunião' }
+                ],
+                'Protocolo': [
+                    { v: 'PROCESSO ADMINISTRATIVO SANITÁRIO',  l: 'Processo Administrativo Sanitário' },
+                    { v: 'PROJETO ARQUITETÔNICO SANITÁRIO',    l: 'Projeto Arquitetônico Sanitário' },
+                    { v: 'REGULARIDADE DE PRODUTO ALIMENTÍCIO', l: 'Regularidade de Produto Alimentício' }
+                ]
+            };
+
+            function filtrarMotivosPorTipo() {
+                const tipo = $('#filterTipo').val();
+                const $motivo = $('#filterMotivo');
+                const valorAnterior = $motivo.val();
+
+                // Determinar quais tipos mostrar
+                const tiposVisiveis = (tipo && tipo !== 'Denúncia')
+                    ? [tipo]
+                    : (tipo === 'Denúncia' ? [] : ['Requerimento', 'Ofício', 'Protocolo']);
+
+                // Reconstruir o select
+                let html = '<option value="">-- Todos --</option>';
+                tiposVisiveis.forEach(function(t) {
+                    const itens = motivosPorTipo[t] || [];
+                    if (itens.length) {
+                        html += `<optgroup label="${t}">`;
+                        itens.forEach(function(m) {
+                            html += `<option value="${m.v}">${m.l}</option>`;
+                        });
+                        html += '</optgroup>';
+                    }
+                });
+                $motivo.html(html);
+
+                // Restaurar seleção anterior se ainda disponível
+                if (valorAnterior) {
+                    $motivo.val(valorAnterior);
+                    if ($motivo.val() !== valorAnterior) $motivo.val('');
+                }
+            }
+
+            $('#filterTipo').on('change', filtrarMotivosPorTipo);
+            filtrarMotivosPorTipo(); // Aplicar estado inicial
             
             // Event listener para botão de busca
             $('.btn-search').on('click', function(e) {
@@ -2551,7 +2648,7 @@ function obterDataPrazo(os) {
             const numeroParam = urlParams.get('numero');
             if (tipoParam || qParam || numeroParam || fiscalParam) {
                 window.__buscaViaDashboard = true;
-                if (tipoParam)   $('#filterTipo').val(tipoParam);
+                if (tipoParam)   { $('#filterTipo').val(tipoParam); filtrarMotivosPorTipo(); }
                 if (fiscalParam) $('#filterFiscal').val(fiscalParam);
                 // numero tem prioridade sobre q (regulado)
                 if (numeroParam) $('#filterNumero').val(numeroParam);
