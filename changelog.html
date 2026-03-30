@@ -185,6 +185,17 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.5.9 — 29/03/2026 23:30 (Horário de Brasília – UTC−3)</h3>
+  <strong>🌐 Rastreamento de origem de acesso e espelhamento para o site oficial</strong>
+  <ul>
+    <li><strong>Rastreamento de origem (<code>index.html</code>):</strong> cada login agora registra no Firestore de qual publicação o usuário acessou (<code>garrado.github.io</code> ou <code>visaanapolis.github.io</code>) e por qual modo (PWA ou Navegador), via campo <code>siteOrigem</code> gravado no mapa de dispositivos do usuário.</li>
+    <li><strong>Painel admin (<code>admin.html</code>):</strong> nova seção <em>Dispositivos por Site</em> exibe a distribuição dos dispositivos entre as publicações garrado e visaanapolis, com badge colorido por origem. O card de cada usuário passa a exibir o site de origem junto ao modo de acesso (ex.: <em>PWA · garrado</em>). Dispositivos registrados antes desta versão aparecem como "não registrado" e serão migrados automaticamente no próximo login.</li>
+    <li><strong>Espelhamento automático (<code>mirror-to-corporate.yml</code>):</strong> a publicação pessoal <code>garrado.github.io/VISA</code> é espelhada automaticamente para o repositório oficial <code>VisaAnapolis/APP</code> a cada push no <code>main</code>, disponibilizando o app também em <code>visaanapolis.github.io/APP</code> — endereço institucional da Vigilância Sanitária de Anápolis.</li>
+  </ul>
+  <p><strong>Arquivos criados/modificados:</strong> <code>index.html</code> — rastreamento de origem; <code>admin.html</code> — seção Dispositivos por Site e badge de origem no card de usuário; <code>.github/workflows/mirror-to-corporate.yml</code> — trigger de espelhamento; <code>js/version.js</code> — APP_VERSION 2.5.9; <code>service-worker.js</code> — CACHE_NAME visa-v2.5.9; <code>changelog.html</code> — esta entrada.</p>
+</div>
+
+<div class="section">
   <h3>v2.5.8 — 27/03/2026 12:00 (Horário de Brasília – UTC−3)</h3>
   <strong>💰 Nova página: Tabela de Taxa de Vigilância Sanitária 2026</strong>
   <ul>
