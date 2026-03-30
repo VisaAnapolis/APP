@@ -777,50 +777,6 @@
                     <label for="filterMotivo">Motivo / Assunto:</label>
                     <select id="filterMotivo">
                         <option value="">-- Todos --</option>
-                        <optgroup label="Requerimento">
-                            <option value="Abertura">Abertura</option>
-                            <option value="AFE Cosméticos/Saneantes">AFE Cosméticos/Saneantes</option>
-                            <option value="AFE Medicamentos">AFE Medicamentos</option>
-                            <option value="AFE Produtos para Saúde">AFE Produtos para Saúde</option>
-                            <option value="Alteração de Atividade">Alteração de Atividade</option>
-                            <option value="Alvará Veicular">Alvará Veicular</option>
-                            <option value="Autorização Temporária">Autorização Temporária</option>
-                            <option value="CBPx Medicamentos">CBPx Medicamentos</option>
-                            <option value="CIFA">CIFA</option>
-                            <option value="Encaminhada pela Chefia">Encaminhada pela Chefia</option>
-                            <option value="Evento">Evento</option>
-                            <option value="Inclusão de Atividade">Inclusão de Atividade</option>
-                            <option value="Inclusão de Serviço">Inclusão de Serviço</option>
-                            <option value="Orientação Sanitária">Orientação Sanitária</option>
-                            <option value="Origem Interna">Origem Interna</option>
-                            <option value="Outros">Outros</option>
-                            <option value="Relatório para AE">Relatório para AE</option>
-                            <option value="Relatório para AFE">Relatório para AFE</option>
-                            <option value="Relatório para CBPx">Relatório para CBPx</option>
-                            <option value="Ren. Medicamentos">Ren. Medicamentos</option>
-                            <option value="Renovação">Renovação</option>
-                            <option value="Retorno">Retorno</option>
-                        </optgroup>
-                        <optgroup label="Ofício">
-                            <option value="BUSCA ATIVA">Busca Ativa</option>
-                            <option value="INSPEÇÃO SANITÁRIA">Inspeção Sanitária</option>
-                            <option value="OPERAÇÃO FISCAL">Operação Fiscal</option>
-                            <option value="OUTRAS">Outras</option>
-                            <option value="OUTROS">Outros</option>
-                            <option value="PLANTÃO FISCAL">Plantão Fiscal</option>
-                            <option value="RETORNO">Retorno (Ofício)</option>
-                            <option value="SERVIÇO TÉCNICO">Serviço Técnico</option>
-                            <option value="SERVIÇOS TÉCNICOS">Serviços Técnicos</option>
-                            <option value="SOLICITAÇÃO SNVS">Solicitação SNVS</option>
-                            <option value="SOLICITAÇÃO ÓRGÃO EXTERNO">Solicitação Órgão Externo</option>
-                            <option value="SOLITAÇÃO ÓRGÃOS EXTERNOS">Solitação Órgãos Externos</option>
-                            <option value="TREINAMENTO/REUNIÃO">Treinamento/Reunião</option>
-                        </optgroup>
-                        <optgroup label="Protocolo">
-                            <option value="PROCESSO ADMINISTRATIVO SANITÁRIO">Processo Administrativo Sanitário</option>
-                            <option value="PROJETO ARQUITETÔNICO SANITÁRIO">Projeto Arquitetônico Sanitário</option>
-                            <option value="REGULARIDADE DE PRODUTO ALIMENTÍCIO">Regularidade de Produto Alimentício</option>
-                        </optgroup>
                     </select>
                 </div>
 
@@ -2584,6 +2540,88 @@ function obterDataPrazo(os) {
             
             // Mostrar mensagem de boas-vindas
             mostrarInfo('✨ Sistema pronto! Use os filtros e clique em <strong>Buscar</strong> para consultar ordens de serviço.', 'success');
+
+            // Filtrar opções do dropdown de motivo conforme tipo selecionado
+            const motivosPorTipo = {
+                'Requerimento': [
+                    { v: 'Abertura',                    l: 'Abertura' },
+                    { v: 'AFE Cosméticos/Saneantes',    l: 'AFE Cosméticos/Saneantes' },
+                    { v: 'AFE Medicamentos',             l: 'AFE Medicamentos' },
+                    { v: 'AFE Produtos para Saúde',     l: 'AFE Produtos para Saúde' },
+                    { v: 'Alteração de Atividade',      l: 'Alteração de Atividade' },
+                    { v: 'Alvará Veicular',              l: 'Alvará Veicular' },
+                    { v: 'Autorização Temporária',      l: 'Autorização Temporária' },
+                    { v: 'CBPx Medicamentos',            l: 'CBPx Medicamentos' },
+                    { v: 'CIFA',                         l: 'CIFA' },
+                    { v: 'Encaminhada pela Chefia',      l: 'Encaminhada pela Chefia' },
+                    { v: 'Evento',                       l: 'Evento' },
+                    { v: 'Inclusão de Atividade',       l: 'Inclusão de Atividade' },
+                    { v: 'Inclusão de Serviço',         l: 'Inclusão de Serviço' },
+                    { v: 'Orientação Sanitária',        l: 'Orientação Sanitária' },
+                    { v: 'Origem Interna',               l: 'Origem Interna' },
+                    { v: 'Outros',                       l: 'Outros' },
+                    { v: 'Relatório para AE',            l: 'Relatório para AE' },
+                    { v: 'Relatório para AFE',           l: 'Relatório para AFE' },
+                    { v: 'Relatório para CBPx',         l: 'Relatório para CBPx' },
+                    { v: 'Ren. Medicamentos',            l: 'Ren. Medicamentos' },
+                    { v: 'Renovação',                    l: 'Renovação' },
+                    { v: 'Retorno',                      l: 'Retorno' }
+                ],
+                'Ofício': [
+                    { v: 'BUSCA ATIVA',                  l: 'Busca Ativa' },
+                    { v: 'INSPEÇÃO SANITÁRIA',           l: 'Inspeção Sanitária' },
+                    { v: 'OPERAÇÃO FISCAL',              l: 'Operação Fiscal' },
+                    { v: 'OUTRAS',                       l: 'Outras' },
+                    { v: 'OUTROS',                       l: 'Outros' },
+                    { v: 'PLANTÃO FISCAL',               l: 'Plantão Fiscal' },
+                    { v: 'RETORNO',                      l: 'Retorno' },
+                    { v: 'SERVIÇO TÉCNICO',              l: 'Serviço Técnico' },
+                    { v: 'SERVIÇOS TÉCNICOS',           l: 'Serviços Técnicos' },
+                    { v: 'SOLICITAÇÃO SNVS',             l: 'Solicitação SNVS' },
+                    { v: 'SOLICITAÇÃO ÓRGÃO EXTERNO',   l: 'Solicitação Órgão Externo' },
+                    { v: 'SOLITAÇÃO ÓRGÃOS EXTERNOS',   l: 'Solitação Órgãos Externos' },
+                    { v: 'TREINAMENTO/REUNIÃO',          l: 'Treinamento/Reunião' }
+                ],
+                'Protocolo': [
+                    { v: 'PROCESSO ADMINISTRATIVO SANITÁRIO',  l: 'Processo Administrativo Sanitário' },
+                    { v: 'PROJETO ARQUITETÔNICO SANITÁRIO',    l: 'Projeto Arquitetônico Sanitário' },
+                    { v: 'REGULARIDADE DE PRODUTO ALIMENTÍCIO', l: 'Regularidade de Produto Alimentício' }
+                ]
+            };
+
+            function filtrarMotivosPorTipo() {
+                const tipo = $('#filterTipo').val();
+                const $motivo = $('#filterMotivo');
+                const valorAnterior = $motivo.val();
+
+                // Determinar quais tipos mostrar
+                const tiposVisiveis = (tipo && tipo !== 'Denúncia')
+                    ? [tipo]
+                    : (tipo === 'Denúncia' ? [] : ['Requerimento', 'Ofício', 'Protocolo']);
+
+                // Reconstruir o select
+                let html = '<option value="">-- Todos --</option>';
+                tiposVisiveis.forEach(function(t) {
+                    const itens = motivosPorTipo[t] || [];
+                    if (itens.length) {
+                        html += `<optgroup label="${t}">`;
+                        itens.forEach(function(m) {
+                            html += `<option value="${m.v}">${m.l}</option>`;
+                        });
+                        html += '</optgroup>';
+                    }
+                });
+                $motivo.html(html);
+
+                // Restaurar seleção anterior se ainda disponível
+                if (valorAnterior) {
+                    $motivo.val(valorAnterior);
+                    if ($motivo.val() !== valorAnterior) $motivo.val('');
+                }
+            }
+
+            $('#filterTipo').on('change', filtrarMotivosPorTipo);
+            filtrarMotivosPorTipo(); // Aplicar estado inicial
             
             // Event listener para botão de busca
             $('.btn-search').on('click', function(e) {
@@ -2610,7 +2648,7 @@ function obterDataPrazo(os) {
             const numeroParam = urlParams.get('numero');
             if (tipoParam || qParam || numeroParam || fiscalParam) {
                 window.__buscaViaDashboard = true;
-                if (tipoParam)   $('#filterTipo').val(tipoParam);
+                if (tipoParam)   { $('#filterTipo').val(tipoParam); filtrarMotivosPorTipo(); }
                 if (fiscalParam) $('#filterFiscal').val(fiscalParam);
                 // numero tem prioridade sobre q (regulado)
                 if (numeroParam) $('#filterNumero').val(numeroParam);
