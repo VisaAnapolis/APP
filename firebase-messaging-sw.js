@@ -43,8 +43,8 @@ messaging.onBackgroundMessage((payload) => {
 
   const notifOptions = {
     body:    notifBody,
-    icon:    'https://garrado.github.io/VISA/icons/visa-192.png',
-    badge:   'https://garrado.github.io/VISA/icons/visa-192.png',
+    icon:    './icons/visa-192.png',
+    badge:   './icons/visa-192.png',
     tag:     `visa-prazo-${osNum}`,
     renotify: true,
     requireInteraction: false,
