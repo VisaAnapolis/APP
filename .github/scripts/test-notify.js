@@ -68,13 +68,13 @@ async function enviarNotificacaoTeste() {
       data: {
         title: '🔔 Notificação de Teste VISA',
         body:  'Esta é uma notificação de teste enviada pelo sistema VISA.',
-        url:   'https://garrado.github.io/VISA/index.html',
+        url:   'https://visaanapolis.github.io/APP/index.html',
         tipo:  'teste'
       },
       webpush: {
         headers: { Urgency: 'high' },
         fcmOptions: {
-          link: 'https://garrado.github.io/VISA/index.html'
+          link: 'https://visaanapolis.github.io/APP/index.html'
         }
       }
     };

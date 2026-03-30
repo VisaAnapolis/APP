@@ -474,7 +474,7 @@ function gerarEmailHTML(nomeFiscal, alertasFiscal) {
     <p style="margin:0 0 24px 0;font-size:12px;color:#888;">📅 ${hoje.charAt(0).toUpperCase() + hoje.slice(1)}</p>
     ${cardsHTML}
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:10px;"><tr><td align="center">
-      <a href="https://garrado.github.io/VISA/os.html" style="display:inline-block;background:#1a3a6b;color:#fff;text-decoration:none;padding:14px 36px;border-radius:8px;font-size:15px;font-weight:700;margin-top:8px;">📋 Abrir Consulta de OS</a>
+      <a href="https://visaanapolis.github.io/APP/index.html" style="display:inline-block;background:#1a3a6b;color:#fff;text-decoration:none;padding:14px 36px;border-radius:8px;font-size:15px;font-weight:700;margin-top:8px;">📋 Abrir Consulta de OS</a>
     </td></tr></table>
   </td></tr>
 

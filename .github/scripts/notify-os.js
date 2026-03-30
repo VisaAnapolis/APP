@@ -530,13 +530,13 @@ async function enviarNotificacaoFiscal(tokens, numero, tipo, motivo, diasParaPra
     data: {
       title: '🔔 Alerta de Prazo — VISA Anápolis',
       body:  texto,
-      url:   'https://garrado.github.io/VISA/index.html',
+      url:   'https://visaanapolis.github.io/APP/index.html',
       tipo:  'prazo-alerta',
       osNum: numero
     },
     webpush: {
       headers: { Urgency: 'high' },
-      fcmOptions: { link: 'https://garrado.github.io/VISA/index.html' }
+      fcmOptions: { link: 'https://visaanapolis.github.io/APP/index.html' }
     }
   };
 
@@ -830,7 +830,7 @@ function gerarEmailHTML(nomeFiscal, alertasFiscal) {
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:10px;">
               <tr>
                 <td align="center">
-                  <a href="https://garrado.github.io/VISA/os.html"
+                  <a href="https://visaanapolis.github.io/APP/index.html"
                      style="
                        display:inline-block;
                        background:#1a3a6b;
