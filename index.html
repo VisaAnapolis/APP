@@ -1156,6 +1156,44 @@
     .footer a { color: var(--primary, #6b9ad4); }
   }
 
+
+  /* ── Toast de descontinuação do domínio garrado ── */
+  @keyframes toastSlideIn {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes toastSlideOut {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(24px); }
+  }
+  #visa-toast-deprecacao {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    max-width: 360px;
+    background: var(--warnBg, #fff7dd);
+    border: 1.5px solid var(--warnLine, #d1a000);
+    border-radius: 14px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+    padding: 14px 18px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--text, #1a1a1a);
+    z-index: 10000;
+    animation: toastSlideIn 0.35s ease forwards;
+  }
+  #visa-toast-deprecacao.saindo {
+    animation: toastSlideOut 0.45s ease forwards;
+  }
+  @media (max-width: 600px) {
+    #visa-toast-deprecacao {
+      left: 12px;
+      right: 12px;
+      bottom: 16px;
+      max-width: none;
+    }
+  }
+
   </style>
 
   <!-- Sistema de Design - VISA Anápolis -->
@@ -3211,6 +3249,30 @@ try {
       if (e.persisted) location.reload();
     });
   </script>
+    <!-- Toast de aviso de descontinuação do domínio garrado -->
+    <div id="visa-toast-deprecacao" style="display:none;" role="status" aria-live="polite"></div>
+
+    <script>
+      (function () {
+        const _h = window.location.hostname;
+        if (!_h.includes('garrado')) return;
+
+        const isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        const msg = isPWA
+          ? '📢 Este APP será descontinuado em breve. Favor reinstalar pelo endereço oficial: visaanapolis.github.io/APP'
+          : '📢 Este endereço será descontinuado em breve. Favor acessar o endereço oficial: visaanapolis.github.io/APP';
+
+        const toast = document.getElementById('visa-toast-deprecacao');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+
+        setTimeout(function () {
+          toast.classList.add('saindo');
+          toast.addEventListener('animationend', function () { toast.style.display = 'none'; }, { once: true });
+        }, 5000);
+      })();
+    </script>
+
     <!-- Modal de Opt-in de Notificações -->
     <div id="notificationOptInModal" class="modalOverlay">
       <div class="modalCard">
