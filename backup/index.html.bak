@@ -852,7 +852,7 @@
     .fiscal-stats { margin-bottom: 24px; }
     .stats-container {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(6, 1fr);
       gap: 14px;
     }
     .stat-card {
@@ -1040,11 +1040,6 @@
       }
       .stat-card  { padding: 14px 12px; }
       .stat-number { font-size: 1.6rem; }
-      /* Requerimentos: largura dupla no mobile (primeira posição no HTML) */
-      .stat-card--destaque {
-        grid-column: span 2;
-      }
-      .stat-card--destaque .stat-number { font-size: 2rem; }
 
       .content-grid { grid-template-columns: 1fr; }
 
@@ -1056,8 +1051,8 @@
       .stats-container { grid-template-columns: repeat(3, 1fr); }
     }
     @media (min-width: 1201px) {
-      /* Desktop largo: 5 colunas (todos em linha) */
-      .stats-container { grid-template-columns: repeat(5, 1fr); }
+      /* Desktop largo: 6 colunas (todos em linha) */
+      .stats-container { grid-template-columns: repeat(6, 1fr); }
     }
 
   /* sidebar userInfo adaptado */
@@ -1364,15 +1359,6 @@
           <!-- STAT CARDS OS (exibido apenas para Fiscal/Administrador pelo JS) -->
           <div id="fiscalStats" class="fiscal-stats" style="display:none">
             <div class="stats-container">
-              <a class="stat-card stat-card--destaque" href="os.html?tipo=Requerimento" title="Ver OS de Requerimento">
-                <div class="stat-card-header">
-                  <span class="stat-card-label">Requerimentos</span>
-                  <span class="stat-card-icon">📝</span>
-                </div>
-                <span class="stat-number">-</span>
-                <span class="stat-label"></span>
-                <span class="stat-detalhe" id="detRequerimentos">-</span>
-              </a>
               <a class="stat-card" href="os.html?tipo=Protocolo" title="Ver OS de Protocolo">
                 <div class="stat-card-header">
                   <span class="stat-card-label">Protocolos</span>
@@ -1381,6 +1367,15 @@
                 <span class="stat-number">-</span>
                 <span class="stat-label"></span><!-- compatibilidade JS externo -->
                 <span class="stat-detalhe" id="detProtocolos">-</span>
+              </a>
+              <a class="stat-card" href="os.html?tipo=Requerimento" title="Ver OS de Requerimento">
+                <div class="stat-card-header">
+                  <span class="stat-card-label">Requerimentos</span>
+                  <span class="stat-card-icon">📝</span>
+                </div>
+                <span class="stat-number">-</span>
+                <span class="stat-label"></span>
+                <span class="stat-detalhe" id="detRequerimentos">-</span>
               </a>
               <a class="stat-card" href="os.html?tipo=Den%C3%BAncia" title="Ver OS de Denúncia">
                 <div class="stat-card-header">
@@ -1399,15 +1394,6 @@
                 <span class="stat-number">-</span>
                 <span class="stat-label"></span>
                 <span class="stat-detalhe" id="detOficios">-</span>
-              </a>
-              <a class="stat-card" href="os.html?tipo=Auditoria" title="Ver OS de Auditoria">
-                <div class="stat-card-header">
-                  <span class="stat-card-label">Auditorias</span>
-                  <span class="stat-card-icon">🔍</span>
-                </div>
-                <span class="stat-number">-</span>
-                <span class="stat-label"></span>
-                <span class="stat-detalhe" id="detAuditorias">-</span>
               </a>
               <!-- Slots extras para JS externo que possa adicionar OS Concluídas / Canceladas -->
               <a class="stat-card" href="os.html?status=Concluída" title="Ver OS Concluídas" id="statConcluidas" style="display:none">
@@ -2297,97 +2283,55 @@ function horaParaSegundos(horaStr) {
           });
         }
 
-        function processarAuditoria() {
-          return new Promise((resolve) => {
-            const url = 'data/auditoria.csv?' + timestamp;
-            fetch(url, { cache: 'no-store' })
-              .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.arrayBuffer(); })
-              .then(buf => {
-                const bytes = new Uint8Array(buf);
-                let encoding = 'utf-8';
-                if (bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF) encoding = 'utf-8';
-                else if (bytes[0] === 0xFF && bytes[1] === 0xFE) encoding = 'utf-16le';
-                else if (bytes[0] === 0xFE && bytes[1] === 0xFF) encoding = 'utf-16be';
-                else {
-                  try { new TextDecoder('utf-8', { fatal: true }).decode(buf); }
-                  catch(e) { encoding = 'iso-8859-1'; }
-                }
-                return new TextDecoder(encoding).decode(buf);
-              })
-              .then(text => {
-                Papa.parse(text, {
-                  header: true, delimiter: ',', skipEmptyLines: true,
-                  complete: function(results) {
-                    let vencidas = 0, aVencer = 0;
-                    results.data.forEach(row => {
-                      const fiscal = (row['Fiscal'] || '').trim().toUpperCase();
-                      if (fiscal !== nomeFiscalUpper) return;
-                      const status   = (row['Status']   || '').trim();
-                      const cancelada = (row['Cancelada'] || '').trim();
-                      if (status === 'Concluida' || status === 'Cancelada' || cancelada === 'Sim') return;
-                      const prazo = parseData(row['Prazo'] || '');
-                      if (!prazo) return;
-                      const tipo = classificarPrazo(prazo);
-                      if (tipo === 'vencida') vencidas++;
-                      else if (tipo === 'avencer') aVencer++;
-                    });
-                    resolve({ vencidas, aVencer, total: vencidas + aVencer });
-                  },
-                  error: () => resolve({ vencidas: 0, aVencer: 0, total: 0 })
-                });
-              })
-              .catch(() => resolve({ vencidas: 0, aVencer: 0, total: 0 }));
-          });
-        }
-
-        const [requerimentos, protocolos, denuncias, oficios, auditorias] = await Promise.all([
-          processarRequerimento(),
+        const [protocolos, requerimentos, denuncias, oficios] = await Promise.all([
           processarProtocolo(),
+          processarRequerimento(),
           processarDenuncia(),
-          processarOficio(),
-          processarAuditoria()
+          processarOficio()
         ]);
 
         const statCards = document.querySelectorAll('.stat-card .stat-number');
-        if (statCards.length >= 5) {
-          statCards[0].textContent = requerimentos.total;
-          statCards[1].textContent = protocolos.total;
+        if (statCards.length >= 4) {
+          statCards[0].textContent = protocolos.total;
+          statCards[1].textContent = requerimentos.total;
           statCards[2].textContent = denuncias.total;
           statCards[3].textContent = oficios.total;
-          statCards[4].textContent = auditorias.total;
 
-          document.getElementById('detRequerimentos').textContent =
-            `${requerimentos.vencidas} vencidas | ${requerimentos.aVencer} próximas`;
           document.getElementById('detProtocolos').textContent =
             `${protocolos.vencidas} vencidas | ${protocolos.aVencer} próximas`;
+          document.getElementById('detRequerimentos').textContent =
+            `${requerimentos.vencidas} vencidas | ${requerimentos.aVencer} próximas`;
           document.getElementById('detDenuncias').textContent =
             `${denuncias.vencidas} vencidas | ${denuncias.aVencer} próximas`;
           document.getElementById('detOficios').textContent =
             `${oficios.vencidas} vencidas | ${oficios.aVencer} próximas`;
-          document.getElementById('detAuditorias').textContent =
-            `${auditorias.vencidas} vencidas | ${auditorias.aVencer} próximas`;
 
 function aplicarCorCard(cardEl, vencidas, aVencer) {
   if (!cardEl) return;
+
   cardEl.classList.remove('alert-red', 'alert-yellow', 'alert-ok');
-  if (vencidas > 0) cardEl.classList.add('alert-red');
-  else if (aVencer > 0) cardEl.classList.add('alert-yellow');
-  else cardEl.classList.add('alert-ok');
+
+  if (vencidas > 0) {
+    cardEl.classList.add('alert-red');
+  } else if (aVencer > 0) {
+    cardEl.classList.add('alert-yellow');
+  } else {
+    cardEl.classList.add('alert-ok');
+  }
 }
 const cards = document.querySelectorAll('#fiscalStats .stat-card');
-aplicarCorCard(cards[0], requerimentos.vencidas, requerimentos.aVencer);
-aplicarCorCard(cards[1], protocolos.vencidas,    protocolos.aVencer);
-aplicarCorCard(cards[2], denuncias.vencidas,      denuncias.aVencer);
-aplicarCorCard(cards[3], oficios.vencidas,        oficios.aVencer);
-aplicarCorCard(cards[4], auditorias.vencidas,     auditorias.aVencer);
+aplicarCorCard(cards[0], protocolos.vencidas, protocolos.aVencer);
+aplicarCorCard(cards[1], requerimentos.vencidas, requerimentos.aVencer);
+aplicarCorCard(cards[2], denuncias.vencidas, denuncias.aVencer);
+aplicarCorCard(cards[3], oficios.vencidas, oficios.aVencer);
 
           // Injetar o nome do fiscal no href dos cards para que a página OS filtre pelo fiscal logado
           const fiscalEncoded = encodeURIComponent(nomeFiscalUpper);
-          const tiposCards = ['Requerimento', 'Protocolo', 'Den%C3%BAncia', 'Of%C3%ADcio', 'Auditoria'];
+          const tiposCards = ['Protocolo', 'Requerimento', 'Den%C3%BAncia', 'Of%C3%ADcio'];
           cards.forEach(function(card, i) {
-            if (tiposCards[i]) card.href = 'os.html?tipo=' + tiposCards[i] + '&fiscal=' + fiscalEncoded;
+            card.href = 'os.html?tipo=' + tiposCards[i] + '&fiscal=' + fiscalEncoded;
           });
-
+   
         }
       } catch(e) {
         console.error('Erro ao carregar OS:', e);
@@ -2638,74 +2582,27 @@ aplicarCorCard(cards[4], auditorias.vencidas,     auditorias.aVencer);
           });
         }
       
-        // Auditoria: todos os fiscais, não concluídas e não canceladas
-        function processarAuditoriaAdmin() {
-          return new Promise((resolve) => {
-            const url = 'data/auditoria.csv?' + timestamp;
-            fetch(url, { cache: 'no-store' })
-              .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.arrayBuffer(); })
-              .then(buf => {
-                const bytes = new Uint8Array(buf);
-                let encoding = 'utf-8';
-                if (bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF) encoding = 'utf-8';
-                else if (bytes[0] === 0xFF && bytes[1] === 0xFE) encoding = 'utf-16le';
-                else if (bytes[0] === 0xFE && bytes[1] === 0xFF) encoding = 'utf-16be';
-                else {
-                  try { new TextDecoder('utf-8', { fatal: true }).decode(buf); }
-                  catch(e) { encoding = 'iso-8859-1'; }
-                }
-                return new TextDecoder(encoding).decode(buf);
-              })
-              .then(text => {
-                Papa.parse(text, {
-                  header: true, delimiter: ',', skipEmptyLines: true,
-                  complete: function(results) {
-                    let vencidas = 0, aVencer = 0;
-                    results.data.forEach(row => {
-                      if (!(row['Fiscal'] || '').trim()) return;
-                      const status    = (row['Status']   || '').trim();
-                      const cancelada = (row['Cancelada'] || '').trim();
-                      if (status === 'Concluida' || status === 'Cancelada' || cancelada === 'Sim') return;
-                      const prazo = parseData(row['Prazo'] || '');
-                      if (!prazo) return;
-                      const tipo = classificarPrazo(prazo);
-                      if (tipo === 'vencida') vencidas++;
-                      else if (tipo === 'avencer') aVencer++;
-                    });
-                    resolve({ vencidas, aVencer, total: vencidas + aVencer });
-                  },
-                  error: () => resolve({ vencidas: 0, aVencer: 0, total: 0 })
-                });
-              })
-              .catch(() => resolve({ vencidas: 0, aVencer: 0, total: 0 }));
-          });
-        }
-
-        const [requerimentos, protocolos, denuncias, oficios, auditorias] = await Promise.all([
-          processarRequerimentoAdmin(),
+        const [protocolos, requerimentos, denuncias, oficios] = await Promise.all([
           processarProtocoloAdmin(),
+          processarRequerimentoAdmin(),
           processarDenunciaAdmin(),
-          processarOficioAdmin(),
-          processarAuditoriaAdmin()
+          processarOficioAdmin()
         ]);
 
         const statCards = document.querySelectorAll('.stat-card .stat-number');
-        if (statCards.length >= 5) {
-          statCards[0].textContent = requerimentos.total;
-          statCards[1].textContent = protocolos.total;
+        if (statCards.length >= 4) {
+          statCards[0].textContent = protocolos.total;
+          statCards[1].textContent = requerimentos.total;
           statCards[2].textContent = denuncias.total;
           statCards[3].textContent = oficios.total;
-          statCards[4].textContent = auditorias.total;
-          document.getElementById('detRequerimentos').textContent =
-            `${requerimentos.vencidas} vencidas | ${requerimentos.aVencer} próximas`;
           document.getElementById('detProtocolos').textContent =
             `${protocolos.vencidas} vencidas | ${protocolos.aVencer} próximas`;
+          document.getElementById('detRequerimentos').textContent =
+            `${requerimentos.vencidas} vencidas | ${requerimentos.aVencer} próximas`;
           document.getElementById('detDenuncias').textContent =
             `${denuncias.vencidas} vencidas | ${denuncias.aVencer} próximas`;
           document.getElementById('detOficios').textContent =
             `${oficios.vencidas} vencidas | ${oficios.aVencer} próximas`;
-          document.getElementById('detAuditorias').textContent =
-            `${auditorias.vencidas} vencidas | ${auditorias.aVencer} próximas`;
           function aplicarCorCard(cardEl, vencidas, aVencer) {
             if (!cardEl) return;
             cardEl.classList.remove('alert-red', 'alert-yellow', 'alert-ok');
@@ -2714,11 +2611,10 @@ aplicarCorCard(cards[4], auditorias.vencidas,     auditorias.aVencer);
             else cardEl.classList.add('alert-ok');
           }
           const cards = document.querySelectorAll('#fiscalStats .stat-card');
-          aplicarCorCard(cards[0], requerimentos.vencidas, requerimentos.aVencer);
-          aplicarCorCard(cards[1], protocolos.vencidas,    protocolos.aVencer);
+          aplicarCorCard(cards[0], protocolos.vencidas,    protocolos.aVencer);
+          aplicarCorCard(cards[1], requerimentos.vencidas, requerimentos.aVencer);
           aplicarCorCard(cards[2], denuncias.vencidas,     denuncias.aVencer);
           aplicarCorCard(cards[3], oficios.vencidas,       oficios.aVencer);
-          aplicarCorCard(cards[4], auditorias.vencidas,    auditorias.aVencer);
         }
       } catch(e) {
         console.error('Erro ao carregar OS (Admin):', e);
