@@ -1160,13 +1160,19 @@
   /* ── Toast de descontinuação do domínio garrado ── */
   @keyframes visaToastDeprecEntrada {
     from { opacity: 0; transform: translateX(-50%) translateY(18px) scale(0.96); }
-    to   { opacity: 1; transform: translateX(-50%) translateY(0)     scale(1);    }
+    to   { opacity: 0.92; transform: translateX(-50%) translateY(0)     scale(1);    }
+  }
+
+  /* ── Pulse sutil na borda ── */
+  @keyframes visaToastPulse {
+    0%, 100% { box-shadow: 0 8px 32px rgba(0,0,0,0.28), 0 0 0 2px rgba(255,255,255,0.10); }
+    50%       { box-shadow: 0 8px 32px rgba(0,0,0,0.28), 0 0 0 4px rgba(100,180,255,0.30); }
   }
 
   /* ── Particle Dissolve: desintegração lenta em 3 fases ── */
   @keyframes visaParticleDissolve {
     0%   {
-      opacity: 1;
+      opacity: 0.92;
       filter: blur(0px) brightness(1);
       transform: translateX(-50%) translateY(0) scale(1);
       clip-path: inset(0% 0% 0% 0% round 14px);
@@ -1209,7 +1215,10 @@
     left: 50%;
     transform: translateX(-50%);
     z-index: 99998;
-    background: linear-gradient(135deg, #1a3a6b, #2c5aa0);
+    background: rgba(26, 58, 107, 0.82);
+    backdrop-filter: blur(12px) saturate(1.3);
+    -webkit-backdrop-filter: blur(12px) saturate(1.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     color: #fff;
     border-radius: 14px;
     padding: 14px 22px;
@@ -1218,11 +1227,13 @@
     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
     font-weight: 600;
     line-height: 1.45;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,255,255,0.10);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.28), 0 0 0 2px rgba(255,255,255,0.10);
     text-align: center;
+    opacity: 0.92;
     display: none;
-    /* Entrada suave */
-    animation: visaToastDeprecEntrada 0.45s cubic-bezier(.22,1,.36,1) both;
+    /* Entrada suave + pulse contínuo na borda */
+    animation: visaToastDeprecEntrada 0.45s cubic-bezier(.22,1,.36,1) both,
+               visaToastPulse 2s ease-in-out 0.45s infinite;
     will-change: opacity, filter, transform;
   }
 
