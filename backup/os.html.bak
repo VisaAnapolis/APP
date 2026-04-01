@@ -273,7 +273,6 @@
         .badge-oficio { background: #28a745; color: white; }
         .badge-denuncia { background: #dc3545; color: white; }
         .badge-protocolo { background: #6f42c1; color: white; }
-        .badge-auditoria { background: #fd7e14; color: white; }
 
         .badge-complexidade-alta { background: #dc3545; color: white; }
         .badge-complexidade-media { background: #ffc107; color: var(--text-primary); }
@@ -724,7 +723,6 @@
                         <option value="Ofício">Ofício</option>
                         <option value="Denúncia">Denúncia</option>
                         <option value="Protocolo">Protocolo</option>
-                        <option value="Auditoria">Auditoria</option>
                     </select>
                 </div>
 
@@ -941,7 +939,6 @@
         let dadosRegulados = [];
         let dadosBairros = [];
         let dadosCnae = [];
-        let dadosAuditoria = [];
         
         // Controle de carregamento
         let cacheCarregado = {
@@ -952,8 +949,7 @@
             tramitacao: false,
             regulados: false,
             bairros: false,
-            cnae: false,
-            auditoria: false
+            cnae: false
         };
         
         // ==================== CONFIGURAÇÃO DE CACHE ====================
@@ -1001,7 +997,6 @@
             dadosRegulados = [];
             dadosBairros = [];
             dadosCnae = [];
-            dadosAuditoria = [];
             
             cacheCarregado = {
                 requerimento: false,
@@ -1011,8 +1006,7 @@
                 tramitacao: false,
                 regulados: false,
                 bairros: false,
-                cnae: false,
-                auditoria: false
+                cnae: false
             };
             
             indiceRegulados = null;
@@ -1161,58 +1155,8 @@
             const promises = lista.map(item => {
                 return carregarCSV(item.arquivo, item.cache);
             });
-
+            
             return Promise.all(promises);
-        }
-
-        // Loader especializado para auditoria.csv
-        // (delimitador vírgula + detecção automática de encoding via BOM)
-        function carregarCSVAuditoria() {
-            return new Promise((resolve, reject) => {
-                verificarCacheDesatualizado();
-                if (cacheCarregado.auditoria) {
-                    console.log('✅ auditoria já em cache');
-                    resolve(dadosAuditoria);
-                    return;
-                }
-                console.log('⬇️  Baixando auditoria.csv...');
-                const url = `data/auditoria.csv?v=${Date.now()}`;
-                fetch(url, { cache: 'no-store' })
-                    .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.arrayBuffer(); })
-                    .then(buf => {
-                        const bytes = new Uint8Array(buf);
-                        let encoding = 'utf-8';
-                        if (bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF) {
-                            encoding = 'utf-8';       // UTF-8 BOM
-                        } else if (bytes[0] === 0xFF && bytes[1] === 0xFE) {
-                            encoding = 'utf-16le';    // UTF-16 LE BOM
-                        } else if (bytes[0] === 0xFE && bytes[1] === 0xFF) {
-                            encoding = 'utf-16be';    // UTF-16 BE BOM
-                        } else {
-                            // Sem BOM: tenta UTF-8 estrito; se falhar usa ISO-8859-1
-                            try { new TextDecoder('utf-8', { fatal: true }).decode(buf); }
-                            catch(e) { encoding = 'iso-8859-1'; }
-                        }
-                        console.log(`🔤 auditoria.csv encoding detectado: ${encoding}`);
-                        return new TextDecoder(encoding).decode(buf);
-                    })
-                    .then(text => {
-                        Papa.parse(text, {
-                            header: true,
-                            delimiter: ',',
-                            skipEmptyLines: true,
-                            complete: results => {
-                                dadosAuditoria = results.data;
-                                cacheCarregado.auditoria = true;
-                                console.log(`✅ auditoria carregado: ${dadosAuditoria.length} registros`);
-                                atualizarStatusCache();
-                                resolve(dadosAuditoria);
-                            },
-                            error: reject
-                        });
-                    })
-                    .catch(reject);
-            });
         }
         
         // ==================== ÍNDICES PARA BUSCA RÁPIDA ====================
@@ -1466,13 +1410,8 @@ function buscarInfoProtocolo(numeroProtocolo) {
             
             // Carregar CSVs necessários
             mostrarInfo(`⏳ Carregando ${csvsNecessarios.length} arquivo(s)...`, 'info');
-
-            const promessasCarregamento = [carregarCSVsNecessarios(csvsNecessarios)];
-            if (!filtros.tipo || filtros.tipo === 'Auditoria') {
-                promessasCarregamento.push(carregarCSVAuditoria());
-            }
-
-            Promise.all(promessasCarregamento)
+            
+            carregarCSVsNecessarios(csvsNecessarios)
                 .then(() => {
                     console.log('✅ Todos os arquivos necessários carregados');
                     // Processar e filtrar dados
@@ -1836,66 +1775,7 @@ function converterData(dataStr) {
                     
                     console.log(`✅ Ofícios incluídos: ${contadorOficios}`);
                 }
-
-                // Processar AUDITORIAS
-                if (dadosAuditoria && dadosAuditoria.length > 0 &&
-                    (!filtros.tipo || filtros.tipo === 'Auditoria')) {
-
-                    console.log(`📦 Processando ${dadosAuditoria.length} auditorias...`);
-                    let contadorAuditorias = 0;
-
-                    dadosAuditoria.forEach((a, index) => {
-                        const fiscal = a['Fiscal'] || '';
-                        if (!fiscal || !fiscal.trim()) return;
-                        if (filtros.fiscal && fiscal !== filtros.fiscal) return;
-
-                        const numCSV = a['Número OS'] ? a['Número OS'].trim() : '';
-                        const numero = numCSV !== '' ? numCSV : `AUD-${String(index + 1).padStart(3, '0')}`;
-                        if (filtros.numero && numero !== filtros.numero) return;
-
-                        const dataReq = converterData(a['Data Geração']);
-                        if (filtros.dataReqIni && dataReq < filtros.dataReqIni) return;
-                        if (filtros.dataReqFim && dataReq > filtros.dataReqFim) return;
-                        if (filtros.dataReq && dataReq !== filtros.dataReq) return;
-
-                        const atendida = a['Status'] === 'Concluida' ? 'Sim' : 'Não';
-                        if (filtros.atendida && atendida !== filtros.atendida) return;
-
-                        const cancelado = (a['Cancelada'] === 'Sim' || a['Status'] === 'Cancelada') ? 'Sim' : 'Não';
-                        if (filtros.cancelado && cancelado !== filtros.cancelado) return;
-
-                        const razaoSocial = a['Razão Social'] || '';
-                        if (!matchRegulado(filtros.regulado, razaoSocial, '', '', '')) return;
-
-                        todasOS.push({
-                            numero: numero,
-                            tipo: 'Auditoria',
-                            fiscal: fiscal,
-                            razao_social: razaoSocial,
-                            fantasia: '',
-                            complexidade: '',
-                            data_req: dataReq,
-                            data_encaminha: dataReq,
-                            prazo: converterData(a['Prazo']),
-                            motivo: '',
-                            atendida: atendida,
-                            cancelado: cancelado,
-                            area: '',
-                            area_desc: '',
-                            logradouro: '',
-                            complemento: '',
-                            cnpj: '',
-                            cpf: '',
-                            observacao: '',
-                            cdbai: '',
-                            bairro: ''
-                        });
-                        contadorAuditorias++;
-                    });
-
-                    console.log(`✅ Auditorias incluídas: ${contadorAuditorias}`);
-                }
-
+                
                 // Processar DENÚNCIAS
                 if (dadosDenuncia && dadosDenuncia.length > 0 &&
                     (!filtros.tipo || filtros.tipo === 'Denúncia') &&
