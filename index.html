@@ -892,7 +892,7 @@
 
     /* ── SYNC CVS ── */
     #sync-cvs-info {
-      display: inline-flex; align-items: center; gap: 6px;
+      display: flex; flex-direction: column; gap: 4px;
       margin: 0 0 20px;
       padding: 7px 14px;
       font-size: 0.82rem;
@@ -1515,10 +1515,13 @@
             </div>
           </div>
 
-          <!-- Sync CVS -->
-          <p id="sync-cvs-info" class="small" style="margin:0 0 20px;padding:7px 14px;background:rgba(44,90,160,.07);border-radius:8px;border:1px solid rgba(44,90,160,.12);color:#2c5aa0;font-weight:600;display:inline-flex;align-items:center;gap:6px">
-            🔄 Sincronização CVS: verificando...
-          </p>
+          <!-- Sync Info -->
+          <div id="sync-cvs-info" class="small" style="margin:0 0 20px;padding:7px 14px;background:rgba(44,90,160,.07);border-radius:8px;border:1px solid rgba(44,90,160,.12);color:#2c5aa0;font-weight:600;display:flex;flex-direction:column;gap:4px">
+            <span id="sync-line-cvs">🔄 Sincronização CVS: verificando...</span>
+            <span id="sync-line-taxa">🏦 Sincronização SIM – Taxa: verificando...</span>
+            <span id="sync-line-cnae">🏦 Sincronização SIM – CNAE: verificando...</span>
+            <span id="sync-line-auditoria">📋 OS Auditoria: verificando...</span>
+          </div>
 
           <!-- Grid: Novidades + Mensagem Institucional -->
           <div class="content-grid">
@@ -2811,48 +2814,37 @@ aplicarCorCard(cards[4], auditorias.vencidas,     auditorias.aVencer);
       }
     };
 
-        // ===== Sincronização CVS =====
+        // ===== Sincronização (CVS, SIM–Taxa, SIM–CNAE, OS Auditoria) =====
     document.addEventListener('DOMContentLoaded', function () {
-      const el = document.getElementById('sync-cvs-info');
-      if (!el) return;
+      function parsearTimestamp(txt) {
+        const v = (txt || '').trim();
+        if (!v) return null;
+        const matchBR = v.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{1,2}):(\d{2})$/);
+        if (matchBR) {
+          const d = new Date(+matchBR[3], +matchBR[2]-1, +matchBR[1], +matchBR[4], +matchBR[5]);
+          if (!isNaN(d.getTime())) return d.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+        }
+        const d = new Date(v);
+        if (!isNaN(d.getTime())) return d.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+        return v;
+      }
 
-      fetch('data/cvs_sync.txt?ts=' + Date.now(), { cache: 'no-store' })
-        .then(function (resp) {
-          if (!resp.ok) throw new Error('HTTP ' + resp.status);
-          return resp.text();
-        })
-        .then(function (txt) {
-          const v = (txt || '').trim();
-          if (!v) throw new Error('Arquivo vazio');
+      function carregarSync(arquivo, elementId, prefixo) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        fetch('data/' + arquivo + '?ts=' + Date.now(), { cache: 'no-store' })
+          .then(function(resp) { if (!resp.ok) throw new Error('HTTP ' + resp.status); return resp.text(); })
+          .then(function(txt) {
+            const exibicao = parsearTimestamp(txt);
+            el.innerHTML = prefixo + ' <strong>' + (exibicao || (txt || '').trim()) + '</strong>';
+          })
+          .catch(function() { el.innerHTML = prefixo + ' ⚠️ não foi possível verificar'; });
+      }
 
-          let exibicao = v;
-          // Formato brasileiro DD/MM/YYYY HH:MM — parsear manualmente para evitar
-          // que new Date() interprete como MM/DD (padrão americano)
-          const matchBR = v.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{1,2}):(\d{2})$/);
-          if (matchBR) {
-            const d = new Date(+matchBR[3], +matchBR[2] - 1, +matchBR[1], +matchBR[4], +matchBR[5]);
-            if (!isNaN(d.getTime())) {
-              exibicao = d.toLocaleString('pt-BR', {
-                timeZone: 'America/Sao_Paulo',
-                day: '2-digit', month: '2-digit', year: 'numeric',
-                hour: '2-digit', minute: '2-digit'
-              });
-            }
-          } else {
-            const d = new Date(v);
-            if (!isNaN(d.getTime())) {
-              exibicao = d.toLocaleString('pt-BR', {
-                timeZone: 'America/Sao_Paulo',
-                day: '2-digit', month: '2-digit', year: 'numeric',
-                hour: '2-digit', minute: '2-digit'
-              });
-            }
-          }
-          el.innerHTML = '🔄 Sincronização CVS: <strong>' + exibicao + '</strong>';
-        })
-        .catch(function () {
-          el.innerHTML = '⚠️ Sincronização CVS: não foi possível verificar';
-        });
+      carregarSync('cvs_sync.txt',       'sync-line-cvs',       '🔄 Sincronização CVS:');
+      carregarSync('taxa_sync.txt',      'sync-line-taxa',      '🏦 Sincronização SIM – Taxa:');
+      carregarSync('cnae_sync.txt',      'sync-line-cnae',      '🏦 Sincronização SIM – CNAE:');
+      carregarSync('auditoria_sync.txt', 'sync-line-auditoria', '📋 OS Auditoria:');
     });
 
     // Oculta card Sugestões se quantidade de cards for ÍMPAR (mobile)
