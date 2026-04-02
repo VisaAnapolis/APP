@@ -185,6 +185,17 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.6.0 — 02/04/2026 11:19 (Horário de Brasília – UTC−3)</h3>
+  <strong>📋 OS de Auditoria no APP + automação de timestamps de sincronização</strong>
+  <ul>
+    <li><strong>Novidade no dashboard (<code>index.html</code>):</strong> adicionada entrada na seção <em>Novidades no Aplicativo</em> informando que as Ordens de Serviço de Auditoria atribuídas a cada fiscal podem ser consultadas diretamente pelo APP oficial da Vigilância Sanitária de Anápolis. Removida a entrada mais antiga (<em>Busca no Dashboard</em>) para manter o painel enxuto.</li>
+    <li><strong>Novo workflow — <code>update-sync-timestamps.yml</code> (criado):</strong> GitHub Actions que dispara automaticamente a cada push no <code>main</code> quando os arquivos <code>data/cnae_aux.csv</code>, <code>data/taxa.csv</code> ou <code>data/auditoria.csv</code> são alterados — ou seja, sempre que o sistema externo (CVS/SIM/OS) faz commit de novos dados. O workflow extrai o timestamp diretamente da mensagem do commit (padrão <code>"Auto-sync data DD/MM/YYYY HH:MM:SS,XX"</code>) e grava nos respectivos <code>*_sync.txt</code> (<code>cnae_sync.txt</code>, <code>taxa_sync.txt</code>, <code>auditoria_sync.txt</code>), que são lidos pelo dashboard para exibir a data/hora da última sincronização de cada fonte. Caso a mensagem do commit não contenha esse padrão, usa o timestamp ISO 8601 do próprio commit convertido para <code>America/Sao_Paulo</code> como fallback. Possui guarda anti-loop dupla: condição <code>!contains(github.event.head_commit.message, '[skip ci]')</code> e <code>!startsWith(github.event.head_commit.message, 'Atualizar timestamps')</code>, evitando que o próprio commit do workflow dispare uma nova execução.</li>
+    <li><strong>Correção no workflow — <code>update-sync-timestamps.yml</code> (fix):</strong> o passo de <code>git add</code> original usava <code>git add data/cnae_sync.txt data/taxa_sync.txt data/auditoria_sync.txt</code>, que falhava com erro quando algum dos arquivos ainda não existia no repositório (caso do <code>cnae_sync.txt</code> recém-criado). Substituído por um loop condicional <code>for f in ...; do [ -f "$f" ] && git add "$f" || true; done</code>, tornando o <code>git add</code> tolerante à ausência de qualquer arquivo sync. Simultaneamente criado o <code>data/cnae_sync.txt</code> que estava faltante.</li>
+  </ul>
+  <p><strong>Arquivos criados/modificados:</strong> <code>index.html</code> — nova novidade OS Auditoria + remoção entrada antiga; <code>.github/workflows/update-sync-timestamps.yml</code> — criado e corrigido; <code>data/cnae_sync.txt</code> — criado; <code>js/version.js</code> — APP_VERSION 2.6.0; <code>service-worker.js</code> — CACHE_NAME visa-v2.6.0; <code>changelog.html</code> — esta entrada.</p>
+</div>
+
+<div class="section">
   <h3>v2.5.9 — 29/03/2026 23:30 (Horário de Brasília – UTC−3)</h3>
   <strong>🌐 Rastreamento de origem de acesso e espelhamento para o site oficial</strong>
   <ul>
