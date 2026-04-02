@@ -94,6 +94,8 @@ jobs:
 
           git config user.name  "VISA Bot"
           git config user.email "visa-bot@anapolis.go.gov.br"
-          git add data/cnae_sync.txt data/taxa_sync.txt data/auditoria_sync.txt
+          for f in data/cnae_sync.txt data/taxa_sync.txt data/auditoria_sync.txt; do
+            [ -f "$f" ] && git add "$f" || true
+          done
           git diff --staged --quiet || git commit -m "Atualizar timestamps de sincronização [skip ci]"
           git push
