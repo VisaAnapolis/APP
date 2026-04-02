@@ -65,19 +65,6 @@
     return r.json();
   }
 
-  async function fetchGitCommitTime(filePath) {
-    try {
-      const url = `https://api.github.com/repos/garrado/VISA/commits?path=${encodeURIComponent(filePath)}&per_page=1`;
-      const r = await fetch(url);
-      if (!r.ok) return null;
-      const data = await r.json();
-      if (Array.isArray(data) && data[0]?.commit?.author?.date) {
-        return data[0].commit.author.date;
-      }
-      return null;
-    } catch { return null; }
-  }
-
   const els = {
     q: byId("q"),
     btnClear: byId("btnClear"),
@@ -113,7 +100,6 @@
   let municipalMap     = new Map(); // CODIGO (string) → MUNICIPAL raw (for display)
   let municipalNormMap = new Map(); // CODIGO (string) → MUNICIPAL digits-only (for search)
   let taxaMap          = new Map(); // Inscrição Municipal (string) → dados da taxa
-  let taxaTimestamp    = "";        // Data de atualização do arquivo taxa.csv
 
   function showStatus(msg) { safeText(els.status, msg || ""); }
   function hideDetail() {
@@ -184,20 +170,8 @@
   async function loadTaxaData() {
     try {
       const url = `./data/taxa.csv?v=${Date.now()}`;
-      const [r, gitDate] = await Promise.all([
-        fetch(url, { cache: "no-store" }),
-        fetchGitCommitTime('data/taxa.csv'),
-      ]);
+      const r = await fetch(url, { cache: "no-store" });
       if (!r.ok) return;
-      if (gitDate) {
-        const d = new Date(gitDate);
-        const hh = String(d.getHours()).padStart(2, "0");
-        const mm = String(d.getMinutes()).padStart(2, "0");
-        const dd = String(d.getDate()).padStart(2, "0");
-        const mo = String(d.getMonth() + 1).padStart(2, "0");
-        const aa = d.getFullYear();
-        taxaTimestamp = `${hh}:${mm} ${dd}/${mo}/${aa}`;
-      }
       const buf = await r.arrayBuffer();
       const rawText = new TextDecoder("iso-8859-1").decode(buf);
       // Join "* Área:" continuation lines to their parent row so Papa.parse
@@ -380,15 +354,7 @@
         vExerc.className = "kv__v";
         vExerc.textContent = taxa.exercicio || "—";
 
-        if (taxaTimestamp) {
-          const kSync = document.createElement("div");
-          kSync.className = "kv__k";
-          kSync.style.cssText = "grid-column:1/-1; color:var(--muted,#64748b); font-size:0.78rem; font-style:italic; padding-top:6px;";
-          kSync.textContent = `🔄 Sincronização com o SIM: ${taxaTimestamp}`;
-          taxaKv.append(kValor, vValor, kAtiv, vAtiv, kArea, vArea, kVenc, vVenc, kExerc, vExerc, kSit, vSit, kSync);
-        } else {
-          taxaKv.append(kValor, vValor, kAtiv, vAtiv, kArea, vArea, kVenc, vVenc, kExerc, vExerc, kSit, vSit);
-        }
+        taxaKv.append(kValor, vValor, kAtiv, vAtiv, kArea, vArea, kVenc, vVenc, kExerc, vExerc, kSit, vSit);
       } else {
         taxaCard.style.display = "";
         taxaKv.innerHTML = "";
