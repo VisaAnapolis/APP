@@ -54,29 +54,6 @@
     return r.json();
   }
 
-  async function fetchGitCommitTime(filePath) {
-    try {
-      const url = `https://api.github.com/repos/garrado/VISA/commits?path=${encodeURIComponent(filePath)}&per_page=1`;
-      const r = await fetch(url);
-      if (!r.ok) return null;
-      const data = await r.json();
-      if (Array.isArray(data) && data[0]?.commit?.author?.date) {
-        return data[0].commit.author.date;
-      }
-      return null;
-    } catch { return null; }
-  }
-
-  function formatCsvDate(lm) {
-    if (!lm) return "";
-    try {
-      return new Date(lm).toLocaleString("pt-BR", {
-        day: "2-digit", month: "2-digit", year: "numeric",
-        hour: "2-digit", minute: "2-digit",
-      });
-    } catch { return ""; }
-  }
-
   /**
    * Carrega um CSV via PapaParse.
    * @param {string} url
@@ -136,8 +113,6 @@
   let simByDoc       = new Map();     // digits-only doc → cnae_aux row[]
   // Regulados: mapa de CODIGO → info de inscrição e doc
   let reguladosMap   = new Map();     // codigo_str → { municipal, cgc, cpf }
-  // Data/hora do arquivo cnae_aux.csv (Last-Modified)
-  let simCsvDate     = null;
 
   /* ══════════════════════════════════════════════════════════
      ELEMENTOS DOM
@@ -181,14 +156,12 @@
 
     const ts = `v=${Date.now()}`;
 
-    const [indexRoot, auxRows, regRows, cnaeRows, auxLastModified] = await Promise.all([
+    const [indexRoot, auxRows, regRows, cnaeRows] = await Promise.all([
       fetchJson(`./data/index_regulados.json?${ts}`),
       parseCSV(`./data/cnae_aux.csv?${ts}`,   ["INSCRICAO_ISS", "CNAE", "ATIVIDADE", "DOCUMENTO", "IND_PRINCIPAL"]),
       parseCSV(`./data/regulados.csv?${ts}`,   ["CODIGO", "MUNICIPAL", "CGC", "CPF"]),
       parseCSV(`./data/cnae.csv?${ts}`,        ["Subclasse"]),
-      fetchGitCommitTime('data/cnae_aux.csv'),
     ]);
-    simCsvDate = auxLastModified;
 
     /* ── Índice de busca ─────────────────────────────────── */
     indexItems = Array.isArray(indexRoot?.dados)
@@ -378,15 +351,12 @@
 
     /* Faixa de correspondência */
     if (els.matchInfo) {
-      const csvDateHtml = simCsvDate
-        ? `<span class="csv-stamp">📅 SIM: ${esc(formatCsvDate(simCsvDate))}</span>`
-        : "";
       if (matchMethod) {
         els.matchInfo.innerHTML =
-          `🔗 Encontrado no SIM <span class="match-badge ${matchCls}">${esc(matchMethod)}</span>${divIcon}${csvDateHtml}`;
+          `🔗 Encontrado no SIM <span class="match-badge ${matchCls}">${esc(matchMethod)}</span>${divIcon}`;
       } else {
         els.matchInfo.innerHTML =
-          `<span class="match-badge match-badge--err">⚠️ Contribuinte não encontrado no SIM (sem inscrição, CNPJ ou CPF correspondente)</span>${csvDateHtml}`;
+          `<span class="match-badge match-badge--err">⚠️ Contribuinte não encontrado no SIM (sem inscrição, CNPJ ou CPF correspondente)</span>`;
       }
     }
 
