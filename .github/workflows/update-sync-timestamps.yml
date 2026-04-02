@@ -1,0 +1,99 @@
+# ============================================================
+# update-sync-timestamps.yml — GitHub Actions Workflow
+#
+# Atualiza automaticamente os arquivos *_sync.txt com a hora
+# de geração do CSV correspondente sempre que os arquivos:
+#   - data/cnae_aux.csv  → data/cnae_sync.txt
+#   - data/taxa.csv      → data/taxa_sync.txt
+#   - data/auditoria.csv → data/auditoria_sync.txt
+# forem alterados por um push ao branch main.
+#
+# O timestamp é extraído da mensagem do commit no formato:
+#   "Auto-sync data DD/MM/YYYY HH:MM:SS,XX"
+# e gravado nos arquivos sync como "DD/MM/YYYY HH:MM".
+# Caso a mensagem não contenha esse padrão, usa o horário
+# do próprio commit (convertido para America/Sao_Paulo).
+# ============================================================
+
+name: Atualizar timestamps de sincronização
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data/cnae_aux.csv'
+      - 'data/taxa.csv'
+      - 'data/auditoria.csv'
+
+jobs:
+  update-sync:
+    name: Atualizar *_sync.txt
+    if: |
+      !contains(github.event.head_commit.message, '[skip ci]') &&
+      !startsWith(github.event.head_commit.message, 'Atualizar timestamps')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Extrair timestamp e atualizar arquivos sync
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+          COMMIT_TIMESTAMP: ${{ github.event.head_commit.timestamp }}
+        run: |
+          set -e
+
+          # 1. Tenta extrair o timestamp da mensagem de commit
+          #    Formato esperado: "Auto-sync data 02/04/2026  9:38:01,16"
+          TIMESTAMP=$(echo "$COMMIT_MSG" \
+            | grep -oP '\d{2}/\d{2}/\d{4}\s+\d{1,2}:\d{2}' \
+            | head -1 \
+            | tr -s ' ')
+
+          # 2. Fallback: usa o timestamp do commit (ISO 8601) convertido para BRT
+          if [ -z "$TIMESTAMP" ]; then
+            TIMESTAMP=$(TZ="America/Sao_Paulo" date -d "$COMMIT_TIMESTAMP" '+%d/%m/%Y %H:%M')
+            echo "Timestamp não encontrado na mensagem; usando horário do commit: $TIMESTAMP"
+          else
+            echo "Timestamp extraído da mensagem: $TIMESTAMP"
+          fi
+
+          # 3. Descobre quais arquivos CSV mudaram neste commit
+          CHANGED=$(git diff --name-only HEAD~1 HEAD)
+          echo "Arquivos alterados: $CHANGED"
+
+          UPDATED=0
+
+          if echo "$CHANGED" | grep -q "data/cnae_aux.csv"; then
+            echo "$TIMESTAMP" > data/cnae_sync.txt
+            echo "cnae_sync.txt atualizado → $TIMESTAMP"
+            UPDATED=1
+          fi
+
+          if echo "$CHANGED" | grep -q "data/taxa.csv"; then
+            echo "$TIMESTAMP" > data/taxa_sync.txt
+            echo "taxa_sync.txt atualizado → $TIMESTAMP"
+            UPDATED=1
+          fi
+
+          if echo "$CHANGED" | grep -q "data/auditoria.csv"; then
+            echo "$TIMESTAMP" > data/auditoria_sync.txt
+            echo "auditoria_sync.txt atualizado → $TIMESTAMP"
+            UPDATED=1
+          fi
+
+          if [ "$UPDATED" -eq 0 ]; then
+            echo "Nenhum arquivo sync precisou ser atualizado."
+            exit 0
+          fi
+
+          git config user.name  "VISA Bot"
+          git config user.email "visa-bot@anapolis.go.gov.br"
+          git add data/cnae_sync.txt data/taxa_sync.txt data/auditoria_sync.txt
+          git diff --staged --quiet || git commit -m "Atualizar timestamps de sincronização [skip ci]"
+          git push
