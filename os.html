@@ -841,6 +841,11 @@
             </div>
 
             
+            <!-- Timestamp de sincronização das OS de Auditoria -->
+            <div id="timestampSincronizacao" style="display:none; margin-bottom: 12px; padding: 8px 14px; background: rgba(253, 126, 20, 0.10); border-left: 4px solid #fd7e14; border-radius: 6px; font-size: 0.9em; font-weight: 600; color: #7a3b00;">
+                <span id="timestampTexto"></span>
+            </div>
+
             <div class="table-responsive">
                 <table id="tabelaOS" class="display" style="display: none;" width="100%">
                     <thead>
@@ -2171,6 +2176,23 @@ function converterData(dataStr) {
             $('#statsArea').show();
             
             mostrarInfo(`✅ Encontradas <strong>${resultados.length}</strong> Ordens de Serviço.`, 'success');
+            
+            // Timestamp de sincronização OS de Auditoria
+            (function() {
+                const agora = new Date();
+                const hh = String(agora.getHours()).padStart(2, '0');
+                const mm = String(agora.getMinutes()).padStart(2, '0');
+                const dd = String(agora.getDate()).padStart(2, '0');
+                const mes = String(agora.getMonth() + 1).padStart(2, '0');
+                const aaaa = agora.getFullYear();
+                const texto = `🕐 Sincronização OS de Auditoria: ${hh}:${mm} ${dd}/${mes}/${aaaa}`;
+                const el = document.getElementById('timestampTexto');
+                const wrapper = document.getElementById('timestampSincronizacao');
+                if (el && wrapper) {
+                    el.textContent = texto;
+                    wrapper.style.display = 'block';
+                }
+            })();
             
             // Destruir DataTable anterior
             if (dataTable) {
