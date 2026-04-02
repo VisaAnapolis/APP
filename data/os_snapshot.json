@@ -45023,7 +45023,7 @@
     "notif_amanha": false,
     "notif_hoje": false,
     "notif_venceu_fds": false,
-    "email_notif_5d": false,
+    "email_notif_5d": true,
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
@@ -45053,7 +45053,7 @@
     "notif_amanha": false,
     "notif_hoje": false,
     "notif_venceu_fds": false,
-    "email_notif_5d": false,
+    "email_notif_5d": true,
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
@@ -45263,7 +45263,7 @@
     "notif_amanha": false,
     "notif_hoje": false,
     "notif_venceu_fds": false,
-    "email_notif_5d": false,
+    "email_notif_5d": true,
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
@@ -45836,7 +45836,7 @@
     "email_notif_5d": false,
     "email_notif_recuperacao": true,
     "email_notif_amanha": true,
-    "email_notif_hoje": false,
+    "email_notif_hoje": true,
     "email_notif_venceu_fds": false
   },
   "20260135": {
@@ -45866,7 +45866,7 @@
     "email_notif_5d": false,
     "email_notif_recuperacao": true,
     "email_notif_amanha": true,
-    "email_notif_hoje": false,
+    "email_notif_hoje": true,
     "email_notif_venceu_fds": false
   },
   "20260137": {
@@ -45896,7 +45896,7 @@
     "email_notif_5d": false,
     "email_notif_recuperacao": true,
     "email_notif_amanha": true,
-    "email_notif_hoje": false,
+    "email_notif_hoje": true,
     "email_notif_venceu_fds": false
   },
   "20260146": {
@@ -47035,7 +47035,7 @@
     "notif_venceu_fds": false,
     "email_notif_5d": false,
     "email_notif_recuperacao": true,
-    "email_notif_amanha": false,
+    "email_notif_amanha": true,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
   },
@@ -47423,7 +47423,7 @@
     "notif_amanha": false,
     "notif_hoje": false,
     "notif_venceu_fds": false,
-    "email_notif_5d": false,
+    "email_notif_5d": true,
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
@@ -47453,7 +47453,7 @@
     "notif_amanha": false,
     "notif_hoje": false,
     "notif_venceu_fds": false,
-    "email_notif_5d": false,
+    "email_notif_5d": true,
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
@@ -48505,7 +48505,7 @@
     "notif_venceu_fds": false,
     "email_notif_5d": false,
     "email_notif_recuperacao": true,
-    "email_notif_amanha": false,
+    "email_notif_amanha": true,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
   },
@@ -48685,7 +48685,7 @@
     "notif_venceu_fds": false,
     "email_notif_5d": false,
     "email_notif_recuperacao": true,
-    "email_notif_amanha": false,
+    "email_notif_amanha": true,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
   },
@@ -49105,7 +49105,7 @@
     "notif_venceu_fds": false,
     "email_notif_5d": false,
     "email_notif_recuperacao": true,
-    "email_notif_amanha": false,
+    "email_notif_amanha": true,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
   },
@@ -53186,7 +53186,7 @@
     "email_notif_5d": false,
     "email_notif_recuperacao": true,
     "email_notif_amanha": true,
-    "email_notif_hoje": false,
+    "email_notif_hoje": true,
     "email_notif_venceu_fds": false
   },
   "20260568": {
@@ -53306,7 +53306,7 @@
     "email_notif_5d": false,
     "email_notif_recuperacao": true,
     "email_notif_amanha": true,
-    "email_notif_hoje": false,
+    "email_notif_hoje": true,
     "email_notif_venceu_fds": false
   },
   "20260572": {
