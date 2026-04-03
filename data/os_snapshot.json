@@ -45353,7 +45353,7 @@
     "notif_amanha": false,
     "notif_hoje": false,
     "notif_venceu_fds": false,
-    "email_notif_5d": false,
+    "email_notif_5d": true,
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
@@ -45715,7 +45715,7 @@
     "notif_venceu_fds": false,
     "email_notif_5d": true,
     "email_notif_recuperacao": false,
-    "email_notif_amanha": false,
+    "email_notif_amanha": true,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
   },
@@ -45983,7 +45983,7 @@
     "notif_amanha": false,
     "notif_hoje": false,
     "notif_venceu_fds": false,
-    "email_notif_5d": false,
+    "email_notif_5d": true,
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
@@ -47036,7 +47036,7 @@
     "email_notif_5d": false,
     "email_notif_recuperacao": true,
     "email_notif_amanha": true,
-    "email_notif_hoje": false,
+    "email_notif_hoje": true,
     "email_notif_venceu_fds": false
   },
   "20260228": {
@@ -47395,7 +47395,7 @@
     "notif_venceu_fds": false,
     "email_notif_5d": true,
     "email_notif_recuperacao": false,
-    "email_notif_amanha": false,
+    "email_notif_amanha": true,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
   },
@@ -48506,7 +48506,7 @@
     "email_notif_5d": false,
     "email_notif_recuperacao": true,
     "email_notif_amanha": true,
-    "email_notif_hoje": false,
+    "email_notif_hoje": true,
     "email_notif_venceu_fds": false
   },
   "20260326": {
@@ -48686,7 +48686,7 @@
     "email_notif_5d": false,
     "email_notif_recuperacao": true,
     "email_notif_amanha": true,
-    "email_notif_hoje": false,
+    "email_notif_hoje": true,
     "email_notif_venceu_fds": false
   },
   "20260335": {
@@ -49106,7 +49106,7 @@
     "email_notif_5d": false,
     "email_notif_recuperacao": true,
     "email_notif_amanha": true,
-    "email_notif_hoje": false,
+    "email_notif_hoje": true,
     "email_notif_venceu_fds": false
   },
   "20260363": {
@@ -50903,7 +50903,7 @@
     "notif_amanha": false,
     "notif_hoje": false,
     "notif_venceu_fds": false,
-    "email_notif_5d": false,
+    "email_notif_5d": true,
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
