@@ -44543,7 +44543,7 @@
     "notif_amanha": false,
     "notif_hoje": false,
     "notif_venceu_fds": false,
-    "email_notif_5d": false,
+    "email_notif_5d": true,
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
@@ -44784,7 +44784,7 @@
     "notif_hoje": false,
     "notif_venceu_fds": false,
     "email_notif_5d": false,
-    "email_notif_recuperacao": false,
+    "email_notif_recuperacao": true,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
@@ -45025,7 +45025,7 @@
     "notif_venceu_fds": false,
     "email_notif_5d": true,
     "email_notif_recuperacao": false,
-    "email_notif_amanha": false,
+    "email_notif_amanha": true,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
   },
@@ -45055,7 +45055,7 @@
     "notif_venceu_fds": false,
     "email_notif_5d": true,
     "email_notif_recuperacao": false,
-    "email_notif_amanha": false,
+    "email_notif_amanha": true,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
   },
@@ -45265,7 +45265,7 @@
     "notif_venceu_fds": false,
     "email_notif_5d": true,
     "email_notif_recuperacao": false,
-    "email_notif_amanha": false,
+    "email_notif_amanha": true,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
   },
@@ -45717,7 +45717,7 @@
     "email_notif_recuperacao": false,
     "email_notif_amanha": true,
     "email_notif_hoje": false,
-    "email_notif_venceu_fds": false
+    "email_notif_venceu_fds": true
   },
   "20260122": {
     "tipo": "Denúncia",
@@ -45954,7 +45954,7 @@
     "notif_hoje": false,
     "notif_venceu_fds": false,
     "email_notif_5d": false,
-    "email_notif_recuperacao": false,
+    "email_notif_recuperacao": true,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
@@ -46014,7 +46014,7 @@
     "notif_hoje": false,
     "notif_venceu_fds": false,
     "email_notif_5d": false,
-    "email_notif_recuperacao": false,
+    "email_notif_recuperacao": true,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
@@ -46044,7 +46044,7 @@
     "notif_hoje": false,
     "notif_venceu_fds": false,
     "email_notif_5d": false,
-    "email_notif_recuperacao": false,
+    "email_notif_recuperacao": true,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
@@ -46433,7 +46433,7 @@
     "notif_amanha": false,
     "notif_hoje": false,
     "notif_venceu_fds": false,
-    "email_notif_5d": false,
+    "email_notif_5d": true,
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
@@ -47187,7 +47187,7 @@
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
-    "email_notif_venceu_fds": false
+    "email_notif_venceu_fds": true
   },
   "20260241": {
     "tipo": "Ofício",
@@ -47217,7 +47217,7 @@
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
-    "email_notif_venceu_fds": false
+    "email_notif_venceu_fds": true
   },
   "20260251": {
     "tipo": "Ofício",
@@ -47397,7 +47397,7 @@
     "email_notif_recuperacao": false,
     "email_notif_amanha": true,
     "email_notif_hoje": false,
-    "email_notif_venceu_fds": false
+    "email_notif_venceu_fds": true
   },
   "20260265": {
     "tipo": "Ofício",
@@ -47425,7 +47425,7 @@
     "notif_venceu_fds": false,
     "email_notif_5d": true,
     "email_notif_recuperacao": false,
-    "email_notif_amanha": false,
+    "email_notif_amanha": true,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
   },
@@ -47455,7 +47455,7 @@
     "notif_venceu_fds": false,
     "email_notif_5d": true,
     "email_notif_recuperacao": false,
-    "email_notif_amanha": false,
+    "email_notif_amanha": true,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
   },
@@ -47487,7 +47487,7 @@
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
-    "email_notif_venceu_fds": false
+    "email_notif_venceu_fds": true
   },
   "20260268": {
     "tipo": "Ofício",
@@ -47606,7 +47606,7 @@
     "email_notif_5d": true,
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
-    "email_notif_hoje": false,
+    "email_notif_hoje": true,
     "email_notif_venceu_fds": false
   },
   "20260278": {
@@ -47634,7 +47634,7 @@
     "notif_hoje": false,
     "notif_venceu_fds": false,
     "email_notif_5d": false,
-    "email_notif_recuperacao": false,
+    "email_notif_recuperacao": true,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
@@ -47723,7 +47723,7 @@
     "notif_amanha": false,
     "notif_hoje": false,
     "notif_venceu_fds": false,
-    "email_notif_5d": false,
+    "email_notif_5d": true,
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
@@ -47784,7 +47784,7 @@
     "notif_hoje": false,
     "notif_venceu_fds": false,
     "email_notif_5d": false,
-    "email_notif_recuperacao": false,
+    "email_notif_recuperacao": true,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
@@ -47814,7 +47814,7 @@
     "notif_hoje": false,
     "notif_venceu_fds": false,
     "email_notif_5d": false,
-    "email_notif_recuperacao": false,
+    "email_notif_recuperacao": true,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
@@ -47844,7 +47844,7 @@
     "notif_hoje": false,
     "notif_venceu_fds": false,
     "email_notif_5d": false,
-    "email_notif_recuperacao": false,
+    "email_notif_recuperacao": true,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
@@ -48776,7 +48776,7 @@
     "email_notif_5d": true,
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
-    "email_notif_hoje": false,
+    "email_notif_hoje": true,
     "email_notif_venceu_fds": false
   },
   "20260343": {
@@ -48956,7 +48956,7 @@
     "email_notif_5d": true,
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
-    "email_notif_hoje": false,
+    "email_notif_hoje": true,
     "email_notif_venceu_fds": false
   },
   "20260353": {
@@ -49194,7 +49194,7 @@
     "notif_hoje": false,
     "notif_venceu_fds": false,
     "email_notif_5d": false,
-    "email_notif_recuperacao": false,
+    "email_notif_recuperacao": true,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
@@ -49343,7 +49343,7 @@
     "notif_amanha": false,
     "notif_hoje": false,
     "notif_venceu_fds": false,
-    "email_notif_5d": false,
+    "email_notif_5d": true,
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
@@ -49377,7 +49377,7 @@
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
-    "email_notif_venceu_fds": false
+    "email_notif_venceu_fds": true
   },
   "20260382": {
     "tipo": "Ofício",
@@ -49766,7 +49766,7 @@
     "email_notif_5d": true,
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
-    "email_notif_hoje": false,
+    "email_notif_hoje": true,
     "email_notif_venceu_fds": false
   },
   "20260398": {
@@ -49914,7 +49914,7 @@
     "notif_hoje": false,
     "notif_venceu_fds": false,
     "email_notif_5d": false,
-    "email_notif_recuperacao": false,
+    "email_notif_recuperacao": true,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
@@ -50247,7 +50247,7 @@
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
-    "email_notif_venceu_fds": false
+    "email_notif_venceu_fds": true
   },
   "20260432": {
     "tipo": "Requerimento",
@@ -50304,7 +50304,7 @@
     "notif_hoje": false,
     "notif_venceu_fds": false,
     "email_notif_5d": false,
-    "email_notif_recuperacao": false,
+    "email_notif_recuperacao": true,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
@@ -50663,7 +50663,7 @@
     "notif_amanha": false,
     "notif_hoje": false,
     "notif_venceu_fds": false,
-    "email_notif_5d": false,
+    "email_notif_5d": true,
     "email_notif_recuperacao": false,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
@@ -51534,7 +51534,7 @@
     "notif_hoje": false,
     "notif_venceu_fds": false,
     "email_notif_5d": false,
-    "email_notif_recuperacao": false,
+    "email_notif_recuperacao": true,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
@@ -53484,7 +53484,7 @@
     "notif_hoje": false,
     "notif_venceu_fds": false,
     "email_notif_5d": false,
-    "email_notif_recuperacao": false,
+    "email_notif_recuperacao": true,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
@@ -53514,7 +53514,7 @@
     "notif_hoje": false,
     "notif_venceu_fds": false,
     "email_notif_5d": false,
-    "email_notif_recuperacao": false,
+    "email_notif_recuperacao": true,
     "email_notif_amanha": false,
     "email_notif_hoje": false,
     "email_notif_venceu_fds": false
