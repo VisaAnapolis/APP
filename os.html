@@ -626,6 +626,47 @@
             .card, .btn, .modal-footer {
                 display: none !important;
             }
+
+            /* ── Impressão a partir do modal de detalhes ── */
+            body.modal-open .page-header,
+            body.modal-open .stats,
+            body.modal-open .results-card,
+            body.modal-open .topbar,
+            body.modal-open .container {
+                display: none !important;
+            }
+
+            body.modal-open .modal {
+                position: static !important;
+                background: none !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+
+            body.modal-open .modal-content {
+                margin: 0 !important;
+                max-height: none !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                overflow: visible !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+            }
+
+            body.modal-open .modal-header {
+                background: none !important;
+                color: #000 !important;
+                border-bottom: 2px solid #333 !important;
+            }
+
+            body.modal-open .modal-header h2 {
+                color: #000 !important;
+            }
+
+            body.modal-open .modal-body {
+                max-height: none !important;
+                overflow: visible !important;
+            }
         }
     </style>
   <link rel="stylesheet" href="./css/sidebar.css">
@@ -2644,11 +2685,13 @@ function obterDataPrazo(os) {
             `;
 
             $('#modalBody').html(html);
+            $('body').addClass('modal-open');
             $('#detailModal').show();
         }
 
         // Fechar modal
         function fecharModal() {
+            $('body').removeClass('modal-open');
             $('#detailModal').hide();
         }
 
