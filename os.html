@@ -668,6 +668,115 @@
                 overflow: visible !important;
             }
         }
+
+        /* ── Galeria de fotos da Denúncia ── */
+        #galleryModal .modal-content {
+            max-width: 960px;
+        }
+
+        .gallery-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #6f42c1, #9c27b0);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .gallery-btn:hover { opacity: 0.85; }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+            padding: 10px 0;
+        }
+
+        .gallery-thumb {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .gallery-thumb:hover {
+            border-color: #6f42c1;
+            transform: scale(1.04);
+        }
+
+        /* Lightbox */
+        #lightboxOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: rgba(0,0,0,0.92);
+            align-items: center;
+            justify-content: center;
+        }
+        #lightboxOverlay.active { display: flex; }
+
+        #lightboxImg {
+            max-width: 90vw;
+            max-height: 85vh;
+            border-radius: 6px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            object-fit: contain;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 18px;
+            right: 24px;
+            color: #fff;
+            font-size: 2.2em;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            user-select: none;
+        }
+        .lightbox-close:hover { color: #e06c75; }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            border: none;
+            font-size: 2em;
+            padding: 10px 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.2s;
+            user-select: none;
+        }
+        .lightbox-nav:hover { background: rgba(255,255,255,0.3); }
+        #lightboxPrev { left: 16px; }
+        #lightboxNext { right: 16px; }
+
+        .lightbox-counter {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 0.95em;
+            background: rgba(0,0,0,0.5);
+            padding: 4px 14px;
+            border-radius: 20px;
+        }
+
+        @media print {
+            #galleryModal, #lightboxOverlay { display: none !important; }
+        }
     </style>
   <link rel="stylesheet" href="./css/sidebar.css">
 </head>
@@ -927,6 +1036,31 @@
         </div>
     </div>
 
+    <!-- Modal de Galeria de Fotos da Denúncia -->
+    <div id="galleryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="galleryTitle">📸 Fotos Anexadas</h2>
+                <span class="close" onclick="fecharGaleria()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="galleryGrid" class="gallery-grid"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="fecharGaleria()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox de foto ampliada -->
+    <div id="lightboxOverlay">
+        <span class="lightbox-close" onclick="fecharLightbox()">&times;</span>
+        <button id="lightboxPrev" class="lightbox-nav" onclick="lightboxNav(-1)">&#8249;</button>
+        <img id="lightboxImg" src="" alt="Foto da denúncia">
+        <button id="lightboxNext" class="lightbox-nav" onclick="lightboxNav(1)">&#8250;</button>
+        <div id="lightboxCounter" class="lightbox-counter"></div>
+    </div>
+
     <script>
         // Lista oficial de fiscais da VISAM Anápolis (igual ao RPF-7.html)
         const fiscaisOficiais = [
@@ -978,6 +1112,9 @@
 
         // ==================== VARIÁVEIS GLOBAIS ====================
         
+        // Índice de imagens de denúncias { "numeroDenuncia": ["arquivo1.jpg", ...] }
+        let imagensDenuncia = {};
+
         // Cache de dados (carrega sob demanda)
         let dadosRequerimento = [];
         let dadosOficio = [];
@@ -2684,6 +2821,22 @@ function obterDataPrazo(os) {
                 </div>
             `;
 
+            // Fotos anexadas (apenas Denúncia)
+            if (os.tipo === 'Denúncia') {
+                const fotos = imagensDenuncia[String(os.numero)] || [];
+                if (fotos.length > 0) {
+                    const numFotos = fotos.length;
+                    const label = numFotos === 1 ? '1 foto anexada' : `${numFotos} fotos anexadas`;
+                    html += `
+                <div class="detail-section" style="text-align:center;padding-top:5px;">
+                    <button class="gallery-btn" onclick="abrirGaleria('${os.numero}')">
+                        📸 Ver ${label}
+                    </button>
+                </div>
+                    `;
+                }
+            }
+
             $('#modalBody').html(html);
             $('body').addClass('modal-open');
             $('#detailModal').show();
@@ -2695,17 +2848,87 @@ function obterDataPrazo(os) {
             $('#detailModal').hide();
         }
 
-        // Fechar modal ao clicar fora
+        // ── Galeria de fotos ────────────────────────────────────────────────
+
+        let _lightboxFotos = [];
+        let _lightboxIdx   = 0;
+
+        function abrirGaleria(numeroDenuncia) {
+            const fotos = imagensDenuncia[String(numeroDenuncia)] || [];
+            if (!fotos.length) return;
+
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '';
+            fotos.forEach((arquivo, i) => {
+                const img = document.createElement('img');
+                img.src = `data/img/${arquivo}`;
+                img.alt = `Foto ${i + 1} da denúncia ${numeroDenuncia}`;
+                img.className = 'gallery-thumb';
+                img.onclick = () => abrirLightbox(fotos, i);
+                grid.appendChild(img);
+            });
+
+            document.getElementById('galleryTitle').textContent =
+                `📸 Fotos Anexadas — Denúncia ${numeroDenuncia}`;
+            document.getElementById('galleryModal').style.display = 'block';
+        }
+
+        function fecharGaleria() {
+            document.getElementById('galleryModal').style.display = 'none';
+        }
+
+        function abrirLightbox(fotos, idx) {
+            _lightboxFotos = fotos;
+            _lightboxIdx   = idx;
+            _renderLightbox();
+            document.getElementById('lightboxOverlay').classList.add('active');
+        }
+
+        function fecharLightbox() {
+            document.getElementById('lightboxOverlay').classList.remove('active');
+        }
+
+        function lightboxNav(dir) {
+            _lightboxIdx = (_lightboxIdx + dir + _lightboxFotos.length) % _lightboxFotos.length;
+            _renderLightbox();
+        }
+
+        function _renderLightbox() {
+            const arquivo = _lightboxFotos[_lightboxIdx];
+            document.getElementById('lightboxImg').src = `data/img/${arquivo}`;
+            document.getElementById('lightboxCounter').textContent =
+                `${_lightboxIdx + 1} / ${_lightboxFotos.length}`;
+            document.getElementById('lightboxPrev').style.display =
+                _lightboxFotos.length > 1 ? 'block' : 'none';
+            document.getElementById('lightboxNext').style.display =
+                _lightboxFotos.length > 1 ? 'block' : 'none';
+        }
+
+        // Fechar lightbox ao clicar fora da imagem
+        document.getElementById('lightboxOverlay').addEventListener('click', function(e) {
+            if (e.target === this) fecharLightbox();
+        });
+
+        // Fechar modais ao clicar fora
         $(window).on('click', function(event) {
             if (event.target.id === 'detailModal') {
                 fecharModal();
+            }
+            if (event.target.id === 'galleryModal') {
+                fecharGaleria();
             }
         });
 
         // Atalho ESC para fechar modal
         $(document).on('keydown', function(event) {
             if (event.key === 'Escape') {
-                fecharModal();
+                if (document.getElementById('lightboxOverlay').classList.contains('active')) {
+                    fecharLightbox();
+                } else if (document.getElementById('galleryModal').style.display === 'block') {
+                    fecharGaleria();
+                } else {
+                    fecharModal();
+                }
             }
         });
 
@@ -2716,6 +2939,12 @@ function obterDataPrazo(os) {
             console.log('✅ Lazy Loading ativado');
             console.log('✅ Índices de busca rápida habilitados');
             console.log('✅ Cache-busting automático habilitado');
+
+            // Carregar índice de imagens de denúncias (silencioso se ausente)
+            fetch('data/img/index.json')
+                .then(r => r.ok ? r.json() : {})
+                .then(idx => { imagensDenuncia = idx || {}; })
+                .catch(() => { imagensDenuncia = {}; });
             
             // Popular select de fiscais (leve)
             popularFiscais();
