@@ -1,0 +1,538 @@
+object frmlocpro: Tfrmlocpro
+  Left = 516
+  Top = 288
+  BorderIcons = []
+  BorderStyle = bsDialog
+  Caption = 'Localiza Regulado'
+  ClientHeight = 429
+  ClientWidth = 774
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  KeyPreview = True
+  OldCreateOrder = False
+  Position = poMainFormCenter
+  OnActivate = FormActivate
+  OnClose = FormClose
+  OnKeyDown = FormKeyDown
+  OnKeyPress = FormKeyPress
+  PixelsPerInch = 96
+  TextHeight = 13
+  object grade: TDBGrid
+    Left = 9
+    Top = 240
+    Width = 752
+    Height = 177
+    DataSource = dscgc
+    Enabled = False
+    Options = [dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
+    ReadOnly = True
+    TabOrder = 1
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'MS Sans Serif'
+    TitleFont.Style = []
+    Columns = <
+      item
+        Expanded = False
+        FieldName = 'CODIGO'
+        Title.Caption = 'Insc.'
+        Width = 42
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'MUNICIPAL'
+        Title.Caption = 'CCM'
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'CGC'
+        Title.Caption = 'CNPJ'
+        Width = 107
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'CPF'
+        Width = 81
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'RAZAO'
+        Title.Caption = 'Raz'#227'o Social'
+        Width = 231
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'FANTASIA'
+        Title.Caption = 'Nome de Fantasia'
+        Width = 313
+        Visible = True
+      end>
+  end
+  object Panel1: TPanel
+    Left = 9
+    Top = 9
+    Width = 752
+    Height = 216
+    TabOrder = 0
+    object Rselec: TRadioGroup
+      Left = 10
+      Top = 9
+      Width = 479
+      Height = 200
+      Hint = 'Selecione um modo de Pesquisa'
+      Caption = 'Modalidade de Pesquisa'
+      Items.Strings = (
+        'CPF'
+        'CNPJ'
+        'Inscri'#231#227'o Municipal'
+        'Inscri'#231#227'o Sanit'#225'ria'
+        'Raz'#227'o Social'
+        'Nome de Fantasia')
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 0
+      OnClick = RselecClick
+    end
+    object c_cgc: TEdit
+      Left = 137
+      Top = 56
+      Width = 128
+      Height = 21
+      Hint = 'Digite aqui o CNPJ do Contribuinte'
+      CharCase = ecUpperCase
+      Enabled = False
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 2
+      OnChange = c_cgcChange
+      OnExit = c_cgcExit
+    end
+    object c_ins: TEdit
+      Left = 137
+      Top = 119
+      Width = 128
+      Height = 21
+      Hint = 'Digite aqui o n'#250'mero da Inscri'#231#227'o Sanit'#225'ria'
+      CharCase = ecUpperCase
+      Enabled = False
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 3
+      OnChange = c_insChange
+      OnExit = c_insExit
+    end
+    object c_raz: TEdit
+      Left = 137
+      Top = 148
+      Width = 336
+      Height = 21
+      Hint = 'Digite aqui a Raz'#227'o Social do Contribuinte'
+      CharCase = ecUpperCase
+      Enabled = False
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 4
+      OnChange = c_razChange
+    end
+    object c_fan: TEdit
+      Left = 137
+      Top = 179
+      Width = 336
+      Height = 21
+      Hint = 'Digite aqui o Nome de Fantasia do Contribuinte '
+      CharCase = ecUpperCase
+      Enabled = False
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 5
+      OnChange = c_fanChange
+    end
+    object c_cpf: TEdit
+      Left = 137
+      Top = 29
+      Width = 128
+      Height = 21
+      Hint = 'Digite aqui o CNPJ do Contribuinte'
+      CharCase = ecUpperCase
+      Enabled = False
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 1
+      OnChange = c_cpfChange
+      OnExit = c_cpfExit
+    end
+    object btcancel: TButton
+      Left = 546
+      Top = 175
+      Width = 155
+      Height = 25
+      Caption = 'Cancela'
+      TabOrder = 7
+      OnClick = btcancelClick
+    end
+    object btok: TButton
+      Left = 546
+      Top = 140
+      Width = 155
+      Height = 25
+      Caption = 'OK'
+      TabOrder = 6
+      OnClick = btokClick
+    end
+    object Btativ: TButton
+      Left = 546
+      Top = 70
+      Width = 155
+      Height = 25
+      Hint = 'Alterna a exibi'#231#227'o do cadastro de desativados'
+      Caption = 'ATIVOS/INATIVOS'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 8
+      TabStop = False
+      OnClick = BtativClick
+    end
+    object StaticText1: TStaticText
+      Left = 546
+      Top = 16
+      Width = 107
+      Height = 17
+      Caption = 'Exibindo Cadastro de:'
+      TabOrder = 9
+    end
+    object t_cadastro: TStaticText
+      Left = 546
+      Top = 32
+      Width = 75
+      Height = 28
+      Caption = 'cadastro'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -20
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 10
+    end
+    object Button1: TButton
+      Left = 546
+      Top = 105
+      Width = 155
+      Height = 25
+      Caption = 'Inclus'#227'o'
+      TabOrder = 11
+      OnClick = Button1Click
+    end
+    object c_ccm: TEdit
+      Left = 137
+      Top = 87
+      Width = 128
+      Height = 21
+      Hint = 'Digite aqui o n'#250'mero da Inscri'#231#227'o Sanit'#225'ria'
+      CharCase = ecUpperCase
+      Enabled = False
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 12
+      OnChange = c_ccmChange
+      OnExit = c_ccmExit
+    end
+  end
+  object tbcgc: TTable
+    DatabaseName = 'wcvs'
+    Filtered = True
+    IndexName = 'Porcgc'
+    TableName = 'CONTRIB.DB'
+    Left = 568
+    Top = 288
+    object tbcgcCONTROLE: TAutoIncField
+      FieldName = 'CONTROLE'
+      ReadOnly = True
+    end
+    object tbcgcCODIGO: TIntegerField
+      FieldName = 'CODIGO'
+    end
+    object tbcgcCPF: TStringField
+      FieldName = 'CPF'
+      Size = 14
+    end
+    object tbcgcCGC: TStringField
+      FieldName = 'CGC'
+      Size = 18
+    end
+    object tbcgcRAZAO: TStringField
+      FieldName = 'RAZAO'
+      Size = 40
+    end
+    object tbcgcFANTASIA: TStringField
+      FieldName = 'FANTASIA'
+      Size = 40
+    end
+    object tbcgcPESSOA: TStringField
+      FieldName = 'PESSOA'
+      Size = 4
+    end
+    object tbcgcINATIVIDADE: TBooleanField
+      FieldName = 'INATIVIDADE'
+    end
+    object tbcgcMUNICIPAL: TStringField
+      FieldName = 'MUNICIPAL'
+      Size = 7
+    end
+  end
+  object dscgc: TDataSource
+    AutoEdit = False
+    DataSet = tbcgc
+    Left = 600
+    Top = 288
+  end
+  object tbfan: TTable
+    DatabaseName = 'wcvs'
+    Filtered = True
+    IndexName = 'PorFantasia'
+    TableName = 'CONTRIB.DB'
+    Left = 568
+    Top = 216
+    object tbfanCONTROLE: TAutoIncField
+      FieldName = 'CONTROLE'
+      ReadOnly = True
+    end
+    object tbfanCODIGO: TIntegerField
+      FieldName = 'CODIGO'
+    end
+    object tbfanFANTASIA: TStringField
+      FieldName = 'FANTASIA'
+      Size = 40
+    end
+    object tbfanPESSOA: TStringField
+      FieldName = 'PESSOA'
+      Size = 4
+    end
+    object tbfanCPF: TStringField
+      FieldName = 'CPF'
+      Size = 14
+    end
+    object tbfanCGC: TStringField
+      FieldName = 'CGC'
+      Size = 18
+    end
+    object tbfanRAZAO: TStringField
+      FieldName = 'RAZAO'
+      Size = 50
+    end
+    object tbfanINATIVIDADE: TBooleanField
+      FieldName = 'INATIVIDADE'
+    end
+    object tbfanMUNICIPAL: TStringField
+      FieldName = 'MUNICIPAL'
+      Size = 7
+    end
+  end
+  object dsfan: TDataSource
+    AutoEdit = False
+    DataSet = tbfan
+    Left = 600
+    Top = 216
+  end
+  object tbraz: TTable
+    DatabaseName = 'wcvs'
+    Filtered = True
+    IndexName = 'PorRazao'
+    TableName = 'CONTRIB.DB'
+    Left = 568
+    Top = 352
+    object tbrazCONTROLE: TAutoIncField
+      FieldName = 'CONTROLE'
+      ReadOnly = True
+    end
+    object tbrazCODIGO: TIntegerField
+      FieldName = 'CODIGO'
+    end
+    object tbrazRAZAO: TStringField
+      FieldName = 'RAZAO'
+      Size = 50
+    end
+    object tbrazCPF: TStringField
+      FieldName = 'CPF'
+      Size = 14
+    end
+    object tbrazCGC: TStringField
+      FieldName = 'CGC'
+      Size = 18
+    end
+    object tbrazFANTASIA: TStringField
+      FieldName = 'FANTASIA'
+      Size = 40
+    end
+    object tbrazPESSOA: TStringField
+      FieldName = 'PESSOA'
+      Size = 4
+    end
+    object tbrazINATIVIDADE: TBooleanField
+      FieldName = 'INATIVIDADE'
+    end
+    object tbrazMUNICIPAL: TStringField
+      FieldName = 'MUNICIPAL'
+      Size = 7
+    end
+  end
+  object dsraz: TDataSource
+    AutoEdit = False
+    DataSet = tbraz
+    Left = 600
+    Top = 352
+  end
+  object tbins: TTable
+    DatabaseName = 'wcvs'
+    Filtered = True
+    IndexName = 'PorCodigo'
+    TableName = 'CONTRIB.DB'
+    Left = 568
+    Top = 320
+    object tbinsCONTROLE: TAutoIncField
+      FieldName = 'CONTROLE'
+      ReadOnly = True
+    end
+    object tbinsCODIGO: TIntegerField
+      FieldName = 'CODIGO'
+    end
+    object tbinsRAZAO: TStringField
+      FieldName = 'RAZAO'
+      Size = 50
+    end
+    object tbinsFANTASIA: TStringField
+      FieldName = 'FANTASIA'
+      Size = 40
+    end
+    object tbinsCPF: TStringField
+      FieldName = 'CPF'
+      Size = 14
+    end
+    object tbinsCGC: TStringField
+      FieldName = 'CGC'
+      Size = 18
+    end
+    object tbinsPESSOA: TStringField
+      FieldName = 'PESSOA'
+      Size = 4
+    end
+    object tbinsINATIVIDADE: TBooleanField
+      FieldName = 'INATIVIDADE'
+    end
+    object tbinsMUNICIPAL: TStringField
+      FieldName = 'MUNICIPAL'
+      Size = 7
+    end
+  end
+  object dsins: TDataSource
+    AutoEdit = False
+    DataSet = tbins
+    Left = 600
+    Top = 320
+  end
+  object tbcpf: TTable
+    DatabaseName = 'wcvs'
+    Filtered = True
+    IndexName = 'PorCPF'
+    TableName = 'CONTRIB.DB'
+    Left = 568
+    Top = 248
+    object tbcpfCONTROLE: TAutoIncField
+      FieldName = 'CONTROLE'
+      ReadOnly = True
+    end
+    object tbcpfCODIGO: TIntegerField
+      FieldName = 'CODIGO'
+    end
+    object tbcpfPESSOA: TStringField
+      FieldName = 'PESSOA'
+      Size = 4
+    end
+    object tbcpfCPF: TStringField
+      FieldName = 'CPF'
+      Size = 14
+    end
+    object tbcpfCGC: TStringField
+      FieldName = 'CGC'
+      Size = 18
+    end
+    object tbcpfRAZAO: TStringField
+      FieldName = 'RAZAO'
+      Size = 50
+    end
+    object tbcpfINATIVIDADE: TBooleanField
+      FieldName = 'INATIVIDADE'
+    end
+    object tbcpfMUNICIPAL: TStringField
+      FieldName = 'MUNICIPAL'
+      Size = 7
+    end
+  end
+  object dscpf: TDataSource
+    AutoEdit = False
+    DataSet = tbcpf
+    Left = 600
+    Top = 248
+  end
+  object tbccm: TTable
+    DatabaseName = 'wcvs'
+    IndexName = 'PorCCM'
+    TableName = 'CONTRIB.DB'
+    Left = 568
+    Top = 384
+    object tbccmCONTROLE: TAutoIncField
+      FieldName = 'CONTROLE'
+      ReadOnly = True
+    end
+    object tbccmCODIGO: TIntegerField
+      FieldName = 'CODIGO'
+    end
+    object tbccmMUNICIPAL: TStringField
+      FieldName = 'MUNICIPAL'
+      Size = 7
+    end
+    object tbccmINATIVIDADE: TBooleanField
+      FieldName = 'INATIVIDADE'
+    end
+    object tbccmPESSOA: TStringField
+      FieldName = 'PESSOA'
+      Size = 4
+    end
+    object tbccmCPF: TStringField
+      FieldName = 'CPF'
+      Size = 14
+    end
+    object tbccmCGC: TStringField
+      FieldName = 'CGC'
+      Size = 18
+    end
+    object tbccmRAZAO: TStringField
+      FieldName = 'RAZAO'
+      Size = 50
+    end
+    object tbccmFANTASIA: TStringField
+      FieldName = 'FANTASIA'
+      Size = 40
+    end
+  end
+  object dsccm: TDataSource
+    AutoEdit = False
+    DataSet = tbccm
+    Left = 600
+    Top = 384
+  end
+end

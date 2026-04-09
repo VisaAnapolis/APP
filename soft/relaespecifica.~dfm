@@ -1,0 +1,690 @@
+object rel_especifica: Trel_especifica
+  Left = 291
+  Top = 320
+  Width = 1174
+  Height = 697
+  Caption = 'Contribuintes por atividade/bairro'
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  OldCreateOrder = False
+  Scaled = False
+  PixelsPerInch = 96
+  TextHeight = 13
+  object QRativ: TQuickRep
+    Left = 8
+    Top = 8
+    Width = 1123
+    Height = 794
+    Frame.Color = clBlack
+    Frame.DrawTop = False
+    Frame.DrawBottom = False
+    Frame.DrawLeft = False
+    Frame.DrawRight = False
+    DataSet = tbcontrib
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Arial'
+    Font.Style = []
+    Functions.Strings = (
+      'PAGENUMBER'
+      'COLUMNNUMBER'
+      'REPORTTITLE')
+    Functions.DATA = (
+      '0'
+      '0'
+      #39#39)
+    Options = [FirstPageHeader, LastPageFooter]
+    Page.Columns = 1
+    Page.Orientation = poLandscape
+    Page.PaperSize = A4
+    Page.Values = (
+      100.0125
+      2100
+      100.0125
+      2970
+      100.0125
+      100.0125
+      0)
+    PrinterSettings.Copies = 1
+    PrinterSettings.Duplex = False
+    PrinterSettings.FirstPage = 0
+    PrinterSettings.LastPage = 0
+    PrinterSettings.OutputBin = Auto
+    PrintIfEmpty = True
+    SnapToGrid = True
+    Units = Pixels
+    Zoom = 100
+    object QRBand1: TQRBand
+      Left = 38
+      Top = 38
+      Width = 1047
+      Height = 83
+      Frame.Color = clBlack
+      Frame.DrawTop = False
+      Frame.DrawBottom = False
+      Frame.DrawLeft = False
+      Frame.DrawRight = False
+      AlignToBottom = False
+      Color = clWhite
+      ForceNewColumn = False
+      ForceNewPage = False
+      Size.Values = (
+        219.604166666667
+        2770.1875)
+      BandType = rbPageHeader
+      object QRLabel1: TQRLabel
+        Left = 8
+        Top = 13
+        Width = 291
+        Height = 18
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          47.625
+          21.1666666666667
+          34.3958333333333
+          769.9375)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Caption = 'Rela'#231#227'o de Contribuintes por atividade/bairro'
+        Color = clWhite
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRSysData1: TQRSysData
+        Left = 1000
+        Top = 0
+        Width = 46
+        Height = 18
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          47.625
+          2645.83333333333
+          0
+          121.708333333333)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        Color = clWhite
+        Data = qrsPageNumber
+        Transparent = False
+        FontSize = 10
+      end
+      object QRSysData4: TQRSysData
+        Left = 816
+        Top = 0
+        Width = 68
+        Height = 18
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          47.625
+          2159
+          0
+          179.916666666667)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        Color = clWhite
+        Data = qrsDateTime
+        Transparent = False
+        FontSize = 10
+      end
+      object QRLabel2: TQRLabel
+        Left = 24
+        Top = 42
+        Width = 78
+        Height = 18
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          47.625
+          63.5
+          111.125
+          206.375)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Caption = 'Raz'#227'o Social'
+        Color = clWhite
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRLabel4: TQRLabel
+        Left = 952
+        Top = 0
+        Width = 32
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.9791666666667
+          2518.83333333333
+          0
+          84.6666666666667)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Caption = 'P'#225'g.:'
+        Color = clWhite
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRLabel5: TQRLabel
+        Left = 700
+        Top = 42
+        Width = 56
+        Height = 18
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          47.625
+          1852.08333333333
+          111.125
+          148.166666666667)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Caption = 'Endere'#231'o'
+        Color = clWhite
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRLabel6: TQRLabel
+        Left = 360
+        Top = 42
+        Width = 107
+        Height = 18
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          47.625
+          952.5
+          111.125
+          283.104166666667)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Caption = 'Nome de Fantasia'
+        Color = clWhite
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRShape1: TQRShape
+        Left = 24
+        Top = 72
+        Width = 1017
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.9791666666667
+          63.5
+          190.5
+          2690.8125)
+        Shape = qrsHorLine
+      end
+      object QRLabel7: TQRLabel
+        Left = 360
+        Top = 58
+        Width = 122
+        Height = 18
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          47.625
+          952.5
+          153.458333333333
+          322.791666666667)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Caption = 'Atividade Econ'#244'mica'
+        Color = clWhite
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+    end
+    object QRBand2: TQRBand
+      Left = 38
+      Top = 121
+      Width = 1047
+      Height = 64
+      Frame.Color = clBlack
+      Frame.DrawTop = False
+      Frame.DrawBottom = False
+      Frame.DrawLeft = False
+      Frame.DrawRight = False
+      AlignToBottom = False
+      Color = clWhite
+      ForceNewColumn = False
+      ForceNewPage = False
+      Size.Values = (
+        169.333333333333
+        2770.1875)
+      BandType = rbDetail
+      object QRDBText1: TQRDBText
+        Left = 24
+        Top = 8
+        Width = 45
+        Height = 18
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          47.625
+          63.5
+          21.1666666666667
+          119.0625)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = True
+        Color = clWhite
+        DataSet = tbcontrib
+        DataField = 'RAZAO'
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRDBText2: TQRDBText
+        Left = 360
+        Top = 8
+        Width = 64
+        Height = 18
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          47.625
+          952.5
+          21.1666666666667
+          169.333333333333)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Color = clWhite
+        DataSet = tbcontrib
+        DataField = 'FANTASIA'
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRDBText3: TQRDBText
+        Left = 700
+        Top = 8
+        Width = 93
+        Height = 18
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          47.625
+          1852.08333333333
+          21.1666666666667
+          246.0625)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Color = clWhite
+        DataSet = tbcontrib
+        DataField = 'LOGRADOURO'
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRDBText4: TQRDBText
+        Left = 700
+        Top = 24
+        Width = 92
+        Height = 18
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          47.625
+          1852.08333333333
+          63.5
+          243.416666666667)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Color = clWhite
+        DataSet = tbcontrib
+        DataField = 'COMPLEMENT'
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRDBText7: TQRDBText
+        Left = 700
+        Top = 43
+        Width = 40
+        Height = 18
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          47.625
+          1852.08333333333
+          113.770833333333
+          105.833333333333)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Color = clWhite
+        DataSet = tbbairro
+        DataField = 'NOME'
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRDBText5: TQRDBText
+        Left = 360
+        Top = 24
+        Width = 40
+        Height = 18
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          47.625
+          952.5
+          63.5
+          105.833333333333)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Color = clWhite
+        DataSet = tbativi
+        DataField = 'NOME'
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+    end
+    object QRBand3: TQRBand
+      Left = 38
+      Top = 185
+      Width = 1047
+      Height = 40
+      Frame.Color = clBlack
+      Frame.DrawTop = False
+      Frame.DrawBottom = False
+      Frame.DrawLeft = False
+      Frame.DrawRight = False
+      AlignToBottom = False
+      Color = clWhite
+      ForceNewColumn = False
+      ForceNewPage = False
+      Size.Values = (
+        105.833333333333
+        2770.1875)
+      BandType = rbSummary
+      object QRLabel3: TQRLabel
+        Left = 24
+        Top = 16
+        Width = 285
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.9791666666667
+          63.5
+          42.3333333333333
+          754.0625)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Caption = 'Total de contribuintes ativos nesta atividade:'
+        Color = clWhite
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRSysData2: TQRSysData
+        Left = 360
+        Top = 16
+        Width = 85
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.9791666666667
+          952.5
+          42.3333333333333
+          224.895833333333)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        Color = clWhite
+        Data = qrsDetailCount
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentFont = False
+        Transparent = False
+        FontSize = 10
+      end
+      object QRShape2: TQRShape
+        Left = 24
+        Top = 0
+        Width = 1017
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.9791666666667
+          63.5
+          0
+          2690.8125)
+        Shape = qrsHorLine
+      end
+    end
+  end
+  object tbcontrib: TTable
+    DatabaseName = 'wcvs'
+    Filtered = True
+    IndexName = 'PorRazao'
+    TableName = 'CONTRIB.DB'
+    Left = 768
+    Top = 272
+    object tbcontribCONTROLE: TAutoIncField
+      FieldName = 'CONTROLE'
+      ReadOnly = True
+    end
+    object tbcontribCODIGO: TIntegerField
+      FieldName = 'CODIGO'
+    end
+    object tbcontribPESSOA: TStringField
+      FieldName = 'PESSOA'
+      Size = 4
+    end
+    object tbcontribCPF: TStringField
+      FieldName = 'CPF'
+      Size = 14
+    end
+    object tbcontribCGC: TStringField
+      FieldName = 'CGC'
+      Size = 18
+    end
+    object tbcontribRAZAO: TStringField
+      FieldName = 'RAZAO'
+      Size = 50
+    end
+    object tbcontribFANTASIA: TStringField
+      FieldName = 'FANTASIA'
+      Size = 40
+    end
+    object tbcontribATIVIDADE: TIntegerField
+      FieldName = 'ATIVIDADE'
+    end
+    object tbcontribGRUPO: TIntegerField
+      FieldName = 'GRUPO'
+    end
+    object tbcontribLOGRADOURO: TStringField
+      FieldName = 'LOGRADOURO'
+      Size = 40
+    end
+    object tbcontribCOMPLEMENT: TStringField
+      FieldName = 'COMPLEMENT'
+      Size = 30
+    end
+    object tbcontribBAIRRO: TStringField
+      FieldName = 'BAIRRO'
+    end
+    object tbcontribCDBAI: TIntegerField
+      FieldName = 'CDBAI'
+    end
+    object tbcontribINATIVIDADE: TBooleanField
+      FieldName = 'INATIVIDADE'
+    end
+  end
+  object dscontrib: TDataSource
+    DataSet = tbcontrib
+    Left = 754
+    Top = 267
+  end
+  object tbativi: TTable
+    DatabaseName = 'wcvs'
+    IndexName = 'PORNUMERO'
+    MasterFields = 'ATIVIDADE'
+    MasterSource = dscontrib
+    TableName = 'ATIVI.DB'
+    Left = 819
+    Top = 320
+    object tbativiCONTROLE: TAutoIncField
+      FieldName = 'CONTROLE'
+      ReadOnly = True
+    end
+    object tbativiNUMERO: TIntegerField
+      FieldName = 'NUMERO'
+    end
+    object tbativiNOME: TStringField
+      FieldName = 'NOME'
+      Size = 40
+    end
+    object tbativiGRUPO: TIntegerField
+      FieldName = 'GRUPO'
+    end
+    object tbativiSINAVISA: TIntegerField
+      FieldName = 'SINAVISA'
+    end
+    object tbativiVALOR: TCurrencyField
+      FieldName = 'VALOR'
+    end
+    object tbativiAREA: TStringField
+      FieldName = 'AREA'
+    end
+  end
+  object tbbairro: TTable
+    DatabaseName = 'wcvs'
+    IndexName = 'PorCodigo'
+    MasterFields = 'CDBAI'
+    MasterSource = dscontrib
+    TableName = 'bairro.DB'
+    Left = 816
+    Top = 272
+    object tbbairroCONTROLE: TAutoIncField
+      FieldName = 'CONTROLE'
+      ReadOnly = True
+    end
+    object tbbairroCODIGO: TIntegerField
+      FieldName = 'CODIGO'
+    end
+    object tbbairroNOME: TStringField
+      FieldName = 'NOME'
+      Size = 50
+    end
+    object tbbairroSETOR: TIntegerField
+      FieldName = 'SETOR'
+    end
+  end
+end

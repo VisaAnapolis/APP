@@ -1,0 +1,961 @@
+object rel_visita: Trel_visita
+  Left = 243
+  Top = 180
+  Width = 856
+  Height = 761
+  VertScrollBar.Position = 207
+  Caption = 'rel_visita'
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -13
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  OldCreateOrder = False
+  Scaled = False
+  PixelsPerInch = 96
+  TextHeight = 16
+  object QRvisita: TQuickRep
+    Left = 24
+    Top = -183
+    Width = 794
+    Height = 1123
+    Frame.Color = clBlack
+    Frame.DrawTop = False
+    Frame.DrawBottom = False
+    Frame.DrawLeft = False
+    Frame.DrawRight = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -17
+    Font.Name = 'Arial'
+    Font.Style = []
+    Functions.Strings = (
+      'PAGENUMBER'
+      'COLUMNNUMBER'
+      'REPORTTITLE')
+    Functions.DATA = (
+      '0'
+      '0'
+      #39#39)
+    Options = [FirstPageHeader, LastPageFooter]
+    Page.Columns = 1
+    Page.Orientation = poPortrait
+    Page.PaperSize = A4
+    Page.Values = (
+      100
+      2970
+      100
+      2100
+      100
+      100
+      0)
+    PrinterSettings.Copies = 1
+    PrinterSettings.Duplex = False
+    PrinterSettings.FirstPage = 0
+    PrinterSettings.LastPage = 0
+    PrinterSettings.OutputBin = Auto
+    PrintIfEmpty = True
+    SnapToGrid = True
+    Units = Native
+    Zoom = 100
+    object DetailBand1: TQRBand
+      Left = 38
+      Top = 38
+      Width = 718
+      Height = 1032
+      Frame.Color = clBlack
+      Frame.DrawTop = False
+      Frame.DrawBottom = False
+      Frame.DrawLeft = False
+      Frame.DrawRight = False
+      AlignToBottom = False
+      Color = clWhite
+      ForceNewColumn = False
+      ForceNewPage = False
+      Size.Values = (
+        2730.5
+        1899.70833333333)
+      BandType = rbDetail
+      object QRDBText6: TQRDBText
+        Left = 119
+        Top = 64
+        Width = 45
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.9791666666667
+          314.854166666667
+          169.333333333333
+          119.0625)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Color = clWhite
+        DataSet = tbestabe
+        DataField = 'RAZAO'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRLabel4: TQRLabel
+        Left = 26
+        Top = 104
+        Width = 71
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.9791666666667
+          68.7916666666667
+          275.166666666667
+          187.854166666667)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Caption = 'Documento:'
+        Color = clWhite
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRDBText4: TQRDBText
+        Left = 279
+        Top = 104
+        Width = 58
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.9791666666667
+          738.1875
+          275.166666666667
+          153.458333333333)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Color = clWhite
+        DataSet = tbvisita
+        DataField = 'NUMERO'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRDBText7: TQRDBText
+        Left = 537
+        Top = 104
+        Width = 87
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.9791666666667
+          1420.8125
+          275.166666666667
+          230.1875)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Color = clWhite
+        DataSet = tbvisita
+        DataField = 'PZ_RETORNO'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRDBText8: TQRDBText
+        Left = 26
+        Top = 170
+        Width = 35
+        Height = 797
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          2108.72916666667
+          68.7916666666667
+          449.791666666667
+          92.6041666666667)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = True
+        Color = clWhite
+        DataSet = tbhistorico
+        DataField = 'DESCR'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 8
+      end
+      object QRDBText2: TQRDBText
+        Left = 26
+        Top = 1001
+        Width = 43
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.9791666666667
+          68.7916666666667
+          2648.47916666667
+          113.770833333333)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Color = clWhite
+        DataSet = tbvisita
+        DataField = 'Fiscal1'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRLabel2: TQRLabel
+        Left = 26
+        Top = 64
+        Width = 59
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.9791666666667
+          68.7916666666667
+          169.333333333333
+          156.104166666667)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Caption = 'Regulado:'
+        Color = clWhite
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRDBText1: TQRDBText
+        Left = 282
+        Top = 1001
+        Width = 43
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.9791666666667
+          746.125
+          2648.47916666667
+          113.770833333333)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Color = clWhite
+        DataSet = tbvisita
+        DataField = 'Fiscal2'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRDBText3: TQRDBText
+        Left = 531
+        Top = 1001
+        Width = 43
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.9791666666667
+          1404.9375
+          2648.47916666667
+          113.770833333333)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Color = clWhite
+        DataSet = tbvisita
+        DataField = 'Fiscal3'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRDBText5: TQRDBText
+        Left = 388
+        Top = 64
+        Width = 29
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.9791666666667
+          1026.58333333333
+          169.333333333333
+          76.7291666666667)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Color = clWhite
+        DataSet = tbestabe
+        DataField = 'CGC'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRDBText9: TQRDBText
+        Left = 388
+        Top = 104
+        Width = 64
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.9791666666667
+          1026.58333333333
+          275.166666666667
+          169.333333333333)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Color = clWhite
+        DataSet = tbvisita
+        DataField = 'DT_VISITA'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRDBText10: TQRDBText
+        Left = 119
+        Top = 104
+        Width = 30
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.9791666666667
+          314.854166666667
+          275.166666666667
+          79.375)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Color = clWhite
+        DataSet = tbvisita
+        DataField = 'TIPO'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRLabel3: TQRLabel
+        Left = 497
+        Top = 104
+        Width = 39
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.9791666666667
+          1314.97916666667
+          275.166666666667
+          103.1875)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Caption = 'Prazo:'
+        Color = clWhite
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRLabel6: TQRLabel
+        Left = 26
+        Top = 17
+        Width = 306
+        Height = 18
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          47.625
+          68.7916666666667
+          44.9791666666667
+          809.625)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Caption = 'Espelho de documento fiscal registrado no CVS '
+        Color = clWhite
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRSysData1: TQRSysData
+        Left = 578
+        Top = 17
+        Width = 68
+        Height = 18
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          47.625
+          1529.29166666667
+          44.9791666666667
+          179.916666666667)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        Color = clWhite
+        Data = qrsDateTime
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        FontSize = 10
+      end
+      object QRLabel1: TQRLabel
+        Left = 26
+        Top = 144
+        Width = 93
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.9791666666667
+          68.7916666666667
+          381
+          246.0625)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Caption = 'Especifica'#231#245'es:'
+        Color = clWhite
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRLabel5: TQRLabel
+        Left = 26
+        Top = 976
+        Width = 141
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.9791666666667
+          68.7916666666667
+          2582.33333333333
+          373.0625)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Caption = 'Autoridades Emitentes :'
+        Color = clWhite
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRDBText11: TQRDBText
+        Left = 119
+        Top = 83
+        Width = 259
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.45
+          315.383333333333
+          220.133333333333
+          685.8)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = False
+        AutoStretch = False
+        Color = clWhite
+        DataSet = tbestabe
+        DataField = 'LOGRADOURO'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRDBText12: TQRDBText
+        Left = 388
+        Top = 83
+        Width = 90
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.45
+          1026.58333333333
+          220.133333333333
+          239.183333333333)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = False
+        AutoStretch = False
+        Color = clWhite
+        DataSet = tbestabe
+        DataField = 'COMPLEMENT'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+      object QRDBText13: TQRDBText
+        Left = 497
+        Top = 83
+        Width = 195
+        Height = 17
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          44.45
+          1314.45
+          220.133333333333
+          516.466666666667)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = False
+        AutoStretch = False
+        Color = clWhite
+        DataSet = tbbairro
+        DataField = 'NOME'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 10
+      end
+    end
+  end
+  object tbestabe: TTable
+    DatabaseName = 'wcvs'
+    TableName = 'CONTRIB.DB'
+    Left = 264
+    Top = 7
+    object tbestabeCONTROLE: TAutoIncField
+      FieldName = 'CONTROLE'
+      ReadOnly = True
+    end
+    object tbestabeCODIGO: TIntegerField
+      FieldName = 'CODIGO'
+    end
+    object tbestabePESSOA: TStringField
+      FieldName = 'PESSOA'
+      Size = 4
+    end
+    object tbestabeCPF: TStringField
+      FieldName = 'CPF'
+      Size = 14
+    end
+    object tbestabeCGC: TStringField
+      FieldName = 'CGC'
+      Size = 18
+    end
+    object tbestabeAGREGADO: TBooleanField
+      FieldName = 'AGREGADO'
+    end
+    object tbestabeRAZAO: TStringField
+      FieldName = 'RAZAO'
+      Size = 50
+    end
+    object tbestabeFANTASIA: TStringField
+      FieldName = 'FANTASIA'
+      Size = 40
+    end
+    object tbestabeREPRESENTANTE: TStringField
+      FieldName = 'REPRESENTANTE'
+      Size = 40
+    end
+    object tbestabeREPRESENTANTE2: TStringField
+      FieldName = 'REPRESENTANTE2'
+      Size = 40
+    end
+    object tbestabeCPFREPRES: TStringField
+      FieldName = 'CPFREPRES'
+      Size = 14
+    end
+    object tbestabeCPFREPRES2: TStringField
+      FieldName = 'CPFREPRES2'
+      Size = 14
+    end
+    object tbestabeATIVIDADE: TIntegerField
+      FieldName = 'ATIVIDADE'
+    end
+    object tbestabeHORARIO: TStringField
+      FieldName = 'HORARIO'
+      Size = 15
+    end
+    object tbestabeAREA: TIntegerField
+      FieldName = 'AREA'
+    end
+    object tbestabeGRUPO: TIntegerField
+      FieldName = 'GRUPO'
+    end
+    object tbestabeMUNICIPAL: TStringField
+      FieldName = 'MUNICIPAL'
+      Size = 6
+    end
+    object tbestabeLOGRADOURO: TStringField
+      FieldName = 'LOGRADOURO'
+      Size = 40
+    end
+    object tbestabeCOMPLEMENT: TStringField
+      FieldName = 'COMPLEMENT'
+      Size = 30
+    end
+    object tbestabeBAIRRO: TStringField
+      FieldName = 'BAIRRO'
+    end
+    object tbestabeCDBAI: TIntegerField
+      FieldName = 'CDBAI'
+    end
+    object tbestabeZONA: TSmallintField
+      FieldName = 'ZONA'
+    end
+    object tbestabeCEP: TStringField
+      FieldName = 'CEP'
+      Size = 10
+    end
+    object tbestabeFONE: TStringField
+      FieldName = 'FONE'
+      Size = 9
+    end
+    object tbestabeCELULAR: TStringField
+      FieldName = 'CELULAR'
+      Size = 14
+    end
+    object tbestabeEMAIL: TStringField
+      FieldName = 'EMAIL'
+      Size = 50
+    end
+    object tbestabeTAXA: TBooleanField
+      FieldName = 'TAXA'
+    end
+    object tbestabeINATIVIDADE: TBooleanField
+      FieldName = 'INATIVIDADE'
+    end
+    object tbestabeOBS: TMemoField
+      FieldName = 'OBS'
+      BlobType = ftMemo
+      Size = 10
+    end
+    object tbestabePendoc: TBooleanField
+      FieldName = 'Pendoc'
+    end
+    object tbestabeDt_cadastro: TDateField
+      FieldName = 'Dt_cadastro'
+    end
+    object tbestabeUser: TStringField
+      FieldName = 'User'
+      Size = 30
+    end
+    object tbestabeDt_alter: TDateField
+      FieldName = 'Dt_alter'
+    end
+    object tbestabeH_alter: TTimeField
+      FieldName = 'H_alter'
+    end
+  end
+  object tbvisita: TTable
+    DatabaseName = 'wcvs'
+    TableName = 'VISITAS.DB'
+    Left = 320
+    Top = 23
+    object tbvisitaCONTROLE: TAutoIncField
+      FieldName = 'CONTROLE'
+      ReadOnly = True
+    end
+    object tbvisitaCODIGO: TIntegerField
+      FieldName = 'CODIGO'
+    end
+    object tbvisitaDT_VISITA: TDateField
+      FieldName = 'DT_VISITA'
+    end
+    object tbvisitaPZ_RETORNO: TSmallintField
+      FieldName = 'PZ_RETORNO'
+    end
+    object tbvisitaACAO: TStringField
+      FieldName = 'ACAO'
+      Size = 35
+    end
+    object tbvisitaTIPO: TStringField
+      FieldName = 'TIPO'
+      Size = 35
+    end
+    object tbvisitaDenuncia: TIntegerField
+      FieldName = 'Denuncia'
+    end
+    object tbvisitaNUMERO: TStringField
+      FieldName = 'NUMERO'
+      Size = 6
+    end
+    object tbvisitaNDOC: TIntegerField
+      FieldName = 'NDOC'
+    end
+    object tbvisitaAtividade: TStringField
+      FieldName = 'Atividade'
+      Size = 9
+    end
+    object tbvisitaFiscal1: TStringField
+      FieldName = 'Fiscal1'
+      Size = 40
+    end
+    object tbvisitaFiscal2: TStringField
+      FieldName = 'Fiscal2'
+      Size = 40
+    end
+    object tbvisitaFiscal3: TStringField
+      FieldName = 'Fiscal3'
+      Size = 40
+    end
+    object tbvisitaUs_inclu: TStringField
+      FieldName = 'Us_inclu'
+      Size = 40
+    end
+    object tbvisitaDt_inclu: TDateField
+      FieldName = 'Dt_inclu'
+    end
+    object tbvisitaGr_inclu: TStringField
+      FieldName = 'Gr_inclu'
+      Size = 3
+    end
+    object tbvisitaUs_altera: TStringField
+      FieldName = 'Us_altera'
+      Size = 40
+    end
+    object tbvisitaDt_altera: TDateField
+      FieldName = 'Dt_altera'
+    end
+  end
+  object tbhistorico: TTable
+    DatabaseName = 'wcvs'
+    TableName = 'HISTORICO.DB'
+    Left = 376
+    Top = 8
+    object tbhistoricoCONTROLE: TAutoIncField
+      FieldName = 'CONTROLE'
+      ReadOnly = True
+    end
+    object tbhistoricoNDOC: TIntegerField
+      FieldName = 'NDOC'
+    end
+    object tbhistoricoDESCR: TMemoField
+      FieldName = 'DESCR'
+      BlobType = ftMemo
+      Size = 32
+    end
+    object tbhistoricoDISPOSITIVO: TMemoField
+      FieldName = 'DISPOSITIVO'
+      BlobType = ftMemo
+      Size = 10
+    end
+  end
+  object tbbairro: TTable
+    DatabaseName = 'wcvs'
+    IndexName = 'PorCodigo'
+    MasterFields = 'CDBAI'
+    MasterSource = dscontrib
+    TableName = 'bairro.DB'
+    Left = 448
+    Top = 24
+    object tbbairroCONTROLE: TAutoIncField
+      FieldName = 'CONTROLE'
+      ReadOnly = True
+    end
+    object tbbairroCODIGO: TIntegerField
+      FieldName = 'CODIGO'
+    end
+    object tbbairroNOME: TStringField
+      FieldName = 'NOME'
+      Size = 50
+    end
+  end
+  object dscontrib: TDataSource
+    DataSet = tbestabe
+    Left = 256
+    Top = 24
+  end
+end

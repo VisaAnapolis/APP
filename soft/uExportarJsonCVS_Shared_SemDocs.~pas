@@ -1,0 +1,35 @@
+unit uExportarJsonCVS_Shared_SemDocs;
+
+interface
+
+uses
+  SysUtils;
+
+function ExportarJsonCVS_Shared_SemDocs(const AliasOrPath, OutBaseDir: string; out Erro: string): Boolean;
+
+implementation
+
+uses
+  uExportarJsonCVS_Shared;
+
+function ExportarJsonCVS_Shared_SemDocs(const AliasOrPath, OutBaseDir: string; out Erro: string): Boolean;
+var
+  BaseDir: string;
+begin
+  Result := False;
+  Erro := '';
+  try
+    BaseDir := OutBaseDir;
+    ExportReguladosPorArquivo(AliasOrPath, BaseDir); // reaproveita tudo, sem histórico
+    Result := True;
+  except
+    on E: Exception do
+    begin
+      Erro := E.Message;
+      Result := False;
+    end;
+  end;
+end;
+
+end.
+

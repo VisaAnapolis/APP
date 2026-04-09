@@ -1,0 +1,157 @@
+unit CPFeCGC;
+
+interface
+function cpf(numcpf: string): boolean;
+function cgc(numcnpj: string): boolean;
+function RemoveAcento(Str: string): string;
+implementation
+uses  SysUtils, strutils;
+
+function cpf(numcpf: string): boolean;
+var
+n1,n2,n3,n4,n5,n6,n7,n8,n9:integer;
+d1,d2:integer;
+con, digitado, calculado:string;
+begin
+con:='';
+if (numcpf = '   .   .   -  ') or (numcpf = '') then
+begin
+cpf:=false;
+exit;
+end;
+con:=Copy(numcpf,1,3) + Copy(numcpf,5,3) + Copy(numcpf,9,3) + Copy(numcpf,13,2);
+n1:= StrToInt(con[1]);
+n2:= StrToInt(con[2]);
+n3:= StrToInt(con[3]);
+n4:= StrToInt(con[4]);
+n5:= StrToInt(con[5]);
+n6:= StrToInt(con[6]);
+n7:= StrToInt(con[7]);
+n8:= StrToInt(con[8]);
+n9:= StrToInt(con[9]);
+d1:= n9*2+n8*3+n7*4+n6*5+n5*6+n4*7+n3*8+n2*9+n1*10;
+d1:= 11-(d1 mod 11);
+if d1>=10 then d1:=0;
+d2:= d1*2+n9*3+n8*4+n7*5+n6*6+n5*7+n4*8+n3*9+n2*10+n1*11;
+d2:= 11-(d2 mod 11);
+if d2>=10 then d2:=0;
+calculado:= inttostr(d1)+inttostr(d2);
+digitado:= con[10]+con[11];
+if calculado = digitado then
+cpf:=true
+else
+cpf:=false;
+if (con = '00000000000') or
+   (con = '11111111111') or
+   (con = '22222222222') or
+   (con = '33333333333') or
+   (con = '44444444444') or
+   (con = '55555555555') or
+   (con = '66666666666') or
+   (con = '77777777777') or
+   (con = '88888888888') or
+   (con = '99999999999')
+   then cpf:=false;
+end;
+
+function cgc(numCNPJ: string): boolean;
+var
+  cnpj: string;
+  dg1, dg2: integer;
+  x, total: integer;
+  ret: boolean;
+begin
+ret:=False;
+cnpj:='';
+//Analisa os formatos
+if Length(numCNPJ) = 18 then
+        if (Copy(numCNPJ,3,1) + Copy(numCNPJ,7,1) + Copy(numCNPJ,11,1) + Copy(numCNPJ,16,1) = '../-') then
+                begin
+                cnpj:=Copy(numCNPJ,1,2) + Copy(numCNPJ,4,3) + Copy(numCNPJ,8,3) + Copy(numCNPJ,12,4) + Copy(numCNPJ,17,2);
+                ret:=True;
+                end;
+if Length(numCNPJ) = 14 then
+        begin
+        cnpj:=numCNPJ;
+        ret:=True;
+        end;
+//Verifica
+if ret then
+        begin
+        try
+                //1∞ digito
+                total:=0;
+                for x:=1 to 12 do
+                        begin
+                        if x < 5 then
+                                Inc(total, StrToInt(Copy(cnpj, x, 1)) * (6 - x))
+                        else
+                                Inc(total, StrToInt(Copy(cnpj, x, 1)) * (14 - x));
+                        end;
+                dg1:=11 - (total mod 11);
+                if dg1 > 9 then
+                        dg1:=0;
+                //2∞ digito
+                total:=0;
+                for x:=1 to 13 do
+                        begin
+                        if x < 6 then
+                                Inc(total, StrToInt(Copy(cnpj, x, 1)) * (7 - x))
+                        else
+                                Inc(total, StrToInt(Copy(cnpj, x, 1)) * (15 - x));
+                        end;
+                dg2:=11 - (total mod 11);
+                if dg2 > 9 then
+                        dg2:=0;
+                //ValidaÁ„o final
+                if (dg1 = StrToInt(Copy(cnpj, 13, 1))) and (dg2 = StrToInt(Copy(cnpj, 14, 1))) then
+                        ret:=True
+                else
+                        ret:=False;
+        except
+                ret:=False;
+                end;
+        //Inv·lidos
+        case AnsiIndexStr(cnpj,['00000000000000','11111111111111','22222222222222','33333333333333','44444444444444',
+
+                                                   '55555555555555','66666666666666','77777777777777','88888888888888','99999999999999']) of
+
+                0..9:   ret:=False;
+
+                end;
+        end;
+cgc:=ret;
+end;
+
+
+function RemoveAcento(Str: string): string;
+
+const
+
+  ComAcento = '¿¬ ‘€√’¡…Õ”⁄«‹';
+
+  SemAcento = 'AAEOUAOAEIOUCU';
+
+var
+
+   x: Integer;
+
+begin;
+
+  for x := 1 to Length(Str) do
+
+  if Pos(Str[x],ComAcento) <> 0 then
+
+    Str[x] := SemAcento[Pos(Str[x], ComAcento)];
+
+  Result := Str;
+
+end;
+
+
+
+
+
+end.
+
+//Autor:Renan_Frutuoso

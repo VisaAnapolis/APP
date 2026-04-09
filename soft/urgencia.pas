@@ -1,0 +1,448 @@
+unit urgencia;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, DB, DBTables, StdCtrls, Grids, DateUtils;
+
+type
+  Tfrmurgencia = class(TForm)
+    tbdenuncia: TTable;
+    tbdenunciaDenuncia: TIntegerField;
+    tbdenunciaArchive: TBooleanField;
+    tbdenunciaFiscalEncaminha: TStringField;
+    tbdenunciaPrazo: TDateField;
+    tbdenunciaLogradouro: TStringField;
+    dsdenuncia: TDataSource;
+    tboficio: TTable;
+    tboficioOficio: TIntegerField;
+    tboficioData: TDateField;
+    tboficioFiscalencaminha: TStringField;
+    tboficioDtencaminha: TDateField;
+    tboficioPrazo: TDateField;
+    tboficioDtatendimento: TDateField;
+    tboficioUser: TStringField;
+    tboficioArchive: TBooleanField;
+    tboficioCancela: TBooleanField;
+    tboficioEmitente: TStringField;
+    tboficioMotivo: TStringField;
+    tboficioRegulado: TStringField;
+    tboficioLogradouro: TStringField;
+    tboficioCdbai: TSmallintField;
+    tboficioOrdem: TStringField;
+    tboficioCpf: TStringField;
+    tboficioCnpj: TStringField;
+    dsoficio: TDataSource;
+    tbreq: TTable;
+    tbreqControle: TAutoIncField;
+    tbreqCodigo: TIntegerField;
+    tbreqOS: TIntegerField;
+    tbreqArea: TStringField;
+    tbreqMotivo: TStringField;
+    tbreqVeiculos: TSmallintField;
+    tbreqRequerente: TStringField;
+    tbreqObs_Req: TStringField;
+    tbreqDt_Req: TDateField;
+    tbreqFiscal_Encaminha: TStringField;
+    tbreqRecebedor: TStringField;
+    tbreqDt_encaminha: TDateField;
+    tbreqEncaminhador: TStringField;
+    tbreqFiscal_Atend: TStringField;
+    tbreqDt_Atend: TDateField;
+    tbreqTipo_Documento: TStringField;
+    tbreqObs_Atend: TStringField;
+    tbreqEncaminhamento: TBooleanField;
+    tbreqAtendimento: TBooleanField;
+    tbreqNum_Documento: TStringField;
+    tbreqCancelado: TBooleanField;
+    tbreqComplexidade: TStringField;
+    tbreqPrazo: TDateField;
+    dsreq: TDataSource;
+    tbplanta: TTable;
+    tbplantaProtocolo: TIntegerField;
+    tbplantaCodigo: TIntegerField;
+    tbplantaCarga: TStringField;
+    tbplantaAssunto: TStringField;
+    dsplanta: TDataSource;
+    tbtramitacao: TTable;
+    tbtramitacaoProtocolo: TIntegerField;
+    tbtramitacaoData: TDateField;
+    tbtramitacaoHora: TTimeField;
+    tbtramitacaoDestino: TStringField;
+    dstramitacao: TDataSource;
+    tbcontrib: TTable;
+    tbcontribCodigo: TIntegerField;
+    tbcontribRazao: TStringField;
+    dscontrib: TDataSource;
+    sgPendencias: TStringGrid;
+    procedure FormActivate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure sgPendenciasDrawCell(Sender: TObject; ACol, ARow: Integer;
+      Rect: TRect; State: TGridDrawState);
+  private
+    RowColors: array of TColor;
+    function IsHoliday(d: TDate): Boolean;
+    function IsBusinessDay(d: TDate): Boolean;
+    function AddBusinessDays(startDate: TDate; days: Integer): TDate;
+  public
+  end;
+
+var
+  frmurgencia: Tfrmurgencia;
+
+implementation
+
+uses login, r_osurg;
+
+{$R *.dfm}
+
+const
+  CLR_VENCIDO = TColor($001E1EC0);
+
+procedure Tfrmurgencia.FormActivate(Sender: TObject);
+var
+  dias: Integer;
+  tramitDates: TStringList;
+  protoStr: string;
+  dt, lastDt: TDateTime;
+  lastDate: TDate;
+  deadline: TDate;
+  razaoSocial: string;
+  dtStr: string;
+  complexOficio: string;
+
+  procedure AddRow(const tipo, numero, complexidade, descricao, prazoStr,
+    situacao: string; cor: TColor);
+  var
+    r: Integer;
+  begin
+    r := sgPendencias.RowCount;
+    sgPendencias.RowCount := r + 1;
+    SetLength(RowColors, r);
+    RowColors[r - 1] := cor;
+    sgPendencias.Cells[0, r] := tipo;
+    sgPendencias.Cells[1, r] := numero;
+    sgPendencias.Cells[2, r] := complexidade;
+    sgPendencias.Cells[3, r] := descricao;
+    sgPendencias.Cells[4, r] := prazoStr;
+    sgPendencias.Cells[5, r] := situacao;
+  end;
+
+begin
+  sgPendencias.RowCount := 1;
+  sgPendencias.Cells[0, 0] := 'Tipo';
+  sgPendencias.Cells[1, 0] := 'N'#186;
+  sgPendencias.Cells[2, 0] := 'Complexidade';
+  sgPendencias.Cells[3, 0] := 'Raz'#227'o Social';
+  sgPendencias.Cells[4, 0] := 'Prazo';
+  sgPendencias.Cells[5, 0] := 'Situa'#231#227'o';
+  SetLength(RowColors, 0);
+
+  if not ((frmlogin.c_grp = 'FIS') or (frmlogin.c_grp = 'ADM')) then
+    Exit;
+
+  Caption := 'Alerta de OS: ' + frmosurg.cbfiscal.text;
+
+  tboficio.Open;
+  tbreq.Open;
+  tbdenuncia.Open;
+  tbcontrib.Open;
+
+  { Oficios }
+  tboficio.Filter := 'fiscalencaminha = ' + QuotedStr(frmosurg.cbfiscal.text);
+    tboficio.First;
+  while not tboficio.Eof do
+  begin
+    if (tboficiofiscalencaminha.Value = frmosurg.cbfiscal.Text)
+          and (tboficioarchive.Value <> True)
+      and (tboficiocancela.Value <> True)
+      and (Copy(tboficioordem.Value, 17, 5) <> 'BAIXA')
+      and not tboficioPrazo.IsNull then
+    begin
+      if AnsiCompareText(Trim(tboficiomotivo.Value), 'RETORNO') = 0 then
+        complexOficio := ''
+      else
+        complexOficio := Trim(Copy(tboficioordem.Value, 1, 15));
+      dias := DaysBetween(Date, tboficioPrazo.Value);
+      if tboficioPrazo.Value < Date then
+        AddRow(
+          tboficiomotivo.Value,
+          IntToStr(tboficioOficio.Value),
+          complexOficio,
+          tboficioRegulado.Value,
+          DateToStr(tboficioPrazo.Value),
+          'VENCIDO h'#225' ' + IntToStr(dias) + ' dia(s)',
+          CLR_VENCIDO)
+      else if dias <= 5 then
+        AddRow(
+          tboficiomotivo.Value,
+          IntToStr(tboficioOficio.Value),
+          complexOficio,
+          tboficioRegulado.Value,
+          DateToStr(tboficioPrazo.Value),
+          'Vence em ' + IntToStr(dias) + ' dia(s)',
+          clYellow);
+    end;
+    tboficio.Next;
+  end;
+
+  { Requerimentos / OS }
+  tbreq.Filter := 'fiscal_encaminha = ' + QuotedStr(frmosurg.cbfiscal.text);
+  tbreq.First;
+  while not tbreq.Eof do
+  begin
+    if (tbreqfiscal_encaminha.Value = frmosurg.cbfiscal.text)
+      and (tbreqatendimento.Value <> True)
+      and (tbreqcancelado.Value <> True)
+      and (tbreqcomplexidade.Value <> 'BAIXA')
+      and not tbreqPrazo.IsNull then
+    begin
+      if tbcontrib.FindKey([tbreqCodigo.Value]) then
+        razaoSocial := tbcontribRazao.Value
+      else
+        razaoSocial := tbreqRequerente.Value;
+      dias := DaysBetween(Date, tbreqPrazo.Value);
+      if tbreqPrazo.Value < Date then
+        AddRow(
+          'REQUERIMENTO',
+          IntToStr(tbreqOS.Value),
+          tbreqComplexidade.Value,
+          razaoSocial,
+          DateToStr(tbreqPrazo.Value),
+          'VENCIDO h'#225' ' + IntToStr(dias) + ' dia(s)',
+          CLR_VENCIDO)
+      else if dias <= 5 then
+        AddRow(
+          'Requerimento',
+          IntToStr(tbreqOS.Value),
+          tbreqComplexidade.Value,
+          razaoSocial,
+          DateToStr(tbreqPrazo.Value),
+          'Vence em ' + IntToStr(dias) + ' dia(s)',
+          clYellow);
+    end;
+    tbreq.Next;
+  end;
+
+  { Denuncias }
+  tbdenuncia.Filter := 'fiscalencaminha = ' + QuotedStr(frmosurg.cbfiscal.text);
+  tbdenuncia.First;
+  while not tbdenuncia.Eof do
+  begin
+    if (tbdenunciafiscalencaminha.Value = frmosurg.cbfiscal.text)
+      and (tbdenunciaarchive.Value <> True)
+      and not tbdenunciaPrazo.IsNull then
+    begin
+      dias := DaysBetween(Date, tbdenunciaPrazo.Value);
+      if tbdenunciaPrazo.Value < Date then
+        AddRow(
+          'DEN'#218'NCIA',
+          IntToStr(tbdenunciaDenuncia.Value),
+          '',
+          tbdenunciaLogradouro.Value,
+          DateToStr(tbdenunciaPrazo.Value),
+          'VENCIDO h'#225' ' + IntToStr(dias) + ' dia(s)',
+          CLR_VENCIDO)
+      else if dias <= 5 then
+        AddRow(
+          'DEN'#218'NCIA',
+          IntToStr(tbdenunciaDenuncia.Value),
+          '',
+          tbdenunciaLogradouro.Value,
+          DateToStr(tbdenunciaPrazo.Value),
+          'Vence em ' + IntToStr(dias) + ' dia(s)',
+          clYellow);
+    end;
+    tbdenuncia.Next;
+  end;
+
+  { Protocolos }
+  tramitDates := TStringList.Create;
+  try
+    tbtramitacao.Open;
+    tbtramitacao.Filter := 'destino = ' + QuotedStr(frmosurg.cbfiscal.text);
+    tbtramitacao.First;
+    while not tbtramitacao.Eof do
+    begin
+      protoStr := IntToStr(tbtramitacaoProtocolo.Value);
+      dt := tbtramitacaoData.Value + tbtramitacaoHora.Value;
+      dtStr := tramitDates.Values[protoStr];
+      if (dtStr = '') or (dt > StrToFloat(dtStr)) then
+        tramitDates.Values[protoStr] := FloatToStr(dt);
+      tbtramitacao.Next;
+    end;
+
+    tbplanta.Open;
+    tbplanta.Filter := 'carga = ' + QuotedStr(frmosurg.cbfiscal.text);
+    tbplanta.First;
+    while not tbplanta.Eof do
+    begin
+      protoStr := IntToStr(tbplantaProtocolo.Value);
+      dtStr := tramitDates.Values[protoStr];
+      if dtStr <> '' then
+      begin
+        lastDt := StrToFloat(dtStr);
+        lastDate := Trunc(lastDt);
+        deadline := AddBusinessDays(lastDate, 15);
+        dias := DaysBetween(Date, deadline);
+        if tbcontrib.FindKey([tbplantaCodigo.Value]) then
+          razaoSocial := tbcontribRazao.Value
+        else
+          razaoSocial := tbplantaAssunto.Value;
+        if deadline < Date then
+          AddRow(
+            'PROTOCOLO',
+            protoStr,
+            '',
+            razaoSocial,
+            DateToStr(deadline),
+            'VENCIDO h'#225' ' + IntToStr(dias) + ' dia(s)',
+            CLR_VENCIDO)
+        else if dias <= 5 then
+          AddRow(
+            'PROTOCOLO',
+            protoStr,
+            '',
+            razaoSocial,
+            DateToStr(deadline),
+            'Vence em ' + IntToStr(dias) + ' dia(s)',
+            clYellow);
+      end;
+      tbplanta.Next;
+    end;
+  finally
+    tramitDates.Free;
+  end;
+
+  { Caixa livre }
+  if sgPendencias.RowCount = 1 then
+  begin
+    sgPendencias.RowCount := 2;
+    SetLength(RowColors, 1);
+    RowColors[0] := clInfoBk;
+    sgPendencias.Cells[0, 1] :=
+      'N'#227'o h'#225' itens vencidos ou pr'#243'ximos do vencimento na sua caixa de entrada';
+    sgPendencias.Cells[1, 1] := '';
+    sgPendencias.Cells[2, 1] := '';
+    sgPendencias.Cells[3, 1] := '';
+    sgPendencias.Cells[4, 1] := '';
+    sgPendencias.Cells[5, 1] := '';
+  end;
+end;
+
+procedure Tfrmurgencia.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  if tboficio.Active then tboficio.Close;
+  if tbreq.Active then tbreq.Close;
+  if tbdenuncia.Active then tbdenuncia.Close;
+  if tbplanta.Active then tbplanta.Close;
+  if tbtramitacao.Active then tbtramitacao.Close;
+  if tbcontrib.Active then tbcontrib.Close;
+end;
+
+procedure Tfrmurgencia.sgPendenciasDrawCell(Sender: TObject; ACol,
+  ARow: Integer; Rect: TRect; State: TGridDrawState);
+var
+  txt: string;
+  textRect: TRect;
+  spanRect: TRect;
+begin
+  if ARow = 0 then
+  begin
+    sgPendencias.Canvas.Brush.Color := $00C8C8C8;
+    sgPendencias.Canvas.Font.Style := [fsBold];
+    sgPendencias.Canvas.Font.Color := clBlack;
+    sgPendencias.Canvas.FillRect(Rect);
+    txt := sgPendencias.Cells[ACol, ARow];
+    textRect := Rect;
+    InflateRect(textRect, -4, -2);
+    DrawText(sgPendencias.Canvas.Handle, PChar(txt), Length(txt), textRect,
+      DT_LEFT or DT_VCENTER or DT_SINGLELINE);
+  end
+  else if (ARow >= 1) and (ARow <= Length(RowColors)) then
+  begin
+    if RowColors[ARow - 1] = clInfoBk then
+    begin
+      sgPendencias.Canvas.Font.Style := [fsItalic];
+      sgPendencias.Canvas.Font.Color := $00606060;
+      if ACol = 0 then
+      begin
+        spanRect.Left := 0;
+        spanRect.Top := Rect.Top;
+        spanRect.Right := sgPendencias.ClientWidth;
+        spanRect.Bottom := Rect.Bottom;
+        sgPendencias.Canvas.Brush.Color := clInfoBk;
+        sgPendencias.Canvas.FillRect(spanRect);
+        DrawText(sgPendencias.Canvas.Handle,
+          PChar(sgPendencias.Cells[0, ARow]),
+          Length(sgPendencias.Cells[0, ARow]),
+          spanRect,
+          DT_CENTER or DT_VCENTER or DT_SINGLELINE);
+      end
+      else
+      begin
+        sgPendencias.Canvas.Brush.Color := clInfoBk;
+        sgPendencias.Canvas.FillRect(Rect);
+      end;
+    end
+    else
+    begin
+      sgPendencias.Canvas.Brush.Color := RowColors[ARow - 1];
+      if RowColors[ARow - 1] = CLR_VENCIDO then
+        sgPendencias.Canvas.Font.Color := clWhite
+      else
+        sgPendencias.Canvas.Font.Color := clBlack;
+      sgPendencias.Canvas.Font.Style := [];
+      sgPendencias.Canvas.FillRect(Rect);
+      txt := sgPendencias.Cells[ACol, ARow];
+      textRect := Rect;
+      InflateRect(textRect, -4, -2);
+      DrawText(sgPendencias.Canvas.Handle, PChar(txt), Length(txt), textRect,
+        DT_LEFT or DT_VCENTER or DT_SINGLELINE or DT_END_ELLIPSIS);
+    end;
+  end
+  else
+  begin
+    sgPendencias.Canvas.Brush.Color := clWhite;
+    sgPendencias.Canvas.FillRect(Rect);
+  end;
+end;
+
+function Tfrmurgencia.IsHoliday(d: TDate): Boolean;
+var
+  m, dy, yr: Word;
+begin
+  DecodeDate(d, yr, m, dy);
+  Result := ((m = 1)  and (dy = 1))
+         or ((m = 4)  and (dy = 21))
+         or ((m = 5)  and (dy = 1))
+         or ((m = 9)  and (dy = 7))
+         or ((m = 10) and (dy = 12))
+         or ((m = 11) and (dy = 2))
+         or ((m = 11) and (dy = 15))
+         or ((m = 12) and (dy = 25));
+end;
+
+function Tfrmurgencia.IsBusinessDay(d: TDate): Boolean;
+begin
+  Result := (DayOfWeek(d) >= 2) and (DayOfWeek(d) <= 6) and not IsHoliday(d);
+end;
+
+function Tfrmurgencia.AddBusinessDays(startDate: TDate; days: Integer): TDate;
+var
+  current: TDate;
+  remaining: Integer;
+begin
+  current := startDate;
+  remaining := days;
+  while remaining > 0 do
+  begin
+    current := current + 1;
+    if IsBusinessDay(current) then
+      Dec(remaining);
+  end;
+  Result := current;
+end;
+
+end.
