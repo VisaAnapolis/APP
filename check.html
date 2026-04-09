@@ -497,6 +497,17 @@
     let pdfAtual = '';
 
     function abrirPDF(url, titulo) {
+      // No APP (PWA) ou mobile, navega para o visualizador com botão "Voltar"
+      const isMobileOrPWA =
+        /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+        window.matchMedia('(display-mode: standalone)').matches ||
+        !!window.navigator.standalone;
+      if (isMobileOrPWA) {
+        location.href = 'pdf_viewer.html?src=' + encodeURIComponent(url) +
+                        '&title=' + encodeURIComponent(titulo);
+        return;
+      }
+
       pdfAtual = url;
       document.getElementById('pdfTitle').textContent = titulo;
       
