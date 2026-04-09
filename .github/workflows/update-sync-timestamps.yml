@@ -38,13 +38,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
 
       - name: Extrair timestamp e atualizar arquivos sync
         env:
           COMMIT_MSG: ${{ github.event.head_commit.message }}
           COMMIT_TIMESTAMP: ${{ github.event.head_commit.timestamp }}
+          # Usa os dados do webhook (sempre corretos, sem race condition de git diff)
+          CHANGED_FILES: >-
+            ${{ join(github.event.head_commit.modified, ' ') }}
+            ${{ join(github.event.head_commit.added, ' ') }}
         run: |
           set -e
 
@@ -63,25 +65,24 @@ jobs:
             echo "Timestamp extraído da mensagem: $TIMESTAMP"
           fi
 
-          # 3. Descobre quais arquivos CSV mudaram neste commit
-          CHANGED=$(git diff --name-only HEAD~1 HEAD)
-          echo "Arquivos alterados: $CHANGED"
+          # 3. Descobre quais arquivos CSV mudaram (via payload do webhook, não git diff)
+          echo "Arquivos alterados: $CHANGED_FILES"
 
           UPDATED=0
 
-          if echo "$CHANGED" | grep -q "data/cnae_aux.csv"; then
+          if echo "$CHANGED_FILES" | grep -q "data/cnae_aux.csv"; then
             echo "$TIMESTAMP" > data/cnae_sync.txt
             echo "cnae_sync.txt atualizado → $TIMESTAMP"
             UPDATED=1
           fi
 
-          if echo "$CHANGED" | grep -q "data/taxa.csv"; then
+          if echo "$CHANGED_FILES" | grep -q "data/taxa.csv"; then
             echo "$TIMESTAMP" > data/taxa_sync.txt
             echo "taxa_sync.txt atualizado → $TIMESTAMP"
             UPDATED=1
           fi
 
-          if echo "$CHANGED" | grep -q "data/auditoria.csv"; then
+          if echo "$CHANGED_FILES" | grep -q "data/auditoria.csv"; then
             echo "$TIMESTAMP" > data/auditoria_sync.txt
             echo "auditoria_sync.txt atualizado → $TIMESTAMP"
             UPDATED=1
@@ -98,4 +99,6 @@ jobs:
             [ -f "$f" ] && git add "$f" || true
           done
           git diff --staged --quiet || git commit -m "Atualizar timestamps de sincronização [skip ci]"
+          # Rebase sobre eventuais pushes concorrentes antes de enviar
+          git pull --rebase origin main
           git push
