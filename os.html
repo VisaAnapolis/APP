@@ -2904,9 +2904,8 @@ function obterDataPrazo(os) {
             pdfs.forEach((arquivo) => {
                 const nome = arquivo.replace(/^den_\d+_\d+\.pdf$/i, arquivo);
                 const a = document.createElement('a');
-                a.href = `data/pdf/${arquivo}`;
-                a.target = '_blank';
-                a.rel = 'noopener noreferrer';
+                const pdfSrc = `data/pdf/${arquivo}`;
+                a.href = `pdf_viewer.html?src=${encodeURIComponent(pdfSrc)}&title=${encodeURIComponent(arquivo)}`;
                 a.className = 'pdf-card';
                 a.title = `Abrir ${arquivo}`;
                 a.innerHTML = `<span class="pdf-icon">📄</span><span>${arquivo}</span>`;

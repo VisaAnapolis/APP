@@ -89,5 +89,13 @@
   </p>
 
   <script src="./js/platform-detector.js"></script>
+  <script>
+    // No APP (PWA) ou mobile, redireciona para o visualizador com botão "Voltar"
+    if (window.platform.isMobile() || window.platform.isPWA()) {
+      var title = encodeURIComponent('MTS – Mandado de Tarefas Sanitárias');
+      var src   = encodeURIComponent('mts/MTS_GERAL_TODOS_FISCAIS.pdf');
+      location.replace('pdf_viewer.html?src=' + src + '&title=' + title);
+    }
+  </script>
 </body>
 </html>
