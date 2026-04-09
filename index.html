@@ -2829,6 +2829,7 @@ aplicarCorCard(cards[4], auditorias.vencidas,     auditorias.aVencer);
         return v;
       }
 
+      // CVS: lê diretamente do arquivo txt gravado pelo sistema externo
       function carregarSync(arquivo, elementId, prefixo) {
         const el = document.getElementById(elementId);
         if (!el) return;
@@ -2841,10 +2842,27 @@ aplicarCorCard(cards[4], auditorias.vencidas,     auditorias.aVencer);
           .catch(function() { el.innerHTML = prefixo + ' ⚠️ não foi possível verificar'; });
       }
 
-      carregarSync('cvs_sync.txt',       'sync-line-cvs',       '🔄 CVS:');
-      carregarSync('taxa_sync.txt',      'sync-line-taxa',      '💰 SIM – Taxa:');
-      carregarSync('cnae_sync.txt',      'sync-line-cnae',      '🏦 SIM – CNAE:');
-      carregarSync('auditoria_sync.txt', 'sync-line-auditoria', '📋 OS Auditoria:');
+      // Taxa, CNAE, Auditoria: busca data do último commit do CSV via GitHub API
+      function carregarSyncCommit(csvPath, elementId, prefixo) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        const url = 'https://api.github.com/repos/garrado/VISA/commits?path=' + csvPath + '&per_page=1';
+        fetch(url, { cache: 'no-store' })
+          .then(function(resp) { if (!resp.ok) throw new Error('HTTP ' + resp.status); return resp.json(); })
+          .then(function(data) {
+            if (!data || !data[0]) throw new Error('vazio');
+            const iso = data[0].commit.committer.date;
+            const d = new Date(iso);
+            const exibicao = d.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+            el.innerHTML = prefixo + ' <strong>' + exibicao + '</strong>';
+          })
+          .catch(function() { el.innerHTML = prefixo + ' ⚠️ não foi possível verificar'; });
+      }
+
+      carregarSync('cvs_sync.txt',            'sync-line-cvs',       '🔄 CVS:');
+      carregarSyncCommit('data/taxa.csv',      'sync-line-taxa',      '💰 SIM – Taxa:');
+      carregarSyncCommit('data/cnae_aux.csv',  'sync-line-cnae',      '🏦 SIM – CNAE:');
+      carregarSyncCommit('data/auditoria.csv', 'sync-line-auditoria', '📋 OS Auditoria:');
     });
 
     // Oculta card Sugestões se quantidade de cards for ÍMPAR (mobile)
