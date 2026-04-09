@@ -1522,7 +1522,8 @@
        MODAL - Anexos de Inspeções
        ======================================== -->
   <div id="inspAnexosBackdrop" class="modal-backdrop modalBackdrop" hidden
-       onclick="fecharAnexosInspecao()"></div>
+       tabindex="0" onclick="fecharAnexosInspecao()"
+       onkeydown="if(event.key==='Enter'||event.key===' ')fecharAnexosInspecao()"></div>
 
   <div id="inspAnexosModal" hidden>
     <div class="insp-anexos-box" role="dialog" aria-modal="true" aria-labelledby="inspAnexosTitulo">

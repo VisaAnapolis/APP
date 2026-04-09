@@ -633,7 +633,7 @@
   window.lightboxNavInsp      = lightboxNavInsp;
   window.fecharLightboxInsp   = fecharLightboxInsp;
 
-
+  function applyFilter() {
     const q = normalize(els.q?.value || "");
     if (!q) {
       renderResults(indexItems.slice(0, 80));
