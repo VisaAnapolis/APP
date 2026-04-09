@@ -101,6 +101,14 @@
   let municipalNormMap = new Map(); // CODIGO (string) → MUNICIPAL digits-only (for search)
   let taxaMap          = new Map(); // Inscrição Municipal (string) → dados da taxa
 
+  // Índices de anexos de inspeções (ndoc → [arquivos])
+  let imagensInspecao = {};
+  let pdfsInspecao    = {};
+
+  // Estado do lightbox de inspeções
+  let _lbFotos = [];
+  let _lbIdx   = 0;
+
   function showStatus(msg) { safeText(els.status, msg || ""); }
   function hideDetail() {
     if (els.detailPanel) els.detailPanel.hidden = true;
@@ -477,6 +485,23 @@
             });
             sub.textContent = "Histórico: ";
             sub.appendChild(btn);
+
+            // Botão Anexos (só aparece se houver arquivos indexados)
+            const fotos = imagensInspecao[String(ndoc)] || [];
+            const pdfs  = pdfsInspecao[String(ndoc)] || [];
+            if (fotos.length + pdfs.length > 0) {
+              const btnAnexos = document.createElement("button");
+              btnAnexos.type = "button";
+              btnAnexos.className = "btn insp-anexos-btn";
+              btnAnexos.style.cssText = "padding:8px 10px; margin-left:8px;";
+              btnAnexos.textContent = "📎 Anexos";
+              btnAnexos.addEventListener("click", (ev) => {
+                ev.preventDefault();
+                ev.stopPropagation();
+                abrirAnexosInspecao(ndoc);
+              });
+              sub.appendChild(btnAnexos);
+            }
           } else {
             sub.textContent = "Histórico: —";
           }
@@ -523,7 +548,92 @@
     }
   }
 
-  function applyFilter() {
+  // ── Galeria de anexos de inspeções ────────────────────────────────────────
+
+  function abrirAnexosInspecao(ndoc) {
+    const fotos = imagensInspecao[String(ndoc)] || [];
+    const pdfs  = pdfsInspecao[String(ndoc)] || [];
+    if (!fotos.length && !pdfs.length) return;
+
+    const grid = byId("inspAnexosGrid");
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    fotos.forEach((arquivo, i) => {
+      const img = document.createElement("img");
+      img.src = `data/img/${arquivo}`;
+      img.alt = `Foto ${i + 1} da inspeção ${ndoc}`;
+      img.className = "insp-gallery-thumb";
+      img.addEventListener("click", () => abrirLightboxInsp(fotos, i));
+      grid.appendChild(img);
+    });
+
+    pdfs.forEach((arquivo) => {
+      const a = document.createElement("a");
+      const pdfSrc = `data/pdf/${arquivo}`;
+      a.href = `pdf_viewer.html?src=${encodeURIComponent(pdfSrc)}&title=${encodeURIComponent(arquivo)}`;
+      a.className = "insp-pdf-card";
+      a.title = `Abrir ${arquivo}`;
+      a.innerHTML = `<span class="insp-pdf-icon">📄</span><span>${arquivo}</span>`;
+      grid.appendChild(a);
+    });
+
+    const numFotos = fotos.length;
+    const numPdfs  = pdfs.length;
+    const partes = [];
+    if (numFotos) partes.push(`${numFotos} foto${numFotos > 1 ? "s" : ""}`);
+    if (numPdfs)  partes.push(`${numPdfs} PDF${numPdfs > 1 ? "s" : ""}`);
+    const titleEl = byId("inspAnexosTitulo");
+    if (titleEl) titleEl.textContent = `📎 Anexos — Inspeção ${ndoc} (${partes.join(", ")})`;
+
+    const modal = byId("inspAnexosModal");
+    if (modal) modal.hidden = false;
+    const backdrop = byId("inspAnexosBackdrop");
+    if (backdrop) backdrop.hidden = false;
+  }
+
+  function fecharAnexosInspecao() {
+    const modal = byId("inspAnexosModal");
+    if (modal) modal.hidden = true;
+    const backdrop = byId("inspAnexosBackdrop");
+    if (backdrop) backdrop.hidden = true;
+    fecharLightboxInsp();
+  }
+
+  function abrirLightboxInsp(fotos, idx) {
+    _lbFotos = fotos;
+    _lbIdx   = idx;
+    _renderLightboxInsp();
+    const lb = byId("inspLightboxOverlay");
+    if (lb) lb.classList.add("active");
+  }
+
+  function fecharLightboxInsp() {
+    _lbFotos = [];
+    _lbIdx   = 0;
+    const lb = byId("inspLightboxOverlay");
+    if (lb) lb.classList.remove("active");
+  }
+
+  function lightboxNavInsp(dir) {
+    if (!_lbFotos.length) return;
+    _lbIdx = (_lbIdx + dir + _lbFotos.length) % _lbFotos.length;
+    _renderLightboxInsp();
+  }
+
+  function _renderLightboxInsp() {
+    const img = byId("inspLightboxImg");
+    const counter = byId("inspLightboxCounter");
+    if (img) img.src = `data/img/${_lbFotos[_lbIdx]}`;
+    if (counter) counter.textContent = `${_lbIdx + 1} / ${_lbFotos.length}`;
+  }
+
+  // Expor funções de galeria ao escopo global (chamadas inline no HTML)
+  window.fecharAnexosInspecao = fecharAnexosInspecao;
+  window.lightboxNavInsp      = lightboxNavInsp;
+  window.fecharLightboxInsp   = fecharLightboxInsp;
+
+
     const q = normalize(els.q?.value || "");
     if (!q) {
       renderResults(indexItems.slice(0, 80));
@@ -567,6 +677,17 @@
     // Carrega inscrições municipais em segundo plano (não bloqueia UI)
     loadMunicipalData().catch(() => {});
     loadTaxaData().catch(() => {});
+
+    // Carregar índices de anexos de inspeções (silencioso se ausente)
+    fetch("data/img/index.json")
+      .then(r => r.ok ? r.json() : {})
+      .then(idx => { imagensInspecao = idx || {}; })
+      .catch(() => { imagensInspecao = {}; });
+
+    fetch("data/pdf/index.json")
+      .then(r => r.ok ? r.json() : {})
+      .then(idx => { pdfsInspecao = idx || {}; })
+      .catch(() => { pdfsInspecao = {}; });
 
     const urlParams = new URLSearchParams(window.location.search);
 

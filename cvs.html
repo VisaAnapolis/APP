@@ -1151,6 +1151,171 @@
       .kv__k {
         margin-top: 6px !important;
       }
+    }
+
+    /* ── Anexos de Inspeções ─────────────────────────────────────── */
+    .insp-anexos-btn {
+      background: linear-gradient(135deg, #6f42c1, #9c27b0);
+      color: #fff;
+    }
+    .insp-anexos-btn:hover { opacity: 0.85; }
+
+    .insp-gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+      padding: 10px 0;
+    }
+
+    .insp-gallery-thumb {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .insp-gallery-thumb:hover {
+      border-color: #6f42c1;
+      transform: scale(1.04);
+    }
+
+    .insp-pdf-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      aspect-ratio: 1 / 1;
+      background: #fff5f5;
+      border: 2px solid #e74c3c;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      color: #c0392b;
+      font-size: 0.78em;
+      font-weight: 600;
+      padding: 8px;
+      text-align: center;
+      word-break: break-all;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .insp-pdf-card:hover {
+      background: #fde8e8;
+      transform: scale(1.04);
+    }
+    .insp-pdf-icon {
+      font-size: 2.4em;
+      line-height: 1;
+    }
+
+    /* Modal de Anexos de Inspeções */
+    #inspAnexosModal {
+      position: fixed;
+      inset: 0;
+      z-index: 1100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #inspAnexosModal .insp-anexos-box {
+      background: var(--surface, #fff);
+      border-radius: 16px;
+      max-width: 900px;
+      width: 95vw;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+      overflow: hidden;
+    }
+    #inspAnexosModal .insp-anexos-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line, #e2e8f0);
+      gap: 12px;
+    }
+    #inspAnexosModal .insp-anexos-header h2 {
+      margin: 0;
+      font-size: 1.1em;
+      font-weight: 700;
+    }
+    #inspAnexosModal .insp-anexos-body {
+      overflow-y: auto;
+      padding: 16px 20px;
+      flex: 1;
+    }
+    #inspAnexosModal .insp-anexos-footer {
+      padding: 12px 20px;
+      border-top: 1px solid var(--line, #e2e8f0);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    /* Lightbox de inspeções */
+    #inspLightboxOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2100;
+      background: rgba(0,0,0,0.92);
+      align-items: center;
+      justify-content: center;
+    }
+    #inspLightboxOverlay.active { display: flex; }
+    #inspLightboxImg {
+      max-width: 90vw;
+      max-height: 85vh;
+      border-radius: 6px;
+      box-shadow: 0 0 40px rgba(0,0,0,0.8);
+      object-fit: contain;
+    }
+    .insp-lb-close {
+      position: absolute;
+      top: 18px;
+      right: 24px;
+      color: #fff;
+      font-size: 2.2em;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 1;
+      user-select: none;
+    }
+    .insp-lb-close:hover { color: #e06c75; }
+    .insp-lb-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      border: none;
+      font-size: 2em;
+      padding: 10px 16px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.2s;
+      user-select: none;
+    }
+    .insp-lb-nav:hover { background: rgba(255,255,255,0.3); }
+    #inspLightboxPrev { left: 16px; }
+    #inspLightboxNext { right: 16px; }
+    .insp-lb-counter {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #fff;
+      font-size: 0.95em;
+      background: rgba(0,0,0,0.5);
+      padding: 4px 14px;
+      border-radius: 20px;
+    }
+
+    @media print {
+      #inspAnexosModal, #inspAnexosBackdrop, #inspLightboxOverlay { display: none !important; }
     }</style>
   <link rel="stylesheet" href="./css/sidebar.css">
 </head>
@@ -1352,6 +1517,37 @@
        MODAL - Histórico/Memo
        ======================================== -->
   <div id="modalBackdrop" class="modal-backdrop modalBackdrop" hidden></div>
+
+  <!-- ========================================
+       MODAL - Anexos de Inspeções
+       ======================================== -->
+  <div id="inspAnexosBackdrop" class="modal-backdrop modalBackdrop" hidden
+       onclick="fecharAnexosInspecao()"></div>
+
+  <div id="inspAnexosModal" hidden>
+    <div class="insp-anexos-box" role="dialog" aria-modal="true" aria-labelledby="inspAnexosTitulo">
+      <div class="insp-anexos-header">
+        <h2 id="inspAnexosTitulo">📎 Anexos</h2>
+        <button class="btn btn--light" type="button" onclick="fecharAnexosInspecao()">Fechar</button>
+      </div>
+      <div class="insp-anexos-body">
+        <div id="inspAnexosGrid" class="insp-gallery-grid"></div>
+      </div>
+      <div class="insp-anexos-footer">
+        <button class="btn btn--light" type="button" onclick="fecharAnexosInspecao()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox de foto ampliada (inspeções) -->
+  <div id="inspLightboxOverlay">
+    <span class="insp-lb-close" onclick="fecharLightboxInsp()">&times;</span>
+    <button id="inspLightboxPrev" class="insp-lb-nav" onclick="lightboxNavInsp(-1)">&#8249;</button>
+    <img id="inspLightboxImg" src="" alt="Foto da inspeção">
+    <button id="inspLightboxNext" class="insp-lb-nav" onclick="lightboxNavInsp(1)">&#8250;</button>
+    <div id="inspLightboxCounter" class="insp-lb-counter"></div>
+  </div>
+
 
   <div id="modal" class="modal" hidden>
     <div class="modalBox" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
