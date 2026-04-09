@@ -711,6 +711,35 @@
             transform: scale(1.04);
         }
 
+        .pdf-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            aspect-ratio: 1 / 1;
+            background: #fff5f5;
+            border: 2px solid #e74c3c;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #c0392b;
+            font-size: 0.78em;
+            font-weight: 600;
+            padding: 8px;
+            text-align: center;
+            word-break: break-all;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .pdf-card:hover {
+            background: #fde8e8;
+            transform: scale(1.04);
+        }
+        .pdf-card .pdf-icon {
+            font-size: 2.4em;
+            line-height: 1;
+        }
+
         /* Lightbox */
         #lightboxOverlay {
             display: none;
@@ -1040,7 +1069,7 @@
     <div id="galleryModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="galleryTitle">📸 Fotos Anexadas</h2>
+                <h2 id="galleryTitle">📎 Anexos</h2>
                 <span class="close" onclick="fecharGaleria()">&times;</span>
             </div>
             <div class="modal-body">
@@ -1114,6 +1143,7 @@
         
         // Índice de imagens de denúncias { "numeroDenuncia": ["arquivo1.jpg", ...] }
         let imagensDenuncia = {};
+        let pdfsDenuncia = {};
 
         // Cache de dados (carrega sob demanda)
         let dadosRequerimento = [];
@@ -2824,13 +2854,14 @@ function obterDataPrazo(os) {
             // Fotos anexadas (apenas Denúncia)
             if (os.tipo === 'Denúncia') {
                 const fotos = imagensDenuncia[String(os.numero)] || [];
-                if (fotos.length > 0) {
-                    const numFotos = fotos.length;
-                    const label = numFotos === 1 ? '1 foto anexada' : `${numFotos} fotos anexadas`;
+                const pdfs  = pdfsDenuncia[String(os.numero)] || [];
+                const totalAnexos = fotos.length + pdfs.length;
+                if (totalAnexos > 0) {
+                    const label = totalAnexos === 1 ? '1 anexo' : `${totalAnexos} anexos`;
                     html += `
                 <div class="detail-section" style="text-align:center;padding-top:5px;">
                     <button class="gallery-btn" onclick="abrirGaleria('${os.numero}')">
-                        📸 Ver ${label}
+                        📎 Ver ${label}
                     </button>
                 </div>
                     `;
@@ -2855,10 +2886,12 @@ function obterDataPrazo(os) {
 
         function abrirGaleria(numeroDenuncia) {
             const fotos = imagensDenuncia[String(numeroDenuncia)] || [];
-            if (!fotos.length) return;
+            const pdfs  = pdfsDenuncia[String(numeroDenuncia)] || [];
+            if (!fotos.length && !pdfs.length) return;
 
             const grid = document.getElementById('galleryGrid');
             grid.innerHTML = '';
+
             fotos.forEach((arquivo, i) => {
                 const img = document.createElement('img');
                 img.src = `data/img/${arquivo}`;
@@ -2868,8 +2901,25 @@ function obterDataPrazo(os) {
                 grid.appendChild(img);
             });
 
+            pdfs.forEach((arquivo) => {
+                const nome = arquivo.replace(/^den_\d+_\d+\.pdf$/i, arquivo);
+                const a = document.createElement('a');
+                a.href = `data/pdf/${arquivo}`;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.className = 'pdf-card';
+                a.title = `Abrir ${arquivo}`;
+                a.innerHTML = `<span class="pdf-icon">📄</span><span>${arquivo}</span>`;
+                grid.appendChild(a);
+            });
+
+            const numFotos = fotos.length;
+            const numPdfs  = pdfs.length;
+            let partes = [];
+            if (numFotos) partes.push(`${numFotos} foto${numFotos > 1 ? 's' : ''}`);
+            if (numPdfs)  partes.push(`${numPdfs} PDF${numPdfs > 1 ? 's' : ''}`);
             document.getElementById('galleryTitle').textContent =
-                `📸 Fotos Anexadas — Denúncia ${numeroDenuncia}`;
+                `📎 Anexos — Denúncia ${numeroDenuncia} (${partes.join(', ')})`;
             document.getElementById('galleryModal').style.display = 'block';
         }
 
@@ -2945,6 +2995,12 @@ function obterDataPrazo(os) {
                 .then(r => r.ok ? r.json() : {})
                 .then(idx => { imagensDenuncia = idx || {}; })
                 .catch(() => { imagensDenuncia = {}; });
+
+            // Carregar índice de PDFs de denúncias (silencioso se ausente)
+            fetch('data/pdf/index.json')
+                .then(r => r.ok ? r.json() : {})
+                .then(idx => { pdfsDenuncia = idx || {}; })
+                .catch(() => { pdfsDenuncia = {}; });
             
             // Popular select de fiscais (leve)
             popularFiscais();
