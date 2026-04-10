@@ -2848,10 +2848,10 @@ aplicarCorCard(cards[4], auditorias.vencidas,     auditorias.aVencer);
           .catch(function() { el.innerHTML = prefixo + ' ⚠️ não foi possível verificar'; });
       }
 
-      carregarSync('cvs_sync.txt',       'sync-line-cvs',       '🔄 CVS:');
-      carregarSync('taxa_sync.txt',      'sync-line-taxa',      '💰 SIM – Taxa:');
-      carregarSync('cnae_sync.txt',      'sync-line-cnae',      '🏦 SIM – CNAE:');
-      carregarSync('auditoria_sync.txt', 'sync-line-auditoria', '📋 OS Auditoria:');
+      carregarSync('cvs_sync.txt',                    'sync-line-cvs',       '🔄 CVS:');
+      carregarSyncCommit('data/taxa.csv',     'sync-line-taxa',      '💰 SIM – Taxa:');
+      carregarSyncCommit('data/cnae_aux.csv', 'sync-line-cnae',      '🏦 SIM – CNAE:');
+      carregarSyncCommit('data/auditoria.csv','sync-line-auditoria', '📋 OS Auditoria:');
     });
 
     // Oculta card Sugestões se quantidade de cards for ÍMPAR (mobile)
