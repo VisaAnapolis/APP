@@ -1302,11 +1302,7 @@
             <span class="nav-icon">🔍</span> Protocolos
           </a>
 
-          <div class="nav-section-label">Relatórios</div>
-          <a class="visa-nav-item" id="link-rmpf" href="rmpf.html">
-            <span class="nav-icon">📚</span> RMPF
-          </a>
-          <a class="visa-nav-item" id="link-inspecoes" href="inspecoes.html">
+          <div class="nav-section-label">Relatórios</div>          <a class="visa-nav-item" id="link-inspecoes" href="inspecoes.html">
             <span class="nav-icon">👁️</span> Inspeções
           </a>
           <a class="visa-nav-item" href="relatorio_plantao_fiscal.html">
@@ -1951,9 +1947,7 @@
     };
 
     // ===== Links dependentes do perfil =====
-    const LINKS = {
-      rmpf: document.getElementById('link-rmpf'),
-      inspecoes: document.getElementById('link-inspecoes'),
+    const LINKS = {      inspecoes: document.getElementById('link-inspecoes'),
       admin: document.getElementById('link-admin'),
       comply: document.getElementById('link-comply')
     };
@@ -1969,20 +1963,14 @@
       a.removeAttribute('aria-disabled');
       a.removeAttribute('title');
     }
-    function lockLinksUntilProfile(){
-      disableLink(LINKS.rmpf, 'Carregando perfil...');
-      disableLink(LINKS.inspecoes, 'Carregando perfil...');
+    function lockLinksUntilProfile(){      disableLink(LINKS.inspecoes, 'Carregando perfil...');
       disableLink(LINKS.admin, 'Carregando perfil...');
       disableLink(LINKS.comply, 'Carregando perfil...');
     }
     function applyLinkPermissions(grupo){
-      if (grupo === 'Fiscal' || grupo === 'Administrador'){
-        enableLink(LINKS.rmpf);
-        enableLink(LINKS.inspecoes);
+      if (grupo === 'Fiscal' || grupo === 'Administrador'){        enableLink(LINKS.inspecoes);
         enableLink(LINKS.comply);
-      } else {
-        disableLink(LINKS.rmpf, 'Acesso conforme perfil');
-        disableLink(LINKS.inspecoes, 'Acesso conforme perfil');
+      } else {        disableLink(LINKS.inspecoes, 'Acesso conforme perfil');
         disableLink(LINKS.comply, 'Acesso conforme perfil');
       }
 
