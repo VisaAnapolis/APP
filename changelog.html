@@ -183,6 +183,18 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.6.1 — 10/04/2026 (Horário de Brasília – UTC−3)</h3>
+  <strong>📎 Anexos de imagem e PDF em Denúncias e no Histórico do Regulado</strong>
+  <ul>
+    <li><strong>Denúncias com anexos (<code>os.html</code>):</strong> ao abrir o detalhe de uma OS do tipo Denúncia, o sistema verifica os índices <code>data/img/index.json</code> e <code>data/pdf/index.json</code> e, se existirem arquivos vinculados ao número da denúncia, exibe o botão <em>📎 Ver X anexos</em>. Ao clicar, abre uma galeria com miniaturas das fotos (com lightbox de navegação) e cards de PDF que abrem no visualizador integrado (<code>pdf_viewer.html</code>).</li>
+    <li><strong>Histórico do regulado com anexos (<code>js/regulados1.js</code>):</strong> na listagem de inspeções do card de regulado, cada linha que possui arquivos indexados (<code>imagensInspecao</code> / <code>pdfsInspecao</code>) passa a exibir o botão <em>📎 Anexos</em> ao lado do link de histórico. Ao clicar, abre galeria idêntica à das denúncias — thumbnails com lightbox para imagens e cards com link para PDF.</li>
+    <li><strong>Índices de arquivos:</strong> ambas as páginas carregam os índices <code>data/img/index.json</code> e <code>data/pdf/index.json</code> de forma silenciosa (sem erros ao usuário caso os arquivos não existam), usando os números de denúncia / ndoc como chave.</li>
+    <li><strong>Novidade no dashboard (<code>index.html</code>):</strong> adicionada entrada <em>Anexos em Denúncias e Histórico de Regulados</em> na seção <em>Novidades no Aplicativo</em>; removida entrada mais antiga (<em>CNAEs SIM × CVS</em>) para manter o painel enxuto.</li>
+  </ul>
+  <p><strong>Arquivos criados/modificados:</strong> <code>os.html</code> — galeria de imagens e PDFs para denúncias; <code>js/regulados1.js</code> — botão e galeria de anexos no histórico do regulado; <code>index.html</code> — nova novidade + remoção entrada antiga; <code>changelog.html</code> — esta entrada. <em>APP_VERSION não alterada — aguardando aprovação manual.</em></p>
+</div>
+
+<div class="section">
   <h3>v2.6.0 — 02/04/2026 11:19 (Horário de Brasília – UTC−3)</h3>
   <strong>📋 OS de Auditoria no APP + automação de timestamps de sincronização</strong>
   <ul>
