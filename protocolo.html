@@ -173,6 +173,19 @@
 
     .meta-item strong { color: var(--text-primary); font-weight: 600; }
 
+    .badge-inativo {
+      display: inline-block;
+      background: #dc3545;
+      color: white;
+      font-size: 0.75em;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: 8px;
+      vertical-align: middle;
+      letter-spacing: 0.02em;
+    }
+
     .badge-count {
       flex-shrink: 0;
       background: rgba(26, 58, 107, 0.1);
@@ -810,11 +823,12 @@
     const endereco = formatarEndereco(regulado);
     const razao    = regulado.razao    || '-';
     const fantasia = regulado.fantasia || '';
+    const inativo  = (regulado.inatividade || '').trim().toLowerCase() === 'true';
 
     card.innerHTML = `
       <div class="regulado-header">
         <div class="regulado-info">
-          <h3 class="regulado-razao">${escHtml(razao)}</h3>
+          <h3 class="regulado-razao">${escHtml(razao)}${inativo ? '<span class="badge-inativo">INATIVO</span>' : ''}</h3>
           ${fantasia ? `<div class="regulado-fantasia">${escHtml(fantasia)}</div>` : ''}
           <div class="regulado-meta">
             <span class="meta-item"><strong>CNPJ/CPF:</strong> ${escHtml(doc)}</span>

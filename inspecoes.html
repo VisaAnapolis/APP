@@ -346,6 +346,18 @@
             padding: 6px 4px !important;
         }
 
+        .badge-inativo {
+            display: inline-block;
+            background: #dc3545;
+            color: white;
+            font-size: 0.7em;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 8px;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+
         .os-numero {
             font-size: 1.05em;
             font-weight: 400;
@@ -920,7 +932,8 @@
                         razao:    trimSafe(r.RAZAO),
                         fantasia: trimSafe(r.FANTASIA),
                         cpf:      trimSafe(r.CPF),
-                        cgc:      trimSafe(r.CGC)
+                        cgc:      trimSafe(r.CGC),
+                        inativo:  trimSafe(r.INATIVIDADE).toLowerCase() === 'true'
                     });
                 });
 
@@ -1075,7 +1088,8 @@
                         razao:    trimSafe(r.RAZAO),
                         fantasia: trimSafe(r.FANTASIA),
                         cpf:      trimSafe(r.CPF),
-                        cgc:      trimSafe(r.CGC)
+                        cgc:      trimSafe(r.CGC),
+                        inativo:  trimSafe(r.INATIVIDADE).toLowerCase() === 'true'
                     };
                 }
 
@@ -1091,6 +1105,7 @@
                 }
 
                 const razaoSocial = reguladoInfo ? reguladoInfo.razao : '';
+                const reguladoInativo = reguladoInfo ? (reguladoInfo.inativo || false) : false;
 
                 // 4) CNAE / Complexidade (por Subclasse = Atividade)
                 let cnaeSubclasse = '';
@@ -1150,6 +1165,7 @@
                     tipo: trimSafe(insp.TIPO),
                     numero: trimSafe(insp.NUMERO),
                     razao: razaoSocial,
+                    inativo: reguladoInativo,
                     cnae: cnaeSubclasse,
                     complexidade: complexidade
                 });
@@ -1238,7 +1254,7 @@
                         <td class="os-cell">${osHTML}</td>
                         <td>${r.tipo}</td>
                         <td>${r.numero}</td>
-                        <td>${r.razao}</td>
+                        <td>${r.razao}${r.inativo ? ' <span class="badge-inativo">INATIVO</span>' : ''}</td>
                         <td>${r.cnae}</td>
                         <td>${r.complexidade}</td>
                     </tr>
