@@ -183,6 +183,17 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.6.2 — 11/04/2026 14:56 (Horário de Brasília – UTC−3)</h3>
+  <strong>🔧 Correções de integridade de dados + sinalização visual de regulados inativos</strong>
+  <ul>
+    <li><strong>Alvarás cancelados excluídos das contagens (<code>comply.html</code> e <code>indicadores.html</code>):</strong> registros com <code>Cancela = 'True'</code> eram incluídos nas contagens de alvarás emitidos, distorcendo os indicadores de conformidade e o painel de indicadores. O filtro <code>alvFiltrados</code> / <code>alvEmit</code> agora descarta esses registros antes de qualquer contagem.</li>
+    <li><strong>Badge INATIVO em regulados (<code>protocolo.html</code>, <code>inspecoes.html</code>, <code>os.html</code>):</strong> quando o campo <code>INATIVIDADE = 'True'</code>, um badge vermelho <strong>INATIVO</strong> é exibido ao lado da razão social — nos cards de resultado de busca de protocolos, na coluna Empresa da tabela de inspeções e na tabela/card/painel de detalhes de OS. Campo <code>regulado_inativo</code> adicionado ao objeto OS para propagação correta.</li>
+    <li><strong>CSS <code>.badge-inativo</code>:</strong> adicionado em cada arquivo onde o badge é utilizado, com estilo consistente com o <code>badge-danger</code> já existente.</li>
+  </ul>
+  <p><strong>Arquivos criados/modificados:</strong> <code>comply.html</code> — excluir alvarás cancelados; <code>indicadores.html</code> — excluir alvarás cancelados; <code>protocolo.html</code> — badge INATIVO nos cards; <code>inspecoes.html</code> — badge INATIVO na tabela; <code>os.html</code> — badge INATIVO + campo <code>regulado_inativo</code>; <code>js/version.js</code> — APP_VERSION 2.6.2; <code>service-worker.js</code> — CACHE_NAME visa-v2.6.2; <code>changelog.html</code> — esta entrada.</p>
+</div>
+
+<div class="section">
   <h3>v2.6.1 — 10/04/2026 22:00 (Horário de Brasília – UTC−3)</h3>
   <strong>📎 Anexos de imagem e PDF em Denúncias e no Histórico do Regulado</strong>
   <ul>
@@ -350,20 +361,6 @@
     <li><strong>Bug corrigido — tokens FCM não eram gravados no Firestore:</strong> a função de registro de token em <code>js/push-notifications.js</code> não estava salvando corretamente o array de <code>fcmTokens</code> na coleção <code>usuarios</code>. Corrigido: (1) validação melhorada da resposta de registro; (2) sincronização corrigida com <code>updateDoc</code> para Firestore; (3) tratamento de duplicação de tokens aprimorado. O script <code>.github/scripts/notify-os.js</code> também foi revisado para garantir leitura correta dos tokens antes de enviar notificações multicast.</li>
   </ul>
   <p><strong>Arquivos modificados:</strong> <code>comply.html</code> — reescrito com layout padrão, exportar HTML, textos com acentuação corrigida; 22 páginas HTML — link na sidebar; <code>index.html</code> — novidade e permissões; <code>js/push-notifications.js</code> — correção do registro de token FCM; <code>.github/scripts/notify-os.js</code> — validação de tokens; <code>changelog.html</code> — esta entrada; <code>APP_VERSION</code> 2.4.6.</p>
-</div>
-
-<div class="section">
-  <h3>v2.4.5 — 01/03/2026 22:47 (Horário de Brasília – UTC−3)</h3>
-  <strong>Correção de header em iOS e ajuste de layout em telas pequenas</strong>
-  <ul>
-    <li><strong>iOS — header com fundo azul corrigido:</strong> a classe <code>.topbar</code> em iOS estava renderizando com background azul em <code>components.css</code> (linha 361, valor hardcoded <code>rgba(44, 90, 160, 0.9)</code>). Corrigido para usar <code>var(--card-bg)</code> que respeita o modo light/dark automaticamente. Adicionado dark mode específico com <code>@media (prefers-color-scheme: dark)</code>.</li>
-    <li><strong>Fallback de variável CSS corrigido:</strong> o fallback de <code>var(--text-primary)</code> estava definido como <code>#1a3a6b</code> (azul) em vez de <code>#1a202c</code> (cinza escuro). Em iOS Safari com bug de renderização de variáveis CSS em position:sticky, o fallback azul aparecia visível. Corrigido em 6 páginas: <code>sidebar.css</code>, <code>index.html</code>, <code>indicadores.html</code>, <code>inspecoes.html</code>, <code>rmpf.html</code>, <code>total.html</code>.</li>
-    <li><strong>Header sobrepondo conteúdo em telas pequenas (index.html):</strong> o topbar estava sobrepondo o conteúdo ao fazer scroll no mobile. Causas: (1) <code>components.css</code> não definia height do <code>.topbar</code>, deixando-o com altura variável; (2) <code>.page-content</code> não tinha padding-top suficiente. Corrigido: adicionado <code>display: flex</code>, <code>min-height: 56px</code> ao <code>.topbar</code> em components.css; adicionado <code>padding-top: 72px !important</code> ao <code>.page-content</code> em mobile para deixar espaço do topbar (52px) + margem.</li>
-    <li><strong>Cascata CSS em index.html:</strong> <code>components.css</code> vinha <strong>depois</strong> do <code>&lt;style&gt;</code> inline no HTML, sobrescrevendo estilos. Utilizados <code>!important</code> para forçar padding-top e altura mínima do topbar em mobile.</li>
-    <li><strong>iOS dark mode padronizado:</strong> adicionado <code>@supports (-webkit-touch-callout: none)</code> com fallback <code>#2a2a31 !important</code> em sidebar.css e index.html para garantir que em iOS, quando a variável CSS falha, a cor fica correta (cinza escuro, não azul ou branco).</li>
-  </ul>
-  <p><strong>Afeta páginas:</strong> cvs, legislacao, check, changelog, readme, relatorio_plantao_fiscal, cnae, indicadores, inspecoes, rmpf, total e index (dashboard).</p>
-  <p><strong>Arquivos modificados:</strong> <code>css/sidebar.css</code> — fallback de cor, dark mode iOS, z-index e scroll-padding; <code>css/components.css</code> — background iOS, altura mínima do topbar, display flex; <code>index.html</code> — fallback de cor, padding-top com !important, height mínimo; <code>indicadores.html</code>, <code>inspecoes.html</code>, <code>rmpf.html</code>, <code>total.html</code> — fallback de cor corrigido; <code>APP_VERSION</code> 2.4.5.</p>
 </div>
 
     </section>
