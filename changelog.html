@@ -183,6 +183,17 @@
       <p class="ch-subtitle">Registro das alterações publicadas no VISA App.</p>
 
 <div class="section">
+  <h3>v2.6.2 — 11/04/2026 17:53 (Horário de Brasília – UTC−3)</h3>
+  <strong>🔧 Correções de integridade de dados + sinalização visual de regulados inativos</strong>
+  <ul>
+    <li><strong>Alvarás cancelados excluídos das contagens (<code>comply.html</code> e <code>indicadores.html</code>):</strong> registros com <code>Cancela = 'True'</code> eram incluídos nas contagens de alvarás emitidos, distorcendo os indicadores de conformidade e o painel de indicadores. O filtro <code>alvFiltrados</code> / <code>alvEmit</code> agora descarta esses registros antes de qualquer contagem.</li>
+    <li><strong>Badge INATIVO em regulados (<code>protocolo.html</code>, <code>inspecoes.html</code>, <code>os.html</code>):</strong> quando o campo <code>INATIVIDADE = 'True'</code>, um badge vermelho <strong>INATIVO</strong> é exibido ao lado da razão social — nos cards de resultado de busca de protocolos, na coluna Empresa da tabela de inspeções e na tabela/card/painel de detalhes de OS. Campo <code>regulado_inativo</code> adicionado ao objeto OS para propagação correta.</li>
+    <li><strong>CSS <code>.badge-inativo</code>:</strong> adicionado em cada arquivo onde o badge é utilizado, com estilo consistente com o <code>badge-danger</code> já existente.</li>
+  </ul>
+  <p><strong>Arquivos criados/modificados:</strong> <code>comply.html</code> — excluir alvarás cancelados; <code>indicadores.html</code> — excluir alvarás cancelados; <code>protocolo.html</code> — badge INATIVO nos cards; <code>inspecoes.html</code> — badge INATIVO na tabela; <code>os.html</code> — badge INATIVO + campo <code>regulado_inativo</code>; <code>js/version.js</code> — APP_VERSION 2.6.2; <code>service-worker.js</code> — CACHE_NAME visa-v2.6.2; <code>changelog.html</code> — esta entrada.</p>
+</div>
+
+<div class="section">
   <h3>v2.6.1 — 10/04/2026 22:00 (Horário de Brasília – UTC−3)</h3>
   <strong>📎 Anexos de imagem e PDF em Denúncias e no Histórico do Regulado</strong>
   <ul>
