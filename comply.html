@@ -500,6 +500,7 @@
     const codigosIns = new Set(insFiltrados.map(r => r['CODIGO']).filter(Boolean));
 
     const alvFiltrados = dadosAlv.filter(r => {
+      if ((r['Cancela'] || '').trim().toLowerCase() === 'true') return false;
       if (!codigosReq.has(r['Codigo'])) return false;
       const dt = parseBRDate(r['Dt_emite']);
       return dt && dt >= dtIni && dt <= dtFim;

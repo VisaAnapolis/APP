@@ -699,7 +699,7 @@
       var protOutros = protTotal - protProj - protPAS;
 
       /* ── ALVARÁS EMITIDOS ── */
-      var alvEmit = alv.filter(function(r){ return inRange(parseDMY(r.Dt_emite), start, end); });
+      var alvEmit = alv.filter(function(r){ return inRange(parseDMY(r.Dt_emite), start, end) && (r.Cancela || '').trim().toLowerCase() !== 'true'; });
       var alvTotal = alvEmit.length;
 
       /* ── REGULADOS CADASTRADOS — complexidade e Mapa SIA/SUS ── */

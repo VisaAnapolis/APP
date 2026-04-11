@@ -275,6 +275,18 @@
         .badge-protocolo { background: #6f42c1; color: white; }
         .badge-auditoria { background: #fd7e14; color: white; }
 
+        .badge-inativo {
+            display: inline-block;
+            background: #dc3545;
+            color: white;
+            font-size: 0.7em;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 8px;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+
         .badge-complexidade-alta { background: #dc3545; color: white; }
         .badge-complexidade-media { background: #ffc107; color: var(--text-primary); }
         .badge-complexidade-baixa { background: #28a745; color: white; }
@@ -1927,6 +1939,7 @@ function converterData(dataStr) {
                         const fantasia    = regulado ? (regulado.FANTASIA  || regulado.Fantasia  || '') : '';
                         const cnpj        = regulado ? (regulado.CGC       || regulado.Cgc       || '') : '';
                         const cpf         = regulado ? (regulado.CPF       || regulado.Cpf       || '') : '';
+                        const reguladoInativo = regulado ? ((regulado.INATIVIDADE || '').trim().toLowerCase() === 'true') : false;
 
                         if (!matchRegulado(filtros.regulado, razaoSocial, fantasia, cnpj, cpf)) {
                             descartadosFiltroRazao++;
@@ -1953,6 +1966,7 @@ function converterData(dataStr) {
                             motivo: r.Motivo || '',
                             atendida: atendida,
                             cancelado: cancelado,
+                            regulado_inativo: reguladoInativo,
                             area: area,
                             area_desc: areaDesc,
                             logradouro: logradouro,
@@ -2247,6 +2261,7 @@ function converterData(dataStr) {
                         const logradouro = regulado ? (regulado.LOGRADOURO || regulado.Logradouro || '') : '';
                         const cnpj = regulado ? (regulado.CGC || regulado.Cgc || '') : '';
                         const cpf = regulado ? (regulado.CPF || regulado.Cpf || '') : '';
+                        const reguladoInativo = regulado ? ((regulado.INATIVIDADE || '').trim().toLowerCase() === 'true') : false;
                         
                         if (!matchRegulado(filtros.regulado, razaoSocial, fantasia, cnpj, cpf)) return;
                         
@@ -2262,6 +2277,7 @@ function converterData(dataStr) {
                             motivo: p.Assunto || '',
                             atendida: atendida,
                             cancelado: cancelado,
+                            regulado_inativo: reguladoInativo,
                             area: '',
                             area_desc: '',
                             logradouro: logradouro,
@@ -2593,7 +2609,7 @@ function obterDataPrazo(os) {
                 <td>${formatarDataBR(os.data_req)}</td>
                 <td><span class="badge ${badgeTipo}">${os.tipo}</span></td>
                 <td>${os.fiscal || '-'}</td>
-                <td>${os.razao_social || '-'}</td>
+                <td>${os.razao_social || '-'}${os.regulado_inativo ? ' <span class="badge-inativo">INATIVO</span>' : ''}</td>
                 <td>${os.fantasia || '-'}</td>
                 <td>${badgeComplexidade}</td>
                 <td data-order="${prazoOrdem}">${prazoHtml}</td>
@@ -2674,7 +2690,7 @@ function obterDataPrazo(os) {
                         </div>
                         <div class="card-row">
                             <span class="card-label">Empresa:</span>
-                            <span class="card-value">${os.razao_social || '-'}</span>
+                            <span class="card-value">${os.razao_social || '-'}${os.regulado_inativo ? ' <span class="badge-inativo">INATIVO</span>' : ''}</span>
                         </div>
                         ${os.fantasia ? `
                         <div class="card-row">
@@ -2739,7 +2755,7 @@ function obterDataPrazo(os) {
                     <h3>🏢 Dados do Estabelecimento</h3>
                     <div class="detail-row">
                         <div class="detail-label">Razão Social:</div>
-                        <div class="detail-value">${os.razao_social || '-'}</div>
+                        <div class="detail-value">${os.razao_social || '-'}${os.regulado_inativo ? ' <span class="badge-inativo">INATIVO</span>' : ''}</div>
                     </div>
                     <div class="detail-row">
                         <div class="detail-label">Nome de Fantasia:</div>
